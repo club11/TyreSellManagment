@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %} Tyresize detail {% endblock title %}
+{% block body %} 
+Модель: {{ object.tyre_size }}</br>
+<a href="{% url 'dictionaries:ts_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

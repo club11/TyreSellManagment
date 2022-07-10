@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %} Model create {% endblock title %}
+{% block body %} 
+<h1>Добавить модель</h1>
+<form action="" method="post">
+    {% csrf_token %} 
+    {{ form }}
+    <button type="submit" class="btn btn-success">Добавить</button>
+</form>
+<a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}
+
+
+
+
+
+

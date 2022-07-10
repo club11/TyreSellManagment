@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Model update {% endblock title %}
+{% block body %} 
+<h1>изменить модель</h1>
+<form action="" method="post">
+    {% csrf_token %} 
+    {{ form }}
+    <button type="submit" class="btn btn-success">изменить</button>
+</form>
+<a href="{% url 'dictionaries:model_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

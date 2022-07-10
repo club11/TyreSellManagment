@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %} Directories {% endblock title %}
+{% block body %} 
+<ul>
+    <li><b><a href="{% url 'dictionaries:model_list' %}">Модели</a></b></li>
+    <li><b><a href="{% url 'dictionaries:ts_list' %}">Типоразмеры</a></b></li>
+</ul>
+{% endblock body %}
+
