@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %} Quantity detail {% endblock title %}
+{% block body %} 
+Модель: {{ object.tyre_group }}</br>
+<a href="{% url 'dictionaries:qnt_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

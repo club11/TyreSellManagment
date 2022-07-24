@@ -2,6 +2,15 @@ from django.db import models
 from django.urls import reverse
 
 # Create your models here.
+
+class Currency(models.Model):
+    currency = models.CharField(
+        max_length=10,
+        verbose_name='валюта',
+    )
+    def get_absolute_url(self):
+        return reverse('dictionaries:curr_list')
+
 class TyreSizeModel(models.Model):
     tyre_size = models.CharField(
         verbose_name='типоразмер',
@@ -20,3 +29,21 @@ class ModelNameModel(models.Model):
     def get_absolute_url(self):
         return reverse('dictionaries:model_list')
         #return reverse('dictionaries:dictionaries', args = [self.pk])
+
+class TyreGroupModel(models.Model):
+    tyre_group = models.CharField(
+        verbose_name='группа шин',
+        max_length=10,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:tg_list')
+
+class QantityCountModel(models.Model):
+    quantity_count = models.CharField(
+        verbose_name='ед. измерения',
+        max_length=10,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:qnt_list')

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %} Quantity delete {% endblock title %}
+{% block body %} 
+<form action="" method="post">
+    {% csrf_token %}
+<button type="submit">Удалить</button>
+</form>
+<a href="{% url 'dictionaries:qnt_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

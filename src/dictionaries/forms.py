@@ -17,3 +17,24 @@ class ModelNameForm(forms.ModelForm):
         fields = {
             'model',
         }
+
+class TyreGroupForm(forms.ModelForm):
+    class Meta:
+        model = models.TyreGroupModel
+        fields = {
+            'tyre_group',
+        }
+
+class QantityCountModelForm(forms.ModelForm):
+    class Meta:
+        model = models.QantityCountModel
+        fields = {
+            'quantity_count',
+        }
+
+class CurrencytModelForm(forms.ModelForm):
+    class Meta:
+        model = models.Currency
+        fields = {
+            'currency',
+        }

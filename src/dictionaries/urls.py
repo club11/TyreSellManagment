@@ -18,4 +18,22 @@ urlpatterns = [
     path('model_update/<int:pk>/', dictionaries_views.ModelNameUpdateView.as_view(), name='model_update'), 
     path('model_delete/<int:pk>/', dictionaries_views.ModelNameDeleteView.as_view(), name='model_delete'), 
     path('model_list/', dictionaries_views.ModelNameListView.as_view(), name='model_list'), 
+
+    path('tg_create/', dictionaries_views.TyreGroupCreateView.as_view(), name='tg_create'),  
+    path('tg_detail/<int:pk>/', dictionaries_views.TyreGroupDetailView.as_view(), name='tg_detail'), 
+    path('tg_update/<int:pk>/', dictionaries_views.TyreGroupUpdateView.as_view(), name='tg_update'), 
+    path('tg_delete/<int:pk>/', dictionaries_views.TyreGroupDeleteView.as_view(), name='tg_delete'), 
+    path('tg_list/', dictionaries_views.TyreGroupListView.as_view(), name='tg_list'), 
+
+    path('qnt_create/', dictionaries_views.QantityCountCreateView.as_view(), name='qnt_create'),  
+    path('qnt_detail/<int:pk>/', dictionaries_views.QantityCountDetailView.as_view(), name='qnt_detail'), 
+    path('qnt_update/<int:pk>/', dictionaries_views.QantityCountUpdateView.as_view(), name='qnt_update'), 
+    path('qnt_delete/<int:pk>/', dictionaries_views.QantityCountDeleteView.as_view(), name='qnt_delete'), 
+    path('qnt_list/', dictionaries_views.QantityCountListView.as_view(), name='qnt_list'), 
+
+    path('curr_create/', dictionaries_views.CurrencyCreateView.as_view(), name='curr_create'),  
+    path('curr_detail/<int:pk>/', dictionaries_views.CurrencyDetailView.as_view(), name='curr_detail'), 
+    path('curr_update/<int:pk>/', dictionaries_views.CurrencyUpdateView.as_view(), name='curr_update'), 
+    path('curr_delete/<int:pk>/', dictionaries_views.CurrencyDeleteView.as_view(), name='curr_delete'), 
+    path('curr_list/', dictionaries_views.CurrencyListView.as_view(), name='curr_list'),
 ]

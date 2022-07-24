@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %} Currency detail {% endblock title %}
+{% block body %} 
+Модель: {{ object.currency }}</br>
+<a href="{% url 'dictionaries:curr_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

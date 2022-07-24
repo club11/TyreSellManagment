@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %} Tyres group list {% endblock title %}
+{% block body %} 
+
+
+<table class="table table-dark table-borderless">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Группа/th>
+        <th scope="col">Обновить</th>
+        <th scope="col">Удалить</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td><a href="{% url 'dictionaries:tg_detail' object.pk %}">{{ object.tyre_group }}</a></td>
+        <td><a href="{% url 'dictionaries:tg_update' object.pk %}">Обновить</a></td>
+        <td><a href="{% url 'dictionaries:tg_delete' object.pk %}">Удалить</a></td>
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'dictionaries:tg_create' %}" class="btn btn-success">Создать модель</a>
+  <a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к перечню справочников</a>
+
+{% endblock body %}

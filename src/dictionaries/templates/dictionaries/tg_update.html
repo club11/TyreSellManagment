@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Tyre group update {% endblock title %}
+{% block body %} 
+<h1>изменить группу</h1>
+<form action="" method="post">
+    {% csrf_token %} 
+    {{ form }}
+    <button type="submit" class="btn btn-success">изменить</button>
+</form>
+<a href="{% url 'dictionaries:tg_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

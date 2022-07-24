@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Quantity update {% endblock title %}
+{% block body %} 
+<h1>изменить ед. измеренияу</h1>
+<form action="" method="post">
+    {% csrf_token %} 
+    {{ form }}
+    <button type="submit" class="btn btn-success">изменить</button>
+</form>
+<a href="{% url 'dictionaries:qnt_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

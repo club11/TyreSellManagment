@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %} Tyre card detail {% endblock title %}
+{% block body %} 
+<a href="{% url 'tyres:tyre_card_list' %}" class="btn-primary">Назад к списку</a>
+
+<div class="card text-white bg-dark w-75 p-3">
+    <div class="card-horizontal">
+        <div class="img-square-wrapper">
+          <img src='{{ object.picture.url }}' class="card-img-top w-100 p-2" alt="...">
+        </div>
+      <div class="card-body">
+        <h5 class="card-title" style="color:#f00000">Информация о шине <b></b></h5> 
+        <p class="card-text"> 
+          Модель: <b style="color:#fafaf4">{{ object.tyre.tyre_model.model }}</b></br>          
+          Типоразмер: <b style="color:#fafaf4">{{ object.tyre.tyre_size.tyre_size }}</b></br>    
+          Дата постановки на серию {{ object.serie_date }}</br>
+      </p>
+        <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-light">Назад</a>
+      </div>
+    </div>
+</div>
+
+{% endblock body %}
