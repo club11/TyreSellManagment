@@ -1,209 +1,643 @@
-
+from datetime import date
+from turtle import st
+from unicodedata import decimal, name
 from django.shortcuts import render
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 from . import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 import openpyxl 
+import openpyxl.utils.cell
 import re
+from dictionaries import models as dictionaries_models
+from tyres import models as tyres_models
+from sales import models as sales_models
+from itertools import count, islice
 
-# Create your views here.
-class ExcelStaffView(FormView):
-    form_class = forms.ImportDataForm
+class ExcelTemplateView(TemplateView):
     template_name = 'filemanagment/excel_import.html'
 
-    def form_valid(self, form):
-        form = forms.ImportDataForm(self.request.POST, self.request.FILES)
-        if form.is_valid():
-            file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)     
-            sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel
-            print(f'Total Rows = {sheet.max_row} and Total Columns = {sheet.max_column}')               # получить количество строк и колонок на листе
-            #print('все окей', file_to_read.active)
-            # поиск ячейки с названием 'Наименование продукции' и выборка данных из данной колонки с заголовком этой ячейки            
-            for row in sheet.rows:
-                tyresize_list = []
-                tyremodel_list = []
-                tyreparametrs_list = []                       
-                for cell in row:
-                    if cell.value == 'Наименование продукции':
-                        for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
-                            ### проверка если строка пустая
-                            if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
-                                tyresize_list.append(' ')
-                            #######
-                            reg_list = [
-                            #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
-                            #'\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2}', 
-                            #'(\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2})',  # = '(\d{3}|\d{2})/\d{2}([A-Za-z]|-)\d{2}' +  '\d{3}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',    
-                            '(\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}))|(\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2})|((\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2}))', #3 в одном чтобы избежать повторений двойных в ячейке наподобие #АШ 480/80R42(18.4R42)
-                            '\d{2}(\.|\,)\d{1}[A-Za-z](R|-)\d{2}',
-                            '(\d{4}|\d{3})[A-Za-z]\d{3}([A-Za-z]|-)\d{3}',
-                            '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
-                            '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
-                            '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
-                            ' \d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
-                             ' \d{1}[A-Za-z]-\d{2} ',
-                            '\d{3}[A-Za-z]\d{2}[A-Za-z]',
-                            '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
-                            '\d{2}[A-Za-z][A-Za-z]\d{2}', 
-                            ]
-                            for n in reg_list:
-                                result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
-                                if result:
-                                    tyresize_list.append(result.group(0))
-                                    ### удаление среза с типоразмером и всем что написано перед типоразмером
-                                    left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
-                                    if left_before_size_data_index > 0:
-                                        str_left_data = str(row[cell.column-1].value)[0:left_before_size_data_index-1]
-                                    row[cell.column-1].value = str(row[cell.column-1].value).replace(str_left_data, '')
-                                    row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response({'aform': forms.ImportDataForm(prefix='aform_pre'), 'bform': forms.ImportSalesDataForm(prefix='bform_pre')})
+
+    def post(self, request, *args, **kwargs):
+        form_name = self.request.POST.get('form_name')
+        row_value = int
+        tyresize_list = []
+        tyremodel_list = []
+        tyreparametrs_list = [] 
+        sales_list = []
+        ply_dict = {}
+        dict_of_param_to_remake_in_standart = {
+                ('Сер', 'Ср'):'сер',
+                ('Груз', 'Гр'):'груз',
+                ('Легк', 'Лег', 'Лг'):'легк',
+                ('Сх', 'С/х'):'сх',
+                ('Л/г', 'л/г'):'л/г',
+                ('Тр', 'Тп', 'Трп'):'трп',
+                'L-2':'L-2',
+                'LS-2':'LS-2',
+                ('Type', 'Typ'):'Type',
+                'кам':'кам',
+                ('б/к', 'бк'):'б/к',
+                ('ошип', 'ош', 'п/ош'):'ошип',
+                'КГШ':'КГШ',
+                'ЗМШ':'ЗМШ',
+                'ВАЗ':'ВАЗ',
+                'а/к':'а/к',
+                'о/л':'о/л',
+                'ак23.5':'ак23.5',
+                'ол23.5':'ол23.5',
+                'Газель':'Газель',
+                'Вездеход':'Вездеход',
+                'погр':'Погр',
+                'масс':'Масс',
+                ('выт', 'камневыт.'):'камневыт',
+                'вен.161':'вен.161',
+                'вен.ТК':'вен.ТК',
+                'H':'H',
+                'S':'S',
+                'C':'C',
+                #'РК-\d{1}-\d{3}',
+                #'РК-\d{1}([А-Яа-я]|[A-Za-z])-\d{3}',
+                #'ГК--\d{3}',
+                #' (\d{2}|\d{1})\b',
+                #'\d{3}([А-Яа-я]|[A-Za-z])\d{1}|\d{3} ([А-Яа-я]|[A-Za-z])\d{1}',
+            }
+        if form_name == "aform.prefix":
+            form = forms.ImportDataForm(self.request.POST, self.request.FILES)
+            if form.is_valid():
+                file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)     
+                sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel
+                #print(f'Total Rows = {sheet.max_row} and Total Columns = {sheet.max_column}')               # получить количество строк и колонок на листе
+                # 1. Парсинг. поиск ячейки с названием 'Наименование продукции' и выборка данных из данной колонки с заголовком этой ячейки            
+                for row in sheet.rows:                      
+                    for cell in row:
+                        if cell.value == 'Наименование продукции':
+                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
+                                ### проверка если строка пустая
+                                if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
+                                    tyresize_list.append(' ')
+                                #######
+                                reg_list = [
+                                #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
+                                #'\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2}', 
+                                #'(\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2})',  # = '(\d{3}|\d{2})/\d{2}([A-Za-z]|-)\d{2}' +  '\d{3}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',    
+                                '(\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}))|(\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2})|((\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2}))', #3 в одном чтобы избежать повторений двойных в ячейке наподобие #АШ 480/80R42(18.4R42)
+                                '\d{2}(\.|\,)\d{1}[A-Za-z](R|-)\d{2}',
+                                '(\d{4}|\d{3})[A-Za-z]\d{3}([A-Za-z]|-)\d{3}',
+                                '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
+                                '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
+                                '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
+                                ' \d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
+                                 ' \d{1}[A-Za-z]-\d{2} ',
+                                '\d{3}[A-Za-z]\d{2}[A-Za-z]',
+                                '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
+                                '\d{2}[A-Za-z][A-Za-z]\d{2}', 
+                                ]
+                                for n in reg_list:
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                    if result:
+                                        tyresize_list.append(result.group(0))
+                                        ### удаление среза с типоразмером и всем что написано перед типоразмером
+                                        left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
+                                        if left_before_size_data_index > 0:
+                                            str_left_data = str(row[cell.column-1].value)[0:left_before_size_data_index-1]
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(str_left_data, '')
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+
+                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):    
+                                ### проверка если строка пустая
+                                if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
+                                    tyremodel_list.append(' ')
+                                ####### 
+                                reg_list = ['BEL-\w+',
+                                '(ФБел-\d{3}-\d{1})|(Бел-\d{3}-\d{1})|ФБел-\d{3}([A-Za-z]|[А-Яа-я])|(ФБел-\d{3})|(Бел-\d{2}(\.|\,)\d{2}(\.|\,)\d{2})|(Бел-\w+)|(Бел ПТ-\w+|ПТ-\w+)|(БелОШ\w+)',
+                                #'БИ-\w+',
+                                #'ВИ-\w+',
+                                'И-\w+|ВИ-\w+|БИ-\w+',
+                                '(Ф-\d{3}-\d{1})|(Ф-\d{2}[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}\s[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}-\d{1})|(Ф-\w+|КФ-\w+|ВФ-\w+)',
+                                'ФД-\w+',
+                                'ИД-\w+',
+                                '(К|K)-\d{2}[А-Яа-я][А-Яа-я]',
+                                '(В-\d{2}-\d{1})|(В-\w+|ИЯВ-\w+)',
+                                'ФТ-\w+',
+                                'Я-\w+',]   
+                                for n in reg_list:
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                    if result:
+                                        #print(result.group(0))
+                                        tyremodel_list.append(result.group(0))
+                                        ### удаление среза с моделью
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                        #print(str(row[cell.column-1].value))
+
+                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):     
+                                reg_list = [
+                                    'ЗМШ',
+                                    'КГШ',
+                                    'Сер|сер|ср',
+                                    'СГ',
+                                    'Трп|Тр|Тпр',
+                                    'Масс',
+                                    'с/х|сх',
+                                    'Лег|лг|легк', 
+                                    'Груз|груз|гр',
+                                    'Л/гр|Л/г|л/г',
+                                    'бк|б/к',
+                                    'Погр',
+                                    'кам',
+                                    'LS-2|LS|L-2',  
+                                    'Type|Typ',
+                                    'S|H|C',
+                                    '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))', 
+                                    'Газель',
+                                    '(ВАЗ)',
+                                    'Вездеход'
+                                    'У-\d{1}',
+                                    'ошип|а/к|выт|п/ош',
+                                    '(ГК|ЕР)-\d{3}',
+                                    'РК-5-165',
+                                    '\(ак23.5\)|\(ол23.5\)|\(ГК-260\)|вен.260|\(РК-5А-145\)|\(о/л\)|о/л|\(кам.14.9\)|\(кам12,5\)|ЛК-35-16.5|\(ГК-165\)|\(вен.ТК\)|\(вен.161\)|вен.260|Подз|\(Подз\)|вен.|(о/л)|\(ЛК-35-16.5\)',
+                                    '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
+                                    '(\d{2}|\d{1})+$',
+                                ] 
+
+                                list_of_parametrs = []
+                                for n in reg_list:
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))                                  
+                                    if result:
+                                        list_of_parametrs.append(result.group(0))   
+                                        #print('rEsUlT', result, print('N is =', n))
+                                        ### удаление среза с моделью                                   
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                    #################################### дополнительно получаем и формируем данные стандартых параметров НОРМ СЛОЙНОСТИ для добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart    
+                                    dict_ply = ''
+                                    if n is '(\d{2}|\d{1})+$':
+                                        if result:
+                                            #print(n, 'НОРМА СЛОЙНОСТИ ПОЛУЧЕНА =', result.group(0))
+                                            dict_ply = str(result.group(0))
+                                            ply_dict[dict_ply] = result.group(0)
+                                    ###########################
+                                    pp = str(row[cell.column-1].value)                                      #### ????? это зачем - не задействовано ЖИ!
+                                    #print(str(row[cell.column-1].value))    
+                                        ### 
+                                str_of_param = ' '.join(list_of_parametrs)
+                                tyreparametrs_list.append(str_of_param)
+
+                                
+            ####### очистка списка параметров шины для формирования уникальных значений для справочника модели TyreParametersModel:                    
+            tyreparametrs_list_cleaned = list(set(' '.join(tyreparametrs_list).split()))  
+
+            #######################################################################################################################
+            ################################# 2. модуль преобразователь - разные варианты написания к одному стандарту:
+
+            ####### 2.1 преобразование уникальных параметров к стандарту для справочников:
+            tyreparametrs_list_cleaned_and_prepared = []
+            for n in (tyreparametrs_list_cleaned):
+                for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
+                    if n in standart_dict_param:
+                        n = dict_of_param_to_remake_in_standart.get(standart_dict_param)
+                        tyreparametrs_list_cleaned_and_prepared.append(n)                                   # очищенные уникальные данные параметры для внесения в справочник
+            ####### 2.2 преобразование параметров шины к стандарту для сопоставления с уникальными данными в справочниках в дальнейшем:
+            #print(tyreparametrs_list)
+            tyreparametrs_list_prepared = []
+            for n in (tyreparametrs_list):
+                tyre_params = ''.join(n).split()
+                tyreparametrs_list_prepared.append(tyre_params)      
+
+            ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря ply_dict:
+            dict_of_param_to_remake_in_standart.update(ply_dict)
+            #print(dict_of_param_to_remake_in_standart)
+            ############################################################
+
+            #print('KK',tyreparametrs_list_prepared)       
+            tyreparam_list = []    
+            for tpl in tyreparametrs_list_prepared:
+                tyreparametrs = []
+                for n in tpl:
+                    for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
+                        for standart_dict_param_value in standart_dict_param:
+                            if n == standart_dict_param_value: 
+                                #print('tyreparametr prepared=', n, 'standart_dict_param=', standart_dict_param)
+                                for k in standart_dict_param:  
+                                    if n == k:                                                                      #### ПРОВЕРКА НА ПОЛНОЕ соответстие с ключами dict_of_param_to_remake_in_standart для преобразования
+                                        #print('n=', n, 'k=', k)
+                                        n = dict_of_param_to_remake_in_standart.get(standart_dict_param)
+                                        #print(n)
+                                        tyreparametrs.append(n) 
+                                        #print(tyreparametrs)
+                    for k in list(ply_dict.values()):                                   # дополнительно провека норм слойности
+                        if n == k: 
+                            #print('n=',n, 'k=', k)
+                            tyreparametrs.append(n)            
+                tyreparam_list.append(tyreparametrs)                                    # готовые данные параметры шины для сверки с справочником
+            #print(tyreparametrs_list)
+            #print(tyreparametrs_list_prepared)
+            #print('tyreparam_list', tyreparam_list)                 
+
+            #print(list(ply_dict.values()))
+
+            ###################################### 3. Создать объекты справочников:
+            for tyre_model in tyremodel_list:
+                dictionaries_models.ModelNameModel.objects.update_or_create(model=tyre_model)
+                    
+            for tyre_size in tyresize_list:
+                dictionaries_models.TyreSizeModel.objects.update_or_create(tyre_size=tyre_size)
+
+            for tyre_ply_value in ply_dict.values():
+                dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_ply_value)   
+
+            for tyre_type in tyreparametrs_list_cleaned_and_prepared:
+                dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_type)   
+
+            ##### сверка данных спарсенных с данными в справочниках:
+            tyre_model_obj_list = []
+            tyre_size_obj_list = []
+            tyre_type_obj_list = []
+            for n in dictionaries_models.ModelNameModel.objects.all():
+                tyre_model_obj_list.append(n)
+            for n in dictionaries_models.TyreSizeModel.objects.all():
+                tyre_size_obj_list.append(n)
+            for n in dictionaries_models.TyreParametersModel.objects.all():
+                tyre_type_obj_list.append(n)
+
+            tyre_model_list = [] 
+            for cleaned_model_name in tyremodel_list:               # сверка спарсенных данных о модели с данными в БД справочнике модель
+                for dict_ob in tyre_model_obj_list:
+                    if cleaned_model_name == dict_ob.model:
+                        #print(cleaned_model_name)
+                        pass
+                if cleaned_model_name is None:
+                    cleaned_model_name = ''  
+                tyre_model_list.append(cleaned_model_name)
+
+            tyre_size_list = [] 
+            for cleaned_tyresize_name in tyresize_list:               # сверка спарсенных данных о типоразмере с данными в БД справочнике типоразмер
+                for dict_ob in tyre_size_obj_list:
+                    if cleaned_tyresize_name == dict_ob.tyre_size:
+                        #print(cleaned_tyresize_name)
+                        pass
+                if cleaned_tyresize_name is None:
+                    cleaned_tyresize_name = ''                   
+                tyre_size_list.append(cleaned_tyresize_name)
+
+            tyre_param_list = []                                    # сверка спарсенных данных о параметрах шины с данными в БД справочнике параметры шины
+            for cleaned_tyreparam_name in tyreparam_list:  
+                trprmtrs = []             
+                for n in cleaned_tyreparam_name:
+                    for dict_ob in tyre_type_obj_list:
+                        if n == dict_ob.tyre_type:
+                            #print(cleaned_tyreparam_name)
+                            trprmtrs.append(n)
+                    if n is None:
+                        n == ''
+                        trprmtrs.append(n)
+                tyre_param_list.append(trprmtrs)
 
 
+            #print(tyre_model_list, len(tyre_model_list))
+            #print(tyre_size_list, len(tyre_size_list))
+            #print(tyre_param_list, len(tyre_param_list))
+                ###### запись в модель Tyre данных о модели типоразмере и параметрах - сверенных с данными в моделях справочников
+            if len(tyre_model_list) == len(tyre_size_list) and len(tyre_model_list) == len(tyre_param_list):                ########### ЗДЕСЬ ВРОДЬ КАК ДАННЫЕ ЧТО ПОЙДУТ В МОДЕЛЬ TYRE
+                for n in range(0, len(tyre_param_list)):
+                    ######################################  Проверяем, существует ли в БД уже объект шина с заданными параметрами:
+                    mod_pos = tyre_model_list[n]
+                    size_pos = tyre_size_list[n]
+                    param_pos =tyre_param_list[n]
+                    tyre_obj_exist = tyres_models.Tyre.objects.filter(tyre_model__model=mod_pos, tyre_size__tyre_size=size_pos, tyre_type__tyre_type__in=param_pos)
 
-                        for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):    
-                            ### проверка если строка пустая
-                            if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
-                                tyremodel_list.append(' ')
-                            ####### 
-                            reg_list = ['BEL-\w+',
-                            '(ФБел-\d{3}-\d{1})|(Бел-\d{3}-\d{1})|ФБел-\d{3}([A-Za-z]|[А-Яа-я])|(ФБел-\d{3})|(Бел-\d{2}(\.|\,)\d{2}(\.|\,)\d{2})|(Бел-\w+)|(Бел ПТ-\w+|ПТ-\w+)|(БелОШ\w+)',
-                            #'БИ-\w+',
-                            #'ВИ-\w+',
-                            'И-\w+|ВИ-\w+|БИ-\w+',
-                            '(Ф-\d{3}-\d{1})|(Ф-\d{2}[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}\s[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}-\d{1})|(Ф-\w+|КФ-\w+|ВФ-\w+)',
-                            'ФД-\w+',
-                            'ИД-\w+',
-                            '(К|K)-\d{2}[А-Яа-я][А-Яа-я]',
-                            '(В-\d{2}-\d{1})|(В-\w+|ИЯВ-\w+)',
-                            'ФТ-\w+',
-                            'Я-\w+',]   
-                            for n in reg_list:
-                                result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
-                                if result:
-                                    #print(result.group(0))
-                                    tyremodel_list.append(result.group(0))
-                                    ### удаление среза с моделью
-                                    row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
-                                    #print(str(row[cell.column-1].value))
+                for n in range(0, len(tyre_param_list)):
+                    tyre_type_el_list = []
+                    for k in range (0, len(tyre_param_list[n])):
+                        tyre_type_el = dictionaries_models.TyreParametersModel.objects.get(tyre_type=tyre_param_list[n][k])
+                        #print(tyre_type_el)
+                        tyre_type_el_list.append(tyre_type_el)
+                    if tyre_obj_exist:                              ### если объект существует - не созавать новый такой же
+                        #print('YEAP!', tyre_obj_exist)
+                        pass
+                        ######################################    
+                    else:
+                        #print('tyre_type_el_list = ', tyre_type_el_list)           
+                        tyre_obj = tyres_models.Tyre.objects.create(                                                        ####  СОЗДАЕМ объект Tyre
+                            tyre_model=dictionaries_models.ModelNameModel.objects.get(model=tyre_model_list[n]),
+                            tyre_size=dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size_list[n]), 
+                        )
+                        for n in tyre_type_el_list:
+                            tyre_obj.tyre_type.add(n)
 
-                        for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):     
-                            reg_list = [
-                                'ЗМШ',
-                                'КГШ',
-                                'Сер|сер|ср',
-                                'СГ',
-                                'Трп|Тр|Тпр',
-                                'Масс',
-                                'с/х|сх',
-                                'Лег|лг|легк', 
-                                'Груз|груз|гр',
-                                'Л/гр|Л/г|л/г',
-                                'бк|б/к',
-                                'Погр',
-                                'кам',
-                                'LS-2|LS|L-2',  
-                                'Type|Typ',
-                                'S|H|C',
-                                '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))', 
-                                'Газель',
-                                '(ВАЗ)',
-                                'Вездеход'
-                                'У-\d{1}',
-                                'ошип|а/к|с выт|п/ош',
-                                '(ГК|ЕР)-\d{3}',
-                                'РК-5-165',
-                                '\(ак23.5\)|\(ол23.5\)|\(ГК-260\)|вен.260|\(РК-5А-145\)|\(о/л\)|о/л|\(кам.14.9\)|\(кам12,5\)|ЛК-35-16.5|\(ГК-165\)|\(вен.ТК\)|\(вен.161\)|вен.260|Подз|\(Подз\)|вен.|(о/л)|\(ЛК-35-16.5\)',
-                                '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
-                                '(\d{2}|\d{1})+$',
-                            ]                
-                            list_of_parametrs = []
-                            for n in reg_list:
-                                result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
-                                if result:
-                                    list_of_parametrs.append(result.group(0))   
-                                    #print(result)
-                                    ### удаление среза с моделью                                   
-                                    row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
-                                pp = str(row[cell.column-1].value)
-                                print(str(row[cell.column-1].value))    
-                                    ### 
-                            str_of_param = ' '.join(list_of_parametrs)
-                            tyreparametrs_list.append(str_of_param)
+                        #tyre_obj = tyres_models.Tyre.objects.update_or_create(
+                        #    tyre_model=dictionaries_models.ModelNameModel.objects.get(model=tyre_model_list[n]),
+                        #    tyre_size=dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size_list[n]), 
+                        #    ##tyre_type=dictionaries_models.TyreParametersModel.objects.get(tyre_type=tyre_type_el.tyre_type),
+                        #)
+                        #print('tyre_obj = ', tyre_obj, type(tyre_obj))
+                        #for n in tyre_type_el_list:
+                        #    tyre_obj[0].tyre_type.add(n)
 
 
-                        #print(tyreparametrs_list)
-                        #print(tyresize_list)
-                        #print(tyremodel_list)                          
+            
+            #print(tyres_models.Tyre.objects.all())
+            #for k in tyres_models.Tyre.objects.all():        
+            #    print(k.tyre_model.model)
+            #    print(k.tyre_size.tyre_size)
+            #    print(k.tyre_type.all())
+            #    print(tyres_models.Tyre.objects.all().count())
+            ###############################################################
 
-                            #result = str(row[cell.column-1].value).find('Cер')
-                            #print(str(row[cell.column-1].value))
-                            #print(result)
-
-                            #result = re.search(r'(?i)(\W|^)[сер](\W|$)', str(row[cell.column-1].value))
-                            #result = re.findall(r'(?i)(\W|^).+(сер)+.(\W|$)', str(row[cell.column-1].value))
-                            #result = re.findall(rf'(?i){reg_list}', str(row[cell.column-1].value))
-
-                            #result = re.findall(rf'(?i){n}', str(row[cell.column-1].value))
-                            #result = re.findall(r'(?i)сер', str(row[cell.column-1].value))
-
-                            
-
-                                #result = re.findall(rf'(?i){n}', str(row[cell.column-1].value))
-                                #print(list_of_parametrs)
-
-
-                            #(?i)(\W|^)(туфта|проклятие|убирайся|бред|черт\sвозьми|зараза)(\W|$)
-                            #if .rindex:
-                            #    #print(result.group(0))
-                            #    print(result)
-                        print('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
-
-
-            #for row in range(2, sheet.max_row + 1): # Цикл по строкам начиная со второй (в первой заголовки)
-            #    data = []
-            #    for col in range(1, 16): # Цикл по столбцам от 1 до 15 ( 16 не включая)
-            #        value = sheet.cell(row, col).value # value содержит значение ячейки с координатами row col
-            #        data.append(value)
-            #    print(data, len(data))
-            #    author = directories_models.Author.objects.update_or_create(author=data[3])
-            #    serie = directories_models.Serie.objects.update_or_create(serie=data[4])
-            #    genre = directories_models.Genre.objects.update_or_create(genre=data[5])
-            #    editor = directories_models.Editor.objects.update_or_create(editor=data[6])
-            #    books_models.Book.objects.update_or_create(book_name=data[0], 
-            #    price=data[1], 
-            #    currency_price=data[2], 
-            #    author=directories_models.Author.objects.get(author=data[3]), 
-            #    serie=directories_models.Serie.objects.get(serie=data[4]), 
-            #    genre=directories_models.Genre.objects.get(genre=data[5]), 
-            #    editor=directories_models.Editor.objects.get(editor=data[6]), 
-            #    publishing_date=data[7], 
-            #    pages=data[8], 
-            #    binding=data[9], 
-            #    format=data[10], 
-            #    isbn=data[11], 
-            #    weigh=data[12], 
-            #    age_restrictions=data[13], 
-            #    value_available=data[14],
-            #    )
-            #return HttpResponseRedirect(reverse_lazy('books:book_list'))
-
-                        from openpyxl import Workbook
-                        excel_file = Workbook()
-                        excel_sheet = excel_file.create_sheet(title='Holidays 2019', index=0)
-                        excel_sheet['A1'] = 'Типоразмер'
-                        excel_sheet['B1'] = 'Модель'
-                        excel_sheet['C1'] = 'Параметры'
-                        for n in range(len(tyresize_list)): 
-                            excel_sheet.cell(row=n+1, column=1).value = tyresize_list[n]
-                        for n in range(len(tyremodel_list)): 
-                            excel_sheet.cell(row=n+1, column=2).value = tyremodel_list[n]
-                        for n in range(len(tyreparametrs_list)): 
-                            excel_sheet.cell(row=n+1, column=3).value = tyreparametrs_list[n]    
-                        for n in range(len(pp)): 
-                            excel_sheet.cell(row=n+1, column=4).value = pp[n]                         
-
-                        excel_file.save(filename="Tyres.xlsx")
-        else:
+            ####################################################### Запись данных в файл
+            from openpyxl import Workbook
+            excel_file = Workbook()
+            excel_sheet = excel_file.create_sheet(title='Holidays 2019', index=0)
+            excel_sheet['A1'] = 'Типоразмер'
+            excel_sheet['B1'] = 'Модель'
+            excel_sheet['C1'] = 'Параметры'
+            for n in range(len(tyresize_list)): 
+                excel_sheet.cell(row=n+1, column=1).value = tyresize_list[n]
+            for n in range(len(tyremodel_list)): 
+                excel_sheet.cell(row=n+1, column=2).value = tyremodel_list[n]
+            for n in range(len(tyreparametrs_list)): 
+                excel_sheet.cell(row=n+1, column=3).value = tyreparametrs_list[n]     
+        
+            #for n in range(len(pp)): 
+            #    excel_sheet.cell(row=n+1, column=4).value = pp[n]                         
+            excel_file.save(filename="Tyres.xlsx")
+    ############################################################
             form = forms.ImportDataForm()
-        return render(self.request, 'filemanagment/excel_import.html', {'form': form})
+            return render(self.request, 'filemanagment/excel_import.html', {'form': form})            
+
+
+        #########################################################################
+        ### ЕСЛИ ЗАБРАСЫВАЮТСЯ ФАЙЛЫ С ДАННЫМИ О ПРОДАЖАХ/ОСТАТКАХ/ПРОИЗВОДСТВЕ/ЦЕНЫ:
+        ################ считывание файла и сопоставление с текущей базой данных:
+        elif form_name == "bform.prefix":
+            form = forms.ImportSalesDataForm(self.request.POST, self.request.FILES)  
+            if form.is_valid():
+                file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)     
+                sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel 
+                for row in sheet.rows:                      
+                    for cell in row:
+                        if cell.value == 'объем продаж':
+                            #sales_column = cell.coordinate          # получаем колонку 'объем продаж'
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    sell_value =  cell.value.lstrip().rstrip()                                 
+                                    sales_list.append(sell_value)
+                                    pass
+                            sales_list = [float(x) for x in sales_list]    # str значения в float
+                                                # 1 Парсинг
+                        if cell.value == 'Наименование продукции':
+                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
+                                ### проверка если строка пустая
+                                if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
+                                    tyresize_list.append(' ')
+                                #######
+                                reg_list = [
+                                #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
+                                #'\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2}', 
+                                #'(\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2})',  # = '(\d{3}|\d{2})/\d{2}([A-Za-z]|-)\d{2}' +  '\d{3}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',    
+                                '(\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}))|(\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2})|((\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2}))', #3 в одном чтобы избежать повторений двойных в ячейке наподобие #АШ 480/80R42(18.4R42)
+                                '\d{2}(\.|\,)\d{1}[A-Za-z](R|-)\d{2}',
+                                '(\d{4}|\d{3})[A-Za-z]\d{3}([A-Za-z]|-)\d{3}',
+                                '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
+                                '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
+                                '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
+                                ' \d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
+                                 ' \d{1}[A-Za-z]-\d{2} ',
+                                '\d{3}[A-Za-z]\d{2}[A-Za-z]',
+                                '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
+                                '\d{2}[A-Za-z][A-Za-z]\d{2}', 
+                                ]
+                                for n in reg_list:
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                    if result:
+                                        tyresize_list.append(result.group(0))
+                                        ### удаление среза с типоразмером и всем что написано перед типоразмером
+                                        left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
+                                        if left_before_size_data_index > 0:
+                                            str_left_data = str(row[cell.column-1].value)[0:left_before_size_data_index-1]
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(str_left_data, '')
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+
+                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):    
+                                ### проверка если строка пустая
+                                if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
+                                    tyremodel_list.append(' ')
+                                ####### 
+                                reg_list = ['BEL-\w+',
+                                '(ФБел-\d{3}-\d{1})|(Бел-\d{3}-\d{1})|ФБел-\d{3}([A-Za-z]|[А-Яа-я])|(ФБел-\d{3})|(Бел-\d{2}(\.|\,)\d{2}(\.|\,)\d{2})|(Бел-\w+)|(Бел ПТ-\w+|ПТ-\w+)|(БелОШ\w+)',
+                                #'БИ-\w+',
+                                #'ВИ-\w+',
+                                'И-\w+|ВИ-\w+|БИ-\w+',
+                                '(Ф-\d{3}-\d{1})|(Ф-\d{2}[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}\s[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}-\d{1})|(Ф-\w+|КФ-\w+|ВФ-\w+)',
+                                'ФД-\w+',
+                                'ИД-\w+',
+                                '(К|K)-\d{2}[А-Яа-я][А-Яа-я]',
+                                '(В-\d{2}-\d{1})|(В-\w+|ИЯВ-\w+)',
+                                'ФТ-\w+',
+                                'Я-\w+',]   
+                                for n in reg_list:
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                    if result:
+                                        #print(result.group(0))
+                                        tyremodel_list.append(result.group(0))
+                                        ### удаление среза с моделью
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                        #print(str(row[cell.column-1].value))
+
+                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):     
+                                reg_list = [
+                                    'ЗМШ',
+                                    'КГШ',
+                                    'Сер|сер|ср',
+                                    'СГ',
+                                    'Трп|Тр|Тпр',
+                                    'Масс',
+                                    'с/х|сх',
+                                    'Лег|лг|легк', 
+                                    'Груз|груз|гр',
+                                    'Л/гр|Л/г|л/г',
+                                    'бк|б/к',
+                                    'Погр',
+                                    'кам',
+                                    'LS-2|LS|L-2',  
+                                    'Type|Typ',
+                                    'S|H|C',
+                                    '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))', 
+                                    'Газель',
+                                    '(ВАЗ)',
+                                    'Вездеход'
+                                    'У-\d{1}',
+                                    'ошип|а/к|выт|п/ош',
+                                    '(ГК|ЕР)-\d{3}',
+                                    'РК-5-165',
+                                    '\(ак23.5\)|\(ол23.5\)|\(ГК-260\)|вен.260|\(РК-5А-145\)|\(о/л\)|о/л|\(кам.14.9\)|\(кам12,5\)|ЛК-35-16.5|\(ГК-165\)|\(вен.ТК\)|\(вен.161\)|вен.260|Подз|\(Подз\)|вен.|(о/л)|\(ЛК-35-16.5\)',
+                                    '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
+                                    '(\d{2}|\d{1})+$',
+                                ]                
+                                list_of_parametrs = []
+                                for n in reg_list:
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                    if result:
+                                        list_of_parametrs.append(result.group(0))   
+                                        #print(result)
+                                        ### удаление среза с моделью                                   
+                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                    pp = str(row[cell.column-1].value)
+                                    #print(str(row[cell.column-1].value))    
+                                        ### 
+                                str_of_param = ' '.join(list_of_parametrs)
+                                tyreparametrs_list.append(str_of_param)
+                #print(tyresize_list, len(tyresize_list))           
+                #print(tyremodel_list, len(tyremodel_list))
+                #print(tyreparametrs_list, len(tyreparametrs_list))  
+
+
+            ####### 2. преобразование параметров шины к стандарту для сопоставления с уникальными данными в справочниках в дальнейшем:
+            tyreparametrs_list_cleaned_and_prepared_ready = []                  # список параметов шины из таблицы подготовленных для сопоставления с базой
+            for n in (tyreparametrs_list):
+                tyre_el = sorted(n.split(' '), reverse=True)
+                tyreparametrs_list_cleaned_and_prepared = []
+                for el_in_param in tyre_el:
+                    for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
+                        if el_in_param in standart_dict_param:
+                            #print(el_in_param, '==', standart_dict_param)
+                            el_in_param = dict_of_param_to_remake_in_standart.get(standart_dict_param)
+                            tyreparametrs_list_cleaned_and_prepared.append(el_in_param)  
+                    el = ' '.join(tyreparametrs_list_cleaned_and_prepared)                   
+                tyreparametrs_list_cleaned_and_prepared_ready.append(el)  # список параметов шины из таблицы подготовленных для сопоставления с базой
+
+            tyre_param_list_from_db = dictionaries_models.TyreParametersModel.objects.all()
+            tyre_param_list_from_db_param_only = []
+            for n in tyre_param_list_from_db:
+                tyre_param_list_from_db_param_only.append(n.tyre_type)              #####! спикок уникальных имет параметров шины из базы данных
+            #print('данные из БД перечень:', tyre_param_list_from_db_param_only)      
+            #print('исходные данные:', tyreparametrs_list)             
+            #print('подготовленные для сверки с бд:', tyreparametrs_list_cleaned_and_prepared_ready) 
+        
+            ######### 3 Сопоставление - сверка данных из таблицы с параметами в БД
+            
+            #print(tyreparametrs_list_cleaned_and_prepared_ready)
+            #print(tyre_param_list_from_db_param_only)
+            tyreparam_list = []                                                     # ПОДГОТОВЛЕНЫЫЙ И ОЧИЩЕННЫЙ СПИСОК ДАННЫХ ПАРАМЕТРОВ ШИНЫ ДЛЯ СОПОСТАВЛЕНИЯ С БД НА ФИНАЛЬНОЙ СТАДИИ ВНЕСЕНИЯ (реализац/остатки/произв) в Базу  
+            tyreparam_list_with_lists = []                                             # ПОДГОТОВЛЕНЫЫЙ И ОЧИЩЕННЫЙ СПИСОК ДАННЫХ ПАРАМЕТРОВ ШИНЫ в виде вложенных списков ДЛЯ СОПОСТАВЛЕНИЯ С БД НА ФИНАЛЬНОЙ СТАДИИ ВНЕСЕНИЯ (реализац/остатки/произв) в Базу  
+            for tpl in tyreparametrs_list_cleaned_and_prepared_ready:
+                tyre_params_value = []
+                tpl_list = sorted(tpl.split(' '), reverse=True)
+                for n in tpl_list:  # sorted(GG.split(' '), reverse=True)   
+                    for standart_dict_param in tyre_param_list_from_db_param_only:
+                        if n == standart_dict_param:
+                        #if n in standart_dict_param:
+                            tyre_params_value.append(n)
+                tyre_params_value_str = ', '.join(tyre_params_value)                    ## !!!! Для формирования списка со строками 
+
+                tyreparam_list.append(tyre_params_value_str)  
+                tyreparam_list_with_lists.append(tyre_params_value) 
+            #print(len(tyreparam_list), tyreparam_list)                               # совпавшие данные параметры шины из таблицы с параметрами в БД
+            #print(len(tyresize_list), tyresize_list)
+            #print(len(tyremodel_list), tyremodel_list)
+
+            ##### Запись в модель данных (например, о продажах):
+
+            #### Проверка - вывод в файл данных
+            #if len(tyresize_list) == len(tyremodel_list) and len(tyresize_list) ==  len(tyreparametrs_list):
+            #    for n in range(0, len(tyresize_list)):
+            #        #if tyresize_list[n] == tyres_models.Tyre.objects.filter(tyre_size__tyre_size=tyresize_list[n]) and tyremodel_list[n] == tyres_models.Tyre.objects.filter(tyre_model__model=tyremodel_list[n]) and tyreparametrs_list[n] == tyres_models.Tyre.objects.filter(tyre_type__tyre_type=tyreparametrs_list[n]):
+            #        some_list = tyres_models.Tyre.objects.filter(tyre_size__tyre_size__icontains='315/80R22.5')
+            #        print(some_list, tyresize_list[n], tyres_models.Tyre.objects.get(id=2).tyre_size)
+
+            ###################################### СВЕРКА СПИСКОВ МОДЕЛЬ ТИПОРАЗМЕР ПАРАМЕТРЫ с ДАННЫМИ В МОДЕЛИ ШИНЫ В БД  + внесение данныхв в одель Sales(Например):
+            #print(len(tyresize_list), tyresize_list)           # 1   
+            #print(len(tyremodel_list), tyremodel_list)         # 2
+            #print(len(tyremodel_list), tyreparam_list)          # 3/1  в виде списка со строками
+            #print(len(tyreparam_list_with_lists), tyreparam_list_with_lists)    # 3/2  в виде списка с вложенными списками
+
+            #print('SALES', len(sales_list), sales_list)
+            #print(tyres_models.Tyre.objects.get(tyre_type__tyre_type__contains='сер'))
+            #print(tyres_models.Tyre.objects.filter(tyre_type__tyre_type__in=tyreparam_list_with_lists[2]))
+            tyre_obj_list = []
+            sale_obj_list = []
+            if len(tyresize_list) == len(tyremodel_list) and len(tyremodel_list) == len(tyremodel_list):
+                for row_value in range(0, len(tyresize_list)):
+                    #db_tyre_model = tyres_models.Tyre.objects.get(tyre_model__model=tyremodel_list[n], tyre_size__tyre_size=tyresize_list[n], tyre_type__tyre_type__in=tyreparam_list_with_lists[n])
+                    db_tyre_model = tyres_models.Tyre.objects.filter(tyre_model__model=tyremodel_list[row_value], tyre_size__tyre_size=tyresize_list[row_value], tyre_type__tyre_type__in=tyreparam_list_with_lists[row_value])
+                    #print(db_tyre_model.all()) #### ЗДЕСЬ ПРОБЛЕМА В ТОМ ЧТО ФИЛЬТРОМ ПОЛУЧАЕМ КВЕРИСЕТ ВМЕСТО ОДНОГО ОБЪЕКТА
+                    if db_tyre_model:
+                        tyre_is = db_tyre_model[0]      #### А ЗДЕСЬ КОРЯВЕНЬКО ДОСТАЕМ ОБЪЕКТ (ТИП В КВЕРИСЕТЕ ВСЕ ОБЪЕКТЫ ОДИНАКОВЫЕ и БЕРЕМ ПЕРВЫЙ)
+                    ############################################################################################################################
+                    #print(tyre_is.tyre_model.model, tyre_is.tyre_size.tyre_size, tyre_is.tyre_type.all())       # проверка совпавших параметров
+                    #course_qs = tyre_is.tyre_type.all()                                                         # проверка совпавших параметров
+                    #for course in course_qs:                                                                    # проверка совпавших параметров
+                        #print(course.tyre_type)                                                                 # проверка совпавших параметров
+                    ############################################################################################################################
+                        if tyre_is:
+                            # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
+                            sale_value = sales_list[row_value]
+                            sales_obj = sales_models.Sales.objects.update_or_create(
+                                tyre = tyre_is,
+                                date_of_sales = date.today(),
+                                contragent = 'none',
+                                sales_value = int(sale_value)
+                            )
+
+        ############################################ Запись данных в существующий файл в столбец:
+        from openpyxl import load_workbook
+        excel_file = load_workbook('Tyres.xlsx')
+        excel_sheet = excel_file["Holidays 2019"]
+        #print(excel_file.sheetnames, 'TTTTTTTTTTTTTTTTTT')
+
+        ###### получить количество объектов Sales:
+        row_value = 0
+        for ob_val in sales_models.Sales.objects.all():
+            row_value += 1
+
+        #генератор для хождения по строкам:    
+        def raw_generator(n, stop):
+            while True:
+                if n > stop:
+                    raise StopIteration
+                yield n
+                n += 1
+        max_raw = row_value     
+        i = 1       # со второй строки
+        row_curr = raw_generator(i, max_raw)
+
+        for sales_obj in sales_models.Sales.objects.all():
+            val = next(row_curr)
+            excel_sheet['E1'] = 'Tyre Size'
+            excel_sheet.cell(row=val, column=5).value = sales_obj.tyre.tyre_size.tyre_size
+
+            excel_sheet['F1'] = 'Model'
+            excel_sheet.cell(row=val, column=6).value = sales_obj.tyre.tyre_model.model
+
+            excel_sheet['G1'] = 'Param'
+            str_obj_param_list = []
+            str_obj_param_str = ''
+            for type_obj in sales_obj.tyre.tyre_type.all():
+                str_obj_param_list.append(type_obj.tyre_type)
+            str_obj_param_str = ', '.join(str_obj_param_list)
+            #print(str_obj_param_str)
+            excel_sheet.cell(row=val, column=7).value = str_obj_param_str
+
+            excel_sheet['H1'] = 'Sales value'
+            excel_sheet.cell(row=val, column=8).value = sales_obj.sales_value
+
+            excel_sheet['I1'] = 'Date_of_sales'
+            excel_sheet.cell(row=val, column=9).value = sales_obj.date_of_sales
+
+            excel_sheet['J1'] = 'Contragent'
+            excel_sheet.cell(row=val, column=10).value = sales_obj.contragent
+
+            excel_file.save(filename="Tyres.xlsx")                                 
+        form = forms.ImportSalesDataForm()
+        #################################################                
+
+        
+
+        return render(self.request, 'filemanagment/excel_import.html', {'form': form}) 
 

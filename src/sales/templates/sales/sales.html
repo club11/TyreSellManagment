@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} Sales detail {% endblock title %}
+{% block body %} 
+
+{% for object in object_list %}
+<li>{{object}}</li>
+{% endfor %}
+
+{% for object in sales_all %}
+<li> {{ object.date_of_sales }} | {{ object.contragent }} | {{ object.sales_value }}</li>
+
+{% endfor %}
+
+adsad
+{% endblock body %}

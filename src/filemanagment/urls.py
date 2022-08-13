@@ -5,5 +5,6 @@ from . import views as filemanagment_views
 app_name = 'filemanagment'
 
 urlpatterns = [    
-    path('', filemanagment_views.ExcelStaffView.as_view(), name='excel_import'), 
+    #path('', filemanagment_views.ExcelStaffView.as_view(), name='excel_import'), 
+    path('', filemanagment_views.ExcelTemplateView.as_view(), name='excel_import'), 
 ]

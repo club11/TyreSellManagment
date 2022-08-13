@@ -30,6 +30,15 @@ class ModelNameModel(models.Model):
         return reverse('dictionaries:model_list')
         #return reverse('dictionaries:dictionaries', args = [self.pk])
 
+class TyreParametersModel(models.Model):
+    tyre_type = models.CharField(
+        verbose_name='параметры шины',
+        max_length=10,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:param_list')
+
 class TyreGroupModel(models.Model):
     tyre_group = models.CharField(
         verbose_name='группа шин',

@@ -13,22 +13,29 @@ class TyreSizeModelAdmin(admin.ModelAdmin):
     ]
 
 class ModelNameModelAdmin(admin.ModelAdmin):
-    tyre_size = [
+    list_display = [
         'model',
     ]
 
+class TyreParametersModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'tyre_type',
+    ]
+
 class TyreGroupModelModelAdmin(admin.ModelAdmin):
-    tyre_size = [
+    list_display = [
         'tyre_group',
     ]
 
 class QantityCountModelAdmin(admin.ModelAdmin):
-    tyre_size = [
+    list_display = [
         'quantity_count',
     ]
 
 admin.site.register(models.Currency, CurrencyAdmin)
 admin.site.register(models.TyreSizeModel, TyreSizeModelAdmin)
 admin.site.register(models.ModelNameModel, ModelNameModelAdmin)
+admin.site.register(models.TyreParametersModel, TyreParametersModelAdmin)
 admin.site.register(models.TyreGroupModel, TyreGroupModelModelAdmin)
 admin.site.register(models.QantityCountModel, QantityCountModelAdmin)
+

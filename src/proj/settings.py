@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'tyres',
     'dictionaries',
     'filemanagment',
+    'abc_table_xyz',   
+    'sales', 
+
 ]
 
 MIDDLEWARE = [

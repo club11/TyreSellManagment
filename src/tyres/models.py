@@ -9,6 +9,7 @@ class Tyre(models.Model):
         related_name='tire_models',
         on_delete=models.PROTECT,
         default=None,
+        verbose_name='модель'
     )
     tyre_size = models.ForeignKey(
         dictionaries_models.TyreSizeModel,
@@ -16,11 +17,11 @@ class Tyre(models.Model):
         on_delete=models.PROTECT,
         default=None,
     )
-    tyre_type = models.CharField(
-        verbose_name='исполнение',
-        max_length=15,
+    tyre_type = models.ManyToManyField(
+        dictionaries_models.TyreParametersModel,
+        related_name='tire_parameters',
+        default=None,
         blank=True,
-        null=True
     )
     prime_cost = models.FloatField(
         verbose_name='полные затраты',

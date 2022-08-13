@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %} ABC XYZ Table {% endblock title %}
+{% block body %} 
+<h1>ABC XYZ таблица</h1>
+
+<table class="table table-dark table-borderless">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">#</th>
+        <th scope="col">#</th>
+        <th scope="col">#</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object }}</a></td>
+
+        <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.date_of_sales }}</a></td>
+        <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.sales_on_date }}</a></td>
+      </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body %}

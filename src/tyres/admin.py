@@ -5,7 +5,6 @@ class TyreAdmin(admin.ModelAdmin):
     list_display = [
         'tyre_model',
         'tyre_size',
-        'tyre_type',
         'prime_cost',
         'direct_costs',
     ]
