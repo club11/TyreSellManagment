@@ -1,4 +1,6 @@
 from datetime import date
+from enum import unique
+from operator import index
 from turtle import st
 from unicodedata import decimal, name
 from django.shortcuts import render
@@ -28,6 +30,7 @@ class ExcelTemplateView(TemplateView):
         tyreparametrs_list = [] 
         sales_list = []
         ply_dict = {}
+        load_speed_index_dict = {}
         dict_of_param_to_remake_in_standart = {
                 ('Сер', 'Ср'):'сер',
                 ('Груз', 'Гр'):'груз',
@@ -179,6 +182,14 @@ class ExcelTemplateView(TemplateView):
                                             dict_ply = str(result.group(0))
                                             ply_dict[dict_ply] = result.group(0)
                                     ###########################
+                                    #################################### дополнительно получаем и формируем данные индексов скорости нагрузки добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart:    
+                                    load_speed_index = ''
+                                    if n is '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))':
+                                        if result:
+                                            #print(n, 'ИНДЕКС НАГРУЗКИ СКОРОСТИ ПОЛУЧЕН =', result.group(0))
+                                            load_speed_index = str(result.group(0))
+                                            load_speed_index_dict[load_speed_index] = result.group(0)
+                                    ###########################
                                     pp = str(row[cell.column-1].value)                                      #### ????? это зачем - не задействовано ЖИ!
                                     #print(str(row[cell.column-1].value))    
                                         ### 
@@ -210,6 +221,10 @@ class ExcelTemplateView(TemplateView):
             dict_of_param_to_remake_in_standart.update(ply_dict)
             #print(dict_of_param_to_remake_in_standart)
             ############################################################
+            ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря load_speed_index_dict:
+            dict_of_param_to_remake_in_standart.update(load_speed_index_dict)
+            #print(dict_of_param_to_remake_in_standart)
+            ############################################################
 
             #print('KK',tyreparametrs_list_prepared)       
             tyreparam_list = []    
@@ -230,7 +245,11 @@ class ExcelTemplateView(TemplateView):
                     for k in list(ply_dict.values()):                                   # дополнительно провека норм слойности
                         if n == k: 
                             #print('n=',n, 'k=', k)
-                            tyreparametrs.append(n)            
+                            tyreparametrs.append(n)      
+                    for k in list(load_speed_index_dict.values()):                                   # дополнительно провека Индексов нагрузки скорости
+                        if n == k: 
+                            #print('n=',n, 'k=', k)
+                            tyreparametrs.append(n)         
                 tyreparam_list.append(tyreparametrs)                                    # готовые данные параметры шины для сверки с справочником
             #print(tyreparametrs_list)
             #print(tyreparametrs_list_prepared)
@@ -238,7 +257,7 @@ class ExcelTemplateView(TemplateView):
 
             #print(list(ply_dict.values()))
 
-            ###################################### 3. Создать объекты справочников:
+            ###################################### 3. Создать объекты справочников (ИНДЕКС СКОРОСТИ НАГРУЗИ И НОРМ СЛОЙНОСТИ ЗАКИДЫВАЮТСЯ ЗДЕСЬ ОТДЕЛЬНО):
             for tyre_model in tyremodel_list:
                 dictionaries_models.ModelNameModel.objects.update_or_create(model=tyre_model)
                     
@@ -248,6 +267,9 @@ class ExcelTemplateView(TemplateView):
             for tyre_ply_value in ply_dict.values():
                 dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_ply_value)   
 
+            for load_speed_index_value in load_speed_index_dict.values():
+                dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=load_speed_index_value)   
+            
             for tyre_type in tyreparametrs_list_cleaned_and_prepared:
                 dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_type)   
 
@@ -282,32 +304,36 @@ class ExcelTemplateView(TemplateView):
                     cleaned_tyresize_name = ''                   
                 tyre_size_list.append(cleaned_tyresize_name)
 
+            #print('готовые данные параметры шины для сверки с справочником: tyreparam_list = ', tyreparam_list)
             tyre_param_list = []                                    # сверка спарсенных данных о параметрах шины с данными в БД справочнике параметры шины
             for cleaned_tyreparam_name in tyreparam_list:  
-                trprmtrs = []             
+                trprmtrs = []   
+                #print('ОТДЕЛЬНЫЙ ПОДСПИСОК парам готовые данные параметры шины для сверки с справочником', cleaned_tyreparam_name)          
                 for n in cleaned_tyreparam_name:
-                    for dict_ob in tyre_type_obj_list:
+                    #print('ОТДЕЛЬНЫЙ ЭЛЕМЕНТ ИЗ ОТДЕЛЬНЫЙ ПОДСПИСОК готовые данные параметры шины для сверки с справочником : n', n)
+                    for dict_ob in tuple(tyre_type_obj_list):
+                        #print('dict_ob ИЗ tyre_type_obj_list:', dict_ob.tyre_type)
                         if n == dict_ob.tyre_type:
-                            #print(cleaned_tyreparam_name)
+                            #print('cleaned_tyreparam_name IS',cleaned_tyreparam_name)
+                            #print('n = ', n, 'dict_ob.tyre_type = ', dict_ob.tyre_type)
                             trprmtrs.append(n)
                     if n is None:
                         n == ''
                         trprmtrs.append(n)
                 tyre_param_list.append(trprmtrs)
 
-
             #print(tyre_model_list, len(tyre_model_list))
             #print(tyre_size_list, len(tyre_size_list))
-            #print(tyre_param_list, len(tyre_param_list))
+            #print('tyre_param_list ==', tyre_param_list, len(tyre_param_list))
                 ###### запись в модель Tyre данных о модели типоразмере и параметрах - сверенных с данными в моделях справочников
             if len(tyre_model_list) == len(tyre_size_list) and len(tyre_model_list) == len(tyre_param_list):                ########### ЗДЕСЬ ВРОДЬ КАК ДАННЫЕ ЧТО ПОЙДУТ В МОДЕЛЬ TYRE
                 for n in range(0, len(tyre_param_list)):
                     ######################################  Проверяем, существует ли в БД уже объект шина с заданными параметрами:
                     mod_pos = tyre_model_list[n]
                     size_pos = tyre_size_list[n]
-                    param_pos =tyre_param_list[n]
+                    param_pos = tyre_param_list[n]
                     tyre_obj_exist = tyres_models.Tyre.objects.filter(tyre_model__model=mod_pos, tyre_size__tyre_size=size_pos, tyre_type__tyre_type__in=param_pos)
-
+                    ######################################  
                 for n in range(0, len(tyre_param_list)):
                     tyre_type_el_list = []
                     for k in range (0, len(tyre_param_list[n])):
@@ -316,8 +342,7 @@ class ExcelTemplateView(TemplateView):
                         tyre_type_el_list.append(tyre_type_el)
                     if tyre_obj_exist:                              ### если объект существует - не созавать новый такой же
                         #print('YEAP!', tyre_obj_exist)
-                        pass
-                        ######################################    
+                        pass          
                     else:
                         #print('tyre_type_el_list = ', tyre_type_el_list)           
                         tyre_obj = tyres_models.Tyre.objects.create(                                                        ####  СОЗДАЕМ объект Tyre
@@ -336,16 +361,6 @@ class ExcelTemplateView(TemplateView):
                         #for n in tyre_type_el_list:
                         #    tyre_obj[0].tyre_type.add(n)
 
-
-            
-            #print(tyres_models.Tyre.objects.all())
-            #for k in tyres_models.Tyre.objects.all():        
-            #    print(k.tyre_model.model)
-            #    print(k.tyre_size.tyre_size)
-            #    print(k.tyre_type.all())
-            #    print(tyres_models.Tyre.objects.all().count())
-            ###############################################################
-
             ####################################################### Запись данных в файл
             from openpyxl import Workbook
             excel_file = Workbook()
@@ -353,12 +368,24 @@ class ExcelTemplateView(TemplateView):
             excel_sheet['A1'] = 'Типоразмер'
             excel_sheet['B1'] = 'Модель'
             excel_sheet['C1'] = 'Параметры'
-            for n in range(len(tyresize_list)): 
-                excel_sheet.cell(row=n+1, column=1).value = tyresize_list[n]
-            for n in range(len(tyremodel_list)): 
-                excel_sheet.cell(row=n+1, column=2).value = tyremodel_list[n]
-            for n in range(len(tyreparametrs_list)): 
-                excel_sheet.cell(row=n+1, column=3).value = tyreparametrs_list[n]     
+            for n in range(0, tyres_models.Tyre.objects.all().count()):
+                obj = tyres_models.Tyre.objects.all()[n]
+                tyresize_val = obj.tyre_model.model
+                tyremodel_val = obj.tyre_size.tyre_size
+                tyreparmetrs_val_list = []
+                for qo in obj.tyre_type.all():
+                    tyreparmetrs_val = qo.tyre_type
+                    tyreparmetrs_val_list.append(tyreparmetrs_val)
+                tyreparametrs_val = ' '.join(tyreparmetrs_val_list) 
+                excel_sheet.cell(row=n+1, column=1).value = tyresize_val
+                excel_sheet.cell(row=n+1, column=2).value = tyremodel_val
+                excel_sheet.cell(row=n+1, column=3).value = tyreparametrs_val
+                #for n in range(len(tyresize_list)): 
+                #    excel_sheet.cell(row=n+1, column=1).value = tyresize_list[n]
+                #for n in range(len(tyremodel_list)): 
+                #    excel_sheet.cell(row=n+1, column=2).value = tyremodel_list[n]
+                #for n in range(len(tyreparametrs_list)): 
+                #    excel_sheet.cell(row=n+1, column=3).value = tyreparametrs_list[n]     
         
             #for n in range(len(pp)): 
             #    excel_sheet.cell(row=n+1, column=4).value = pp[n]                         
@@ -480,22 +507,49 @@ class ExcelTemplateView(TemplateView):
                                     '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
                                     '(\d{2}|\d{1})+$',
                                 ]                
+
                                 list_of_parametrs = []
                                 for n in reg_list:
-                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))                                  
                                     if result:
                                         list_of_parametrs.append(result.group(0))   
-                                        #print(result)
+                                        #print('rEsUlT', result, print('N is =', n))
                                         ### удаление среза с моделью                                   
                                         row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
-                                    pp = str(row[cell.column-1].value)
+                                    #################################### дополнительно получаем и формируем данные стандартых параметров НОРМ СЛОЙНОСТИ для добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart    
+                                    dict_ply = ''
+                                    if n is '(\d{2}|\d{1})+$':
+                                        if result:
+                                            #print(n, 'НОРМА СЛОЙНОСТИ ПОЛУЧЕНА =', result.group(0))
+                                            dict_ply = str(result.group(0))
+                                            ply_dict[dict_ply] = result.group(0)
+                                    ###########################
+                                    #################################### дополнительно получаем и формируем данные индексов скорости нагрузки добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart:    
+                                    load_speed_index = ''
+                                    if n is '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))':
+                                        if result:
+                                            #print(n, 'ИНДЕКС НАГРУЗКИ СКОРОСТИ ПОЛУЧЕН =', result.group(0))
+                                            load_speed_index = str(result.group(0))
+                                            load_speed_index_dict[load_speed_index] = result.group(0)
+                                    ###########################
+                                    pp = str(row[cell.column-1].value)                                      #### ????? это зачем - не задействовано ЖИ!
                                     #print(str(row[cell.column-1].value))    
                                         ### 
                                 str_of_param = ' '.join(list_of_parametrs)
                                 tyreparametrs_list.append(str_of_param)
+
                 #print(tyresize_list, len(tyresize_list))           
                 #print(tyremodel_list, len(tyremodel_list))
                 #print(tyreparametrs_list, len(tyreparametrs_list))  
+
+            ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря ply_dict:
+            dict_of_param_to_remake_in_standart.update(ply_dict)
+            #print(dict_of_param_to_remake_in_standart)
+            ############################################################
+            ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря load_speed_index_dict:
+            dict_of_param_to_remake_in_standart.update(load_speed_index_dict)
+            #print(dict_of_param_to_remake_in_standart)
+            ############################################################
 
 
             ####### 2. преобразование параметров шины к стандарту для сопоставления с уникальными данными в справочниках в дальнейшем:
@@ -505,17 +559,19 @@ class ExcelTemplateView(TemplateView):
                 tyreparametrs_list_cleaned_and_prepared = []
                 for el_in_param in tyre_el:
                     for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
-                        if el_in_param in standart_dict_param:
-                            #print(el_in_param, '==', standart_dict_param)
+                        #print('HHHHHHHHH', type(tuple(standart_dict_param)), standart_dict_param)           ###### str значения словаря в тапл
+                        if el_in_param in list(standart_dict_param) or el_in_param == standart_dict_param: 
+                            #print('el_in_param = ', el_in_param, 'standart_dict_param = ', standart_dict_param)      #!!!!!!!!!!!!!!!!
                             el_in_param = dict_of_param_to_remake_in_standart.get(standart_dict_param)
                             tyreparametrs_list_cleaned_and_prepared.append(el_in_param)  
                     el = ' '.join(tyreparametrs_list_cleaned_and_prepared)                   
                 tyreparametrs_list_cleaned_and_prepared_ready.append(el)  # список параметов шины из таблицы подготовленных для сопоставления с базой
-
+                
             tyre_param_list_from_db = dictionaries_models.TyreParametersModel.objects.all()
             tyre_param_list_from_db_param_only = []
             for n in tyre_param_list_from_db:
                 tyre_param_list_from_db_param_only.append(n.tyre_type)              #####! спикок уникальных имет параметров шины из базы данных
+
             #print('данные из БД перечень:', tyre_param_list_from_db_param_only)      
             #print('исходные данные:', tyreparametrs_list)             
             #print('подготовленные для сверки с бд:', tyreparametrs_list_cleaned_and_prepared_ready) 
@@ -542,6 +598,8 @@ class ExcelTemplateView(TemplateView):
             #print(len(tyresize_list), tyresize_list)
             #print(len(tyremodel_list), tyremodel_list)
 
+            #print(len(tyreparam_list_with_lists), tyreparam_list_with_lists)
+
             ##### Запись в модель данных (например, о продажах):
 
             #### Проверка - вывод в файл данных
@@ -562,28 +620,76 @@ class ExcelTemplateView(TemplateView):
             #print(tyres_models.Tyre.objects.filter(tyre_type__tyre_type__in=tyreparam_list_with_lists[2]))
             tyre_obj_list = []
             sale_obj_list = []
-            if len(tyresize_list) == len(tyremodel_list) and len(tyremodel_list) == len(tyremodel_list):
-                for row_value in range(0, len(tyresize_list)):
-                    #db_tyre_model = tyres_models.Tyre.objects.get(tyre_model__model=tyremodel_list[n], tyre_size__tyre_size=tyresize_list[n], tyre_type__tyre_type__in=tyreparam_list_with_lists[n])
-                    db_tyre_model = tyres_models.Tyre.objects.filter(tyre_model__model=tyremodel_list[row_value], tyre_size__tyre_size=tyresize_list[row_value], tyre_type__tyre_type__in=tyreparam_list_with_lists[row_value])
-                    #print(db_tyre_model.all()) #### ЗДЕСЬ ПРОБЛЕМА В ТОМ ЧТО ФИЛЬТРОМ ПОЛУЧАЕМ КВЕРИСЕТ ВМЕСТО ОДНОГО ОБЪЕКТА
-                    if db_tyre_model:
-                        tyre_is = db_tyre_model[0]      #### А ЗДЕСЬ КОРЯВЕНЬКО ДОСТАЕМ ОБЪЕКТ (ТИП В КВЕРИСЕТЕ ВСЕ ОБЪЕКТЫ ОДИНАКОВЫЕ и БЕРЕМ ПЕРВЫЙ)
+            object_list_finel = []
+
+
+            #### прокладка: уберем запятые из строк с параметрами:
+            #print('TTT', tyreparam_list)
+            t_list = []
+            for n in tyreparam_list:
+                temporaly_list = []
+                param = str(n)
+                n = param.replace(',', '')
+                temporaly_list = n
+                t_list.append(temporaly_list)
+            tyreparam_list = t_list
+            #print('TTT',tyreparam_list)
+            ####
+
+            list_of_unique_tyres_objs_cleaned = []
+            #print(tyreparam_list)
+            if len(tyresize_list) == len(tyremodel_list) and len(tyremodel_list) == len(tyreparam_list):
+                for n in range(0, len(tyreparam_list)):
+                    ######################################  Проверяем, существует ли в БД уже объект шина с заданными параметрами:
+                    mod_pos = tyremodel_list[n]
+                    size_pos = tyresize_list[n]
+                    param_pos = tyreparam_list[n]
+                    #print(mod_pos, size_pos, param_pos)
+                    param_pos_list = sorted(tyreparam_list[n].split(' '), reverse=True)
+                    #print(param_pos_list)
+                    tyre_obj_exist = tyres_models.Tyre.objects.filter(tyre_model__model=mod_pos, tyre_size__tyre_size=size_pos, tyre_type__tyre_type__in=param_pos_list)
+                    if tyre_obj_exist:                              ### если кверисет объектов существует
+                    #    print('YEAP!', tyre_obj_exist)
+                    #print('_____________')
+                        list_of_unique_tyres_objs = []
+                        for obj in tyre_obj_exist:              ### берем объекты из кверисета
+                            #print('param=',param, 'obj.tyre_type.all() = ', obj.tyre_type.all())
+                            counter_coinc = 0
+                            for param in param_pos_list:                ### берем параметры из param_pos_list и перебираем
+                                len(param_pos_list)                     ###  замеряем количество параметров в текущем param_pos_list 
+                                #print(len(param_pos_list))
+                                for p in obj.tyre_type.all():       ###   перебираем параметры из param_pos_list в параметрах объекта
+                                    #print('param = ', param , 'p.tyre_type = ', p.tyre_type)
+                                    if param == p.tyre_type:        ### если параметры совпадают
+                                        #print('param = ', param, 'p.tyre_type = ', p.tyre_type)
+                                        counter_coinc += 1
+                            if counter_coinc == len(param_pos_list):        ###### ЗДЕСЬ ПОЛУЧАЕМ ОБЪЕКТ У КОТОРОГО ВСЕ ПАРАМЕТРЫ СОВПАЛИ СПАРАМЕТРАМИ ШИНЫ В БАЗЕ
+                                ##################print(obj)
+                                list_of_unique_tyres_objs.append(obj)
+                    list_of_unique_tyres_objs_cleaned.append(list(set(list_of_unique_tyres_objs)))
+                    #print('_____________')
+            #print(list_of_unique_tyres_objs_cleaned, len(list_of_unique_tyres_objs_cleaned))        ####!!!!!! СПИСОК С ОБЪЕКТАМИ с СОВПАВШИМИ ПАРАМЕТРАМИ - итоговые даннее готовые
+                ### зДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                row_value_counter = 0
+                #print(obj_list_el)
+                for obj in obj_list_el:
+                #    ############################################################################################################################
+                #    print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
+                #    course_qs = obj.tyre_type.all()                                                         # проверка совпавших параметров
+                #    for course in course_qs:                                                                    # проверка совпавших параметров
+                #        print(course.tyre_type)                                                                 # проверка совпавших параметров
                     ############################################################################################################################
-                    #print(tyre_is.tyre_model.model, tyre_is.tyre_size.tyre_size, tyre_is.tyre_type.all())       # проверка совпавших параметров
-                    #course_qs = tyre_is.tyre_type.all()                                                         # проверка совпавших параметров
-                    #for course in course_qs:                                                                    # проверка совпавших параметров
-                        #print(course.tyre_type)                                                                 # проверка совпавших параметров
-                    ############################################################################################################################
-                        if tyre_is:
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
-                            sale_value = sales_list[row_value]
+                            #sale_value = sales_list[row_value_counter]
+                            sale_value = 11
                             sales_obj = sales_models.Sales.objects.update_or_create(
-                                tyre = tyre_is,
+                                tyre = obj,
                                 date_of_sales = date.today(),
                                 contragent = 'none',
                                 sales_value = int(sale_value)
                             )
+                row_value_counter += 1
 
         ############################################ Запись данных в существующий файл в столбец:
         from openpyxl import load_workbook
