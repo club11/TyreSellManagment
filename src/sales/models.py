@@ -12,11 +12,11 @@ class Sales(models.Model):
         null=False,
         blank=True,    
     )
-    contragent = models.CharField(
-        verbose_name='контрагент',
-        max_length=10,
-    )
     sales_value = models.IntegerField(
         verbose_name='объем продаж контрагенту',
         blank=True,
+    )
+    contragent = models.CharField(
+        verbose_name='контрагент',
+        max_length=10,
     )

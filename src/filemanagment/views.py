@@ -673,6 +673,7 @@ class ExcelTemplateView(TemplateView):
             for obj_list_el in list_of_unique_tyres_objs_cleaned:
                 row_value_counter = 0
                 #print(obj_list_el)
+                n= 2
                 for obj in obj_list_el:
                 #    ############################################################################################################################
                 #    print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
@@ -682,11 +683,13 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
-                            sale_value = 11
+                            n = n + 1
+                            sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
-                                date_of_sales = date.today(),
-                                contragent = 'none',
+                                #date_of_sales = date.today(),
+                                date_of_sales = date(2022, 8, 14),
+                                contragent = 'БНХ Польска',
                                 sales_value = int(sale_value)
                             )
                 row_value_counter += 1
@@ -710,8 +713,8 @@ class ExcelTemplateView(TemplateView):
                 yield n
                 n += 1
         max_raw = row_value     
-        i = 1       # со второй строки
-        row_curr = raw_generator(i, max_raw)
+        i = 2       # со второй строки
+        row_curr = raw_generator(i, max_raw+i)
 
         for sales_obj in sales_models.Sales.objects.all():
             val = next(row_curr)

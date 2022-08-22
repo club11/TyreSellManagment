@@ -1,15 +1,31 @@
 {% extends 'base.html' %}
 {% block title %} Sales detail {% endblock title %}
 {% block body %} 
+{{ params }}
 
-{% for object in object_list %}
-<li>{{object}}</li>
-{% endfor %}
-
-{% for object in sales_all %}
-<li> {{ object.date_of_sales }} | {{ object.contragent }} | {{ object.sales_value }}</li>
-
-{% endfor %}
-
-adsad
+<table class="table table-dark table-borderless">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Типоразмер/Модель</th>
+      <th scope="col">Контрагент</th>
+      <th scope="col">Объем продаж</th>
+      <th scope="col">Дата</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for object in sales_list %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}
+        {% for param in object.tyre.tyre_type.all %}
+          {{ param.tyre_type }}
+        {% endfor %}</a></td>
+      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.contragent }}</a></td>
+      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.sales_value }}</a></td>
+      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.date_of_sales }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock body %}

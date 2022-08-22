@@ -4,5 +4,5 @@ from . import views as abcxyz_views
 app_name = 'abc_table_xyz'
 
 urlpatterns = [    
-    path('', abcxyz_views.AbcxyzTemplateView.as_view(), name='main'), 
+    path('', abcxyz_views.AbcxyzTemplateView.as_view(), name='abc'), 
 ]

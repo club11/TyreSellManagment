@@ -1,8 +1,9 @@
+from gc import get_objects
 from multiprocessing import context
 from django.shortcuts import render
 from . import forms
 from . import models
-from django.views.generic import TemplateView, ArchiveIndexView
+from django.views.generic import TemplateView, ArchiveIndexView, ListView
 from django.urls import reverse_lazy
 
 from tyres import models as tyres_models
@@ -20,15 +21,8 @@ import datetime
 
 
 
-class SalesTemplateView(TemplateView):
+class SalesTemplateListView(ListView):
+
     model = models.Sales
-    #form_class = forms.SalesForm
     template_name = 'sales/sales.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        tyre_objs = tyres_models.Tyre.objects.all()
-        for n in tyre_objs:
-            models.Sales.objects.update_or_create(tyre=n, date_of_sales=datetime.datetime.now(), contragent='БНХ УКР', sales_value=10)
-        context['sales_all'] = models.Sales.objects.all()   
-        return context
