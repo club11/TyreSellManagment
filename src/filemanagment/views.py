@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 from enum import unique
 from operator import index
 from turtle import st
@@ -15,6 +15,7 @@ from dictionaries import models as dictionaries_models
 from tyres import models as tyres_models
 from sales import models as sales_models
 from itertools import count, islice
+from abc_table_xyz import models as abc_table_xyz_models
 
 class ExcelTemplateView(TemplateView):
     template_name = 'filemanagment/excel_import.html'
@@ -666,7 +667,7 @@ class ExcelTemplateView(TemplateView):
                             if counter_coinc == len(param_pos_list):        ###### ЗДЕСЬ ПОЛУЧАЕМ ОБЪЕКТ У КОТОРОГО ВСЕ ПАРАМЕТРЫ СОВПАЛИ СПАРАМЕТРАМИ ШИНЫ В БАЗЕ
                                 ##################print(obj)
                                 list_of_unique_tyres_objs.append(obj)
-                    list_of_unique_tyres_objs_cleaned.append(list(set(list_of_unique_tyres_objs)))
+                        list_of_unique_tyres_objs_cleaned.append(list(set(list_of_unique_tyres_objs)))
                     #print('_____________')
             #print(list_of_unique_tyres_objs_cleaned, len(list_of_unique_tyres_objs_cleaned))        ####!!!!!! СПИСОК С ОБЪЕКТАМИ с СОВПАВШИМИ ПАРАМЕТРАМИ - итоговые даннее готовые
                 ### зДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
@@ -688,11 +689,45 @@ class ExcelTemplateView(TemplateView):
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
                                 #date_of_sales = date.today(),
-                                date_of_sales = date(2022, 8, 14),
+                                date_of_sales = datetime.date(2022, 7, 25),
                                 contragent = 'БНХ Польска',
                                 sales_value = int(sale_value)
                             )
                 row_value_counter += 1
+
+        
+        #### соберем объекты ABC из шин и объектов Sales:
+
+        #0) создадим объект таблицы AbcxyzTable для проверки:
+        abc_table_queryset = abc_table_xyz_models.AbcxyzTable.objects.update_or_create()
+        abc_table = abc_table_queryset[0]
+        #print(abc_table)
+        # 1) возмем все объекты шин:
+        for obj in tyres_models.Tyre.objects.all():
+            tyre_obj = obj
+        # 2) возмем все объекты продаж:
+            sales_obj_set = sales_models.Sales.objects.filter(tyre=tyre_obj)
+            #print(sales__obj_set)       # <QuerySet [<Sales: Sales object (999)>, <Sales: Sales object (1017)>]>
+            #print(list(sales__obj_set))
+        # 3) создадим объекты модели Abcxyz
+            abc_obj = abc_table_xyz_models.Abcxyz.objects.filter(table=abc_table, tyre=tyre_obj)
+            abc_obj_set = abc_table_xyz_models.Abcxyz.objects.update_or_create(
+                table=abc_table,
+                tyre = tyre_obj,
+            )
+            for sales_obj in sales_obj_set:
+                abc_obj_set[0].sales.add(sales_obj)
+            #print(abc_obj_set[0].sales.all(), 'JJJJJJJJ')
+
+
+        #####if abc_table:
+        #####    #print(abc_table, '==', abc_table.tyre_total, abc_table.list_of_total_sales_of_of_tyre_in_period())
+        #####    pass
+        #####
+
+        #for obj in abc_table_xyz_models.Abcxyz.objects.all():
+        #    #print(obj.total_sales_of_of_tyre_in_period(), obj.percent_in_total_amount())
+        #    print(obj.abc_group[0])
 
         ############################################ Запись данных в существующий файл в столбец:
         from openpyxl import load_workbook

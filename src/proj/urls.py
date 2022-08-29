@@ -12,7 +12,7 @@ urlpatterns = [
     path('directory/', include('dictionaries.urls', namespace='dictionaries')), 
     path('tyre/', include('tyres.urls', namespace='tyres')),
     path('filemanagment/', include('filemanagment.urls', namespace='filemanagment')),      
-    path('main/', include('abc_table_xyz.urls', namespace='main')),   
+    path('abctable/', include('abc_table_xyz.urls', namespace='abctable')),   
     path('sales/', include('sales.urls', namespace='sales')),  
 ] 
 if settings.DEBUG:
