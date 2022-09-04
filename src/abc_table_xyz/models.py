@@ -244,6 +244,49 @@ class Abcxyz(models.Model):
         return abc_group
 
     def average_revenue(self):  #средне - периодная выручка
-        period = 1                                                              # ЗАГЛУШКА . ПОКА НЕ ГОТОВА ФУНКЦИЯ РАСЧЕТА ПЕРИОДА ЧЕРЕЗ date
-        average_revenue = self.total_sales_of_of_tyre_in_period()/period
+        num_periods = len(self.table.time_delta_calc())
+        average_revenue = self.total_sales_of_of_tyre_in_period()/num_periods
         return average_revenue
+
+
+    def standard_deviation(self):       #стандартное отклонение
+        values_in_period = self.sales_in_period()
+        average_revenue = self.average_revenue()
+        #print('average_revenue', average_revenue)
+        num_periods = len(self.table.time_delta_calc())
+        #print('num_periods', num_periods)
+        if num_periods == 1:
+            return  "1 заглушка"
+        sq_sum = 0
+        for value in values_in_period:
+            sq_sum += (value - average_revenue) * (value - average_revenue) 
+        std_deviation = (sq_sum/(num_periods - 1)) ** (0.5)
+        #return std_deviation
+        return 2342
+
+
+
+    def variation_coefficient(self):
+        variation_coefficien = 0
+        variation_coefficien = self.standard_deviation() / self.average_revenue()
+        return variation_coefficien
+
+    def xyz_group(self):
+        variation_coefficien  = self.variation_coefficient()
+        if variation_coefficien <= 10:
+            xyz_group = 'X'
+        elif variation_coefficien <= 25:
+            xyz_group = 'Y'
+        elif variation_coefficien >= 25:
+            xyz_group = 'Z'
+        return xyz_group
+
+    def abc_xyz_gr(self):
+        abc_xyz_group = ''
+        abc_group = self.abc_group
+        print(abc_group)
+        xyz_group = self.xyz_group()
+        print(xyz_group)
+        abc_xyz_group = abc_group + xyz_group
+        return abc_xyz_group
+

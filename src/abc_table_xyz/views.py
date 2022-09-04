@@ -45,8 +45,8 @@ class AbcxyzTemplateDetailView(DetailView):
             #pass
 
         #for abc_ssales in  models.Abcxyz.objects.all():
-            #print(abc_ssales, abc_ssales.sales.all())
-            #print('SSAALLLEESS', abc_ssales.sales_in_period)
+        #    #print(abc_ssales, abc_ssales.sales.all())
+        #    print('SSAALLLEESS', abc_ssales.xyz_group())
            
         return abc_table
 

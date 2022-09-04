@@ -18,7 +18,10 @@
       <th scope="col">Доля в общем объеме с накопительным итогом, %</th>
       <th scope="col">Группа анализа (А, В, С)</th>
       <th scope="col">Cреднемесячная выручка</th>
-      <th scope="col">ВСЕГО</th>
+      <th scope="col">Cтандартное отклонение</th>
+      <th scope="col">Коэффициент вариации</th>
+      <th scope="col">Группа анализа (X, Y, Z)</th>
+      <th scope="col">Группа А, В, С | X, Y, Z</th>
     </tr>
   </thead>
   <tbody>
@@ -39,7 +42,10 @@
         <td><a href="">{{ object.percent_in_total_amount_accumulated_percentage }}%</a></td>
         <td><a href="">{{ object.abc_group }}</a></td>
         <td><a href="">{{ object.average_revenue }}</a></td>
-        <td><a href=""> dfgsdfds {{ abcxyztable.tyre_total }}</a></td>    
+        <td><a href=""> {{ object.standard_deviation }}</a></td>    
+        <td><a href=""> {{ object.variation_coefficient }}</a></td>    
+        <td><a href=""> {{ object.xyz_group }}</a></td>    
+        <td><a href=""> {{ object.abc_xyz_gr }}</a></td>    
     </tr>
 
     {% endfor %}
