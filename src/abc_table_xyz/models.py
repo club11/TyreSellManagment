@@ -256,13 +256,18 @@ class Abcxyz(models.Model):
         num_periods = len(self.table.time_delta_calc())
         #print('num_periods', num_periods)
         if num_periods == 1:
-            return  "1 заглушка"
+            sq_sum = 0
+            for value in values_in_period:
+                sq_sum += (value - average_revenue) * (value - average_revenue) 
+                std_deviation = (sq_sum/(num_periods)) ** (0.5)
+                return std_deviation
+            #return  "1 заглушка"
         sq_sum = 0
         for value in values_in_period:
             sq_sum += (value - average_revenue) * (value - average_revenue) 
         std_deviation = (sq_sum/(num_periods - 1)) ** (0.5)
-        #return std_deviation
-        return 2342
+        return std_deviation
+        #return 2342
 
 
 

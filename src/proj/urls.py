@@ -7,8 +7,8 @@ from django.conf.urls.static import static
 from dictionaries import views as dictionaries_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', dictionaries_views.HomeTemplateView.as_view(), name='home'),  
+    path('admin/', admin.site.urls), 
+    path('homepage/', include('homepage.urls', namespace='home')), 
     path('directory/', include('dictionaries.urls', namespace='dictionaries')), 
     path('tyre/', include('tyres.urls', namespace='tyres')),
     path('filemanagment/', include('filemanagment.urls', namespace='filemanagment')),      

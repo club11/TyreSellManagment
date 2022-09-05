@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'filemanagment',
     'abc_table_xyz',   
     'sales', 
+    'homepage',
 
 ]
 

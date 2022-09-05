@@ -4,8 +4,6 @@ from . import forms
 from django.views.generic import CreateView, DetailView, UpdateView, ListView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 
-class HomeTemplateView(TemplateView):
-    template_name = 'dictionaries/home.html'
 
 class DictionariesTemplateView(TemplateView):
     template_name = 'dictionaries/dictionaries.html'
@@ -100,7 +98,6 @@ class QantityCountDeleteView(DeleteView):
     template_name = 'dictionaries/model_delete.html'
     success_url = reverse_lazy('dictionaries:qnt_list')
 
-
 class CurrencyCreateView(CreateView):
     model = models.Currency
     form_class = forms.CurrencytModelForm
@@ -120,3 +117,5 @@ class CurrencyDeleteView(DeleteView):
     model = models.Currency
     template_name = 'dictionaries/curr_delete.html'
     success_url = reverse_lazy('dictionaries:curr_list')
+
+
