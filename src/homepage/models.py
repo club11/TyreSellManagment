@@ -14,12 +14,6 @@ class HomePageModel(models.Model):
     #    related_name='tyre_card_home',
     #    on_delete=models.PROTECT,
     #)
-    abcxyz_group = models.CharField(
-        verbose_name='abc_xyz_group',
-        max_length=5,
-    )
     
-
-
     def get_absolute_url(self):
         return reverse('homepage:home')

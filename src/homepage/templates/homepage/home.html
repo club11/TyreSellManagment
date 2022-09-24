@@ -8,13 +8,19 @@ HOME PAGE
       <tr>
         <th scope="col">#</th>
         <th scope="col">Номенклатура</th>
+        <th scope="col">Группа</th>
       </tr>
     </thead>
     <tbody>
-      {% for object in object_list %}
+      {% for obj in object %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}
+        <td>{{ obj.tyre.tyre_model.model }} {{ obj.tyre.tyre_size.tyre_size }} 
+        {% for param in obj.tyre.tyre_type.all %}
+          {{ param.tyre_type }}
+        {% endfor %}
+        </td>
+        <td>{{ obj.abcxyz_group }} </td>
             
       </tr>
   

@@ -3,14 +3,13 @@
 {% block body %} 
 <h1>ABC XYZ таблица</h1>
 
-
-
-<table class="table table-dark table-borderless">
+<table class="table table-sm table-dark table table-bordered">
   <thead>
     <tr>
       <th scope="col">#</th>
       <th scope="col">Номенклатура</th>
-      {% for per in periods %}
+      <th scope="col"></th>
+      {% for per in object.period_dict_final %}
       <th scope="col">{{ per }}</th>
       {% endfor %}
       <th scope="col">Итого</th>
@@ -18,40 +17,36 @@
       <th scope="col">Доля в общем объеме с накопительным итогом, %</th>
       <th scope="col">Группа анализа (А, В, С)</th>
       <th scope="col">Cреднемесячная выручка</th>
-      <th scope="col">Cтандартное отклонение</th>
-      <th scope="col">Коэффициент вариации</th>
+      {#<th scope="col">Cтандартное отклонение</th>#}
+      {#<th scope="col">Коэффициент вариации</th>#}
       <th scope="col">Группа анализа (X, Y, Z)</th>
       <th scope="col">Группа А, В, С | X, Y, Z</th>
     </tr>
   </thead>
   <tbody>
-    {% for object in sorted %}
+    {% for obj in list_of_tableobects %}
     <tr>
       <th scope="row">{{ forloop.counter }}</th>
-      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}
-        {% for param in object.tyre.tyre_type.all %}
+      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ obj.tyre.tyre_model.model }} {{ obj.tyre.tyre_size.tyre_size.all }}
+        {% for param in obj.tyre.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}</a></td>
 
-        {% for val in object.sales_in_period %}
-        <td><a href="">{{ val }}</a></td>
-        {% endfor %}
+        <td>{% for val in obj.return_val %}
+          <td>{{ val }}</td>
+        </td>{% endfor %}
 
-        <td><a href="">{{ object.total_sales_of_of_tyre_in_period }}</a></td>
-        <td><a href="">{{ object.percent_in_total_amount_percentage }}%</a></td>
-        <td><a href="">{{ object.percent_in_total_amount_accumulated_percentage }}%</a></td>
-        <td><a href="">{{ object.abc_group }}</a></td>
-        <td><a href="">{{ object.average_revenue }}</a></td>
-        <td><a href=""> {{ object.standard_deviation }}</a></td>    
-        <td><a href=""> {{ object.variation_coefficient }}</a></td>   
-        <td><a href=""> {{ object.xyz_group }}</a></td>    
-        <td><a href=""> {{ object.abc_xyz_gr }}</a></td>    
+        <td>{{ obj.total_sales_in_period }}</td>
+        <td>{{ obj.tyre_percent_in_total_amount_in_period }} %</td>
+        <td>{{ obj.percent_in_total_amount_accumulated_percentage }} %</td>
+        <td>{{ obj.abc_group }}</td>
+        <td>{{ obj.average_revenue }}</td>
+        <td>{{ obj.xyz_group }}</td>
+        <td>{{ obj.abc_xyz_group }}</td>
     </tr>
-
     {% endfor %}
   </tbody>
 </table>
-
 {% endblock body %}
 
 {# {% for object in object.table.all %} #}

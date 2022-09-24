@@ -689,7 +689,7 @@ class ExcelTemplateView(TemplateView):
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
                                 #date_of_sales = date.today(),
-                                date_of_sales = datetime.date(2022, 2, 24),
+                                date_of_sales = datetime.date(2022, 4, 22),
                                 contragent = 'БНХ Польска',
                                 sales_value = int(sale_value)
                             )
