@@ -670,6 +670,12 @@ class ExcelTemplateView(TemplateView):
                         list_of_unique_tyres_objs_cleaned.append(list(set(list_of_unique_tyres_objs)))
                     #print('_____________')
             #print(list_of_unique_tyres_objs_cleaned, len(list_of_unique_tyres_objs_cleaned))        ####!!!!!! СПИСОК С ОБЪЕКТАМИ с СОВПАВШИМИ ПАРАМЕТРАМИ - итоговые даннее готовые
+
+            #### ВСТАВКА:
+            ##### + Создаем единую таблицу SALES_TABLE:                                                
+            sales_table, created = sales_models.SalesTable.objects.get_or_create()                   ##### !!!!!  ####### ДЛЯ РАБОТЫ С СТРАНИЦЕЙ SALES:    
+            #### КОНЕЦ ВСТАВКИ  
+
                 ### зДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
             for obj_list_el in list_of_unique_tyres_objs_cleaned:
                 row_value_counter = 0
@@ -684,24 +690,35 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
-                            n = 7 + 1
+                            n = 11 + 1
                             sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
                                 #date_of_sales = date.today(),
-                                date_of_sales = datetime.date(2022, 4, 22),
-                                contragent = 'БНХ Польска',
-                                sales_value = int(sale_value)
+                                date_of_sales = datetime.date(2022, 5, 8),
+                                contragent = 'БНХ РОС',
+                                sales_value = int(sale_value),
+                                table = sales_table
                             )
                 row_value_counter += 1
-
         
+        ## соберем Tyre_Sale объекты:
+        for obj in tyres_models.Tyre.objects.all():
+            tyr_sal = sales_models.Tyre_Sale.objects.update_or_create(
+                tyre = obj,
+                table = sales_table
+            )
+
         #### соберем объекты ABC из шин и объектов Sales:
 
         #0) создадим объект таблицы AbcxyzTable для проверки:
-        abc_table_queryset = abc_table_xyz_models.AbcxyzTable.objects.update_or_create()
-        abc_table = abc_table_queryset[0]
-        #print(abc_table)
+        table_id = self.request.session.get('table_id')             
+        abc_table_get = abc_table_xyz_models.AbcxyzTable.objects.filter(pk=table_id)
+        if abc_table_get:
+            abc_table = abc_table_get[0]
+        else:
+            abc_table_queryset = abc_table_xyz_models.AbcxyzTable.objects.update_or_create()
+            abc_table = abc_table_queryset[0]
         # 1) возмем все объекты шин:
         for obj in tyres_models.Tyre.objects.all():
             tyre_obj = obj

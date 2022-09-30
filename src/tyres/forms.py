@@ -11,3 +11,12 @@ class TyreCardForm(forms.ModelForm):
             'serie_date',
             'picture',
         }
+
+class TyreForm(forms.ModelForm):
+    class Meta:
+        model = models.Tyre
+        fields = {
+            'tyre_model',
+            'tyre_size',
+            'tyre_type',
+        }

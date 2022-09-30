@@ -2,6 +2,7 @@ from datetime import date
 from multiprocessing import context
 from multiprocessing.resource_sharer import stop
 from pickletools import anyobject
+from pyexpat import model
 from django.shortcuts import render
 from . import models
 from tyres import models as tyres_models
@@ -44,11 +45,11 @@ class AbcxyzTemplateDetailView(DetailView):
         total_sales_in_period = {}                          # объем продаж шины за период всего: 
         tyre_total_price = 0                                # объем продаж всех шин за период всего: 
         period_dict_final = {}                              # ИТОГОВЫЙ СЛОВАРЬ для формирования (отрисовки) в таблице: ПЕРИОД - ОБЩИЙ ОБЪЕМ ПРОДАЖ ЗА ДАННЫЙ ПЕРИОД для конкретной шины
-        tyre_percent_in_total_amount = {}                   # Доля шины в общем объеме продаж за период
+        tyre_percent_in_total_amount = {}                   # доля шины в общем объеме продаж за период
         sorted_tyres_dict_final = {}                        # словарь ключ - pk объекта, значения - позиция в очереди, значение (объем продаж), доля в общем объеме, доля в общем объеме с накопмительным итогом  ### ТАК МОЖЕТ ТУТ ДАЖЕ ДАННЫЕ ИЗЛИШНИЕ
         average_revenue = {}                                # средне - периодная выручка
         dict_list_sales_on_period_final = {}                # сортировка sales по числам  и формирование финального словаря ключ = число год месяц , значения = объекты sales
-        #tyre_sales_sold_in_small_period = {}                # ключ объект Abcxyz и дата продажи. значение - объекты Sales. ДЛЯ ОТРИСОВКИ ПРОДАЖ ПО МАЛЫМ ПЕРИОДАМ ПО КОНКРЕТНОЙ ШИНЕ
+        #tyre_sales_sold_in_small_period = {}               # ключ объект Abcxyz и дата продажи. значение - объекты Sales. ДЛЯ ОТРИСОВКИ ПРОДАЖ ПО МАЛЫМ ПЕРИОДАМ ПО КОНКРЕТНОЙ ШИНЕ
         unique_keys = []                                    # даты продаж 
 
 
@@ -119,7 +120,6 @@ class AbcxyzTemplateDetailView(DetailView):
                         #print(sal_per, 'LLLLLL')
                 sale_in_period_list.append(sal_per)
 
-            
         #3.1  # Доля в общем объеме, %  
         for obj in total_sales_in_period:
             obj_tyre_total = total_sales_in_period.get(obj)
@@ -236,16 +236,30 @@ class AbcxyzTemplateDetailView(DetailView):
             tyre_values_in_period = tyres_sales_in_period.get(obj)
             tyre_average_revenue = average_revenue.get(obj)
             num_periods 
+            #if num_periods == 1:
+            #    sq_sum = 0
+            #    for value in tyre_values_in_period:
+            #        sq_sum += (value - tyre_average_revenue) * (value - tyre_average_revenue) 
+            #        std_deviation = (sq_sum/(num_periods)) ** (0.5)
+            #    #return  "1 заглушка"
+            #sq_sum = 0
+            #for value in tyre_values_in_period:
+            #    sq_sum += (value - tyre_average_revenue) * (value - tyre_average_revenue) 
+            #std_deviation = (sq_sum/(num_periods - 1)) ** (0.5)
+
+            sq_sum = 0
             if num_periods == 1:
                 sq_sum = 0
                 for value in tyre_values_in_period:
                     sq_sum += (value - tyre_average_revenue) * (value - tyre_average_revenue) 
-                    std_deviation = (sq_sum/(num_periods)) ** (0.5)
-                #return  "1 заглушка"
-            sq_sum = 0
-            for value in tyre_values_in_period:
-                sq_sum += (value - tyre_average_revenue) * (value - tyre_average_revenue) 
-            std_deviation = (sq_sum/(num_periods - 1)) ** (0.5)
+                std_deviation = (sq_sum/(num_periods)) ** (0.5)
+            else:
+                sq_sum = 0
+                for value in tyre_values_in_period:
+                    sq_sum += (value - tyre_average_revenue) * (value - tyre_average_revenue) 
+                std_deviation = (sq_sum/(num_periods - 1)) ** (0.5)
+
+
             standard_deviation[obj] = std_deviation
 
         # 7.2     Коэффициент вариации:
@@ -288,21 +302,23 @@ class AbcxyzTemplateDetailView(DetailView):
             abc_xyz_group = abc_group + xyz_group
             abc_xyz_group_dict[obj] = abc_xyz_group
 
-        # Финальный блок - собираем объекты из Models перед отрисовкой:
+        
+        # 8 Финальный блок - собираем объекты из Models перед отрисовкой:
         models.TOTAL_SALES_IN_PERIOD = total_sales_in_period
         models.PERCENT_IN_TOTAL_AMOUNT_IN_PERIOD = tyre_percent_in_total_amount
         models.SORTED_WITH_PERCENTS = sorted_tyres_dict_final
         models.AVERAGE_REVENUE = average_revenue
         models.XYZ_GROUP = xyz_group_dict
         models.ABC_XYZ_GROUP = abc_xyz_group_dict
-
         models.TOTAL_PERIOD_SALES = period_dict_final
         models.TYRE_SALES_IN_SMALL_PERIOD = unique_keys
  
-
         [[obj.total_sales_in_period(), obj.tyre_percent_in_total_amount_in_period(), obj.percent_in_total_amount_accumulated_percentage(), 
-        obj.abc_group(), obj.average_revenue(), obj.xyz_group(), obj.abc_xyz_group(), ] for obj in list_of_abc_bjects]    
-        
+        obj.abc_group(), obj.average_revenue(), obj.xyz_group(), obj.abc_xyz_group()] for obj in list_of_abc_bjects]    
+
+        # 9 Дополнительный блок - подготовка данных для вывода в сводной таблице HOMEPAGE:
+
+   
         return abc_table
 
     def get_context_data(self, **kwargs):       

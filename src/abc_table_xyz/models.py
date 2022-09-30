@@ -37,7 +37,7 @@ class AbcxyzTable(models.Model):
         print(table_period_headers)
         return table_period_headers 
 
-    def tyre_sales_sold_in_small_period(self, val):
+    def tyre_sales_sold_in_small_period(self):
         table_period_headers = TOTAL_PERIOD_SALES.keys()
         return table_period_headers
 
@@ -130,6 +130,8 @@ class Abcxyz(models.Model):
                 total_per_value += sal.sales_value
             tyre_in_period_sale_dict[per] = total_per_value
         return tyre_in_period_sale_dict.values()
+
+
 
 
 

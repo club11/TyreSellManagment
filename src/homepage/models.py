@@ -13,7 +13,11 @@ class HomePageModel(models.Model):
     #    tyres_models.TyreCard,
     #    related_name='tyre_card_home',
     #    on_delete=models.PROTECT,
+    #    default=0
     #)
+
+    def abc_xyz_value(self):
+        return 'abc_xyz'
     
     def get_absolute_url(self):
         return reverse('homepage:home')

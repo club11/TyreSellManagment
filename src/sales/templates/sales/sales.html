@@ -3,28 +3,41 @@
 {% block body %} 
 {{ params }}
 
-<table class="table table-dark table-borderless">
+<table class="table table-sm table-dark table table-bordered">
   <thead>
     <tr>
       <th scope="col">#</th>
       <th scope="col">Типоразмер/Модель</th>
-      <th scope="col">Контрагент</th>
-      <th scope="col">Объем продаж</th>
-      <th scope="col">Дата</th>
+      <th scope="col"></th>
+      {% for per in object.dates %}
+      <th scope="col">{{ per }}</th>
+      {% endfor %}
     </tr>
   </thead>
   <tbody>
-    {% for object in sales_list %}
+    {% for object in list_objects%}
     <tr>
       <th scope="row">{{ forloop.counter }}</th>
-      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}
-        {% for param in object.tyre.tyre_type.all %}
-          {{ param.tyre_type }}
-        {% endfor %}</a></td>
-      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.contragent }}</a></td>
-      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.sales_value }}</a></td>
-      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.date_of_sales }}</a></td>
-    </tr>
+      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}</a></td>
+
+      <td>{% for sal in object.sale_on_date  %}
+        <td>{{ sal }}</td>
+      {% endfor %}</td>
+
+        
+
+      <tr>
+        {% for contragent_sal in object.contragents_sales_joined %}
+        <tr>
+          <td></td>
+          <td>{% for con in contragent_sal  %}</td> 
+          <td>{{ con }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tr>
+
+
+
+
     {% endfor %}
   </tbody>
 </table>

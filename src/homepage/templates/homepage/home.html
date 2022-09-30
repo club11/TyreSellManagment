@@ -3,7 +3,7 @@
 {% block body %} 
 HOME PAGE
 
-<table class="table table-dark table-borderless">
+<table class="table table-sm table-dark table table-bordered">
     <thead>
       <tr>
         <th scope="col">#</th>
@@ -15,13 +15,12 @@ HOME PAGE
       {% for obj in object %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td>{{ obj.tyre.tyre_model.model }} {{ obj.tyre.tyre_size.tyre_size }} 
-        {% for param in obj.tyre.tyre_type.all %}
+        <td>{{ obj.tyre_model.model }} <b>{{ obj.tyre_size.tyre_size }}</b>
+        {% for param in obj.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}
         </td>
-        <td>{{ obj.abcxyz_group }} </td>
-            
+        <td>{{ obj.abcxyz_group }} </td>  
       </tr>
   
       {% endfor %}

@@ -31,11 +31,9 @@
         {% for param in obj.tyre.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}</a></td>
-
         <td>{% for val in obj.return_val %}
           <td>{{ val }}</td>
         </td>{% endfor %}
-
         <td>{{ obj.total_sales_in_period }}</td>
         <td>{{ obj.tyre_percent_in_total_amount_in_period }} %</td>
         <td>{{ obj.percent_in_total_amount_accumulated_percentage }} %</td>

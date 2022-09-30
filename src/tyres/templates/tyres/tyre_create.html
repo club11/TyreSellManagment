@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %} Tyre create {% endblock title %}
+{% block body %} 
+<h1>Добавить шину</h1>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %} 
+    {{ form }}
+    <button type="submit" class="btn btn-success">Добавить</button>
+</form>
+<a href="{% url 'tyres:tyre_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

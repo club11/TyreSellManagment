@@ -23,22 +23,24 @@ class Tyre(models.Model):
         default=None,
         blank=True,
     )
-    prime_cost = models.FloatField(
-        verbose_name='полные затраты',
-        blank=True,
-        null=True
-    )
-    direct_costs = models.FloatField(
-        verbose_name='прямые затраты',
-        blank=True,
-        null=True
-    )
-    #currency = models.ForeignKey(
-    #    dictionaries_models.Currency,
-    #    related_name='tyre_currency',
-    #    on_delete=models.PROTECT,
-    #    default=None,
+    #prime_cost = models.FloatField(
+    #    verbose_name='полные затраты',
+    #    blank=True,
+    #    null=True
     #)
+    #direct_costs = models.FloatField(
+    #    verbose_name='прямые затраты',
+    #    blank=True,
+    #    null=True
+    #)
+    ##currency = models.ForeignKey(
+    ##    dictionaries_models.Currency,
+    ##    related_name='tyre_currency',
+    ##    on_delete=models.PROTECT,
+    ##    default=None,
+    ##)
+    def get_absolute_url(self):
+        return reverse('tyres:tyre_list')
 
 class TyreCard(models.Model):
     tyre = models.ForeignKey(
