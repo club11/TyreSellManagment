@@ -8,6 +8,8 @@ SAL_PER_DICTIONARY ={}
 CONTRAGENT = ''
 CONTR_SAL_LIST = {}
 TYR_CONTR_SAL_LIST = {}
+TYRE_SAL_TOTAL_DICT ={}
+
 
 
 class SalesTable(models.Model):
@@ -78,17 +80,17 @@ class Tyre_Sale(models.Model):
                 return all_sal_on_date
         return 0
     
-    def contragents(self):
-        tyre_sal_dict = SAL_PER_DICTIONARY
-        for key, value in tyre_sal_dict.items():
-            if self.tyre == key:
-                contragents_list = []
-                for val in value:
-                    for v in val:
-                        contragents_list.append(v[2])
-        unique_names_list = list(set(contragents_list))                       
-        # ['БНХ Укр', 'БНХ Польска']
-        return unique_names_list
+    #def contragents(self):
+    #    tyre_sal_dict = SAL_PER_DICTIONARY
+    #    for key, value in tyre_sal_dict.items():
+    #        if self.tyre == key:
+    #            contragents_list = []
+    #            for val in value:
+    #                for v in val:
+    #                    contragents_list.append(v[2])
+    #    unique_names_list = list(set(contragents_list))                       
+    #    # ['БНХ Укр', 'БНХ Польска']
+    #    return unique_names_list
                 
     def contragents_sales(self):
         tyre_sal_dict = SAL_PER_DICTIONARY
@@ -110,23 +112,25 @@ class Tyre_Sale(models.Model):
                     return all_sal_on_date
         return 0
 
-
-
-
     def contragents_sales_joined(self):
-        #print(len(TYR_CONTR_SAL_LIST))
         if self.tyre in TYR_CONTR_SAL_LIST.keys():
             tyr_sal = TYR_CONTR_SAL_LIST.get(self.tyre)
-            #print(tyr_sal)
-            #print(tyr_sal.keys())
             total_final_list = []
             for key in tyr_sal:
                 list_sales = []
                 val = tyr_sal.get(key)
                 list_sales.append(key)
+                sum1 = 0
                 for v in val:
+                    sum1 += v
+                    #print(v)
                     list_sales.append(v)
+                list_sales.append(sum1)
                 total_final_list.append(list_sales)
-        #print(total_final_list)
+        print(total_final_list)
         return total_final_list
-        #return [['БНХ УКР',1,2,3], ['БНХ РОС',8,4,5]]
+
+    def total_sale_in_period(self):
+        if self in TYRE_SAL_TOTAL_DICT:
+            total_sal = TYRE_SAL_TOTAL_DICT.get(self)
+        return total_sal

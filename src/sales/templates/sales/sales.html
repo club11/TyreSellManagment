@@ -12,6 +12,7 @@
       {% for per in object.dates %}
       <th scope="col">{{ per }}</th>
       {% endfor %}
+      <th scope="col">Итого</th>
     </tr>
   </thead>
   <tbody>
@@ -24,7 +25,7 @@
         <td>{{ sal }}</td>
       {% endfor %}</td>
 
-        
+      <td>{{ object.total_sale_in_period }}</td>
 
       <tr>
         {% for contragent_sal in object.contragents_sales_joined %}
@@ -34,10 +35,7 @@
           <td>{{ con }}</td>{% endfor %}</tr>
         {% endfor %}
       </tr>
-
-
-
-
+      
     {% endfor %}
   </tbody>
 </table>

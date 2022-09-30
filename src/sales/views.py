@@ -69,9 +69,18 @@ class SalesDetailView(DetailView):
                 obj.contragents_sales()
 
 
-
-
-        [[obj.sale_on_date(), obj.contragents(), obj.contragents_sales(), obj.contragents_sales_joined(),] for obj in list_of_tyre_sales] 
+        ##  Расчет словарь итого по каждой шине:
+        tyre_sal_total_dict ={}
+        for obj in list_of_tyre_sales:
+            tyre_sal_total = 0
+            for sal in obj.tyre.sales.all():
+                tyre_sal_total += sal.sales_value
+            tyre_sal_total_dict[obj] = tyre_sal_total
+        
+        models.TYRE_SAL_TOTAL_DICT = tyre_sal_total_dict
+        
+        #[[obj.sale_on_date(), obj.contragents(), obj.contragents_sales(), obj.contragents_sales_joined(),] for obj in list_of_tyre_sales] 
+        [[obj.sale_on_date(), obj.contragents_sales(), obj.contragents_sales_joined(), obj.total_sale_in_period()] for obj in list_of_tyre_sales] 
         return sales_table
 
     def get_context_data(self, **kwargs):
