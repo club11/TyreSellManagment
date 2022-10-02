@@ -42,7 +42,7 @@ class TyreParametersModel(models.Model):
 class TyreGroupModel(models.Model):
     tyre_group = models.CharField(
         verbose_name='группа шин',
-        max_length=10,
+        max_length=15,
     )
 
     def get_absolute_url(self):

@@ -8,4 +8,11 @@ class HomePageAdmin(admin.ModelAdmin):
 
     ]
 
+class Tyre_HomepageAdmin(admin.ModelAdmin):
+    list_display = [
+        'tyre',
+        'table',
+    ]
+
 admin.site.register(models.HomePageModel, HomePageAdmin)
+admin.site.register(models.Tyre_Homepage, Tyre_HomepageAdmin)

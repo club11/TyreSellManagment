@@ -5,10 +5,8 @@ from . import forms
 from . import models
 from django.views.generic import ArchiveIndexView, ListView, DetailView
 from django.urls import reverse_lazy
-
 from tyres import models as tyres_models
 import datetime
-
 
 class SalesDetailView(DetailView):
     model = models.SalesTable
@@ -68,7 +66,6 @@ class SalesDetailView(DetailView):
                 models.CONTRAGENT = contragent
                 obj.contragents_sales()
 
-
         ##  Расчет словарь итого по каждой шине:
         tyre_sal_total_dict ={}
         for obj in list_of_tyre_sales:
@@ -91,9 +88,8 @@ class SalesDetailView(DetailView):
         list_of_sal_tyres = []
         for object in sal_tyr_objects:
             list_of_sal_tyres.append(object)
-        
+
         list_of_sal_tyres.reverse()
         context['list_objects'] = list_of_sal_tyres
-
         return context
 

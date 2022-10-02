@@ -23,6 +23,13 @@ class Tyre(models.Model):
         default=None,
         blank=True,
     )
+    tyre_group = models.ManyToManyField(
+        dictionaries_models.TyreGroupModel,
+        related_name='tire_group',
+        default=None,
+        blank=True,
+    )
+
     #prime_cost = models.FloatField(
     #    verbose_name='полные затраты',
     #    blank=True,

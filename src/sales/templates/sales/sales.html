@@ -22,10 +22,10 @@
       <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}</a></td>
 
       <td>{% for sal in object.sale_on_date  %}
-        <td>{{ sal }}</td>
+        <td><b>{{ sal }}</b></td>
       {% endfor %}</td>
 
-      <td>{{ object.total_sale_in_period }}</td>
+      <td><b>{{ object.total_sale_in_period }}</b></td>
 
       <tr>
         {% for contragent_sal in object.contragents_sales_joined %}

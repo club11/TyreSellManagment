@@ -10,8 +10,6 @@ CONTR_SAL_LIST = {}
 TYR_CONTR_SAL_LIST = {}
 TYRE_SAL_TOTAL_DICT ={}
 
-
-
 class SalesTable(models.Model):
     customer = models.ForeignKey(
         User,
@@ -127,10 +125,13 @@ class Tyre_Sale(models.Model):
                     list_sales.append(v)
                 list_sales.append(sum1)
                 total_final_list.append(list_sales)
-        print(total_final_list)
+        #print(total_final_list)
         return total_final_list
 
     def total_sale_in_period(self):
         if self in TYRE_SAL_TOTAL_DICT:
             total_sal = TYRE_SAL_TOTAL_DICT.get(self)
         return total_sal
+
+
+

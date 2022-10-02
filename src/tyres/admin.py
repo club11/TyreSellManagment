@@ -5,6 +5,7 @@ class TyreAdmin(admin.ModelAdmin):
     list_display = [
         'tyre_model',
         'tyre_size',
+
     ]
 
 class TyreCardAdmin(admin.ModelAdmin):

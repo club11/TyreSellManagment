@@ -258,8 +258,6 @@ class AbcxyzTemplateDetailView(DetailView):
                 for value in tyre_values_in_period:
                     sq_sum += (value - tyre_average_revenue) * (value - tyre_average_revenue) 
                 std_deviation = (sq_sum/(num_periods - 1)) ** (0.5)
-
-
             standard_deviation[obj] = std_deviation
 
         # 7.2     Коэффициент вариации:
@@ -273,7 +271,6 @@ class AbcxyzTemplateDetailView(DetailView):
 
         # 7.3 xyz_group:
         xyz_group_dict = {}
-
         for obj in list_of_abc_bjects:
             variation_coeff  = variation_coefficien.get(obj)
             if variation_coeff <= 10:
@@ -302,7 +299,6 @@ class AbcxyzTemplateDetailView(DetailView):
             abc_xyz_group = abc_group + xyz_group
             abc_xyz_group_dict[obj] = abc_xyz_group
 
-        
         # 8 Финальный блок - собираем объекты из Models перед отрисовкой:
         models.TOTAL_SALES_IN_PERIOD = total_sales_in_period
         models.PERCENT_IN_TOTAL_AMOUNT_IN_PERIOD = tyre_percent_in_total_amount

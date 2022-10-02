@@ -323,6 +323,7 @@ class ExcelTemplateView(TemplateView):
                         trprmtrs.append(n)
                 tyre_param_list.append(trprmtrs)
 
+
             #print(tyre_model_list, len(tyre_model_list))
             #print(tyre_size_list, len(tyre_size_list))
             #print('tyre_param_list ==', tyre_param_list, len(tyre_param_list))
@@ -361,6 +362,31 @@ class ExcelTemplateView(TemplateView):
                         #print('tyre_obj = ', tyre_obj, type(tyre_obj))
                         #for n in tyre_type_el_list:
                         #    tyre_obj[0].tyre_type.add(n)
+            
+            ### Создать или проверить наличие групп шин:
+            group_names = ['легковые', 'легкогруз', 'с/х', 'грузовые']
+            for group_name in group_names:
+                dictionaries_models.TyreGroupModel.objects.get_or_create(
+                    tyre_group=group_name
+                )
+            #for obj in dictionaries_models.TyreGroupModel.objects.all():
+            #    print(obj, obj.tyre_group)
+
+            ###  
+            for obj in tyres_models.Tyre.objects.all():
+                for p in obj.tyre_type.all():
+                    if p.tyre_type == 'груз':
+                        group_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='грузовые')
+                        obj.tyre_group.add(group_obect)
+                    elif p.tyre_type == 'легк':
+                        group_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легковые')
+                        obj.tyre_group.add(group_obect)
+                    elif p.tyre_type == 'сх':
+                        group_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='с/х')
+                        obj.tyre_group.add(group_obect)
+                    elif p.tyre_type == 'л/г':
+                        group_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легкогруз')
+                        obj.tyre_group.add(group_obect)
 
             ####################################################### Запись данных в файл
             from openpyxl import Workbook

@@ -9,18 +9,28 @@ HOME PAGE
         <th scope="col">#</th>
         <th scope="col">Номенклатура</th>
         <th scope="col">Группа</th>
+        <th scope="col">Объем продаж всего</th>
+        <th scope="col">Группа А, В, С | X, Y, Z</th>
+        <th scope="col">Топ-2 контрагента</th>
+
       </tr>
     </thead>
     <tbody>
       {% for obj in object %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td>{{ obj.tyre_model.model }} <b>{{ obj.tyre_size.tyre_size }}</b>
-        {% for param in obj.tyre_type.all %}
+        <td>{{ obj.tyre.tyre_model.model }} <b>{{ obj.tyre.tyre_size.tyre_size }}</b>
+        {% for param in obj.tyre.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}
         </td>
-        <td>{{ obj.abcxyz_group }} </td>  
+        <td>{{ obj.tyre_group }} </td>
+        <td>{{obj.total_sales }}</td>
+        <td>{{ obj.abc_xyz_group_home }} </td>
+        <td>{% for contragent in obj.top_contragents_by_sales %} 
+          <a href="">{{ contragent }}</a>
+            {% endfor %}
+        </td>
       </tr>
   
       {% endfor %}

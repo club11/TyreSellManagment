@@ -2,6 +2,9 @@ from django.db import models
 from django.urls import reverse
 from tyres import models as tyres_models
 
+TOTAL_SALES_DICT = {}
+ABC_XYZ_GROP_HOME_DICT = {}
+CONTRAGENT_SALES_SORTED_DICT = {}
 
 class HomePageModel(models.Model):
     tyre = models.ForeignKey(
@@ -21,3 +24,47 @@ class HomePageModel(models.Model):
     
     def get_absolute_url(self):
         return reverse('homepage:home')
+
+    def total_sale(self):
+        pass
+  
+class Tyre_Homepage(models.Model):
+    tyre = models.ForeignKey(
+        tyres_models.Tyre,
+        related_name='tyr_homepage',
+        on_delete=models.PROTECT,
+    )
+    table = models.ForeignKey(
+        HomePageModel,
+        verbose_name='Таблица главная',
+        related_name='table_home',                    
+        on_delete=models.CASCADE,  
+        null=True                      
+    )
+
+    def total_sales(self):
+        if TOTAL_SALES_DICT:
+            total_sal_val = TOTAL_SALES_DICT.get(self.tyre)
+        return total_sal_val
+
+    def tyre_group(self):
+        for group in self.tyre.tyre_group.all():
+            return group.tyre_group
+
+    def abc_xyz_group_home(self):
+        if ABC_XYZ_GROP_HOME_DICT:
+            total_sal_val = ABC_XYZ_GROP_HOME_DICT.get(self.tyre)
+        return total_sal_val
+
+    def top_contragents_by_sales(self):
+        contragents_top_by_sale = {}
+        if self.tyre in CONTRAGENT_SALES_SORTED_DICT:
+            contragents_top_by_sale = CONTRAGENT_SALES_SORTED_DICT.get(self.tyre)
+        #print(self.tyre, 'gg', CONTRAGENT_SALES_SORTED_DICT.get(self.tyre))
+        top_two_contragent_by_sale = list(contragents_top_by_sale.keys())
+        list_of_contr = []
+        for contyrag in top_two_contragent_by_sale[:2]:
+            list_of_contr.append(contyrag)
+        return list_of_contr
+
+
