@@ -39,19 +39,26 @@ class HomeTemplateDetailView(DetailView):
 
         # ФИЛЬТР 2  - задаваемые группы шин для работы в таблице:
         # group_names = ['легковые', 'легкогруз', 'с/х', 'грузовые']
-        print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES LLLLLLLLLLLLL models.TYRE_GROUP_NAMES')
+        #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES LLLLLLLLLLLLL models.TYRE_GROUP_NAMES')
+
+
+
+        # 1-й рабочий вариант  (для одной группы)
+        #if models.TYRE_GROUP_NAMES:
+        #    tyre_groups_for_table = []
+        #    tyre_groups_for_table.append(models.TYRE_GROUP_NAMES)
+        #    tyres_list = tyres_list.filter(tyre_group__tyre_group__in=tyre_groups_for_table)
+        #print(tyre_groups_for_table, 'GGG1', tyres_list)
+
+        ## 2-й рабочий вариант  (для некоьких групп)
         if models.TYRE_GROUP_NAMES:
-            #tyre_groups_for_table = models.TYRE_GROUP_NAMES 
             tyre_groups_for_table = []
-            tyre_groups_for_table.append(models.TYRE_GROUP_NAMES)
+            tyre_groups_for_table = models.TYRE_GROUP_NAMES
             tyres_list = tyres_list.filter(tyre_group__tyre_group__in=tyre_groups_for_table)
-            #tyres_list = tyres_list.filter(tyre_group__tyre_group=tyre_groups_for_table)
-            print('OOOO', tyre_groups_for_table)
-            print('RKKNN' , tyres_list)
+        #print(tyre_groups_for_table, 'GGG2', tyres_list)
 
 
-        #tyres_list = tyres_list.filter(tyre_group__tyre_group='грузовые') # заглушка # заглушка # заглушка # заглушка # заглушка # заглушка # заглушка # заглушка # заглушка # заглушка
-        #print('RKK' , tyres_list)
+
 
         # 1 Объем продаж по шине всего
         tyres_all__dict = {}
@@ -195,11 +202,14 @@ class HomeTemplateDetailView(DetailView):
         #models.PERIOD = sales_period_for_table
         
         [[obj.total_sales(), obj.tyre_group(), obj.abc_xyz_group_home(), obj.top_contragents_by_sales(), ] for obj in home_table_tyres]
+
+
+
         return home_table_tyres
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #obj = context.get('object')
+        obj = context.get('object')
         # период:
         per_list = models.PERIOD
         if len(per_list) == 2:
@@ -213,12 +223,29 @@ class HomeTemplateDetailView(DetailView):
             tyre_groups_list.append(group_name.tyre_group)
         context['tyre_groups'] = tyre_groups_list
         #
+
+        # ВЫВОД ОТФИЛЬТРОВАННЫХ TYRES_HOME группа шин:
+
+        if models.TYRE_GROUP_NAMES:
+            tyres_list = tyre_models.Tyre.objects.all()
+            tyre_groups_for_table = []
+            tyre_groups_for_table = models.TYRE_GROUP_NAMES
+            tyres_list = tyres_list.filter(tyre_group__tyre_group__in=tyre_groups_for_table)
+            object = context.get('object')
+            listtyr_home_ojects_filtered = []
+            for obj in object:
+                for tyr in tyres_list: 
+                    if obj.tyre == tyr:
+                        listtyr_home_ojects_filtered.append(obj)
+            context['object'] = listtyr_home_ojects_filtered
+
+
         return context
 
 
 class HomeTemplateUpdateView(View):
     def post(self, request):
-        print(request.POST, 'TTT')
+        #print(request.POST, 'TTT')
         #print(self.request.POST.get('change_period'))
         # 1 работа с периодами:
         start_period, end_period = '', ''
@@ -234,17 +261,22 @@ class HomeTemplateUpdateView(View):
 
         # 2 работа с группами шин:
         tyre_groups_list = []
-        for key, value in request.POST.items():
-            if 'tyre_groups' in  key:
-                print(value, 'VALUE')
-                tyre_groups_list = value
-            
-            else:         
-                tyre_groups = []
-                tyr_gr_objects = dictionaries_models.TyreGroupModel.objects.all()
-                for gr_name in tyr_gr_objects:
-                    tyre_groups.append(gr_name.tyre_group)
-                    tyre_groups_list = ', '.join(tyre_groups_list)
+
+        # 1-й рабочий вариант  (для одной группы)
+        #for key, value in request.POST.items():
+        #    if 'tyre_groups' in  key:
+        #        #print(value, 'VALUE')
+        #        tyre_groups_list = value     
+        #    else:         
+        #        tyre_groups = []
+        #        tyr_gr_objects = dictionaries_models.TyreGroupModel.objects.all()
+        #        for gr_name in tyr_gr_objects:
+        #            tyre_groups.append(gr_name.tyre_group)
+        #            tyre_groups_list = ', '.join(tyre_groups_list)
+        #print(tyre_groups_list , type(tyre_groups_list), 'GOPA1')
+
+        # 2-й рабочий вариант  (для некоьких групп)
+        tyre_groups_list = request.POST.getlist('tyre_groups')
 
         if not periods_list:
             #print('EMPTY periods_list')
@@ -257,6 +289,7 @@ class HomeTemplateUpdateView(View):
             pass
         else:
             models.TYRE_GROUP_NAMES = tyre_groups_list
+            
             print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO')
 
         return HttpResponseRedirect(reverse_lazy('homepage:home'))
