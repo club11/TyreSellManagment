@@ -6,6 +6,9 @@ TOTAL_SALES_DICT = {}
 ABC_XYZ_GROP_HOME_DICT = {}
 CONTRAGENT_SALES_SORTED_DICT = {}
 
+PERIOD = ''
+TYRE_GROUP_NAMES = []
+
 class HomePageModel(models.Model):
     tyre = models.ForeignKey(
         tyres_models.Tyre,
@@ -27,6 +30,9 @@ class HomePageModel(models.Model):
 
     def total_sale(self):
         pass
+
+    def period(self):
+        return PERIOD
   
 class Tyre_Homepage(models.Model):
     tyre = models.ForeignKey(
@@ -43,6 +49,7 @@ class Tyre_Homepage(models.Model):
     )
 
     def total_sales(self):
+        total_sal_val = 0
         if TOTAL_SALES_DICT:
             total_sal_val = TOTAL_SALES_DICT.get(self.tyre)
         return total_sal_val
@@ -52,6 +59,7 @@ class Tyre_Homepage(models.Model):
             return group.tyre_group
 
     def abc_xyz_group_home(self):
+        total_sal_val = ''
         if ABC_XYZ_GROP_HOME_DICT:
             total_sal_val = ABC_XYZ_GROP_HOME_DICT.get(self.tyre)
         return total_sal_val
