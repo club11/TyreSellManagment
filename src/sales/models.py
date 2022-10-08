@@ -13,6 +13,8 @@ CONTR_SAL_LIST = {}
 TYR_CONTR_SAL_LIST = {}
 TYRE_SAL_TOTAL_DICT ={}
 
+CONTR_UNIQUE_NAME_LIST = []
+
 PERIOD_UPDATE_SALES = ''
 
 class SalesTable(models.Model):
@@ -84,28 +86,117 @@ class Tyre_Sale(models.Model):
                 return all_sal_on_date
         return 0
                
+    #def contragents_sales(self):
+    #    tyre_sal_dict = SAL_PER_DICTIONARY
+    #    contragent = CONTRAGENT
+    #    #print('CONTR_SAL_LISTCONTR_SAL_LISTCONTR_SAL_LIST 1= ',  CONTR_SAL_LIST)
+    #    for key, value in tyre_sal_dict.items():
+    #        for bj in self.tyre.sales.all():
+    #        #for bj in self.tyre.sales.all():.filter(date_of_sales__range=asked_dates)
+    #            if self.tyre == key and bj.contragent == contragent:
+    #                all_sal_on_date = []
+    #                for val in value:
+    #                    sale_val_on_date = 0
+    #                    for v in val:
+    #                        if  v[2] == contragent:
+    #                            sale_val_on_date = v[0]
+    #                            print('all_sal_on_date', all_sal_on_date)
+    #                            CONTR_SAL_LIST[v[2]] = all_sal_on_date
+    #                            #CONTR_SAL_LIST[v[2]] = [3,]
+    #                            TYR_CONTR_SAL_LIST[key] = CONTR_SAL_LIST
+    #                            #print('CONTR_SAL_LISTCONTR_SAL_LISTCONTR_SAL_LIST### = ',  CONTR_SAL_LIST)
+    #                    all_sal_on_date.append(sale_val_on_date)
+    #                print(CONTR_SAL_LIST, 'IWONTCHANGEFORUuuuuuuu')
+    #                #print(TYR_CONTR_SAL_LIST, 'IWONTCHANGEFORUuuuuuuu')
+    #                #print(all_sal_on_date)
+    #                return all_sal_on_date
+
+
     def contragents_sales(self):
         tyre_sal_dict = SAL_PER_DICTIONARY
-        contragent = CONTRAGENT
+
+        asked_dates = SALES_DATES
+
+        CONTR_UNIQUE_NAME_LIST
+        contr_dict = {}
+        for name in CONTR_UNIQUE_NAME_LIST:
+            contr_dict[name] = None
+
         for key, value in tyre_sal_dict.items():
-            for bj in self.tyre.sales.all():
-                if self.tyre == key and bj.contragent == contragent:
-                    all_sal_on_date = []
-                    for val in value:
-                        sale_val_on_date = 0
-                        for v in val:
-                            if  v[2] == contragent:
-                                sale_val_on_date = v[0]
-                                CONTR_SAL_LIST[v[2]] = all_sal_on_date
-                                TYR_CONTR_SAL_LIST[key] = CONTR_SAL_LIST
-                        all_sal_on_date.append(sale_val_on_date)
-                    #print(CONTR_SAL_LIST, 'IWONTCHANGEFORU')
-                    #print(all_sal_on_date)
-                    return all_sal_on_date
-        return 0
+            #print(key, value )
+            for k in contr_dict.keys():
+                for bj in self.tyre.sales.filter(date_of_sales__in=asked_dates):
+                    if self.tyre == key:
+                        sal_values_list = []                     
+                        #for period in value:
+                        #    for doma in period:
+                        #        #  (12, datetime.date(2022, 5, 15), 'БНХ Польска')
+                        #        if doma[1] in asked_dates and k == doma[2]:
+                        #            sal_values_list.append(doma[0])
+                        #contr_dict[k] = sal_values_list
+                        all_sal_on_date = []
+                        for period in value:
+                            sale_val_on_date = 0
+                            for doma in period:
+                                if doma[1] in asked_dates and k == doma[2]:
+                                    sale_val_on_date = doma[0]
+
+                                    CONTR_SAL_LIST[doma[2]] = all_sal_on_date
+                                    #CONTR_SAL_LIST[v[2]] = contr_dict.get(v[2])
+
+                                    TYR_CONTR_SAL_LIST[key] = CONTR_SAL_LIST
+                                    print('CONTR_SAL_LISTCONTR_SAL_LISTCONTR_SAL_LIST### = ',  CONTR_SAL_LIST)
+                            all_sal_on_date.append(sale_val_on_date)
+                        #print('CONTR_SAL_LISTCONTR_SAL_LISTCONTR_SAL_LIST### = ',  CONTR_SAL_LIST)
+
+        #print('DICT',  contr_dict)
+
+
+        #tyre_sal_dict = SAL_PER_DICTIONARY
+        #contragent = CONTRAGENT
+        ##print('CONTR_SAL_LISTCONTR_SAL_LISTCONTR_SAL_LIST 1= ',  CONTR_SAL_LIST)
+        #for key, value in tyre_sal_dict.items():
+        #    for bj in self.tyre.sales.all():
+        #    #for bj in self.tyre.sales.all():.filter(date_of_sales__range=asked_dates)
+        #        if self.tyre == key and bj.contragent == contragent:
+        #            all_sal_on_date = []
+        #            for val in value:
+        #                sale_val_on_date = 0
+        #                for v in val:
+        #                    if  v[2] == contragent:
+        #                        sale_val_on_date = v[0]
+        #                        #print('all_sal_on_date', all_sal_on_date)
+#
+        #                        CONTR_SAL_LIST[v[2]] = all_sal_on_date
+        #                        #CONTR_SAL_LIST[v[2]] = contr_dict.get(v[2])
+#
+        #                        TYR_CONTR_SAL_LIST[key] = CONTR_SAL_LIST
+        #                        #print('CONTR_SAL_LISTCONTR_SAL_LISTCONTR_SAL_LIST### = ',  CONTR_SAL_LIST)
+        #                all_sal_on_date.append(sale_val_on_date)
+        #            print(CONTR_SAL_LIST, 'IWONTCHANGEFORUuuuuuuu')
+        #            #print(all_sal_on_date)
+        #            return all_sal_on_date
+
+    
+                            
+
+
+
+        #for key, value in tyre_sal_dict.items():
+        #    for bj in self.tyre.sales.all():
+        #        if self.tyre == key :
+        #            all_sal_on_date = []
+        #            for val in value:
+        #                sale_val_on_date = 0
+        #                all_sal_on_date.append(sale_val_on_date)
+    #
+#
+        #            return all_sal_on_date
+
 
     def contragents_sales_joined(self):
         total_final_list = []
+        #print('TYR_CONTR_SAL_LIST', TYR_CONTR_SAL_LIST)
         if self.tyre in TYR_CONTR_SAL_LIST.keys():
             tyr_sal = TYR_CONTR_SAL_LIST.get(self.tyre)
             
