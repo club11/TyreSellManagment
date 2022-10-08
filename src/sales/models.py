@@ -2,6 +2,9 @@ from django.db import models
 from tyres import models as tyres_model
 from django.contrib.auth import get_user_model
 User = get_user_model()
+from datetime import timedelta 
+
+#from datetime_periods import period
 
 SALES_DATES = []
 SAL_PER_DICTIONARY ={}
@@ -9,6 +12,8 @@ CONTRAGENT = ''
 CONTR_SAL_LIST = {}
 TYR_CONTR_SAL_LIST = {}
 TYRE_SAL_TOTAL_DICT ={}
+
+PERIOD_UPDATE_SALES = ''
 
 class SalesTable(models.Model):
     customer = models.ForeignKey(
@@ -21,6 +26,7 @@ class SalesTable(models.Model):
 
     def dates(self):
         datess = SALES_DATES
+        #print(timedelta(datess[1], datess[0]))
         return datess
 
 
@@ -77,19 +83,7 @@ class Tyre_Sale(models.Model):
                     all_sal_on_date.append(sale_val_on_date)
                 return all_sal_on_date
         return 0
-    
-    #def contragents(self):
-    #    tyre_sal_dict = SAL_PER_DICTIONARY
-    #    for key, value in tyre_sal_dict.items():
-    #        if self.tyre == key:
-    #            contragents_list = []
-    #            for val in value:
-    #                for v in val:
-    #                    contragents_list.append(v[2])
-    #    unique_names_list = list(set(contragents_list))                       
-    #    # ['БНХ Укр', 'БНХ Польска']
-    #    return unique_names_list
-                
+               
     def contragents_sales(self):
         tyre_sal_dict = SAL_PER_DICTIONARY
         contragent = CONTRAGENT
@@ -111,9 +105,10 @@ class Tyre_Sale(models.Model):
         return 0
 
     def contragents_sales_joined(self):
+        total_final_list = []
         if self.tyre in TYR_CONTR_SAL_LIST.keys():
             tyr_sal = TYR_CONTR_SAL_LIST.get(self.tyre)
-            total_final_list = []
+            
             for key in tyr_sal:
                 list_sales = []
                 val = tyr_sal.get(key)

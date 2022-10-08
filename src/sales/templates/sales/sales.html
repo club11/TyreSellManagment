@@ -3,40 +3,48 @@
 {% block body %} 
 {{ params }}
 
-<table class="table table-sm table-dark table table-bordered">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Типоразмер/Модель</th>
-      <th scope="col"></th>
-      {% for per in object.dates %}
-      <th scope="col">{{ per }}</th>
-      {% endfor %}
-      <th scope="col">Итого</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for object in list_objects%}
-    <tr>
-      <th scope="row">{{ forloop.counter }}</th>
-      <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}</a></td>
+<form action="{% url 'sales:update_sales' %}" method="post">
 
-      <td>{% for sal in object.sale_on_date  %}
-        <td><b>{{ sal }}</b></td>
-      {% endfor %}</td>
-
-      <td><b>{{ object.total_sale_in_period }}</b></td>
-
+  <table class="table table-sm table-dark table table-bordered">
+    <thead>
       <tr>
-        {% for contragent_sal in object.contragents_sales_joined %}
-        <tr>
-          <td></td>
-          <td>{% for con in contragent_sal  %}</td> 
-          <td>{{ con }}</td>{% endfor %}</tr>
+        <th scope="col">#</th>
+        <th scope="col">Типоразмер/Модель</th>
+        <th scope="col"></th>
+        {% for per in object.dates %}
+        <th scope="col">{{ per }}</th>
         {% endfor %}
+        <th scope="col">Итого</th>
       </tr>
-      
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {% for object in list_objects%}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}</a></td>
+
+        <td>{% for sal in object.sale_on_date  %}
+          <td><b>{{ sal }}</b></td>
+        {% endfor %}</td>
+
+        <td><b>{{ object.total_sale_in_period }}</b></td>
+
+        <tr>
+          {% for contragent_sal in object.contragents_sales_joined %}
+          <tr>
+            <td></td>
+            <td>{% for con in contragent_sal  %}</td> 
+            <td>{{ con }}</td>{% endfor %}</tr>
+          {% endfor %}
+        </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% csrf_token %} 
+  задать начало периода: <input type="date" name="start_period"> конец периода <input type="date"  name="end_period"> <input type="hidden" value="select"><br>
+  <button type="submit" class="btn btn-success" name1="change_period" value1="period" name2="tyre_groups" value2="{{ select }}">Принять</button>
+
+</form>
 {% endblock body %}

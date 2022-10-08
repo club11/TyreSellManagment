@@ -8,6 +8,8 @@ CONTRAGENT_SALES_SORTED_DICT = {}
 
 PERIOD = ''
 TYRE_GROUP_NAMES = []
+TYRE_GROUP_SIZES = []
+TYRE_GROUP_MODELS = []
 
 class HomePageModel(models.Model):
     tyre = models.ForeignKey(

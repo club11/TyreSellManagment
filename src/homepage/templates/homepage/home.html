@@ -51,11 +51,23 @@ HOME PAGE
           <option value="{{ selec }}">{{ selec }}</option>
           {% endfor %}
       </select>
+
+    выбрать типоразмер:
+      {% csrf_token %}
+      <select name = "tyre_sizes"  multiple aria-label="multiple select example">
+          {% for selec in tyre_sizes %}
+          <option value="{{ selec }}">{{ selec }}</option>
+          {% endfor %}
+      </select>
+
+      выбрать модель:
+      {% csrf_token %}
+      <select name = "tyre_models"  multiple aria-label="multiple select example" >
+          {% for selec in tyre_models %}
+          <option value="{{ selec }}">{{ selec }}</option>
+          {% endfor %}
+      </select>
     </form> 
 
   </form>
-
-
-
-
 {% endblock body %}

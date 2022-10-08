@@ -716,13 +716,13 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
-                            n = 19 + 1
+                            n = 3 + 1
                             sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
                                 #date_of_sales = date.today(),
-                                date_of_sales = datetime.date(2022, 3, 8),
-                                contragent = 'БНХ Укр',
+                                date_of_sales = datetime.date(2022, 9, 20),
+                                contragent = '	БНХ РОС',
                                 sales_value = int(sale_value),
                                 table = sales_table
                             )
