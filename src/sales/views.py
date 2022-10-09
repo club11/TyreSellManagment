@@ -34,7 +34,7 @@ class SalesDetailView(DetailView):
         else:
             list_of_sale_objects = only_one_exsted_sales_table.sales_table.all()
         # 2. получение всех дат:
-        #2.1 получение вводимых пользователем датб если нет UPDATEVIEW  - то просто все имеющиеся даты:
+        #2.1 получение вводимых пользователем дат ФИЛЬТР 1. если нет UPDATEVIEW  - то просто все имеющиеся даты:
         if asked_dates:
         #    nad = datetime.datetime.strptime(asked_data, '%Y-%m-%d').date()                        # МОЖЕТ ПРИГОДИТЬСЯ
             list_of_datesfiltered_by_asked_dates = list_of_sale_objects.filter(date_of_sales__range=asked_dates)
@@ -48,12 +48,26 @@ class SalesDetailView(DetailView):
         list_of_tyre_sales = only_one_exsted_sales_table.table_sales.all()
         ###print( 'GGG1', list_of_tyre_sales)
 
-        ## 2-й рабочий вариант  (для некоьких групп) UPDATEVIEW по группе шин
+        ## ФИЛЬТР 2-й рабочий вариант  (для некоьких групп) UPDATEVIEW по группе шин
         if models.TYRE_GROUP_NAMES:
             tyre_groups_for_table = []
             tyre_groups_for_table = models.TYRE_GROUP_NAMES
             list_of_tyre_sales = list_of_tyre_sales.filter(tyre__tyre_group__tyre_group__in=tyre_groups_for_table)
             ###print(tyre_groups_for_table, 'GGG2', list_of_tyre_sales)
+
+        # ФИЛЬТР 3  - задаваемые типоразмеры шин для работы в таблице:
+        if models.TYRE_GROUP_SIZES:
+            tyre_sizes_for_table = []
+            tyre_sizes_for_table = models.TYRE_GROUP_SIZES
+            list_of_tyre_sales = list_of_tyre_sales.filter(tyre__tyre_size__tyre_size__in=tyre_sizes_for_table)
+            #print(tyre_sizes_for_table, 'GGG3', list_of_tyre_sales)
+
+        # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
+        if models.TYRE_GROUP_MODELS:
+            tyre_models_for_table = []
+            tyre_models_for_table = models.TYRE_GROUP_MODELS
+            list_of_tyre_saless = list_of_tyre_sales.filter(tyre__tyre_model__model__in=tyre_models_for_table)
+        #print(tyre_models_for_table, 'GGG4', list_of_tyre_sales)
 
         tyre_sales_in_period_dict = {}                                          # Словарь - ШИНА - sales на дату, контрагент
         for obj in list_of_tyre_sales:
@@ -118,8 +132,6 @@ class SalesDetailView(DetailView):
         #print('list_of_sal_tyres', list_of_sal_tyres)
         #context['list_objects'] = list_of_sal_tyres
 
-
-        
         # 2  группа шин:
         tyre_groups = dictionaries_models.TyreGroupModel.objects.all()
         tyre_groups_list = []
@@ -127,6 +139,7 @@ class SalesDetailView(DetailView):
             tyre_groups_list.append(group_name.tyre_group)
         context['tyre_groups'] = tyre_groups_list
 
+        listtyr_home_ojects_filtered = []                   ############## !!!!!!!!!!!!!!!!!!!!!
         if models.TYRE_GROUP_NAMES:
             tyres_list = tyre_models.Tyre.objects.all()
             object = context.get('object')
@@ -152,6 +165,79 @@ class SalesDetailView(DetailView):
             context['list_objects'] = list_of_sal_tyres
             ###
 
+        #######################################################################################
+        ## 3 типоразмер:
+        tyre_sizes = dictionaries_models.TyreSizeModel.objects.all()
+        tyre_sizes_list = []
+        for tyre_sizes_name in tyre_sizes:
+            tyre_sizes_list.append(tyre_sizes_name.tyre_size)
+        context['tyre_sizes'] = tyre_sizes_list
+        
+        # ВЫВОД ОТФИЛЬТРОВАННЫХ TYRES_HOME типорапзмер:
+        if listtyr_home_ojects_filtered:                    # если фильтруется еще по группам шин:
+            tyre_sizes_for_table = []
+            tyre_sizes_for_table = models.TYRE_GROUP_SIZES
+            tyres_list = tyres_list.filter(tyre_size__tyre_size__in=tyre_sizes_for_table)
+            #print('tyres_lis', tyres_list)
+
+            if tyre_sizes_for_table:
+                tyres_list = tyres_list.filter(tyre_size__tyre_size__in=tyre_sizes_for_table)
+                listtyr_home_ojects_filtered = []
+                for obj in sal_tyr_objects:
+                    for tyr in tyres_list: 
+                        if obj.tyre == tyr:
+                            listtyr_home_ojects_filtered.append(obj)
+                context['list_objects'] = listtyr_home_ojects_filtered
+        else:                                               # если фильтруется еще без групп шин:
+            tyres_list = tyre_models.Tyre.objects.all()
+            tyre_sizes_for_table = []
+            tyre_sizes_for_table = models.TYRE_GROUP_SIZES
+            tyres_list = tyres_list.filter(tyre_size__tyre_size__in=tyre_sizes_for_table)
+            if tyre_sizes_for_table:
+                tyres_list = tyres_list.filter(tyre_size__tyre_size__in=tyre_sizes_for_table)
+                listtyr_home_ojects_filtered = []
+                for obj in sal_tyr_objects:
+                    for tyr in tyres_list: 
+                        if obj.tyre == tyr:
+                            listtyr_home_ojects_filtered.append(obj)
+                context['list_objects'] = listtyr_home_ojects_filtered
+        #################################################################################################
+
+        ## 4 модель:
+        tire_models = dictionaries_models.ModelNameModel.objects.all()
+        tyre_models_list = []
+        for tyre_model_name in tire_models:
+            tyre_models_list.append(tyre_model_name.model)
+        context['tyre_models'] = tyre_models_list
+
+        # ВЫВОД ОТФИЛЬТРОВАННЫХ TYRES_HOME модель:
+        if listtyr_home_ojects_filtered:                    # если фильтруется еще по группам шин:
+            tyre_models_for_table = []
+            tyre_models_for_table = models.TYRE_GROUP_MODELS
+            tyres_list = tyres_list.filter(tyre_model__model__in=tyre_models_for_table)
+            #print('tyres_lis', tyres_list)
+
+            if tyre_models_for_table:
+                tyres_list = tyres_list.filter(tyre_model__model__in=tyre_models_for_table)
+                listtyr_home_ojects_filtered = []
+                for obj in sal_tyr_objects:
+                    for tyr in tyres_list: 
+                        if obj.tyre == tyr:
+                            listtyr_home_ojects_filtered.append(obj)
+                context['list_objects'] = listtyr_home_ojects_filtered
+        else:                                               # если фильтруется еще без групп шин:
+            tyres_list = tyre_models.Tyre.objects.all()
+            tyre_models_for_table = []
+            tyre_models_for_table = models.TYRE_GROUP_MODELS
+            tyres_list = tyres_list.filter(tyre_model__model__in=tyre_models_for_table)
+            if tyre_models_for_table:
+                tyres_list = tyres_list.filter(tyre_model__model__in=tyre_models_for_table)
+                listtyr_home_ojects_filtered = []
+                for obj in sal_tyr_objects:
+                    for tyr in tyres_list: 
+                        if obj.tyre == tyr:
+                            listtyr_home_ojects_filtered.append(obj)
+                context['list_objects'] = listtyr_home_ojects_filtered
 
         return context
 
@@ -176,11 +262,14 @@ class SalesTemplateUpdateView(View):
         # 2-й рабочий вариант  (для некоьких групп)
         tyre_groups_list = request.POST.getlist('tyre_groups')
 
-        ## 3 работа с типоразмерами:
-        #tyre_sizes_list = []
-        #tyre_sizes_list = request.POST.getlist('tyre_sizes')
-#
-#
+        # 3 работа с типоразмерами:
+        tyre_sizes_list = []
+        tyre_sizes_list = request.POST.getlist('tyre_sizes')
+
+        # 4 работа с моделями
+        tyre_models_list = []
+        tyre_models_list = request.POST.getlist('tyre_models')
+
         if not periods_list:
             #print('EMPTY periods_list')
             pass
@@ -192,7 +281,19 @@ class SalesTemplateUpdateView(View):
             pass
         else:
             models.TYRE_GROUP_NAMES = tyre_groups_list 
-            #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO')            
+            #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO')     
+
+        if not tyre_sizes_list:
+            #print('EMPTY tyre_sizes_list')
+            pass
+        else:
+            models.TYRE_GROUP_SIZES = tyre_sizes_list       
+
+        if not tyre_models_list:
+            #print('EMPTY tyre_sizes_list')
+            pass
+        else:
+            models.TYRE_GROUP_MODELS = tyre_models_list
     
         return HttpResponseRedirect(reverse_lazy('sales:sales'))
 

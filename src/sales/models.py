@@ -18,6 +18,8 @@ CONTR_UNIQUE_NAME_LIST = []
 #UPDATE_VIEW:
 PERIOD_UPDATE_SALES = ''
 TYRE_GROUP_NAMES = []
+TYRE_GROUP_SIZES = []
+TYRE_GROUP_MODELS = []
 
 class SalesTable(models.Model):
     customer = models.ForeignKey(
