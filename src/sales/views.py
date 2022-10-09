@@ -8,6 +8,8 @@ from django.urls import reverse_lazy
 from tyres import models as tyres_models
 from django.http import HttpResponseRedirect
 import datetime
+from tyres import models as tyre_models
+from dictionaries import models as dictionaries_models
 
 class SalesDetailView(DetailView):
     model = models.SalesTable
@@ -32,7 +34,7 @@ class SalesDetailView(DetailView):
         else:
             list_of_sale_objects = only_one_exsted_sales_table.sales_table.all()
         # 2. получение всех дат:
-        #2.1 получение вводимых пользователем датб если нет - то просто все имеющиеся даты:
+        #2.1 получение вводимых пользователем датб если нет UPDATEVIEW  - то просто все имеющиеся даты:
         if asked_dates:
         #    nad = datetime.datetime.strptime(asked_data, '%Y-%m-%d').date()                        # МОЖЕТ ПРИГОДИТЬСЯ
             list_of_datesfiltered_by_asked_dates = list_of_sale_objects.filter(date_of_sales__range=asked_dates)
@@ -43,7 +45,15 @@ class SalesDetailView(DetailView):
         models.SALES_DATES = list_of_dates 
                                           
         # 3. FПолучение словаря ШИНА - sales на дату, контрагент                                                         
-        list_of_tyre_sales = only_one_exsted_sales_table.table_sales.all() 
+        list_of_tyre_sales = only_one_exsted_sales_table.table_sales.all()
+        ###print( 'GGG1', list_of_tyre_sales)
+
+        ## 2-й рабочий вариант  (для некоьких групп) UPDATEVIEW по группе шин
+        if models.TYRE_GROUP_NAMES:
+            tyre_groups_for_table = []
+            tyre_groups_for_table = models.TYRE_GROUP_NAMES
+            list_of_tyre_sales = list_of_tyre_sales.filter(tyre__tyre_group__tyre_group__in=tyre_groups_for_table)
+            ###print(tyre_groups_for_table, 'GGG2', list_of_tyre_sales)
 
         tyre_sales_in_period_dict = {}                                          # Словарь - ШИНА - sales на дату, контрагент
         for obj in list_of_tyre_sales:
@@ -90,18 +100,9 @@ class SalesDetailView(DetailView):
                 for sal in obj.tyre.sales.all():
                     tyre_sal_total += sal.sales_value
                 tyre_sal_total_dict[obj] = tyre_sal_total
-
-        #tyre_sal_total_dict ={}
-        #for obj in list_of_tyre_sales:
-        #    tyre_sal_total = 0
-        #    for sal in obj.tyre.sales.all():
-        #        tyre_sal_total += sal.sales_value
-        #    tyre_sal_total_dict[obj] = tyre_sal_total
-        
+  
         models.TYRE_SAL_TOTAL_DICT = tyre_sal_total_dict
-        
         [[obj.sale_on_date(), obj.contragents_sales(), obj.contragents_sales_joined(), obj.total_sale_in_period()] for obj in list_of_tyre_sales] 
-
         return sales_table
 
     def get_context_data(self, **kwargs):
@@ -109,12 +110,49 @@ class SalesDetailView(DetailView):
         #obj = context.get('object')
         obj = context.get('salestable')
    
-        sal_tyr_objects = obj.table_sales.all()
-        list_of_sal_tyres = []
-        for object in sal_tyr_objects:
-            list_of_sal_tyres.append(object)
-        list_of_sal_tyres.reverse()
-        context['list_objects'] = list_of_sal_tyres
+        #sal_tyr_objects = obj.table_sales.all()
+        #list_of_sal_tyres = []
+        #for object in sal_tyr_objects:
+        #    list_of_sal_tyres.append(object)
+        #list_of_sal_tyres.reverse()
+        #print('list_of_sal_tyres', list_of_sal_tyres)
+        #context['list_objects'] = list_of_sal_tyres
+
+
+        
+        # 2  группа шин:
+        tyre_groups = dictionaries_models.TyreGroupModel.objects.all()
+        tyre_groups_list = []
+        for group_name in tyre_groups:
+            tyre_groups_list.append(group_name.tyre_group)
+        context['tyre_groups'] = tyre_groups_list
+
+        if models.TYRE_GROUP_NAMES:
+            tyres_list = tyre_models.Tyre.objects.all()
+            object = context.get('object')
+            # ВЫВОД ОТФИЛЬТРОВАННЫХ TYRES_HOME группа шин:
+            listtyr_home_ojects_filtered = []
+            if models.TYRE_GROUP_NAMES:
+                tyre_groups_for_table = []
+                tyre_groups_for_table = models.TYRE_GROUP_NAMES
+                tyres_list = tyres_list.filter(tyre_group__tyre_group__in=tyre_groups_for_table)
+
+                sal_tyr_objects = obj.table_sales.all()
+                for obj in sal_tyr_objects:
+                    for tyr in tyres_list: 
+                        if obj.tyre == tyr:
+                            listtyr_home_ojects_filtered.append(obj)
+                context['list_objects'] = listtyr_home_ojects_filtered
+        else:                                                                                       # здеся просто вывод всех шин . всех-всех
+            sal_tyr_objects = obj.table_sales.all()
+            list_of_sal_tyres = []
+            for object in sal_tyr_objects:
+                list_of_sal_tyres.append(object)
+            list_of_sal_tyres.reverse()
+            context['list_objects'] = list_of_sal_tyres
+            ###
+
+
         return context
 
 
@@ -135,9 +173,9 @@ class SalesTemplateUpdateView(View):
         #print(start_period, '||', end_period, 'RAKAKA', periods_list)
 
 
-        ## 2-й рабочий вариант  (для некоьких групп)
-        #tyre_groups_list = request.POST.getlist('tyre_groups')
-#
+        # 2-й рабочий вариант  (для некоьких групп)
+        tyre_groups_list = request.POST.getlist('tyre_groups')
+
         ## 3 работа с типоразмерами:
         #tyre_sizes_list = []
         #tyre_sizes_list = request.POST.getlist('tyre_sizes')
@@ -148,6 +186,13 @@ class SalesTemplateUpdateView(View):
             pass
         else:
             models.PERIOD_UPDATE_SALES = periods_list            # передаем в глобальныую данные и перезапускаем страницу
+
+        if not tyre_groups_list:
+            #print('EMPTY tyre_groups_list')
+            pass
+        else:
+            models.TYRE_GROUP_NAMES = tyre_groups_list 
+            #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO')            
     
         return HttpResponseRedirect(reverse_lazy('sales:sales'))
 

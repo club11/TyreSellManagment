@@ -15,7 +15,9 @@ TYRE_SAL_TOTAL_DICT ={}
 
 CONTR_UNIQUE_NAME_LIST = []
 
+#UPDATE_VIEW:
 PERIOD_UPDATE_SALES = ''
+TYRE_GROUP_NAMES = []
 
 class SalesTable(models.Model):
     customer = models.ForeignKey(

@@ -46,5 +46,33 @@
   задать начало периода: <input type="date" name="start_period"> конец периода <input type="date"  name="end_period"> <input type="hidden" value="select"><br>
   <button type="submit" class="btn btn-success" name1="change_period" value1="period" name2="tyre_groups" value2="{{ select }}">Принять</button>
 
+
+    задать группу шин:
+    <form action="{% url 'homepage:update_home' %}" method="post">
+      {% csrf_token %}
+      <select name = "tyre_groups"  multiple aria-label="multiple select example">
+          {% for selec in tyre_groups %}
+          <option value="{{ selec }}">{{ selec }}</option>
+          {% endfor %}
+      </select>
+    
+    выбрать типоразмер:
+      {% csrf_token %}
+      <select name = "tyre_sizes"  multiple aria-label="multiple select example">
+          {% for selec in tyre_sizes %}
+          <option value="{{ selec }}">{{ selec }}</option>
+          {% endfor %}
+      </select>
+    
+      выбрать модель:
+      {% csrf_token %}
+      <select name = "tyre_models"  multiple aria-label="multiple select example" >
+          {% for selec in tyre_models %}
+          <option value="{{ selec }}">{{ selec }}</option>
+          {% endfor %}
+      </select>
+    </form> 
+
+
 </form>
 {% endblock body %}
