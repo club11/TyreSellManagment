@@ -101,6 +101,7 @@ class SalesDetailView(DetailView):
         models.TYRE_SAL_TOTAL_DICT = tyre_sal_total_dict
         
         [[obj.sale_on_date(), obj.contragents_sales(), obj.contragents_sales_joined(), obj.total_sale_in_period()] for obj in list_of_tyre_sales] 
+
         return sales_table
 
     def get_context_data(self, **kwargs):
@@ -131,7 +132,7 @@ class SalesTemplateUpdateView(View):
             elif key == 'end_period' and value is not '':
                 end_period = value
                 periods_list.append(end_period)
-        print(start_period, '||', end_period, 'RAKAKA', periods_list)
+        #print(start_period, '||', end_period, 'RAKAKA', periods_list)
 
 
         ## 2-й рабочий вариант  (для некоьких групп)
