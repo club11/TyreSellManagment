@@ -258,7 +258,6 @@ class SalesTemplateUpdateView(View):
                 periods_list.append(end_period)
         #print(start_period, '||', end_period, 'RAKAKA', periods_list)
 
-
         # 2-й рабочий вариант  (для некоьких групп)
         tyre_groups_list = request.POST.getlist('tyre_groups')
 

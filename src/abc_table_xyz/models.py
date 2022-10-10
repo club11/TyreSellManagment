@@ -15,6 +15,12 @@ ABC_XYZ_GROUP = {}
 TOTAL_PERIOD_SALES = {}
 TYRE_SALES_IN_SMALL_PERIOD = {}
 
+#UPDATE_VIEW:
+PERIOD_UPDATE_SALES = ''
+TYRE_GROUP_NAMES = []
+TYRE_GROUP_SIZES = []
+TYRE_GROUP_MODELS = []
+
 def period_counter_generator(list_of_periods):
     for period in list_of_periods:
         yield period
@@ -34,7 +40,7 @@ class AbcxyzTable(models.Model):
 
     def period_dict_final(self):
         table_period_headers = TOTAL_PERIOD_SALES.keys()
-        print(table_period_headers)
+        #print(table_period_headers)
         return table_period_headers 
 
     def tyre_sales_sold_in_small_period(self):

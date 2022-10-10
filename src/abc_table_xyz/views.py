@@ -7,8 +7,12 @@ from django.shortcuts import render
 from . import models
 from tyres import models as tyres_models
 from sales import models as sales_models
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, View
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from tyres import models as tyre_models
+from dictionaries import models as dictionaries_models
+import collections
 
 from tyres import models as tyre_model
 ### работа с датами:
@@ -16,7 +20,6 @@ import calendar
 from datetime import datetime, timedelta
 import pandas
 ###
-
 
 class AbcxyzTemplateDetailView(DetailView):
     model = models.AbcxyzTable
@@ -53,35 +56,56 @@ class AbcxyzTemplateDetailView(DetailView):
         unique_keys = []                                    # даты продаж 
 
 
+        # ФИЛЬТР 1 - задаваемый период продаж для работы в таблице:
+        sales_period_for_table = models.PERIOD_UPDATE_SALES  
+        ##          
+
+
         # 1 расчет объемов продаж шины за период всего:     (ДОРАБОТАТЬ ПО ПЕРИОДАМ)                                  
         for obj in list_of_abc_bjects:
             total_sales = 0 
-            for sale in obj.sales.all():
-                val = sale.sales_value
-                total_sales += val
-            total_sales_in_period[obj] = total_sales
+            if sales_period_for_table:
+                for sale in obj.sales.all().filter(date_of_sales__range=sales_period_for_table):
+                    val = sale.sales_value
+                    total_sales += val
+                total_sales_in_period[obj] = total_sales
+            else:
+                for sale in obj.sales.all():
+                    val = sale.sales_value
+                    total_sales += val
+                total_sales_in_period[obj] = total_sales
         #print(total_sales_in_period, 'total_sales_in_period')
 
+        #for obj in list_of_abc_bjects:                                         ############### ЗАГЛУШКА
+        #    total_sales = 0                                                    ############### ЗАГЛУШКА
+        #    for sale in obj.sales.all():                                       ############### ЗАГЛУШКА
+        #        val = sale.sales_value                                         ############### ЗАГЛУШКА
+        #        total_sales += val                                             ############### ЗАГЛУШКА
+        #    total_sales_in_period[obj] = total_sales                           ############### ЗАГЛУШКА
+        
         # 1.1 объем родаж всех шин за период (ДОРАБОТАТЬ ПО ПЕРИОДАМ)                                                                                    
         list_of_abc_bjects                         
         tyre_total_price = sum(total_sales_in_period.values())
 
         # 2   ДЛЯ ОТРИСОВКИ ПЕРИОДОВ ПРОДАЖ В ТАБЛИЦЕ (КОЛИЧЕСТВО - клчючи в словаре):
-        date1 = datetime.strptime(str('2021-08-15 12:00:00'), '%Y-%m-%d %H:%M:%S')
-        date2 = datetime.strptime(str('2022-08-15'), '%Y-%m-%d')
-        delta = date2 - date1
-        days = [date1 + timedelta(days=i) for i in range(delta.days + 1)]
-        #return list(map(lambda n: n.strftime("%Y-%m-%d"), days))
 
-        #period = date2 - date1
-        period = pandas.date_range("2020-01-01", "2022-08-25", freq='MS')
-        #print(period)
+        #period = pandas.date_range("2020-01-01", "2022-09-1", freq='MS')               ################################################# ЗАГЛУШКА -  ПЕРИОД
+        if sales_period_for_table:
+            sales_period_for_table = list(sales_period_for_table)
+            per1 = datetime.strptime(sales_period_for_table[0], '%Y-%m-%d') 
+            per2 = datetime.strptime(sales_period_for_table[-1], '%Y-%m-%d') 
+            period = pandas.date_range(per1, per2 + pandas.offsets.MonthEnd(), freq='M') 
+        else:
+            d = obj.sales.dates('date_of_sales', 'day')
+            d = list(d)
+            period = pandas.date_range(d[0], d[-1] + pandas.offsets.MonthEnd(), freq='M')                                                    ###### ЗДЕСЬ ЗАДАЕТСЯ ЧАСТОТНОСТЬ ПОИСКА: ДЕНЬ/ МЕСЯЦ/ГОД
+        #period = pandas.date_range(sales_period_for_table, freq='MS') 
 
         list_of_periods = []
         for p in period:                                                                            ######## ОПТИМИЗИРОВАТЬ
             i =  p.year, p.month
             list_of_periods.append(i)
-        #print(list_of_periods)
+        #print(list_of_periods, 'list_of_periods')
 
         list_sales_on_period = []
         for obj in list_of_abc_bjects:                                                                ######## ОПТИМИЗИРОВАТЬ
@@ -98,15 +122,13 @@ class AbcxyzTemplateDetailView(DetailView):
         for n in list_sales_on_period:                                                              ######## ОПТИМИЗИРОВАТЬ
             yaer = n[1]
             month = n[2]
-            zov = yaer, month
-            lost_keys.append(zov)
+            zv = yaer, month
+            lost_keys.append(zv)
         #print(set(lost_keys))
         unique_keys = set(lost_keys)
         #print(unique_keys, 'unique_keys')
 
         ##2.1 # продажи шины в конкретный период:            # ключ объект Abcxyz и дата продажи. значение - объекты Sales. ДЛЯ ОТРИСОВКИ ПРОДАЖ ПО МАЛЫМ ПЕРИОДАМ ПО КОНКРЕТНОЙ ШИНЕ 
-
-        ####
         for ob in list_of_abc_bjects:
             sale_in_period_list = []
             for period in unique_keys:  
@@ -119,6 +141,7 @@ class AbcxyzTemplateDetailView(DetailView):
                         sal_per = value, period
                         #print(sal_per, 'LLLLLL')
                 sale_in_period_list.append(sal_per)
+        #print(sale_in_period_list)
 
         #3.1  # Доля в общем объеме, %  
         for obj in total_sales_in_period:
@@ -131,7 +154,6 @@ class AbcxyzTemplateDetailView(DetailView):
                 tyre_percent_in_total_amount[obj] = pecent
         
         # 4.1 сортировка sales по числам  и формирование финального словаря ключ = число год месяц , значения = объекты sales
-
         list_of_obj_big = []
         for k in unique_keys:                                                                       ######## ОПТИМИЗИРОВАТЬ
             unique_year = k[0]
@@ -145,7 +167,6 @@ class AbcxyzTemplateDetailView(DetailView):
             #dict_list_sales_on_period_final[unique_year, unique_month] = list_of_obj_small 
             dict_list_sales_on_period_final[k] = list_of_obj_small                              ##### СЛОВАРЬ ПЕРИОД ПРОДАЖ  : SALES objects      
         #print(dict_list_sales_on_period_final)    
-
 
         # 4.2              # отсортированный список значений продаж шин за период от наибольшего объема к наименьшему + вычисление позиции шины в перечне
         list_of_sale_values = []
@@ -207,8 +228,11 @@ class AbcxyzTemplateDetailView(DetailView):
             for v in value:
                 sales_in_period += v.sales_value
             period_dict_final[key] = sales_in_period
-        #print(period_dict_final.values())
-        #print(period_dict_final)
+        #print(period_dict_final.values(), 'JJJ')
+        #print(period_dict_final, 'GGG')
+
+        period_dict_final = collections.OrderedDict(sorted(period_dict_final.items()))          ## дополнительная сортировка словара дата-значение по датам 
+        
 
         #### 5.2 разбираем продажи шин по периодам:
         ####print(dict_list_sales_on_period_final)
@@ -313,8 +337,6 @@ class AbcxyzTemplateDetailView(DetailView):
         obj.abc_group(), obj.average_revenue(), obj.xyz_group(), obj.abc_xyz_group()] for obj in list_of_abc_bjects]    
 
         # 9 Дополнительный блок - подготовка данных для вывода в сводной таблице HOMEPAGE:
-
-   
         return abc_table
 
     def get_context_data(self, **kwargs):       
@@ -338,9 +360,35 @@ class AbcxyzTemplateDetailView(DetailView):
         #context['list_of_tableobects'] = list_of_tableobects
         context['list_of_tableobects'] = list_of_tableobects_prepared
 
-        #def takeFirst(elem):
-        #    return elem[0]
-        #list_of_tableobects.sort(key=takeFirst)    
-
-        #sorted_list_context = [n[1] for n in list_of_tableobects] #sorted_list_context = [] #for n in list_of_tableobects: #    sorted_list_context.append(n[1])
+ 
         return context
+
+
+
+class ABCXYZTemplateUpdateView(View):
+    def post(self, request):
+        #print(request.POST, 'TTT')
+        #print(self.request.POST.get('change_period'))
+        # 1 работа с периодами:
+        start_period, end_period = '', ''
+        periods_list = []
+        for key, value in request.POST.items():
+            if key == 'start_period' and value is not '':
+                start_period = value
+                periods_list.append(start_period)
+            elif key == 'end_period' and value is not '':
+                end_period = value
+                periods_list.append(end_period)
+        #print(start_period, '||', end_period, 'RAKAKA', periods_list)
+
+        # 2-й рабочий вариант  (для некоьких групп)
+        tyre_groups_list = request.POST.getlist('tyre_groups')
+
+        if not periods_list:
+            #print('EMPTY periods_list')
+            pass
+        else:
+            models.PERIOD_UPDATE_SALES = periods_list            # передаем в глобальныую данные и перезапускаем страницу
+
+
+        return HttpResponseRedirect(reverse_lazy('abc_table_xyz:abctable'))
