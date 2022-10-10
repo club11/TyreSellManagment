@@ -58,8 +58,29 @@ class AbcxyzTemplateDetailView(DetailView):
 
         # ФИЛЬТР 1 - задаваемый период продаж для работы в таблице:
         sales_period_for_table = models.PERIOD_UPDATE_SALES  
-        ##          
 
+        ##  
+        ## ФИЛЬТР 2-й рабочий вариант  (для некоьких групп) UPDATEVIEW по группе шин
+        if models.TYRE_GROUP_NAMES:
+            tyre_groups_for_table = []
+            tyre_groups_for_table = models.TYRE_GROUP_NAMES
+            list_of_abc_bjects = list_of_abc_bjects.filter(tyre__tyre_group__tyre_group__in=tyre_groups_for_table)
+            #print(list_of_abc_bjects, 'GGG2', list_of_abc_bjects)
+
+        # ФИЛЬТР 3  - задаваемые типоразмеры шин для работы в таблице:
+        if models.TYRE_GROUP_SIZES:
+            tyre_sizes_for_table = []
+            tyre_sizes_for_table = models.TYRE_GROUP_SIZES
+            list_of_abc_bjects = list_of_abc_bjects.filter(tyre__tyre_size__tyre_size__in=tyre_sizes_for_table)
+            #print(list_of_abc_bjects, 'GGG3', list_of_abc_bjects)
+
+        # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
+        if models.TYRE_GROUP_MODELS:
+            tyre_models_for_table = []
+            tyre_models_for_table = models.TYRE_GROUP_MODELS
+            list_of_abc_bjects = list_of_abc_bjects.filter(tyre__tyre_model__model__in=tyre_models_for_table)
+        #print(list_of_abc_bjects, 'GGG4', list_of_abc_bjects)
+        
 
         # 1 расчет объемов продаж шины за период всего:     (ДОРАБОТАТЬ ПО ПЕРИОДАМ)                                  
         for obj in list_of_abc_bjects:
@@ -94,7 +115,7 @@ class AbcxyzTemplateDetailView(DetailView):
             sales_period_for_table = list(sales_period_for_table)
             per1 = datetime.strptime(sales_period_for_table[0], '%Y-%m-%d') 
             per2 = datetime.strptime(sales_period_for_table[-1], '%Y-%m-%d') 
-            period = pandas.date_range(per1, per2 + pandas.offsets.MonthEnd(), freq='M') 
+            period = pandas.date_range(per1, per2 + pandas.offsets.MonthEnd(), freq='M')                    ####### ВОЗМОЖНЫЙ СБОЙ РАСЧЕТОВ М.Б. ВСЛЕДСТВИИ ОТСЕЧЕК МЕСЯЦЕВ (ПЕРИОДОВ)
         else:
             d = obj.sales.dates('date_of_sales', 'day')
             d = list(d)
@@ -344,6 +365,27 @@ class AbcxyzTemplateDetailView(DetailView):
         #.objects.order_by
         obj = context.get('object')
 
+        # 2  группа шин:
+        tyre_groups = dictionaries_models.TyreGroupModel.objects.all()
+        tyre_groups_list = []
+        for group_name in tyre_groups:
+            tyre_groups_list.append(group_name.tyre_group)
+        context['tyre_groups'] = tyre_groups_list
+
+        ## 3 типоразмер:
+        tyre_sizes = dictionaries_models.TyreSizeModel.objects.all()
+        tyre_sizes_list = []
+        for tyre_sizes_name in tyre_sizes:
+            tyre_sizes_list.append(tyre_sizes_name.tyre_size)
+        context['tyre_sizes'] = tyre_sizes_list
+
+        ## 4 модель:
+        tire_models = dictionaries_models.ModelNameModel.objects.all()
+        tyre_models_list = []
+        for tyre_model_name in tire_models:
+            tyre_models_list.append(tyre_model_name.model)
+        context['tyre_models'] = tyre_models_list
+
         # подготовка списка объектов отсортированных по значению объем продаж в период:
         list_of_tableobects_dict = {}
         for obj_tyre in obj.table.all():
@@ -359,11 +401,7 @@ class AbcxyzTemplateDetailView(DetailView):
         #list_of_tableobects = [tyr_sales for tyr_sales in obj.table.all()]
         #context['list_of_tableobects'] = list_of_tableobects
         context['list_of_tableobects'] = list_of_tableobects_prepared
-
- 
         return context
-
-
 
 class ABCXYZTemplateUpdateView(View):
     def post(self, request):
@@ -384,11 +422,38 @@ class ABCXYZTemplateUpdateView(View):
         # 2-й рабочий вариант  (для некоьких групп)
         tyre_groups_list = request.POST.getlist('tyre_groups')
 
+        # 3 работа с типоразмерами:
+        tyre_sizes_list = []
+        tyre_sizes_list = request.POST.getlist('tyre_sizes')
+
+        # 4 работа с моделями
+        tyre_models_list = []
+        tyre_models_list = request.POST.getlist('tyre_models')
+
         if not periods_list:
             #print('EMPTY periods_list')
             pass
         else:
             models.PERIOD_UPDATE_SALES = periods_list            # передаем в глобальныую данные и перезапускаем страницу
+
+        if not tyre_groups_list:
+            #print('EMPTY tyre_groups_list')
+            pass
+        else:
+            models.TYRE_GROUP_NAMES = tyre_groups_list 
+            #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO') 
+
+        if not tyre_sizes_list:
+            #print('EMPTY tyre_sizes_list')
+            pass
+        else:
+            models.TYRE_GROUP_SIZES = tyre_sizes_list  
+
+        if not tyre_models_list:
+            #print('EMPTY tyre_sizes_list')
+            pass
+        else:
+            models.TYRE_GROUP_MODELS = tyre_models_list
 
 
         return HttpResponseRedirect(reverse_lazy('abc_table_xyz:abctable'))
