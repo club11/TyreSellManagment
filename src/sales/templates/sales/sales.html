@@ -21,7 +21,11 @@
       {% for object in list_objects%}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td><a href="{% url 'dictionaries:curr_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }}</a></td>
+        <td><a href="{% url 'tyres:tyre_card_detail' object.pk %}">{{ object.tyre.tyre_model.model }} {{ object.tyre.tyre_size.tyre_size }} 
+          {% for param in object.tyre.tyre_type.all %}
+            {{ param.tyre_type }}
+          {% endfor %}
+        </a></td>  
 
         <td>{% for sal in object.sale_on_date  %}
           <td><b>{{ sal }}</b></td>

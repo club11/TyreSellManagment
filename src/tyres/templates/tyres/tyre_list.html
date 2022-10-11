@@ -16,10 +16,13 @@
         {% for object in object_list %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td>{{ object.tyre_size.tyre_size }} {{ object.tyre_model.model }}
+        <td>
+          <a href="{% url 'tyres:tyre_card_detail' object.pk %}">
+          {{ object.tyre_size.tyre_size }} {{ object.tyre_model.model }}
           {% for param in object.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}
+      </a>
         </td>
         <td><a href="{% url 'tyres:tyre_update' object.pk %}">Обновить</a></td>
         <td><a href="{% url 'tyres:tyre_delete' object.pk %}">Удалить</a></td>

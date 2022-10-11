@@ -21,10 +21,14 @@ HOME PAGE
       {% for obj in object %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td>{{ obj.tyre.tyre_model.model }} <b>{{ obj.tyre.tyre_size.tyre_size }}</b>
+        <td>
+
+          {{ obj.tyre.tyre_model.model }} <b>{{ obj.tyre.tyre_size.tyre_size }}</b>
         {% for param in obj.tyre.tyre_type.all %}
           {{ param.tyre_type }}
+
         {% endfor %}
+          
         </td>
         <td>{{ obj.tyre_group }} </td>
         <td>{{obj.total_sales }}</td>
