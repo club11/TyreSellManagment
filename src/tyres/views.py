@@ -69,6 +69,27 @@ class TyreListView(ListView):
     template_name = 'tyres/tyre_list.html'
     model = models.Tyre
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #print(context.get('object_list'))
+
+        # ПОДМЕШИВАЕМ TYRE_CARD для ссылки в template:
+        tyr__qset = context.get('object_list')
+        tyr_card_qset = models.TyreCard.objects.all()
+        list_of_tyr_sal_and_tyr_cards = []
+        for tyr_ob in tyr__qset:
+            tyr_card_matched = tyr_card_qset.filter(tyre=tyr_ob)
+            if tyr_card_matched:
+                tyr_card_matched = tyr_card_qset.get(tyre=tyr_ob)
+                tyr_card_matched = tyr_card_matched.id
+            else:
+                tyr_card_matched = None
+            tyr_sal_and_tyr_cards = tyr_ob, tyr_card_matched
+            list_of_tyr_sal_and_tyr_cards.append(tyr_sal_and_tyr_cards)
+        context['object_list'] = list_of_tyr_sal_and_tyr_cards
+        #print(context.get('object_list'))
+        
+        return context
 
 class TyreCreateView(CreateView):
     model = models.Tyre

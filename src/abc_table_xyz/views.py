@@ -401,6 +401,23 @@ class AbcxyzTemplateDetailView(DetailView):
         #list_of_tableobects = [tyr_sales for tyr_sales in obj.table.all()]
         #context['list_of_tableobects'] = list_of_tableobects
         context['list_of_tableobects'] = list_of_tableobects_prepared
+
+        # ПОДМЕШИВАЕМ TYRE_CARD для ссылки в template:
+        tyr__qset = context.get('list_of_tableobects')
+        tyr_card_qset = tyre_models.TyreCard.objects.all()
+        list_of_tyr_sal_and_tyr_cards = []
+        for tyr_ob in tyr__qset:
+            tyr_card_matched = tyr_card_qset.filter(tyre=tyr_ob.tyre)
+            if tyr_card_matched:
+                tyr_card_matched = tyr_card_qset.get(tyre=tyr_ob.tyre)
+                tyr_card_matched = tyr_card_matched.id
+            else:
+                tyr_card_matched = None
+            tyr_sal_and_tyr_cards = tyr_ob, tyr_card_matched
+            list_of_tyr_sal_and_tyr_cards.append(tyr_sal_and_tyr_cards)
+        context['list_of_tableobects'] = list_of_tyr_sal_and_tyr_cards
+        #print(context.get('object_list'))
+
         return context
 
 class ABCXYZTemplateUpdateView(View):

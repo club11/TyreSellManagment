@@ -26,10 +26,17 @@
     </tr>
   </thead>
   <tbody>
-    {% for obj in list_of_tableobects %}
+    {% for obj, tyr_card in list_of_tableobects %}
     <tr>
       <th scope="row">{{ forloop.counter }}</th>
-      <td><a href="{% url 'tyres:tyre_card_detail' object.pk %}">{{ obj.tyre.tyre_model.model }} {{ obj.tyre.tyre_size.tyre_size.all }}
+      
+      {% if tyr_card %}
+      <td><a href="{% url 'tyres:tyre_card_detail' tyr_card %}">
+      {% endif %}
+      {% if not tyr_card %}
+      <td><a href="">
+      {% endif %}
+        {{ obj.tyre.tyre_model.model }} {{ obj.tyre.tyre_size.tyre_size.all }}
         {% for param in obj.tyre.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}</a></td>
