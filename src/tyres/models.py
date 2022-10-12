@@ -67,3 +67,9 @@ class TyreCard(models.Model):
 
     def get_absolute_url(self):
         return reverse('tyres:tyre_card_list')
+        
+    
+    def __str__(self):
+        return "(%s) %s" % (self.tyre, self.serie_date)
+    def __unicode__(self):
+        return "(%s) %s" % (self.tyre, self.serie_date)

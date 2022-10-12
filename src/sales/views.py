@@ -238,6 +238,21 @@ class SalesDetailView(DetailView):
                         if obj.tyre == tyr:
                             listtyr_home_ojects_filtered.append(obj)
                 context['list_objects'] = listtyr_home_ojects_filtered
+        
+        # ПОДМЕШИВАЕМ TYRE_CARD для ссылки в template:
+        tyr_sal_qset = context.get('list_objects')
+        tyr_card_qset = tyre_models.TyreCard.objects.all()
+        list_of_tyr_sal_and_tyr_cards = []
+        for tyr_sal_ob in tyr_sal_qset:
+            for tyr_card in tyr_card_qset:
+                tyr_card_matched = None
+                if tyr_sal_ob.tyre == tyr_card.tyre:
+                    tyr_card_matched = tyr_card.id
+            tyr_sal_and_tyr_cards = tyr_sal_ob, tyr_card_matched
+            list_of_tyr_sal_and_tyr_cards.append(tyr_sal_and_tyr_cards)
+        #print(list_of_tyr_sal_and_tyr_cards)
+        context['list_objects'] = list_of_tyr_sal_and_tyr_cards
+
 
         return context
 

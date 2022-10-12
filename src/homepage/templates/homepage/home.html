@@ -18,17 +18,21 @@ HOME PAGE
       </tr>
     </thead>
     <tbody>
-      {% for obj in object %}
+      {% for obj, tyr_card in object %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-        <td>
 
+        {% if tyr_card %}
+        <td><a href="{% url 'tyres:tyre_card_detail' tyr_card %}">
+        {% endif %}
+        {% if not tyr_card %}
+        <td><a href="">
+        {% endif %}
           {{ obj.tyre.tyre_model.model }} <b>{{ obj.tyre.tyre_size.tyre_size }}</b>
         {% for param in obj.tyre.tyre_type.all %}
           {{ param.tyre_type }}
-
         {% endfor %}
-          
+        </a>
         </td>
         <td>{{ obj.tyre_group }} </td>
         <td>{{obj.total_sales }}</td>
