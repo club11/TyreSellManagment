@@ -76,11 +76,14 @@ class SalesDetailView(DetailView):
                 s_p = []
                 for sal in obj.tyre.sales.all():
                     if sal.date_of_sales == per and sal.sales_value:
-                        date_value = sal.sales_value, sal.date_of_sales, sal.contragent
+                        date_value = sal.sales_value, sal.date_of_sales, sal.contragent.contragent_name
                         s_p.append(date_value)         
                 list_sold_on_date.append(s_p)
             tyre_sales_in_period_dict[obj.tyre] = list_sold_on_date   
         models.SAL_PER_DICTIONARY = tyre_sales_in_period_dict
+        #print(models.SAL_PER_DICTIONARY)
+
+
 
         ## получение списка контрагентов:                           unique_names_list
         tyre_sal_dict = models.SAL_PER_DICTIONARY
@@ -90,8 +93,11 @@ class SalesDetailView(DetailView):
                     contragents_list = []
                     for val in value:
                         for v in val:
+                            #print(v)
                             contragents_list.append(v[2])
+                            #contragents_list.append(v[2])
             contragents_unique_names_list = list(set(contragents_list)) 
+        #print(contragents_unique_names_list)
         models.CONTR_UNIQUE_NAME_LIST = contragents_unique_names_list                 
         ##
         ## вызов функции contragents_sale для вывода объемов продаж по контрагентам:

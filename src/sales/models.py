@@ -3,6 +3,7 @@ from tyres import models as tyres_model
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from datetime import timedelta 
+from dictionaries import models as dictionaries_models
 
 #from datetime_periods import period
 
@@ -51,9 +52,16 @@ class Sales(models.Model):
         verbose_name='объем продаж контрагенту',
         blank=True,
     )
-    contragent = models.CharField(
-        verbose_name='контрагент',
-        max_length=10,
+    #contragent = models.CharField(
+    #    verbose_name='контрагент',
+    #    max_length=10,
+    #)
+    contragent= models.ForeignKey(
+        dictionaries_models.ContragentsModel,
+        related_name='contragent_sales',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True
     )
     table = models.ForeignKey(
         SalesTable,
@@ -79,6 +87,7 @@ class Tyre_Sale(models.Model):
 
     def sale_on_date(self):
         tyre_sal_dict = SAL_PER_DICTIONARY
+        #print(SAL_PER_DICTIONARY)
         for key, value in tyre_sal_dict.items():
             if self.tyre == key:
                 all_sal_on_date = []
@@ -91,7 +100,8 @@ class Tyre_Sale(models.Model):
         return 0
                
     def contragents_sales(self):
-        tyre_sal_dict = SAL_PER_DICTIONARY                  #{<Tyre: Tyre object (76)>: [[(12, datetime.date(2022, 5, 15), 'БНХ Польска'), (10, datetime.date(2022, 5, 15), 'БНХ УКР'), (3, datetime.date(2022, 5, 15), 'БНХ РОС')], [(8, datetime.date(2022, 8, 15), 'БНХ УКР')], [(8, datetime.date(2022, 9, 15), 'БНХ РОС')]],
+        tyre_sal_dict = SAL_PER_DICTIONARY 
+        #print(tyre_sal_dict)                 #{<Tyre: Tyre object (76)>: [[(12, datetime.date(2022, 5, 15), 'БНХ Польска'), (10, datetime.date(2022, 5, 15), 'БНХ УКР'), (3, datetime.date(2022, 5, 15), 'БНХ РОС')], [(8, datetime.date(2022, 8, 15), 'БНХ УКР')], [(8, datetime.date(2022, 9, 15), 'БНХ РОС')]],
         CONTR_UNIQUE_NAME_LIST                              #['БНХ УКР', 'БНХ РОС', 'БНХ Польска']
         contr_dict = {}
         for name in CONTR_UNIQUE_NAME_LIST:
@@ -113,6 +123,7 @@ class Tyre_Sale(models.Model):
                 contr_dict[key] = list_val
             #print(contr_dict)
             TYR_CONTR_SAL_LIST[self.tyre] = contr_dict
+        #print(contr_dict)
         return contr_dict
 
     def contragents_sales_joined(self):

@@ -702,6 +702,13 @@ class ExcelTemplateView(TemplateView):
             sales_table, created = sales_models.SalesTable.objects.get_or_create()                   ##### !!!!!  ####### ДЛЯ РАБОТЫ С СТРАНИЦЕЙ SALES:    
             #### КОНЕЦ ВСТАВКИ  
 
+
+            ################################################################################################################################################  ВРЕМЕННАЯ ЗАТЫЧКА:
+            # Создадим контрагента:
+            dictionaries_models.ContragentsModel.objects.get_or_create(
+                contragent_name = 'БНХ РОС'
+            )
+                
                 ### зДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
             for obj_list_el in list_of_unique_tyres_objs_cleaned:
                 row_value_counter = 0
@@ -716,17 +723,27 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
-                            n = 112 + 1
+                            n = 77 + 1
                             sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
                                 #date_of_sales = date.today(),
-                                date_of_sales = datetime.date(2022, 4, 20),
-                                contragent = 'БНХ ПОЛЬСКА',
+                                date_of_sales = datetime.date(2022, 9, 22),
+                                contragent = dictionaries_models.ContragentsModel.objects.all().last(),
                                 sales_value = int(sale_value),
                                 table = sales_table
                             )
                 row_value_counter += 1
+            ####################################################################################################################################################################
+
+        # Создаем справочники по базовым валютам:
+        base_currencies = ['RUB', 'BYN', 'USD', 'EURO']
+        for curr in base_currencies:
+            dictionaries_models.Currency.objects.get_or_create(
+                currency = curr
+            )
+        ###
+
         
         ## соберем Tyre_Sale объекты:
         for obj in tyres_models.Tyre.objects.all():
@@ -818,7 +835,7 @@ class ExcelTemplateView(TemplateView):
             excel_sheet.cell(row=val, column=9).value = sales_obj.date_of_sales
 
             excel_sheet['J1'] = 'Contragent'
-            excel_sheet.cell(row=val, column=10).value = sales_obj.contragent
+            excel_sheet.cell(row=val, column=10).value = sales_obj.contragent.contragent_name
 
             excel_file.save(filename="Tyres.xlsx")                                 
         form = forms.ImportSalesDataForm()

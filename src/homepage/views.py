@@ -187,6 +187,7 @@ class HomeTemplateDetailView(DetailView):
                 for sal in tyre.sales.all():
                     contragents_list.append(sal.contragent)
             contragents_list_filtered = list(set(contragents_list))
+            #print(contragents_list_filtered)
             contragent_sales_dict = {}
             for contragent in contragents_list_filtered:
                 contragent_sales = tyre.sales.all().filter(contragent=contragent)
@@ -201,9 +202,12 @@ class HomeTemplateDetailView(DetailView):
                 contragent_sales_dict_sorted[k] = contragent_sales_dict[k]     
             #print(contragent_sales_dict_sorted)
             tyre_contragent_top_by_sale[tyre] = contragent_sales_dict_sorted
+            
 
             #tyres_all__dict_sorted_with_percents[tyre] = tyre_total_sal, pecent, accumulated_precent, abc_group, average_revenue, std_deviation, variation_coefficient, xyz_group, abc_xyz_group
             tyres_all__dict_sorted_with_percents_final[tyre] = abc_xyz_group
+        
+        #print(tyre_contragent_top_by_sale)
         
         #print(tyre_contragent_top_by_sale)
         models.ABC_XYZ_GROP_HOME_DICT = tyres_all__dict_sorted_with_percents_final

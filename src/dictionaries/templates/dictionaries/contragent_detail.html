@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %} Contragent detail {% endblock title %}
+{% block body %} 
+Контрагент: {{ object.model }}</br>
+<a href="{% url 'dictionaries:contragent_list' %}" class="btn-primary">Назад к списку</a>
+{% endblock body %}

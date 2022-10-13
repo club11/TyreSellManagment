@@ -38,3 +38,11 @@ class CurrencytModelForm(forms.ModelForm):
         fields = {
             'currency',
         }
+
+
+class ContragentsModelForm(forms.ModelForm):
+    class Meta:
+        model = models.ContragentsModel
+        fields = {
+            'contragent_name',
+        }

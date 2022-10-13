@@ -56,3 +56,12 @@ class QantityCountModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:qnt_list')
+
+class ContragentsModel(models.Model):
+    contragent_name = models.CharField(
+        verbose_name='наименование контрагента',
+        max_length=20,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:tg_list')

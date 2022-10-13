@@ -36,4 +36,10 @@ urlpatterns = [
     path('curr_update/<int:pk>/', dictionaries_views.CurrencyUpdateView.as_view(), name='curr_update'), 
     path('curr_delete/<int:pk>/', dictionaries_views.CurrencyDeleteView.as_view(), name='curr_delete'), 
     path('curr_list/', dictionaries_views.CurrencyListView.as_view(), name='curr_list'),
+
+    path('contragent_create/', dictionaries_views.ContragentsModelCreateView.as_view(), name='contragent_create'),  
+    path('contragent_detail/<int:pk>/', dictionaries_views.ContragentsModelDetailView.as_view(), name='contragent_detail'), 
+    path('contragent_update/<int:pk>/', dictionaries_views.ContragentsModelUpdateView.as_view(), name='contragent_update'), 
+    path('contragent_delete/<int:pk>/', dictionaries_views.ContragentsModelDeleteView.as_view(), name='contragent_delete'), 
+    path('contragent_list/', dictionaries_views.ContragentsModelListView.as_view(), name='contragent_list'), 
 ]

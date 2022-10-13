@@ -119,3 +119,29 @@ class CurrencyDeleteView(DeleteView):
     success_url = reverse_lazy('dictionaries:curr_list')
 
 
+
+
+
+class ContragentsModelCreateView(CreateView):
+    model = models.ContragentsModel
+    form_class = forms.ModelNameForm
+    template_name = 'dictionaries/contragent_create.html'
+
+class ContragentsModelDetailView(DetailView):
+    model = models.ContragentsModel
+    form_class = forms.ContragentsModelForm
+    template_name = 'dictionaries/contragent_detail.html'
+
+class ContragentsModelUpdateView(UpdateView):
+    model = models.ContragentsModel
+    form_class = forms.ContragentsModelForm
+    template_name = 'dictionaries/contragent_update.html'
+
+class ContragentsModelListView(ListView):
+    template_name = 'dictionaries/contragent_list.html'
+    model = models.ContragentsModel
+
+class ContragentsModelDeleteView(DeleteView):
+    model = models.ContragentsModel
+    template_name = 'dictionaries/contragent_delete.html'
+    success_url = reverse_lazy('dictionaries:contragent_list')
