@@ -321,11 +321,12 @@ class HomeTemplateDetailView(DetailView):
                             listtyr_home_ojects_filtered.append(obj)
                 context['object'] = listtyr_home_ojects_filtered
 
-        # ПОДМЕШИВАЕМ TYRE_CARD для ссылки в template:
+        # ПОДМЕШИВАЕМ TYRE_CARD + CONTRAGENTS для ссылки в template:
         tyr__qset = context.get('object')
-        tyr_card_qset = tyre_models.TyreCard.objects.all()
+        tyr_card_qset = tyre_models.TyreCard.objects.all()                          # tyre cards
         list_of_tyr_sal_and_tyr_cards = []
-        for tyr_ob in tyr__qset:
+        for tyr_ob in tyr__qset:    
+            # поиск tyre cards:
             tyr_card_matched = tyr_card_qset.filter(tyre=tyr_ob.tyre)
             if tyr_card_matched:
                 tyr_card_matched = tyr_card_qset.get(tyre=tyr_ob.tyre)
@@ -335,9 +336,6 @@ class HomeTemplateDetailView(DetailView):
             tyr_sal_and_tyr_cards = tyr_ob, tyr_card_matched
             list_of_tyr_sal_and_tyr_cards.append(tyr_sal_and_tyr_cards)
         context['object'] = list_of_tyr_sal_and_tyr_cards
-        #print(context.get('object'))
-
-
 
         return context
 

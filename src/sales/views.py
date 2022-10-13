@@ -122,7 +122,7 @@ class SalesDetailView(DetailView):
                 tyre_sal_total_dict[obj] = tyre_sal_total
   
         models.TYRE_SAL_TOTAL_DICT = tyre_sal_total_dict
-        [[obj.sale_on_date(), obj.contragents_sales(), obj.contragents_sales_joined(), obj.total_sale_in_period()] for obj in list_of_tyre_sales] 
+        [[obj.sale_on_date(), obj.contragents_sales(), obj.contragents_sales_joined(), obj.total_sale_in_period(),] for obj in list_of_tyre_sales] 
         return sales_table
 
     def get_context_data(self, **kwargs):
@@ -248,6 +248,7 @@ class SalesDetailView(DetailView):
         # ПОДМЕШИВАЕМ TYRE_CARD для ссылки в template:
         tyr__qset = context.get('list_objects')
         tyr_card_qset = tyre_models.TyreCard.objects.all()
+        contragents_qset = dictionaries_models.ContragentsModel.objects.all()
         list_of_tyr_sal_and_tyr_cards = []
         for tyr_ob in tyr__qset:
             tyr_card_matched = tyr_card_qset.filter(tyre=tyr_ob.tyre)
@@ -256,10 +257,12 @@ class SalesDetailView(DetailView):
                 tyr_card_matched = tyr_card_matched.id
             else:
                 tyr_card_matched = None
-            tyr_sal_and_tyr_cards = tyr_ob, tyr_card_matched
+            tyr_sal_and_tyr_cards = tyr_ob, tyr_card_matched, #list_of_houses_id
             list_of_tyr_sal_and_tyr_cards.append(tyr_sal_and_tyr_cards)
         context['list_objects'] = list_of_tyr_sal_and_tyr_cards
         #print(context.get('list_objects'))
+
+
 
 
         return context

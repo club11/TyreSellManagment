@@ -56,7 +56,7 @@ class Sales(models.Model):
     #    verbose_name='контрагент',
     #    max_length=10,
     #)
-    contragent= models.ForeignKey(
+    contragent = models.ForeignKey(
         dictionaries_models.ContragentsModel,
         related_name='contragent_sales',
         on_delete=models.PROTECT,
@@ -126,16 +126,39 @@ class Tyre_Sale(models.Model):
         #print(contr_dict)
         return contr_dict
 
-    def contragents_sales_joined(self):
+#    def contragents_sales_joined(self):
+#        total_final_list = []
+#        #print('TYR_CONTR_SAL_LIST', TYR_CONTR_SAL_LIST)
+#        if self.tyre in TYR_CONTR_SAL_LIST.keys():
+#            tyr_sal = TYR_CONTR_SAL_LIST.get(self.tyre)
+#            for key in tyr_sal:
+#                #print(key)
+#                list_sales = []
+#                val = tyr_sal.get(key)
+#                list_sales.append(key)
+#                sum1 = 0
+#                for v in val:
+#                    sum1 += v
+#                    #print(v)
+#                    list_sales.append(v)
+#                list_sales.append(sum1)
+#                total_final_list.append(list_sales)
+#        #print(total_final_list)
+#        return total_final_list
+
+    def contragents_sales_joined(self):                                     # ПОДМЕШИВАЕМ ID КОНТРАГЕНТОВ
+        contragents_qst = dictionaries_models.ContragentsModel.objects.all() 
         total_final_list = []
         #print('TYR_CONTR_SAL_LIST', TYR_CONTR_SAL_LIST)
         if self.tyre in TYR_CONTR_SAL_LIST.keys():
             tyr_sal = TYR_CONTR_SAL_LIST.get(self.tyre)
-            
             for key in tyr_sal:
+                #print(key)
                 list_sales = []
                 val = tyr_sal.get(key)
-                list_sales.append(key)
+                #list_sales.append(key)
+                contragent_id = contragents_qst.get(contragent_name=key) 
+                list_sales.append(contragent_id )
                 sum1 = 0
                 for v in val:
                     sum1 += v
@@ -146,10 +169,15 @@ class Tyre_Sale(models.Model):
         #print(total_final_list)
         return total_final_list
 
+
     def total_sale_in_period(self):
         if self in TYRE_SAL_TOTAL_DICT:
             total_sal = TYRE_SAL_TOTAL_DICT.get(self)
         return total_sal
+
+                                
+
+
 
 
 

@@ -37,10 +37,7 @@ HOME PAGE
         <td>{{ obj.tyre_group }} </td>
         <td>{{obj.total_sales }}</td>
         <td>{{ obj.abc_xyz_group_home }} </td>
-        <td>{% for contragent in obj.top_contragents_by_sales %} 
-          <a href="">{{ contragent.contragent_name }}</a>
-            {% endfor %}
-        </td>
+        <td>{% for contragent in obj.top_contragents_by_sales %} <a href="{% url 'dictionaries:contragent_detail' contragent.id %}">{{ contragent.contragent_name }}</a>{% endfor %}</td>
       </tr>
       {% endfor %}
     </tbody>

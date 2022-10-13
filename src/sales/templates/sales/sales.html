@@ -33,22 +33,25 @@
             {{ param.tyre_type }}
           {% endfor %}
         </td>  
-
         <td>{% for sal in object.sale_on_date  %}
           <td><b>{{ sal }}</b></td>
         {% endfor %}</td>
-
         <td><b>{{ object.total_sale_in_period }}</b></td>
-
         <tr>
           {% for contragent_sal in object.contragents_sales_joined %}
           <tr>
             <td></td>
-            <td>{% for con in contragent_sal  %}</td> 
-            <td>{{ con }} </td>{% endfor %}</tr>
+            <td>{% for con in contragent_sal  %}</td>
+            <td>
+              {% if con.id %}
+              <a href="{% url 'dictionaries:contragent_detail' con.id %}">{{ con.contragent_name }}</a>
+              {% else %}
+              {{ con }}
+              {% endif %}
+
+            </td>{% endfor %}</tr>
           {% endfor %}
         </tr>
-
       {% endfor %}
     </tbody>
   </table>
