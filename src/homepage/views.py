@@ -214,7 +214,7 @@ class HomeTemplateDetailView(DetailView):
         models.CONTRAGENT_SALES_SORTED_DICT = tyre_contragent_top_by_sale
         #models.PERIOD = sales_period_for_table
         
-        [[obj.total_sales(), obj.tyre_group(), obj.abc_xyz_group_home(), obj.top_contragents_by_sales(), ] for obj in home_table_tyres]
+        [[obj.total_sales(), obj.tyre_group(), obj.abc_xyz_group_home(), obj.top_contragents_by_sales(), obj.serie_date(), ] for obj in home_table_tyres]
 
         return home_table_tyres
 

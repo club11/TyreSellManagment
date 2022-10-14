@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.urls import reverse
 from tyres import models as tyres_models
@@ -76,5 +77,15 @@ class Tyre_Homepage(models.Model):
         for contyrag in top_two_contragent_by_sale[:2]:
             list_of_contr.append(contyrag)
         return list_of_contr
+
+    def serie_date(self):
+        serie_date = ''
+        for date_n in self.tyre.tyre_card.all():
+            serie_date = date_n
+        #print(type(serie_date))
+        if serie_date:
+            return serie_date.serie_date
+        else:
+            return serie_date
 
 

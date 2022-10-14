@@ -11,6 +11,7 @@ HOME PAGE
         <th scope="col">#</th>
         <th scope="col">Номенклатура</th>
         <th scope="col">Группа</th>
+        <th scope="col">Дата постановки на <br>серийное призводство</th>
         <th scope="col">Объем продаж всего<br> за период {{ period }}</th>
         <th scope="col">Группа А, В, С | X, Y, Z</th>
         <th scope="col">Топ-2 контрагента</th>
@@ -21,7 +22,6 @@ HOME PAGE
       {% for obj, tyr_card in object %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
-
         {% if tyr_card %}
         <td><a href="{% url 'tyres:tyre_card_detail' tyr_card %}">
         {% endif %}
@@ -34,8 +34,9 @@ HOME PAGE
         {% endfor %}
         </a>
         </td>
-        <td>{{ obj.tyre_group }} </td>
-        <td>{{obj.total_sales }}</td>
+        <td>{{ obj.tyre_group }}</td>
+        <td>{{ obj.serie_date }}</td>
+        <td>{{ obj.total_sales }}</td>
         <td>{{ obj.abc_xyz_group_home }} </td>
         <td>{% for contragent in obj.top_contragents_by_sales %} <a href="{% url 'dictionaries:contragent_detail' contragent.id %}">{{ contragent.contragent_name }}</a>{% endfor %}</td>
       </tr>
