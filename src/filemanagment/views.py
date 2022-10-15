@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import datetime
 from enum import unique
 from operator import index
@@ -16,6 +17,7 @@ from tyres import models as tyres_models
 from sales import models as sales_models
 from itertools import count, islice
 from abc_table_xyz import models as abc_table_xyz_models
+from datetime import datetime
 
 class ExcelTemplateView(TemplateView):
     template_name = 'filemanagment/excel_import.html'
@@ -29,7 +31,9 @@ class ExcelTemplateView(TemplateView):
         tyresize_list = []
         tyremodel_list = []
         tyreparametrs_list = [] 
-        sales_list = []
+        sales_list = []                 #объем продаж на дату
+        contragent_list = []            #контрагент
+        column_sell_date = ''           #строка с датой продажи
         ply_dict = {}
         load_speed_index_dict = {}
         dict_of_param_to_remake_in_standart = {
@@ -432,7 +436,22 @@ class ExcelTemplateView(TemplateView):
                 sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel 
                 for row in sheet.rows:                      
                     for cell in row:
-                        if cell.value == 'объем продаж':
+                        if cell.value == 'контрагент':          # получаем колонку 'контрагент'
+                            contragent_column = cell.column
+                            contragent_row = cell.row
+                            for col in sheet.iter_cols(min_row=contragent_row+1, min_col=contragent_column, max_col=contragent_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    contragent_value = ''
+                                    contragent_value =  cell.value                               
+                                    contragent_list.append(contragent_value)
+
+
+                        if cell.value == 'дата':        # получаем строку'дата'
+                            #print(cell.value)    
+                            #print(cell.coordinate) 
+                            cell = sheet.cell(row=cell.row+1, column=cell.column)
+                            column_sell_date = cell.value
+                        elif cell.value == 'объем продаж':
                             #sales_column = cell.coordinate          # получаем колонку 'объем продаж'
                             sales_column = cell.column
                             sales_row = cell.row
@@ -440,7 +459,10 @@ class ExcelTemplateView(TemplateView):
                                 for cell in col:
                                     sell_value = ''
                                     #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    sell_value =  cell.value.lstrip().rstrip()                                 
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value                            
                                     sales_list.append(sell_value)
                                     pass
                             sales_list = [float(x) for x in sales_list]    # str значения в float
@@ -702,18 +724,55 @@ class ExcelTemplateView(TemplateView):
             sales_table, created = sales_models.SalesTable.objects.get_or_create()                   ##### !!!!!  ####### ДЛЯ РАБОТЫ С СТРАНИЦЕЙ SALES:    
             #### КОНЕЦ ВСТАВКИ  
 
-
-            ################################################################################################################################################  ВРЕМЕННАЯ ЗАТЫЧКА:
-            # Создадим контрагента:
-            dictionaries_models.ContragentsModel.objects.get_or_create(
-                contragent_name = 'БНХ РОС'
-            )
-                
-                ### зДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
+            ### ЗДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
+            #print(list_of_unique_tyres_objs_cleaned)
+            sales_list_values_list = sales_list
             for obj_list_el in list_of_unique_tyres_objs_cleaned:
                 row_value_counter = 0
                 #print(obj_list_el)
-                n= 2
+
+                # Дата продаж
+                if column_sell_date:
+                    #print(type(column_sell_date))
+                    #date_time_obj = datetime.strptime(column_sell_date, '%Y/%m/%d')
+                    #sell_date = date_time_obj
+                    sell_date = column_sell_date
+                else:
+                    sell_date =  datetime.today()
+                # Объемы продаж
+                if sales_list_values_list:
+                    n = sales_list_values_list.pop(0)
+                else:
+                    n = 2
+                # Контрагенты:
+                #print(contragent_list, 'contragent_list')
+                # Создадим контрагента:
+                #if contragent_list:
+                #    contragent = contragent_list.pop(0)
+                #    #contragent_name = 'БНХ РОС'
+                #    if contragent:
+                #        dictionaries_models.ContragentsModel.objects.get_or_create(
+                #            contragent_name = contragent
+                #            )
+                #    if contragent is None:
+                #        contragent = ''
+                #        dictionaries_models.ContragentsModel.objects.get_or_create(
+                #            contragent_name = contragent
+                #            )      
+                #    else:
+                #        contragent = ''
+                #        dictionaries_models.ContragentsModel.objects.get_or_create(
+                #            contragent_name = contragent
+                #            )
+                #else:
+                #    contragent = ''
+                #    dictionaries_models.ContragentsModel.objects.get_or_create(
+                #        contragent_name = contragent
+                #        )  
+                dictionaries_models.ContragentsModel.objects.get_or_create(
+                    contragent_name = 'БНХ РОС'
+                    )                             
+
                 for obj in obj_list_el:
                 #    ############################################################################################################################
                 #    print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
@@ -723,18 +782,22 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
-                            n = 77 + 1
+                            ###n = 77 + 1
                             sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
                                 tyre = obj,
                                 #date_of_sales = date.today(),
-                                date_of_sales = datetime.date(2022, 9, 22),
+                                date_of_sales = datetime.date(sell_date),
+                                #date_of_sales = datetime.date(2022, 9, 23),
                                 contragent = dictionaries_models.ContragentsModel.objects.all().last(),
+                                #contragent = dictionaries_models.ContragentsModel.objects.get(contragent_name=contragent),
                                 sales_value = int(sale_value),
                                 table = sales_table
                             )
                 row_value_counter += 1
             ####################################################################################################################################################################
+            for n in dictionaries_models.ContragentsModel.objects.all():
+                print(n.contragent_name)
 
         # Создаем справочники по базовым валютам:
         base_currencies = ['RUB', 'BYN', 'USD', 'EURO']
@@ -840,8 +903,5 @@ class ExcelTemplateView(TemplateView):
             excel_file.save(filename="Tyres.xlsx")                                 
         form = forms.ImportSalesDataForm()
         #################################################                
-
-        
-
         return render(self.request, 'filemanagment/excel_import.html', {'form': form}) 
 
