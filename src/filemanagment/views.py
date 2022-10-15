@@ -747,32 +747,33 @@ class ExcelTemplateView(TemplateView):
                 # Контрагенты:
                 #print(contragent_list, 'contragent_list')
                 # Создадим контрагента:
-                #if contragent_list:
-                #    contragent = contragent_list.pop(0)
-                #    #contragent_name = 'БНХ РОС'
-                #    if contragent:
-                #        dictionaries_models.ContragentsModel.objects.get_or_create(
-                #            contragent_name = contragent
-                #            )
-                #    if contragent is None:
-                #        contragent = ''
-                #        dictionaries_models.ContragentsModel.objects.get_or_create(
-                #            contragent_name = contragent
-                #            )      
-                #    else:
-                #        contragent = ''
-                #        dictionaries_models.ContragentsModel.objects.get_or_create(
-                #            contragent_name = contragent
-                #            )
-                #else:
-                #    contragent = ''
-                #    dictionaries_models.ContragentsModel.objects.get_or_create(
-                #        contragent_name = contragent
-                #        )  
-                dictionaries_models.ContragentsModel.objects.get_or_create(
-                    contragent_name = 'БНХ РОС'
-                    )                             
-
+                contragent = ' '
+                if contragent_list:
+                    contragent = contragent_list.pop(0)
+                    #contragent_name = 'БНХ РОС'
+                    if contragent is None:
+                        contragent = 'нет данных'
+                        dictionaries_models.ContragentsModel.objects.get_or_create(
+                            contragent_name = contragent
+                            ) 
+                    if contragent:
+                        dictionaries_models.ContragentsModel.objects.get_or_create(
+                            contragent_name = contragent
+                            )
+                    #else:
+                    #    contragent = ' '
+                    #    dictionaries_models.ContragentsModel.objects.get_or_create(
+                    #        contragent_name = contragent
+                    #        )
+                else:
+                    contragent = 'нет данных'
+                    dictionaries_models.ContragentsModel.objects.get_or_create(
+                        contragent_name = contragent
+                        )  
+                #dictionaries_models.ContragentsModel.objects.get_or_create(
+                #    contragent_name = 'БНХ РОС'
+                #    )
+                         
                 for obj in obj_list_el:
                 #    ############################################################################################################################
                 #    print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
@@ -782,6 +783,7 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
+                            print(contragent, 'contragen') 
                             ###n = 77 + 1
                             sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
@@ -789,15 +791,15 @@ class ExcelTemplateView(TemplateView):
                                 #date_of_sales = date.today(),
                                 date_of_sales = datetime.date(sell_date),
                                 #date_of_sales = datetime.date(2022, 9, 23),
-                                contragent = dictionaries_models.ContragentsModel.objects.all().last(),
-                                #contragent = dictionaries_models.ContragentsModel.objects.get(contragent_name=contragent),
+                                #contragent = dictionaries_models.ContragentsModel.objects.all().last(),
+                                contragent = dictionaries_models.ContragentsModel.objects.get(contragent_name=contragent),
                                 sales_value = int(sale_value),
                                 table = sales_table
                             )
                 row_value_counter += 1
             ####################################################################################################################################################################
-            for n in dictionaries_models.ContragentsModel.objects.all():
-                print(n.contragent_name)
+            #for n in dictionaries_models.ContragentsModel.objects.all():
+            #    print(n.contragent_name)
 
         # Создаем справочники по базовым валютам:
         base_currencies = ['RUB', 'BYN', 'USD', 'EURO']

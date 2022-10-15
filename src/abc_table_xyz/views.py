@@ -387,26 +387,11 @@ class AbcxyzTemplateDetailView(DetailView):
         context['tyre_models'] = tyre_models_list
 
         # подготовка списка объектов отсортированных по значению объем продаж в период:
-        #print(models.SORTED_WITH_PERCENTS)
-        #list_of_tableobects_dict = {}
-        #for obj_tyre in obj.table.all():
-        #    if obj_tyre.pk in models.SORTED_WITH_PERCENTS.keys():
-        #        order_numb = models.SORTED_WITH_PERCENTS.get(obj_tyre.pk)[0]
-        #        list_of_tableobects_dict[order_numb] = obj_tyre 
-        #list_of_tableobects_prepared = []
-        #for v_tyre in list_of_tableobects_dict.values():
-        #    list_of_tableobects_prepared.append(v_tyre)
-        #list_of_tableobects_prepared.reverse()
-        #print(list_of_tableobects_prepared)
-
         list_of_tableobects_prepared= []      
         for keys in models.SORTED_WITH_PERCENTS.keys():
            abc_tyr_object =  obj.table.all().get(id=keys)
            list_of_tableobects_prepared.append(abc_tyr_object)
             
-     
-
-
         context['list_of_tableobects'] = list_of_tableobects_prepared
 
         # ПОДМЕШИВАЕМ TYRE_CARD для ссылки в template:

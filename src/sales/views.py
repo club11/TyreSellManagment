@@ -87,16 +87,19 @@ class SalesDetailView(DetailView):
 
         ## получение списка контрагентов:                           unique_names_list
         tyre_sal_dict = models.SAL_PER_DICTIONARY
+        contragents_list = []
         for obj in list_of_tyre_sales:
+            
             for key, value in tyre_sal_dict.items():
                 if obj.tyre == key:
-                    contragents_list = []
+                    #contragents_list = []
                     for val in value:
                         for v in val:
                             #print(v)
                             contragents_list.append(v[2])
-                            #contragents_list.append(v[2])
+                    #print(contragents_list)
             contragents_unique_names_list = list(set(contragents_list)) 
+            #print(contragents_unique_names_list)
         #print(contragents_unique_names_list)
         models.CONTR_UNIQUE_NAME_LIST = contragents_unique_names_list                 
         ##
@@ -261,8 +264,6 @@ class SalesDetailView(DetailView):
             list_of_tyr_sal_and_tyr_cards.append(tyr_sal_and_tyr_cards)
         context['list_objects'] = list_of_tyr_sal_and_tyr_cards
         #print(context.get('list_objects'))
-
-
 
 
         return context
