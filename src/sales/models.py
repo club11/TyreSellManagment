@@ -120,10 +120,11 @@ class Tyre_Sale(models.Model):
                             znch = dom[0]
                     n = znch     
                     list_val.append(n)
+                    #print(list_val)
                 contr_dict[key] = list_val
             #print(contr_dict)
             TYR_CONTR_SAL_LIST[self.tyre] = contr_dict
-        #print(contr_dict)
+        print(contr_dict)
         return contr_dict
 
 #    def contragents_sales_joined(self):
