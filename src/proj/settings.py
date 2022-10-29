@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from tokenize import Ignore
-from ignore_data import KEY
+#from ignore_data import KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'abc_table_xyz',   
     'sales', 
     'homepage',
+    'prices',
 
 ]
 

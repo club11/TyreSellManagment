@@ -18,6 +18,7 @@ from sales import models as sales_models
 from itertools import count, islice
 from abc_table_xyz import models as abc_table_xyz_models
 from datetime import datetime
+from prices import models as prices_models
 
 class ExcelTemplateView(TemplateView):
     template_name = 'filemanagment/excel_import.html'
@@ -32,6 +33,12 @@ class ExcelTemplateView(TemplateView):
         tyremodel_list = []
         tyreparametrs_list = [] 
         sales_list = []                 #объем продаж на дату
+        planned_costs = []              #плановая себестоимость/плановые затраты planned_costs 
+        semi_variable_costs = []        #плановая себестоимость
+        belarus902price_costs = []      #прейскуранты №№9, 902
+        tpsrussiafcaprice_costs = []    #ТПС РФ FCA
+        tpskazfcaprice_costs = []       #ТПС Казахстан FCA
+        tpsmiddleasiafcaprice_costs = []
         contragent_list = []            #контрагент
         column_sell_date = ''           #строка с датой продажи
         ply_dict = {}
@@ -466,6 +473,140 @@ class ExcelTemplateView(TemplateView):
                                     sales_list.append(sell_value)
                                     pass
                             sales_list = [float(x) for x in sales_list]    # str значения в float
+
+                        elif cell.value == 'Полные затраты':
+                            #sales_column = cell.coordinate          # получаем колонку 'полные затраты'    planned_costs
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        #print('cell.value.lstrip().rstrip()', cell.value.lstrip().rstrip() )
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value  
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                                       
+                                        planned_costs.append(sell_value)
+                                    pass
+                            #print(planned_costs)
+                            planned_costs = [float(x) for x in planned_costs]    # str значения в float
+
+                        elif cell.value == 'прямые затраты':
+                            #sales_column = cell.coordinate          # получаем колонку 'прямые затраты'    semi_variable_costs
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value   
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                          
+                                        semi_variable_costs.append(sell_value)
+                                    pass
+                            #print(semi_variable_costs)
+                            semi_variable_costs = [float(x) for x in semi_variable_costs]    # str значения в float
+                            #print(semi_variable_costs)
+
+                        elif cell.value == 'прейскуранты №№9, 902':
+                            #sales_column = cell.coordinate          # получаем колонку 'прейскуранты №№9, 902'    belarus902price_costs
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                              
+                                        belarus902price_costs.append(sell_value)
+                                    pass
+                            belarus902price_costs = [float(x) for x in belarus902price_costs]    # str значения в float
+                            #print(belarus902price_costs)
+
+                        elif cell.value == 'ТПС РФ FCA':
+                            #sales_column = cell.coordinate          # получаем колонку 'ТПС РФ FCA'    tpsrussiafcaprice
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                              
+                                        tpsrussiafcaprice_costs.append(sell_value)
+                                    pass
+                            tpsrussiafcaprice_costs = [float(x) for x in tpsrussiafcaprice_costs]    # str значения в float
+                            #print(tpsrussiafcaprice_costs)
+
+                        elif cell.value == 'ТПС Казахстан FCA':
+                            #sales_column = cell.coordinate          # получаем колонку 'ТПС Казахстан FCA'    tpskazfcaprice
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                              
+                                        tpskazfcaprice_costs.append(sell_value)
+                                    pass
+                            tpskazfcaprice_costs = [float(x) for x in tpskazfcaprice_costs]    # str значения в float
+                            #print('tpskazfcaprice_costs', tpskazfcaprice_costs)
+
+                        elif cell.value == 'ТПС Средняя Азия, Закавказье, Молдова FCA':
+                            #sales_column = cell.coordinate          # получаем колонку 'ТПС Средняя Азия, Закавказье, Молдова FCA'    tpsmiddleasiafcaprice
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                              
+                                        tpsmiddleasiafcaprice_costs.append(sell_value)
+                                    pass
+                            tpsmiddleasiafcaprice_costs = [float(x) for x in tpsmiddleasiafcaprice_costs]    # str значения в float
+                            #print(tpsmiddleasiafcaprice_costs)
                                                 # 1 Парсинг
                         if cell.value == 'Наименование продукции':
                             for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
@@ -662,7 +803,11 @@ class ExcelTemplateView(TemplateView):
             #print(len(tyresize_list), tyresize_list)           # 1   
             #print(len(tyremodel_list), tyremodel_list)         # 2
             #print(len(tyremodel_list), tyreparam_list)          # 3/1  в виде списка со строками
-            #print(len(tyreparam_list_with_lists), tyreparam_list_with_lists)    # 3/2  в виде списка с вложенными списками
+            ##print(len(tyreparam_list_with_lists), tyreparam_list_with_lists)    # 3/2  в виде списка с вложенными списками
+#
+            #print(len(tyresize_list), 'tyresize_list')           # 1   
+            #print(len(tyremodel_list), 'tyremodel_list')         # 2
+            #print(len(tyremodel_list), 'tyreparam_list')          # 3/1  в виде списка со строками
 
             #print('SALES', len(sales_list), sales_list)
             #print(tyres_models.Tyre.objects.get(tyre_type__tyre_type__contains='сер'))
@@ -698,7 +843,7 @@ class ExcelTemplateView(TemplateView):
                     #print(param_pos_list)
                     tyre_obj_exist = tyres_models.Tyre.objects.filter(tyre_model__model=mod_pos, tyre_size__tyre_size=size_pos, tyre_type__tyre_type__in=param_pos_list)
                     if tyre_obj_exist:                              ### если кверисет объектов существует
-                    #    print('YEAP!', tyre_obj_exist)
+                        #print('YEAP!', tyre_obj_exist)
                     #print('_____________')
                         list_of_unique_tyres_objs = []
                         for obj in tyre_obj_exist:              ### берем объекты из кверисета
@@ -783,7 +928,7 @@ class ExcelTemplateView(TemplateView):
                     ############################################################################################################################
                             # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
                             #sale_value = sales_list[row_value_counter]
-                            print(contragent, 'contragen') 
+                            #print(contragent, 'contragen') 
                             ###n = 77 + 1
                             sale_value = n 
                             sales_obj = sales_models.Sales.objects.update_or_create(
@@ -800,6 +945,129 @@ class ExcelTemplateView(TemplateView):
             ####################################################################################################################################################################
             #for n in dictionaries_models.ContragentsModel.objects.all():
             #    print(n.contragent_name)
+
+            # ЗАБРАСЫВАЕМ ПОЛНЫЕ ЗАТРАТЫ:
+            planned_costs_values = planned_costs
+            #print(planned_costs_values)
+            print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
+                currency='BYN'
+            )
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                #print('obj_list_el', obj_list_el)
+                if planned_costs:
+                    pc = planned_costs_values.pop(0)
+                    for obj in obj_list_el:
+                        #print(pc, 'pc')
+                        planned_costs_object = prices_models.PlannedCosstModel.objects.update_or_create(
+                            tyre = obj,     
+                            price = pc,
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
+            #print(prices_models.PlannedCosstModel.objects.all())
+            ####################
+
+            # ЗАБРАСЫВАЕМ ПЛАНОВУЮ СЕБЕСТОИМОСТЬ:
+            semi_variable_costs_values = semi_variable_costs
+            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
+                currency='BYN'
+            )
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                #print('obj_list_el', obj_list_el)
+                if semi_variable_costs:
+                    svcv = semi_variable_costs_values.pop(0)
+                    for obj in obj_list_el:
+                        semi_variable_costs_object = prices_models.SemiVariableCosstModel.objects.update_or_create(
+                            tyre = obj,     
+                            price = svcv,
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
+            #print(prices_models.SemiVariableCosstModel.objects.all())
+            ####################
+
+            # ЗАБРАСЫВАЕМ прейскуранты №№9, 902:
+            belarus902price_costs_values = belarus902price_costs
+            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
+                currency='BYN'
+            )
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                #print('obj_list_el', obj_list_el)
+                if semi_variable_costs:
+                    bcv = belarus902price_costs_values.pop(0)
+                    for obj in obj_list_el:
+                        belarus902price_costs_object = prices_models.Belarus902PriceModel.objects.update_or_create(
+                            tyre = obj,     
+                            price = bcv,
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
+            #print(prices_models.Belarus902PriceModel.objects.all())
+            ####################
+
+            # ЗАБРАСЫВАЕМ даннын по  ТПС РФ FCA:
+            tpsrussiafcaprice_costs_values = tpsrussiafcaprice_costs
+            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
+                currency='BYN'
+            )
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                #print('obj_list_el', obj_list_el)
+                if semi_variable_costs:
+                    tcv = tpsrussiafcaprice_costs_values.pop(0)
+                    for obj in obj_list_el:
+                        tpsrussiafcaprice_object = prices_models.TPSRussiaFCAModel.objects.update_or_create(
+                            tyre = obj,     
+                            price = tcv,
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
+            #print(prices_models.TPSRussiaFCAModel.objects.all())
+            ####################
+            
+            # ЗАБРАСЫВАЕМ даннын по ТПС Казахстан FCA:
+            tpskazfcaprice_costs_values = tpskazfcaprice_costs
+            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+            #print('tpskazfcaprice_costs_values', tpskazfcaprice_costs_values)
+            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
+                currency='BYN'
+            )
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                #print('obj_list_el', obj_list_el)
+                if semi_variable_costs:
+                    tczv = tpskazfcaprice_costs_values.pop(0)
+                    for obj in obj_list_el:
+                        tpskazfcaprice_object = prices_models.TPSKazFCAModel.objects.update_or_create(
+                            tyre = obj,     
+                            price = tczv,
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
+            #print(prices_models.TPSRussiaFCAModel.objects.all())
+            ####################
+
+            # ЗАБРАСЫВАЕМ даннын по ТПС Средняя Азия, Закавказье, Молдова FCA:
+            tpsmiddleasiafcaprice_costs_values = tpsmiddleasiafcaprice_costs
+            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
+                currency='BYN'
+            )
+            for obj_list_el in list_of_unique_tyres_objs_cleaned:
+                #print('obj_list_el', obj_list_el)
+                if semi_variable_costs:
+                    tacv = tpsmiddleasiafcaprice_costs_values.pop(0)
+                    for obj in obj_list_el:
+                        tpsmiddleasiafcaprice_object = prices_models.TPSMiddleAsiaFCAModel.objects.update_or_create(
+                            tyre = obj,     
+                            price = tacv,
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
+            #print(prices_models.TPSMiddleAsiaFCAModel.objects.all())
+            ####################
 
         # Создаем справочники по базовым валютам:
         base_currencies = ['RUB', 'BYN', 'USD', 'EURO']
@@ -838,7 +1106,7 @@ class ExcelTemplateView(TemplateView):
             abc_obj = abc_table_xyz_models.Abcxyz.objects.filter(table=abc_table, tyre=tyre_obj)
             abc_obj_set = abc_table_xyz_models.Abcxyz.objects.update_or_create(
                 table=abc_table,
-                tyre = tyre_obj,
+                tyre=tyre_obj,
             )
             for sales_obj in sales_obj_set:
                 abc_obj_set[0].sales.add(sales_obj)
