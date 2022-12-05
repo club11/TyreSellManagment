@@ -4,6 +4,7 @@ from enum import unique
 from operator import index
 from turtle import st
 from unicodedata import decimal, name
+from webbrowser import get
 from django.shortcuts import render
 from django.views.generic import FormView, TemplateView
 from . import forms
@@ -38,9 +39,26 @@ class ExcelTemplateView(TemplateView):
         belarus902price_costs = []      #прейскуранты №№9, 902
         tpsrussiafcaprice_costs = []    #ТПС РФ FCA
         tpskazfcaprice_costs = []       #ТПС Казахстан FCA
-        tpsmiddleasiafcaprice_costs = []
+        tpsmiddleasiafcaprice_costs = [] #ТПС Азия
+        current_prices = []   # Действующие цены
         contragent_list = []            #контрагент
         column_sell_date = ''           #строка с датой продажи
+        tyretype_row_dict = {}          # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = типоразмер
+        model_row_dict = {}             # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = модель
+        params_row_dict = {}            # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = параметры
+        saless_row_dict = {}            # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = объем продаж
+        planned_costs_row_dict = {}     # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = плановая себестоимость
+        semi_variable_costs_row_dict = {} # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = прямые затраты
+        belarus902price_costs_row_dict = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = прейскуранты №№9, 902
+        tpsrussiafcaprice_costs_row = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = ТПС РФ FCA
+        tpskazfcaprice_cost_row = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = ТПС Казахстан FCA
+        tpsmiddleasiafcaprice_costs_row = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = ТПС Средняя Азия, Закавказье, Молдова FCA
+        current_prices_row = {}                 # словарь, в который закидываются данные о действующих ценах
+
+        row_parsing_sales_costs_prices_dict = {}     # словарь, в который закидываются данные из строк построчно. ключ - шина, параметры = данные о продажах, минималках и прайсах
+
+
+        #date_period =   #ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ ДЛДЯ СЕБЕСТОИМОСТИ и прайсов
         ply_dict = {}
         load_speed_index_dict = {}
         dict_of_param_to_remake_in_standart = {
@@ -435,7 +453,9 @@ class ExcelTemplateView(TemplateView):
 
         #########################################################################
         ### ЕСЛИ ЗАБРАСЫВАЮТСЯ ФАЙЛЫ С ДАННЫМИ О ПРОДАЖАХ/ОСТАТКАХ/ПРОИЗВОДСТВЕ/ЦЕНЫ:
-        ################ считывание файла и сопоставление с текущей базой данных:
+        ################ считывание файла и сопоставление с текущей базой данных
+
+
         elif form_name == "bform.prefix":
             form = forms.ImportSalesDataForm(self.request.POST, self.request.FILES)  
             if form.is_valid():
@@ -452,13 +472,17 @@ class ExcelTemplateView(TemplateView):
                                     contragent_value =  cell.value                               
                                     contragent_list.append(contragent_value)
 
-
+                        # 1 Парсинг
                         if cell.value == 'дата':        # получаем строку'дата'
                             #print(cell.value)    
                             #print(cell.coordinate) 
                             cell = sheet.cell(row=cell.row+1, column=cell.column)
                             column_sell_date = cell.value
+                            date_period = column_sell_date                      # ЗДЕСЬ ПОЛУЧЕНА ДАТА ДЛЯ СЕБЕСТОИМОСТИ И ПРАЙСОВ
+
+
                         elif cell.value == 'объем продаж':
+                            saless_row_temp = int
                             #sales_column = cell.coordinate          # получаем колонку 'объем продаж'
                             sales_column = cell.column
                             sales_row = cell.row
@@ -471,7 +495,11 @@ class ExcelTemplateView(TemplateView):
                                     else:
                                         sell_value = cell.value                            
                                     sales_list.append(sell_value)
-                                    pass
+
+                                    #print('saless_row', saless_row, 'current_row_number', current_row_numberr, cell.row)
+                                    saless_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение объем продаж
+
+                                    pass       
                             sales_list = [float(x) for x in sales_list]    # str значения в float
 
                         elif cell.value == 'Полные затраты':
@@ -493,6 +521,7 @@ class ExcelTemplateView(TemplateView):
                                         if type(sell_value) is str:
                                             sell_value = 0                                       
                                         planned_costs.append(sell_value)
+                                        planned_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                     pass
                             #print(planned_costs)
                             planned_costs = [float(x) for x in planned_costs]    # str значения в float
@@ -515,6 +544,9 @@ class ExcelTemplateView(TemplateView):
                                         if type(sell_value) is str:
                                             sell_value = 0                          
                                         semi_variable_costs.append(sell_value)
+
+                                        semi_variable_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+
                                     pass
                             #print(semi_variable_costs)
                             semi_variable_costs = [float(x) for x in semi_variable_costs]    # str значения в float
@@ -538,6 +570,9 @@ class ExcelTemplateView(TemplateView):
                                         if type(sell_value) is str:
                                             sell_value = 0                              
                                         belarus902price_costs.append(sell_value)
+
+                                        belarus902price_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+
                                     pass
                             belarus902price_costs = [float(x) for x in belarus902price_costs]    # str значения в float
                             #print(belarus902price_costs)
@@ -560,6 +595,9 @@ class ExcelTemplateView(TemplateView):
                                         if type(sell_value) is str:
                                             sell_value = 0                              
                                         tpsrussiafcaprice_costs.append(sell_value)
+
+                                        tpsrussiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+
                                     pass
                             tpsrussiafcaprice_costs = [float(x) for x in tpsrussiafcaprice_costs]    # str значения в float
                             #print(tpsrussiafcaprice_costs)
@@ -582,6 +620,9 @@ class ExcelTemplateView(TemplateView):
                                         if type(sell_value) is str:
                                             sell_value = 0                              
                                         tpskazfcaprice_costs.append(sell_value)
+
+                                        tpskazfcaprice_cost_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+
                                     pass
                             tpskazfcaprice_costs = [float(x) for x in tpskazfcaprice_costs]    # str значения в float
                             #print('tpskazfcaprice_costs', tpskazfcaprice_costs)
@@ -604,12 +645,49 @@ class ExcelTemplateView(TemplateView):
                                         if type(sell_value) is str:
                                             sell_value = 0                              
                                         tpsmiddleasiafcaprice_costs.append(sell_value)
+
+                                        tpsmiddleasiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+
                                     pass
                             tpsmiddleasiafcaprice_costs = [float(x) for x in tpsmiddleasiafcaprice_costs]    # str значения в float
                             #print(tpsmiddleasiafcaprice_costs)
-                                                # 1 Парсинг
+
+                        elif cell.value == 'Действующие цены':
+                            #sales_column = cell.coordinate          # получаем колонку 'Действующие цены'   
+                            sales_column = cell.column
+                            sales_row = cell.row
+                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    sell_value = ''
+                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                    if sell_value is str:
+                                        sell_value = cell.value.lstrip().rstrip()   
+                                    else:
+                                        sell_value = cell.value
+                                    if sell_value is None:
+                                        pass
+                                    else:
+                                        if type(sell_value) is str:
+                                            sell_value = 0                              
+                                        current_prices.append(sell_value)
+
+                                        current_prices_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+
+                                    pass
+                            current_prices = [float(x) for x in current_prices]    # str значения в float
+                            #print(current_prices)
+                            #print('current_prices_row', current_prices_row)
+                        
+                        
+                        ##  ПОЛУЧЕНИЕ МОДЕЛИ ТИПОРАЗМЕРА и ТИПА ДЛЯ ФОРМИРОВАНИЯ СЛОВАРЯ И СВЕРКИ СОСПАВШИХ ШИН ИЗ БД ДЛЯ ВЫБОРКИ ДАННЫХ ПРДАЖИ И МИНИМАЛКИ И ПР ИЗ ЭТОЙ СТРОКИ  !!!!!!!!!!!
+                        ##
+
+                        current_row_number = int
+
                         if cell.value == 'Наименование продукции':
                             for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
+                                #print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
+                         
                                 ### проверка если строка пустая
                                 if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
                                     tyresize_list.append(' ')
@@ -633,7 +711,10 @@ class ExcelTemplateView(TemplateView):
                                 for n in reg_list:
                                     result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
                                     if result:
+                                        #print('result.group(0)', result.group(0))
                                         tyresize_list.append(result.group(0))
+                                        tyretype_row_dict[row[0].row] = result.group(0)                                     # закидываем в словарь строка значение 
+                                        #print(row[0].row, 'cell.row', result.group(0), 'result.group(0)')
                                         ### удаление среза с типоразмером и всем что написано перед типоразмером
                                         left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
                                         if left_before_size_data_index > 0:
@@ -661,8 +742,10 @@ class ExcelTemplateView(TemplateView):
                                 for n in reg_list:
                                     result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
                                     if result:
-                                        #print(result.group(0))
+                                        #print(result.group(0), 'result.group(0)')
                                         tyremodel_list.append(result.group(0))
+                                        model_row_dict[row[0].row] = result.group(0)        # закидываем в словарь строка значение 
+                                        model_row = result.group(0)
                                         ### удаление среза с моделью
                                         row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
                                         #print(str(row[cell.column-1].value))
@@ -697,12 +780,13 @@ class ExcelTemplateView(TemplateView):
                                     '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
                                     '(\d{2}|\d{1})+$',
                                 ]                
-
                                 list_of_parametrs = []
                                 for n in reg_list:
-                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))                                  
+                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value)) 
                                     if result:
-                                        list_of_parametrs.append(result.group(0))   
+                                        list_of_parametrs.append(result.group(0)) 
+                                        #print(row[0].row, result.group(0), type(result.group(0)))
+                                        params_row_dict[row[0].row] = list_of_parametrs           # закидываем в словарь строка значение 
                                         #print('rEsUlT', result, print('N is =', n))
                                         ### удаление среза с моделью                                   
                                         row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
@@ -727,10 +811,65 @@ class ExcelTemplateView(TemplateView):
                                         ### 
                                 str_of_param = ' '.join(list_of_parametrs)
                                 tyreparametrs_list.append(str_of_param)
+                                #print(str_of_param, 'str_of_param')
 
-                #print(tyresize_list, len(tyresize_list))           
-                #print(tyremodel_list, len(tyremodel_list))
-                #print(tyreparametrs_list, len(tyreparametrs_list))  
+
+                ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря ply_dict:
+                dict_of_param_to_remake_in_standart.update(ply_dict)
+                #print(dict_of_param_to_remake_in_standart)
+                ############################################################
+                ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря load_speed_index_dict:
+                dict_of_param_to_remake_in_standart.update(load_speed_index_dict)
+                #print(dict_of_param_to_remake_in_standart)
+                ############################################################
+                # ПРЕОБРАЗОВАНИЕ СПАРСЕННЫХ ДАННЫХ В ВИД ПО БД   + при этом далее есть еще старый код по преобразованию не словаря а списка всех значений
+                for keys, values in params_row_dict.items():
+                    #print(keys, values)
+                    tyreparametrs_list_clean = []
+                    for n in (values):
+                        tyre_el = sorted(n.split(' '), reverse=True)
+                        tyreparametrs_list_cleaned_and_prepared = []
+                        for el_in_param in tyre_el:
+                            for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
+                                #print('HHHHHHHHH', type(tuple(standart_dict_param)), standart_dict_param)           ###### str значения словаря в тапл
+                                if el_in_param in list(standart_dict_param) or el_in_param == standart_dict_param: 
+                                    #print('el_in_param = ', el_in_param, 'standart_dict_param = ', standart_dict_param)      #!!!!!!!!!!!!!!!!
+                                    el_in_param = dict_of_param_to_remake_in_standart.get(standart_dict_param)
+                                    tyreparametrs_list_cleaned_and_prepared.append(el_in_param)  
+                            el = ' '.join(tyreparametrs_list_cleaned_and_prepared) 
+                        tyreparametrs_list_clean.append(el)  
+                    params_row_dict[keys] = tyreparametrs_list_clean
+                #
+
+                ##print(row_parsing_dict)
+                #print('tyretype_row_dict', len(tyretype_row_dict))
+                #print('model_row_dict', len(model_row_dict))
+                #print('model_row_dict', len(params_row_dict), params_row_dict)
+                #print('saless_row_dict',len(saless_row_dict)) 
+                #print('planned_costs_row_dict ', len(planned_costs_row_dict))  
+                #print('semi_variable_costs_row_dict', len(semi_variable_costs_row_dict))   
+                #print('belarus902price_costs_row_dict', len(belarus902price_costs_row_dict))   
+                #print('tpsrussiafcaprice_costs_row', len(tpsrussiafcaprice_costs_row) )                                        
+                #print('tpskazfcaprice_cost_row', len(tpskazfcaprice_cost_row))  
+                #print('tpsmiddleasiafcaprice_costs_row', len(tpsmiddleasiafcaprice_costs_row))  
+
+                #r_item = ' '
+                #for item in tyresize_list:
+                #    if item == r_item:
+                #        tyresize_list.remove(item)
+                #
+#
+                #print(len(tyresize_list), 'tyresize_list', tyresize_list)           
+                #print(len(tyresize_list), 'tyresize_list', tyresize_list)    
+                #print(len(tyremodel_list), 'tyremodel_list')
+                #print(len(tyreparametrs_list), 'tyreparametrs_list')  
+                #print(len(tpsmiddleasiafcaprice_costs), 'tpsmiddleasiafcaprice_costs')
+                #print(len(tpskazfcaprice_costs), 'tpskazfcaprice_costs') 
+                #print(len(tpsrussiafcaprice_costs), 'tpsrussiafcaprice_costs')
+                #print(len(belarus902price_costs), 'belarus902price_costs')
+                #print(len(semi_variable_costs), 'semi_variable_costs')
+                #print(len(planned_costs), 'planned_costs')
+                
 
             ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря ply_dict:
             dict_of_param_to_remake_in_standart.update(ply_dict)
@@ -830,6 +969,8 @@ class ExcelTemplateView(TemplateView):
             #print('TTT',tyreparam_list)
             ####
 
+            ######################################                      ВАРИАНТ  1  =  СОПОСТАВЛЕНИЕ СОВПАШИХ ШИН С БД
+
             list_of_unique_tyres_objs_cleaned = []
             #print(tyreparam_list)
             if len(tyresize_list) == len(tyremodel_list) and len(tyremodel_list) == len(tyreparam_list):
@@ -921,7 +1062,7 @@ class ExcelTemplateView(TemplateView):
                          
                 for obj in obj_list_el:
                 #    ############################################################################################################################
-                #    print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
+                            #print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
                 #    course_qs = obj.tyre_type.all()                                                         # проверка совпавших параметров
                 #    for course in course_qs:                                                                    # проверка совпавших параметров
                 #        print(course.tyre_type)                                                                 # проверка совпавших параметров
@@ -946,128 +1087,205 @@ class ExcelTemplateView(TemplateView):
             #for n in dictionaries_models.ContragentsModel.objects.all():
             #    print(n.contragent_name)
 
-            # ЗАБРАСЫВАЕМ ПОЛНЫЕ ЗАТРАТЫ:
-            planned_costs_values = planned_costs
-            #print(planned_costs_values)
-            print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
+
+            #for a in tyretype_row_dict.values(), model_row_dict.values(), params_row_dict.values():
+            #    print(a, len(a))
+
+            #for k, v in tyretype_row_dict.items():
+            #    print(k, v, ' k, v')
+
+            ## СОЗДАЕМ БАЗОВУЮ ВАЛЮТУ
             currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
                 currency='BYN'
             )
-            for obj_list_el in list_of_unique_tyres_objs_cleaned:
-                #print('obj_list_el', obj_list_el)
-                if planned_costs:
-                    pc = planned_costs_values.pop(0)
-                    for obj in obj_list_el:
-                        #print(pc, 'pc')
+            ####
+
+            #ik = tyres_models.Tyre.objects.all()
+            #for n in ik:
+            #    print(n.tyre_size.tyre_size, 'TYRE')
+
+            ######################################                      ВАРИАНТ  2  =  СОПОСТАВЛЕНИЕ СОВПАШИХ ШИН С БД
+            #### СОПОСТАВЛЕНИЕ СОВПАШИХ СТРОК С С ШИНАМИ В БД:
+            ####
+            #tyretype_row_dict, model_row_dict, params_row_dict, saless_row_dict, planned_costs_row_dict, semi_variable_costs_row_dict, belarus902price_costs_row_dict, tpsrussiafcaprice_costs_row, tpskazfcaprice_cost_row, tpsmiddleasiafcaprice_costs_row, tpsmiddleasiafcaprice_costs_row 
+            #if len(tyretype_row_dict) == len(model_row_dict) and len(tyretype_row_dict) == len(params_row_dict) and len(tyretype_row_dict) == len(saless_row_dict) and len(tyretype_row_dict) == len(planned_costs_row_dict) and len(tyretype_row_dict) == len(semi_variable_costs_row_dict) and len(tyretype_row_dict) == len(belarus902price_costs_row_dict) and len(tyretype_row_dict) == len(tpsrussiafcaprice_costs_row) and len(tyretype_row_dict) == len(tpskazfcaprice_cost_row) and len(tyretype_row_dict) == len(tpsmiddleasiafcaprice_costs_row):
+            #if len(tyretype_row_dict) == len(model_row_dict) and len(tyretype_row_dict) == len(params_row_dict) and len(tyretype_row_dict) == len(planned_costs_row_dict) and len(tyretype_row_dict) == len(semi_variable_costs_row_dict) and len(tyretype_row_dict) == len(belarus902price_costs_row_dict) and len(tyretype_row_dict) == len(tpsrussiafcaprice_costs_row) and len(tyretype_row_dict) == len(tpskazfcaprice_cost_row) and len(tyretype_row_dict) == len(tpsmiddleasiafcaprice_costs_row):
+            if len(tyretype_row_dict) == len(model_row_dict) and len(tyretype_row_dict) == len(params_row_dict):
+                # выбираем именно по строкам, а не просто по порядку. Ведь  ключ -  номер строки:
+                for n in tyretype_row_dict.keys():
+                #for n in range(0, len(tyretype_row_dict)):
+                    #print(tyretype_row_dict.get(n), 'tyretype_row_dict.get(n)', len(tyretype_row_dict))
+                    if tyres_models.Tyre.objects.filter(tyre_model__model=model_row_dict.get(n), tyre_size__tyre_size=tyretype_row_dict.get(n)):
+                        #print(model_row_dict.get(n), tyretype_row_dict.get(n), 'tyretype_row_dict.get(n')
+                        tyre_mathced_obj = tyres_models.Tyre.objects.filter(tyre_model__model=model_row_dict.get(n), tyre_size__tyre_size=tyretype_row_dict.get(n), tyre_type__tyre_type__in=params_row_dict.get(n))
+                        ####for object in tyre_mathced_obj:
+                        ####    print(object.tyre_model.model, object.tyre_size.tyre_size,  object.tyre_type.all(), 'n = ', n)
+                        for obj in tyre_mathced_obj:              ### берем объекты из кверисета
+                            #print(obj.tyre_size.tyre_size, 'tyre_mathced_obj')
+                            counter_coinc = 0
+                            for param in params_row_dict.get(n):                ### берем параметры перебираем
+                                len(params_row_dict.get(n))                     ###  замеряем количество параметров в текущем 
+                                dbpar_list = []
+                                for p in obj.tyre_type.all():       ###   перебираем параметры в параметрах объекта
+                                    if param == p.tyre_type:        ### если параметры совпадают
+                                        counter_coinc += 1
+                                        #matched = param, '=', p.tyre_type
+                                    dbpar_list.append(p.tyre_type)
+                            #print('parsed params = ',  params_row_dict.get(n), 'params in DB=', dbpar_list)
+
+                            if counter_coinc == len(params_row_dict.get(n)):        ###### ЗДЕСЬ ПОЛУЧАЕМ ОБЪЕКТ У КОТОРОГО ВСЕ ПАРАМЕТРЫ СОВПАЛИ СПАРАМЕТРАМИ ШИНЫ В БАЗЕ
+                                #print('MATCHED!!', obj.tyre_size.tyre_size)
+
+                                sales_ddict = {}
+                                sales_ddict['sales_ddict'] = saless_row_dict.get(n)
+                                planned_costs_ddict = {}
+                                planned_costs_ddict['planned_costs_ddict'] = planned_costs_row_dict.get(n)
+                                semi_variable_ddict = {}
+                                semi_variable_ddict['semi_variable_ddict'] = semi_variable_costs_row_dict.get(n)
+                                belarus902price_costs_ddict = {}
+                                belarus902price_costs_ddict['belarus902price_costs_ddict'] = belarus902price_costs_row_dict.get(n)
+                                tpsrussiafcaprice_costs_ddict = {}
+                                tpsrussiafcaprice_costs_ddict['tpsrussiafcaprice_costs_ddict'] = tpsrussiafcaprice_costs_row.get(n)
+                                tpskazfcaprice_cost_ddict = {}
+                                tpskazfcaprice_cost_ddict['tpskazfcaprice_cost_ddict'] = tpskazfcaprice_cost_row.get(n)
+                                tpsmiddleasiafcaprice_costs_ddict = {}
+                                tpsmiddleasiafcaprice_costs_ddict['tpsmiddleasiafcaprice_costs_ddict'] = tpsmiddleasiafcaprice_costs_row.get(n)
+
+                                row_parsing_sales_costs_prices_dict[obj] = sales_ddict, planned_costs_ddict, semi_variable_ddict, belarus902price_costs_ddict, tpsrussiafcaprice_costs_ddict, tpskazfcaprice_cost_ddict, tpsmiddleasiafcaprice_costs_ddict, n 
+                #print('JJJJJJJJJJJJ', current_prices_row, 'current_prices_row')
+
+                current_prices_ddict = {}
+                for n in range(0, len(current_prices_row)):
+                    #print(current_prices_row.get(n))
+                    if tyres_models.Tyre.objects.filter(tyre_model__model=model_row_dict.get(n), tyre_size__tyre_size=tyretype_row_dict.get(n)):
+                        tyre_mathced_obj = tyres_models.Tyre.objects.filter(tyre_model__model=model_row_dict.get(n), tyre_size__tyre_size=tyretype_row_dict.get(n), tyre_type__tyre_type__in=params_row_dict.get(n))
+                        ####for object in tyre_mathced_obj:
+                        ####    print(object.tyre_model.model, object.tyre_size.tyre_size,  object.tyre_type.all(), 'n = ', n)
+                        for obj in tyre_mathced_obj:              ### берем объекты из кверисета
+                            counter_coinc = 0
+                            for param in params_row_dict.get(n):                ### берем параметры перебираем
+                                len(params_row_dict.get(n))                     ###  замеряем количество параметров в текущем 
+                                dbpar_list = []
+                                for p in obj.tyre_type.all():       ###   перебираем параметры в параметрах объекта
+                                    if param == p.tyre_type:        ### если параметры совпадают
+                                        counter_coinc += 1
+                                        #matched = param, '=', p.tyre_type
+                                    dbpar_list.append(p.tyre_type)
+                            #print('parsed params = ',  current_prices_row.get(n), 'params in DB=', dbpar_list)
+
+                            
+                            if counter_coinc == len(params_row_dict.get(n)):        ###### ЗДЕСЬ ПОЛУЧАЕМ ОБЪЕКТ У КОТОРОГО ВСЕ ПАРАМЕТРЫ СОВПАЛИ СПАРАМЕТРАМИ ШИНЫ В БАЗЕ
+                                #print('MATCHED!!', obj)
+                                
+                                #current_prices_ddict['tpsmiddleasiafcaprice_costs_ddict'] = current_prices_row.get(n)
+                                current_prices_ddict[obj] = current_prices_row.get(n)
+
+
+                #print('current_prices_ddict', current_prices_ddict)
+            #for key, value in row_parsing_sales_costs_prices_dict.items():
+            #    print(key.tyre_size.tyre_size, 'row_parsing_sales_costs_prices_dict', value)  
+            ##############          КЛЮЧЕВАЯ ШТУКА:         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            #print('row_parsing_sales_costs_prices_dict', row_parsing_sales_costs_prices_dict)           #### !!!!!!!!!!! КОНТРОЛЬНЫЙ СЛОВАРЬ СО СВОДОМ ПОСТРОЧНЫМ СОВПАШИХ С БД ШИН И СПАРСЕННЫМИ ДАННЫМИ как аналог list_of_unique_tyres_objs_cleaned n = номер строки!!!
+            #Tyre object (1059) ({'sales_ddict': None}, {'planned_costs_ddict': 27541}, {'semi_variable_ddict': 18935}, {'belarus902price_costs_ddict': 33321}, {'tpsrussiafcaprice_costs_ddict': 37245}, {'tpskazfcaprice_cost_ddict': 37226}, {'tpsmiddleasiafcaprice_costs_ddict': 48877}, 25)
+            #'row_parsing_sales_costs_prices_dict':
+            # [0]['sales_ddict']                        # объем продаж
+            # [1]['planned_costs_ddict']                # себестоимость
+            # [2]['semi_variable_ddict']                # плановые затраты
+            # [3]['belarus902price_costs_ddict']        # 902,9 РБ
+            # [4]['tpsrussiafcaprice_costs_ddict']      # ТПС РФ
+            # [5]['tpskazfcaprice_cost_ddict']          # ТПС Казахстан
+            # [6]['tpsmiddleasiafcaprice_costs_ddict']  # ТПС Азия
+            ####### [7]['current_prices_ddict']               # действующие цены
+            # [8] = номер строки                        # номер строки из спарсингованной таблицы
+            #########
+            #'current_prices_ddict'                     # действующие цены - отдельный словарь
+
+            for k, v in row_parsing_sales_costs_prices_dict.items():       # ПРЕДПРОСМОТР СПИСКА СОВПАВШИХ ШИН И ДАННЫХ
+                parrams = []
+                for par in k.tyre_type.all():
+                    parrams.append(par.tyre_type)
+                print(k.tyre_size.tyre_size, k.tyre_model.model, parrams, v)
+
+            # ЗАБРАСЫВАЕМ ПОЛНЫЕ ЗАТРАТЫ:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                #print(obj_list_el[1]['planned_costs_ddict'] , 'KKK')
+                if obj_list_el[1]['planned_costs_ddict']:
                         planned_costs_object = prices_models.PlannedCosstModel.objects.update_or_create(
-                            tyre = obj,     
-                            price = pc,
+                            tyre = key,     
+                            price = obj_list_el[1]['planned_costs_ddict'],
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
-            #print(prices_models.PlannedCosstModel.objects.all())
-            ####################
 
             # ЗАБРАСЫВАЕМ ПЛАНОВУЮ СЕБЕСТОИМОСТЬ:
-            semi_variable_costs_values = semi_variable_costs
-            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
-            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
-                currency='BYN'
-            )
-            for obj_list_el in list_of_unique_tyres_objs_cleaned:
-                #print('obj_list_el', obj_list_el)
-                if semi_variable_costs:
-                    svcv = semi_variable_costs_values.pop(0)
-                    for obj in obj_list_el:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                if obj_list_el[2]['semi_variable_ddict']:
                         semi_variable_costs_object = prices_models.SemiVariableCosstModel.objects.update_or_create(
-                            tyre = obj,     
-                            price = svcv,
+                            tyre = key,     
+                            price = obj_list_el[2]['semi_variable_ddict'],
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
-            #print(prices_models.SemiVariableCosstModel.objects.all())
-            ####################
 
             # ЗАБРАСЫВАЕМ прейскуранты №№9, 902:
-            belarus902price_costs_values = belarus902price_costs
-            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
-            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
-                currency='BYN'
-            )
-            for obj_list_el in list_of_unique_tyres_objs_cleaned:
-                #print('obj_list_el', obj_list_el)
-                if semi_variable_costs:
-                    bcv = belarus902price_costs_values.pop(0)
-                    for obj in obj_list_el:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                if obj_list_el[3]['belarus902price_costs_ddict']:
                         belarus902price_costs_object = prices_models.Belarus902PriceModel.objects.update_or_create(
-                            tyre = obj,     
-                            price = bcv,
+                            tyre = key,     
+                            price = obj_list_el[3]['belarus902price_costs_ddict'],
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
-            #print(prices_models.Belarus902PriceModel.objects.all())
-            ####################
 
             # ЗАБРАСЫВАЕМ даннын по  ТПС РФ FCA:
-            tpsrussiafcaprice_costs_values = tpsrussiafcaprice_costs
-            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
-            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
-                currency='BYN'
-            )
-            for obj_list_el in list_of_unique_tyres_objs_cleaned:
-                #print('obj_list_el', obj_list_el)
-                if semi_variable_costs:
-                    tcv = tpsrussiafcaprice_costs_values.pop(0)
-                    for obj in obj_list_el:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                if obj_list_el[4]['tpsrussiafcaprice_costs_ddict']:
                         tpsrussiafcaprice_object = prices_models.TPSRussiaFCAModel.objects.update_or_create(
-                            tyre = obj,     
-                            price = tcv,
+                            tyre = key,     
+                            price = obj_list_el[4]['tpsrussiafcaprice_costs_ddict'],
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
-            #print(prices_models.TPSRussiaFCAModel.objects.all())
-            ####################
             
             # ЗАБРАСЫВАЕМ даннын по ТПС Казахстан FCA:
-            tpskazfcaprice_costs_values = tpskazfcaprice_costs
-            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
-            #print('tpskazfcaprice_costs_values', tpskazfcaprice_costs_values)
-            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
-                currency='BYN'
-            )
-            for obj_list_el in list_of_unique_tyres_objs_cleaned:
-                #print('obj_list_el', obj_list_el)
-                if semi_variable_costs:
-                    tczv = tpskazfcaprice_costs_values.pop(0)
-                    for obj in obj_list_el:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                if obj_list_el[5]['tpskazfcaprice_cost_ddict']:
                         tpskazfcaprice_object = prices_models.TPSKazFCAModel.objects.update_or_create(
-                            tyre = obj,     
-                            price = tczv,
+                            tyre = key,     
+                            price = obj_list_el[5]['tpskazfcaprice_cost_ddict'],
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
-            #print(prices_models.TPSRussiaFCAModel.objects.all())
-            ####################
 
             # ЗАБРАСЫВАЕМ даннын по ТПС Средняя Азия, Закавказье, Молдова FCA:
-            tpsmiddleasiafcaprice_costs_values = tpsmiddleasiafcaprice_costs
-            #print('list_of_unique_tyres_objs_cleaned', list_of_unique_tyres_objs_cleaned)
-            currency_chosen_by_hand = dictionaries_models.Currency.objects.get_or_create(
-                currency='BYN'
-            )
-            for obj_list_el in list_of_unique_tyres_objs_cleaned:
-                #print('obj_list_el', obj_list_el)
-                if semi_variable_costs:
-                    tacv = tpsmiddleasiafcaprice_costs_values.pop(0)
-                    for obj in obj_list_el:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                if obj_list_el[6]['tpsmiddleasiafcaprice_costs_ddict']:
                         tpsmiddleasiafcaprice_object = prices_models.TPSMiddleAsiaFCAModel.objects.update_or_create(
-                            tyre = obj,     
-                            price = tacv,
+                            tyre = key,     
+                            price = obj_list_el[6]['tpsmiddleasiafcaprice_costs_ddict'],
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
-            #print(prices_models.TPSMiddleAsiaFCAModel.objects.all())
-            ####################
+
+            #print(row_parsing_sales_costs_prices_dict.items(), 'row_parsing_sales_costs_prices_dict.items()')
+            # ЗАБРАСЫВАЕМ даннын по Действующие цены:
+            #for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+            for key, obj_list_el in current_prices_ddict.items():
+                #print('row_parsing_sales_costs_prices_dict', key, obj_list_el )             #current_prices_ddict['tpsmiddleasiafcaprice_costs_ddict']
+                if obj_list_el:
+                        currentpricesprice_object = prices_models.CurrentPricesModel.objects.update_or_create(
+                            tyre = key,     
+                            price = obj_list_el,
+                            #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
+                            date_period = datetime.now(),   
+                            currency = currency_chosen_by_hand[0]         
+                        )
 
         # Создаем справочники по базовым валютам:
         base_currencies = ['RUB', 'BYN', 'USD', 'EURO']
@@ -1077,7 +1295,6 @@ class ExcelTemplateView(TemplateView):
             )
         ###
 
-        
         ## соберем Tyre_Sale объекты:
         for obj in tyres_models.Tyre.objects.all():
             tyr_sal = sales_models.Tyre_Sale.objects.update_or_create(
@@ -1112,15 +1329,112 @@ class ExcelTemplateView(TemplateView):
                 abc_obj_set[0].sales.add(sales_obj)
             #print(abc_obj_set[0].sales.all(), 'JJJJJJJJ')
 
-
         #####if abc_table:
         #####    #print(abc_table, '==', abc_table.tyre_total, abc_table.list_of_total_sales_of_of_tyre_in_period())
         #####    pass
-        #####
-
         #for obj in abc_table_xyz_models.Abcxyz.objects.all():
         #    #print(obj.total_sales_of_of_tyre_in_period(), obj.percent_in_total_amount())
         #    print(obj.abc_group[0])
+
+        #0) создадим объект таблицы ComparativeAnalysisTableModel для проверки:
+
+        table_id = self.request.session.get('table_id')             
+        comparative_analysis_table_get = prices_models.ComparativeAnalysisTableModel.objects.filter(pk=table_id)
+        if comparative_analysis_table_get:
+            comparative_analysis_table = comparative_analysis_table_get[0]
+        else:
+            comparative_analysis_table_queryset = prices_models.ComparativeAnalysisTableModel.objects.update_or_create()
+            comparative_analysis_table = comparative_analysis_table_queryset[0]
+
+        # 1) возмем все объекты шин:
+        for key in row_parsing_sales_costs_prices_dict.keys():
+            tyre_obj = key
+        # 2.1) возмем все объекты плановой себестоимости:
+            planned_costs_obj_set = prices_models.PlannedCosstModel.objects.filter(tyre=tyre_obj)            # !!!! ФИЛЬТР ВСЕХ ОБЪЕКТОВ + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period
+            #planned_costs_obj_set = prices_models.PlannedCosstModel.objects.get(tyre=tyre_obj)                  # ОДИН объект на дату + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period
+            if planned_costs_obj_set:
+                planned_costs_obj_set = planned_costs_obj_set[0]
+            else:       # если пустой кверисет
+                planned_costs_obj_set = None
+        # 2.2) возмем все объекты прямые затраты:
+            semi_variable_costs_obj_set = prices_models.SemiVariableCosstModel.objects.filter(tyre=tyre_obj)
+            #semi_variable_costs_obj_set = prices_models.SemiVariableCosstModel.objects.get(tyre=tyre_obj)
+            if semi_variable_costs_obj_set:
+                semi_variable_costs_obj_set = semi_variable_costs_obj_set[0]
+            else:       # если пустой кверисет
+                semi_variable_costs_obj_set = None
+        # 2.3) возмем все объекты прейскуранты №№9, 902:
+            belarus902price_obj_set = prices_models.Belarus902PriceModel.objects.filter(tyre=tyre_obj)
+            #belarus902price_obj_set = prices_models.Belarus902PriceModel.objects.get(tyre=tyre_obj)
+            if belarus902price_obj_set:
+                belarus902price_obj_set = belarus902price_obj_set[0]
+                #print('belarus902price_obj_set', belarus902price_obj_set.price)
+            else:       # если пустой кверисет
+                belarus902price_obj_set = None
+        # 2.4) возмем все объекты прейскуранты ТПС РФ FCA:
+            tpsrussiafcaprice_obj_set = prices_models.TPSRussiaFCAModel.objects.filter(tyre=tyre_obj)
+            #tpsrussiafcaprice_obj_set = prices_models.TPSRussiaFCAModel.objects.get(tyre=tyre_obj)
+            if  tpsrussiafcaprice_obj_set:
+                tpsrussiafcaprice_obj_set = tpsrussiafcaprice_obj_set[0]
+            else:       # если пустой кверисет
+                tpsrussiafcaprice_obj_set = None
+        # 2.5) возмем все объекты прейскуранты ТПС Казахстан FCA:
+            tpskazfcaprice_obj_set = prices_models.TPSKazFCAModel.objects.filter(tyre=tyre_obj)
+            #tpskazfcaprice_obj_set = prices_models.TPSKazFCAModel.objects.get(tyre=tyre_obj)
+            if  tpskazfcaprice_obj_set:
+                tpskazfcaprice_obj_set = tpskazfcaprice_obj_set[0]
+            else:       # если пустой кверисет
+                tpskazfcaprice_obj_set = None
+        # 2.6) возмем все объекты прейскуранты ТПС Средняя Азия, Закавказье, Молдова FCA:
+            tpsmiddleasiafcaprice_obj_set = prices_models.TPSMiddleAsiaFCAModel.objects.filter(tyre=tyre_obj)
+            #tpsmiddleasiafcaprice_obj_set = prices_models.TPSMiddleAsiaFCAModel.objects.get(tyre=tyre_obj)
+            if tpsmiddleasiafcaprice_obj_set:
+                tpsmiddleasiafcaprice_obj_set = tpsmiddleasiafcaprice_obj_set[0]
+            else:       # если пустой кверисет
+                tpsmiddleasiafcaprice_obj_set = None
+        # 2.7) возмем все объекты Действующие цены:
+            currentpricesprice_obj_set = prices_models.CurrentPricesModel.objects.filter(tyre=tyre_obj)
+            #currentpricesprice_obj_set = prices_models.CurrentPricesModel.objects.get(tyre=tyre_obj)
+            if currentpricesprice_obj_set:
+                currentpricesprice_obj_set = currentpricesprice_obj_set[0]
+            else:       # если пустой кверисет
+                currentpricesprice_obj_set = None
+            #print(planned_costs_obj_set.price, semi_variable_costs_obj_set.price, belarus902price_obj_set.price, 'HHH')
+
+
+        # 3) создадим объекты модели ComparativeAnalysisTyresModel
+
+            #defaults = dict(
+            #    planned_costs=planned_costs.price,
+            #    semi_variable_prices=semi_variable_prices,
+            #    belarus902price=belarus902price,
+            #    tpsrussiafcaprice=0,
+            #    tpskazfcaprice=0,
+            #    tpsmiddleasiafcaprice=0,
+            #    currentpricesprice=0,                
+            #)
+
+            comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
+                table=comparative_analysis_table,
+                tyre=tyre_obj,
+                planned_costs=planned_costs_obj_set,
+                semi_variable_prices=semi_variable_costs_obj_set,
+                belarus902price=belarus902price_obj_set,
+                tpsrussiafcaprice=tpsrussiafcaprice_obj_set,
+                tpskazfcaprice=tpskazfcaprice_obj_set,
+                tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
+                currentpricesprice=currentpricesprice_obj_set,
+                #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
+                )
+
+        #row_value = 0
+        #for j in prices_models.ComparativeAnalysisTyresModel.objects.all():
+        #    if j.planned_costs is None:
+        #        pass
+        #    else:
+        #        print(j.planned_costs.price, 'JJJJJJJ', row_value)
+        #    row_value += 1
+
 
         ############################################ Запись данных в существующий файл в столбец:
         from openpyxl import load_workbook
@@ -1132,7 +1446,7 @@ class ExcelTemplateView(TemplateView):
         row_value = 0
         for ob_val in sales_models.Sales.objects.all():
             row_value += 1
-
+        
         #генератор для хождения по строкам:    
         def raw_generator(n, stop):
             while True:
@@ -1141,7 +1455,7 @@ class ExcelTemplateView(TemplateView):
                 yield n
                 n += 1
         max_raw = row_value     
-        i = 2       # со второй строки
+        i = 2       # со второй строки        
         row_curr = raw_generator(i, max_raw+i)
 
         for sales_obj in sales_models.Sales.objects.all():

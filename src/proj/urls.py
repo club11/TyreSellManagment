@@ -14,6 +14,7 @@ urlpatterns = [
     path('filemanagment/', include('filemanagment.urls', namespace='filemanagment')),      
     path('abctable/', include('abc_table_xyz.urls', namespace='abctable')),   
     path('sales/', include('sales.urls', namespace='sales')),  
+    path('prices/', include('prices.urls', namespace='prices')),  
 ] 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

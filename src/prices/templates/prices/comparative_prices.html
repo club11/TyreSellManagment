@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %} ABC XYZ Table {% endblock title %}
+{% block body %} 
+<h1>Сравнительный анализ цен</h1>
+<table class="table table-hover table-sm table-dark table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col"><span class="align-middle">Номенклатура</span></th>  
+        <th scope="col">полные затраты</th>
+        <th scope="col">прямые затраты</th>
+        <th scope="col">прейскуранты №№9, 902</th>
+        <th scope="col">ТПС РФ FCA</th>
+        <th scope="col">ТПС Казахстан FCA</th>
+        <th scope="col">ТПС Средняя Азия, <br>
+          Закавказье, Молдова FCA</th>
+        <th scope="col">действующие цены</th>
+        <th scope="col">плановая рентабельность</th>
+        <th scope="col">отклонение прямых затрат</th>
+
+        {% for head1, head2, head3 in object.onliner_heders_value  %}
+        <td>{{ head1 }}</td><td>{{ head2 }}</td><td>{{ head3 }}</td>
+        {% endfor %}
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for object in list_of_tyre_comparative_objects %}s
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td><a href=""></a>
+          {{ object.tyre.tyre_size.tyre_size }} {{ object.tyre.tyre_model.model }} 
+        {% for param in object.tyre.tyre_type.all %}
+          {{ param.tyre_type }}
+        {% endfor %}</a></td>
+        <th scope="row">{{ object.planned_costs.price }}</th>
+        <th scope="row">{{ object.semi_variable_prices.price }}</th>
+        <th scope="row">{{ object.belarus902price.price }}</th>
+        <th scope="row">{{ object.tpsrussiafcaprice.price }}</th>
+        <th scope="row">{{ object.tpskazfcaprice.price }}</th>
+        <th scope="row">{{ object.tpsmiddleasiafcaprice.price }}</th>
+        <th scope="row">{{ object.currentpricesprice.price }}</th>
+        <th scope="row">{{ object.planned_profitabilit }}</th>
+        <th scope="row">{{ object.direct_cost_variance }}</th>
+
+        {% for comp, price, deflection in object.onliner_competitor_on_date1  %}
+        <td>{{ comp }}</td> <td>{{ price }}</td> <td>{{ deflection }}</td>
+        {% endfor %}
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body %}

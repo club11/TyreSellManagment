@@ -35,7 +35,11 @@ class HomeTemplateDetailView(DetailView):
             )
         home_table_tyres = []    
         for object in models.Tyre_Homepage.objects.all():
-            home_table_tyres.append(object)
+            if not object.tyre.sales.all():
+                pass
+            else:
+                #print(object.tyre.sales.all())
+                home_table_tyres.append(object)
 
         # ФИЛЬТР 2  - задаваемые группы шин для работы в таблице:
         # group_names = ['легковые', 'легкогруз', 'с/х', 'грузовые']
@@ -148,6 +152,8 @@ class HomeTemplateDetailView(DetailView):
                 list_of_dates.append(sal.date_of_sales)
             num_periods = len(list(set(list_of_dates)))
             average_revenue = tyre_total_sal / num_periods
+
+
 
             #6 Стандартное отклонение:
             tyre_values_in_period = tyre.sales.all()

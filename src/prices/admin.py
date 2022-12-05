@@ -49,7 +49,46 @@ class TPSMiddleAsiaFCAModelAdmin(admin.ModelAdmin):
             'date_period',
     ]
 
+class CurrentPricesModelAdmin(admin.ModelAdmin):
+    list_display = [
+            'tyre',
+            'currency',
+            'price',
+            'date_period',
+    ]
 
+
+class ComparativeAnalysisTableModelAdmin(admin.ModelAdmin):
+    list_display = [
+            'customer',
+    ]
+
+class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
+    list_display = [
+            'table',
+            'tyre',
+            'planned_costs',
+            'semi_variable_prices',
+            'belarus902price',
+            'tpsrussiafcaprice',
+            'tpskazfcaprice',
+            'tpsmiddleasiafcaprice',
+            'currentpricesprice',
+            'sale_data',
+    ]
+
+class CompetitorSiteModelAdmin(admin.ModelAdmin):
+    list_display = [
+            'site',
+
+            'currency',
+            'price',
+            'date_period',
+            'developer',
+            'tyresize_competitor',
+            'name_competitor',
+            'parametres_competitor',
+    ]
 
 admin.site.register(models.PlannedCosstModel, PlannedCosstModelAdmin)
 admin.site.register(models.SemiVariableCosstModel, SemiVariableCosstModelAdmin)
@@ -57,3 +96,7 @@ admin.site.register(models.Belarus902PriceModel, Belarus902PriceModelAdmin)
 admin.site.register(models.TPSRussiaFCAModel, TPSRussiaFCAModelAdmin)
 admin.site.register(models.TPSKazFCAModel, TPSKazFCAModelAdmin)
 admin.site.register(models.TPSMiddleAsiaFCAModel, TPSMiddleAsiaFCAModelAdmin)
+admin.site.register(models.CurrentPricesModel, CurrentPricesModelAdmin)
+admin.site.register(models.ComparativeAnalysisTableModel, ComparativeAnalysisTableModelAdmin)
+admin.site.register(models.ComparativeAnalysisTyresModel, ComparativeAnalysisTyresModelAdmin)
+admin.site.register(models.CompetitorSiteModel, CompetitorSiteModelAdmin)
