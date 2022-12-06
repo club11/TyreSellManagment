@@ -65,3 +65,13 @@ class ContragentsModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+
+
+class CompetitorModel(models.Model):
+    competitor_name = models.CharField(
+        verbose_name='наименование производителя-конкурента',
+        max_length=20,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:tg_list')

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from . import models
 from tyres import models as tyres_models
-from django.views.generic import DetailView
+from django.views.generic import DetailView, View
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
@@ -10,6 +10,8 @@ import datetime
 import re
 from tyres import models as tyres_models
 from dictionaries import models as dictionaries_models
+from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -138,10 +140,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 onliner_companies_list.append(v[4])
         onliner_companies_list = list(set(onliner_companies_list))    
 
-        # выбор по производителю:                               # ЛИШНЯЯ ШТУКА ВЕДЬ СЕЙЧАС ЗАПИСЬ В БД А НЕ ОТРИСОВКА КОНТЕКСТА
+        # выбор по производителю:                               
+        # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
+        if models.ONLINER_COMPETITORS:
+            onliner_companies_list = models.ONLINER_COMPETITORS
+
         chosen_by_company_dict = {}
         for k, v in goods_dict.items():
-            if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ
+            if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
                 chosen_by_company_dict[k] = v
         #print('chosen_by_company_dict', chosen_by_company_dict)
 
@@ -174,6 +180,23 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         obj = context.get('object')
         list_of_tyre_comparative_objects = obj.comparative_table.all()
+
+
+        # выбор по производителю:                               
+        # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
+        if models.ONLINER_COMPETITORS:
+            onliner_companies_list = models.ONLINER_COMPETITORS
+
+        chosen_by_company_dict = {}
+        for k, v in goods_dict.items():
+            if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
+                chosen_by_company_dict[k] = v
+        #print('chosen_by_company_dict', chosen_by_company_dict)
+
+
+
+
+
 
 
         ## 1 фильтр конкурентов Onliner:
@@ -238,4 +261,79 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.onliner_heders_value()
         #object_unit.onliner_competitor_price_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+
+        ##Работа с интефейсом:
+        list_of_all_competitors_template = []
+        for t in all_competitors:
+            list_of_all_competitors_template.append(t.developer)
+        context['onliner_competitors'] = list_of_all_competitors_template
+        ###
+
         return context
+
+
+class ComparativeAnalysisTableModelUpdateView(View):
+    def post(self, request):
+        print(request.POST, 'TTT')
+
+        ## 1 работа с периодами:
+        #start_period, end_period = '', ''
+        #periods_list = []
+        #for key, value in request.POST.items():
+        #    if key == 'start_period' and value is not '':
+        #        start_period = value
+        #        periods_list.append(start_period)
+        #    elif key == 'end_period' and value is not '':
+        #        end_period = value
+        #        periods_list.append(end_period)
+        ##print(start_period, '||', end_period, 'RAKAKA', periods_list)
+#
+        ## 2-й рабочий вариант  (для некоьких групп)
+        #tyre_groups_list = request.POST.getlist('tyre_groups')
+#
+        ## 3 работа с типоразмерами:
+        #tyre_sizes_list = []
+        #tyre_sizes_list = request.POST.getlist('tyre_sizes')
+#
+        ## 4 работа с моделями
+        #tyre_models_list = []
+        #tyre_models_list = request.POST.getlist('tyre_models')
+
+        # 5 работа с производителями-конкурентами
+        onliner_competitors_list = []
+        onliner_competitors_list = request.POST.getlist('onliner_competitor')
+        print('onliner_competitors_list', onliner_competitors_list)
+#
+        #if not periods_list:
+        #    #print('EMPTY periods_list')
+        #    pass
+        #else:
+        #    models.PERIOD_UPDATE_SALES = periods_list            # передаем в глобальныую данные и перезапускаем страницу
+#
+        #if not tyre_groups_list:
+        #    #print('EMPTY tyre_groups_list')
+        #    pass
+        #else:
+        #    models.TYRE_GROUP_NAMES = tyre_groups_list 
+        #    #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO') 
+#
+        #if not tyre_sizes_list:
+        #    #print('EMPTY tyre_sizes_list')
+        #    pass
+        #else:
+        #    models.TYRE_GROUP_SIZES = tyre_sizes_list  
+#
+        #if not tyre_models_list:
+        #    #print('EMPTY tyre_sizes_list')
+        #    pass
+        #else:
+        #    models.TYRE_GROUP_MODELS = tyre_models_list
+
+        if not onliner_competitors_list:
+            #print('onliner_competitors_list')
+            pass
+        else:
+            models.ONLINER_COMPETITORS = onliner_competitors_list
+
+
+        return HttpResponseRedirect(reverse_lazy('prices:comparative_prices'))

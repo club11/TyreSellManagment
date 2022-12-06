@@ -37,6 +37,11 @@ class ContragentsModelAdmin(admin.ModelAdmin):
         'contragent_name',
     ]
 
+class CompetitorModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'competitor_name',
+    ]
+
 admin.site.register(models.Currency, CurrencyAdmin)
 admin.site.register(models.TyreSizeModel, TyreSizeModelAdmin)
 admin.site.register(models.ModelNameModel, ModelNameModelAdmin)
@@ -44,3 +49,4 @@ admin.site.register(models.TyreParametersModel, TyreParametersModelAdmin)
 admin.site.register(models.TyreGroupModel, TyreGroupModelModelAdmin)
 admin.site.register(models.QantityCountModel, QantityCountModelAdmin)
 admin.site.register(models.ContragentsModel, ContragentsModelAdmin)
+admin.site.register(models.CompetitorModel, CompetitorModelAdmin)

@@ -52,4 +52,19 @@
     </tbody>
   </table>
 
+
+  выбрать производителя:
+  <form action="{% url 'prices:apricestable_update' %}" method="post">
+    {% csrf_token %}
+    <select name = "onliner_competitor"  multiple aria-label="multiple select example">
+      {% for comp in onliner_competitors  %}
+      <option value="{{ comp }}">{{ comp }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-success" >Принять</button>
+  </form>
+
+
+
+
 {% endblock body %}

@@ -9,6 +9,9 @@ User = get_user_model()
 #ONLINER_COMPETITORS_DICTIONARY = {}
 ONLINER_COMPETITORS_DICTIONARY1 = {}
 ONLINER_HEADER_NUMBER = int
+#ONLINER UPDATEVIEW:
+ONLINER_COMPETITORS = []
+
 
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
@@ -199,7 +202,7 @@ class ComparativeAnalysisTableModel(models.Model):
     )
 
     def onliner_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Onliner
-        print('ONLINER_HEADER_NUMBER', ONLINER_HEADER_NUMBER)
+        #print('ONLINER_HEADER_NUMBER', ONLINER_HEADER_NUMBER)
         onliner_header_1 = 'конкурент Onliner'
         onliner_header_2 = 'цена конкурента Onliner'
         onliner_header_3 = 'отклонение цены конкурента Onliner'

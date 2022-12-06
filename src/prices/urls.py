@@ -5,4 +5,5 @@ app_name = 'prices'
 
 urlpatterns = [    
     path('', prices_views.ComparativeAnalysisTableModelDetailView.as_view(), name='comparative_prices'),
+    path('pricestable_update', prices_views.ComparativeAnalysisTableModelUpdateView.as_view(), name='apricestable_update'),
 ]
