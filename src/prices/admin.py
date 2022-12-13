@@ -80,7 +80,7 @@ class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
 class CompetitorSiteModelAdmin(admin.ModelAdmin):
     list_display = [
             'site',
-
+            #'tyre_to_compare',
             'currency',
             'price',
             'date_period',

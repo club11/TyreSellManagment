@@ -12,6 +12,7 @@ from tyres import models as tyres_models
 from dictionaries import models as dictionaries_models
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from  . import forms
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -36,6 +37,7 @@ onliner_competitors_dict = {}
 class ComparativeAnalysisTableModelDetailView(DetailView):
     model = models.ComparativeAnalysisTableModel
     template_name = 'prices/comparative_prices.html'
+
     #login_url = reverse_lazy('abc_table_xyz:abctable')
 
     def get_object(self, queryset=None):                
@@ -142,8 +144,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
-        if models.ONLINER_COMPETITORS:
-            onliner_companies_list = models.ONLINER_COMPETITORS
+        #if models.ONLINER_COMPETITORS:
+        #    onliner_companies_list = models.ONLINER_COMPETITORS
+        #    print('onliner_companies_list', onliner_companies_list )
 
         chosen_by_company_dict = {}
         for k, v in goods_dict.items():
@@ -160,6 +163,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     #Cordiant Polar SL 205/55R16 94T ('165,00', '205/55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
                     coma = v[0].find(',')
                     pr = float
+                    name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
+                        competitor_name =  v[4]
+                    )
+                    #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',  name_competitor, 'name_competitor =', v[4])
+
                     if coma:
                         pr = float(v[0].replace(',', '.'))
                     models.CompetitorSiteModel.objects.update_or_create(
@@ -168,11 +176,19 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         currency = dictionaries_models.Currency.objects.get(currency='BYN'),
                         price = pr,
                         date_period = datetime.datetime.today(),
-                        developer = v[4],
+                        #developer = v[4],
+                        developer = name_competitor,
                         tyresize_competitor = v[1],
-                        name_competitor = v[2],
-                        parametres_competitor = v[3]
+                        name_competitor = v[2], 
+                        parametres_competitor = v[3],
+                        #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
                     ) 
+       ###### ЗДЕСЬ СВЯЗЫВАЕМ СПАРСЕННЫЕ ОБЕКТЫ КОНКУРЕНТОВ К ОБЪЕКТАМИ ШИН В БАЗЕ МОДЕЛИ ШИНЫ СРАВНЕНИЕ          
+        for objject in models.CompetitorSiteModel.objects.all():
+            price_tyre_obj = models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=objject.tyresize_competitor)
+            for n in list(price_tyre_obj):
+                objject.tyre_to_compare.add(n) 
+                                        
         ##### END OF ONLINER PARSING
         return comparative_analysis_table
 
@@ -181,98 +197,76 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj = context.get('object')
         list_of_tyre_comparative_objects = obj.comparative_table.all()
 
-
-        # выбор по производителю:                               
-        # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
-        if models.ONLINER_COMPETITORS:
-            onliner_companies_list = models.ONLINER_COMPETITORS
-
-        chosen_by_company_dict = {}
-        for k, v in goods_dict.items():
-            if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
-                chosen_by_company_dict[k] = v
-        #print('chosen_by_company_dict', chosen_by_company_dict)
-
-
-
-
-
-
-
         ## 1 фильтр конкурентов Onliner:
         all_competitors = models.CompetitorSiteModel.objects.all()
             # 1.1 ФИЛЬТР по дате
         #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
             # 1.2 ФИЛЬТР список производителей :
-        onliner_companies_list = []
-        for t in all_competitors:
-            onliner_companies_list.append(t.developer)
-        onliner_companies_list = list(set(onliner_companies_list))
-        #print(onliner_companies_list[0:3], 'onliner_companies_list[0:3]', onliner_companies_list)
+        # выбор по производителю:                               
+        # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
 
-        ###################################################################################################         ВВОД ПОЛЬЗОВАТЕЛЕМ КОЛИЧЕСТВА ПРОИЗВОДИТЕЛЕЙ:
-        ##############nuber_of_chosen_competitors_input_user = int
-        ##############if nuber_of_chosen_competitors_input_user:
-        ##############    nuber_of_chosen_competitors_input_user = 3                                                                  # по производителю (НАПРИМЕР, ПО 3 ПЕРВЫЕ В СПИСКЕ ПРОИЗВОДИТЕЛЕЙ 
-        ##############    all_competitors = models.CompetitorSiteModel.objects.filter(developer__in=onliner_companies_list[0:nuber_of_chosen_competitors_input_user])      # по производителю (НАПРИМЕР, ПО 3 ПЕРВЫЕ В СПИСКЕ ПРОИЗВОДИТЕЛЕЙ )
-        ##############else:
-        ##############    all_competitors = models.CompetitorSiteModel.objects.all()
-        ###################################################################################################
-
-        #for t in all_competitors:
-        #    print(t.developer, t.tyresize_competitor, t.price, 'YYYTTTTTTTT')
-        ##
-
+        
         onliner_competitors_dict1 = {}
-
         for object_unit in list_of_tyre_comparative_objects:
-            object_unit.planned_profitabilit = object_unit.planned_profitability()
-            object_unit.direct_cost_varianc = object_unit.direct_cost_variance()
+            object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
+            object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
 
             list_of_matched_competitors = []
-            for competitor in all_competitors:
-                if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                    #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                    #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+            if models.ONLINER_COMPETITORS:
+                for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                        list_of_matched_competitors.append(competitor)
+                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+            else:
+                for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                        list_of_matched_competitors.append(competitor)
+                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
 
-                    list_of_matched_competitors.append(competitor)
-            onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
 
-        #print('!!!!', onliner_competitors_dict1)
+
+
+                                                              ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
+        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
+        #object_unit.onliner_competitor_on_date1() 
+
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
         onliner_max_lengh_list = []
-        for value in onliner_competitors_dict1.values():
-            lengh = len(value)
-            onliner_max_lengh_list.append(lengh)
+        for object_unit in list_of_tyre_comparative_objects:
+            obj_num = len(object_unit.onliner_competitor_on_date1())
+            onliner_max_lengh_list.append(obj_num)
         onliner_max_lengh_header = max(onliner_max_lengh_list)
-        #print('max_competitors_tyres', onliner_max_lengh_header)
-        #for k, v in onliner_competitors_dict1.items():
-        #    print(k, v)
 
-                                                                        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-        #models.ONLINER_COMPETITORS_DICTIONARY = onliner_competitors_dict  
-        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
         models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
-        #object_unit.onliner_competitor_on_date()
-        #object_unit.onliner_competitor_price_on_date()
-        #object_unit.price_902_onliner_deflection()
 
-        object_unit.onliner_competitor_on_date1()
         obj.onliner_heders_value()
         #object_unit.onliner_competitor_price_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
 
         ##Работа с интефейсом:
+        #list_of_all_competitors_template = []
+        #for t in all_competitors:
+        #    list_of_all_competitors_template.append(t.developer.competitor_name)
+        #context['onliner_competitors'] = list(set(list_of_all_competitors_template))
         list_of_all_competitors_template = []
-        for t in all_competitors:
-            list_of_all_competitors_template.append(t.developer)
-        context['onliner_competitors'] = list_of_all_competitors_template
+        all_competitors_in_base = dictionaries_models.CompetitorModel.objects.all()
+        for t in all_competitors_in_base:
+            list_of_all_competitors_template.append(t.competitor_name)
+        context['onliner_competitors'] = list(set(list_of_all_competitors_template))
         ###
+
+        filter_form = forms.FilterForm
+        context['filter_form'] = filter_form
 
         return context
 
 
 class ComparativeAnalysisTableModelUpdateView(View):
+
     def post(self, request):
         print(request.POST, 'TTT')
 
@@ -302,7 +296,8 @@ class ComparativeAnalysisTableModelUpdateView(View):
         # 5 работа с производителями-конкурентами
         onliner_competitors_list = []
         onliner_competitors_list = request.POST.getlist('onliner_competitor')
-        print('onliner_competitors_list', onliner_competitors_list)
+        onliner_competitors_list = request.POST.getlist('competitors')
+        #print('onliner_competitors_list', onliner_competitors_list)
 #
         #if not periods_list:
         #    #print('EMPTY periods_list')
@@ -332,8 +327,14 @@ class ComparativeAnalysisTableModelUpdateView(View):
         if not onliner_competitors_list:
             #print('onliner_competitors_list')
             pass
+        #elif len(onliner_competitors_list) > 3:
+        #    raise 'JHHJJHJHGGHFGFG'
         else:
             models.ONLINER_COMPETITORS = onliner_competitors_list
 
 
+
+
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices'))
+
+

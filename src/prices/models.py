@@ -212,55 +212,7 @@ class ComparativeAnalysisTableModel(models.Model):
             list_onliner_main_headers.append(onliner_main_header)
         return list_onliner_main_headers
         
-class CompetitorSiteModel(models.Model):
-    site = models.CharField(
-        max_length=30,
-        verbose_name='наименование сайта',
-        null=True,
-        blank=True,
-    )
-    #tyre = models.ForeignKey(
-    #    tyres_model.Tyre,
-    #    related_name='competitortyre',
-    #    on_delete=models.PROTECT,
-    #)
-    currency = models.ForeignKey(
-        dictionaries_models.Currency,
-        on_delete=models.PROTECT,
-    )
-    price = models.FloatField(
-        verbose_name='цена конкурента',
-        blank=True,
-    )
-    date_period = models.DateField(
-        verbose_name='период действия',    
-        null=False,
-        blank=True, 
-    ) 
-    developer = models.CharField(
-        verbose_name='производитель',
-        null=False,
-        blank=True, 
-        max_length=25
-    )
-    tyresize_competitor = models.CharField(
-        verbose_name='типоразмер конкурент',
-        null=False,
-        blank=True, 
-        max_length=25
-    )
-    name_competitor = models.CharField(
-        verbose_name='наименование конкурент',
-        null=False,
-        blank=True, 
-        max_length=25
-    )
-    parametres_competitor = models.CharField(
-        verbose_name='параметры конкурент',
-        null=False,
-        blank=True, 
-        max_length=25
-    )
+
 class ComparativeAnalysisTyresModel(models.Model):
     table = models.ForeignKey(
         ComparativeAnalysisTableModel,
@@ -330,6 +282,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         auto_now_add=True
     )
 
+
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:
             print(self.currentpricesprice.price,  self.planned_costs.price)
@@ -350,61 +303,76 @@ class ComparativeAnalysisTyresModel(models.Model):
             competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
             list_od_combined_comp_and_prices = []
             for comp in competitors_values_list:
-                comp_name = comp.tyresize_competitor + comp.name_competitor + comp.parametres_competitor
+                comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + comp.parametres_competitor
                 comp_price = comp.price  
                 if type(comp_price) is float:                                                                    # для расчета отклонения
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                 combined = comp_name, comp_price, deflection
                 list_od_combined_comp_and_prices.append(combined)
+            list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
+            #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
-
-    #def onliner_competitor_on_date(self):                                       # отдаем конкурентов или ничего Onliner
-    #    if self.tyre in ONLINER_COMPETITORS_DICTIONARY.keys():
-    #        values_list = ONLINER_COMPETITORS_DICTIONARY[self.tyre]
-    #        values = ''
-    #        for n in values_list[0 : 2]:
-    #            #print(n, 'n')
-    #            values += n
-    #        #print(values, type(values))
-    #        return values
-    #    else:
-    #        return None
-#
-    #def onliner_competitor_price_on_date(self):                                       # отдаем цены конкурентов или ничего Onliner
-    #    if self.tyre in ONLINER_COMPETITORS_DICTIONARY.keys():
-    #        values = ONLINER_COMPETITORS_DICTIONARY[self.tyre]
-    #        return values[3]
-    #    else:
-    #        return 'Отсутствует'
-
-
-    #def price_902_onliner_deflection(self):                                     # отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)
-    #    value = self.onliner_competitor_price_on_date()
-    #    #print(value, 'valuevalue', type(value))
-    #    if type(value) is float:
-    #        deflection = self.belarus902price.price / self.onliner_competitor_price_on_date()
-    #        #print(deflection, 'deflection', self.belarus902price.price,  self.onliner_competitor_price_on_date())
-    #        return deflection
-    #    #return 0
-
-   #def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены Onliner
-   #    if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys() and ONLINER_COMPETITORS_DICTIONARY1.values():
-   #        competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
-   #        #print('competitors_values_list', competitors_values_list)
-   #        list_of_competitors_to_show = []
-   #        for comp in competitors_values_list:
-   #            comp_name = comp.tyresize_competitor + comp.name_competitor + comp.parametres_competitor
-   #            list_of_competitors_to_show.append(comp_name)
-   #        print('T', list_of_competitors_to_show)
-   #        return list_of_competitors_to_show
-
-    #def onliner_competitor_price_on_date1(self):                                       # отдаем цены конкурентов или ничего Onliner
-    #    if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys() and ONLINER_COMPETITORS_DICTIONARY1.values():
-    #        competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
-    #        list_of_competitors_prices_to_show = []
-    #        for comp in competitors_values_list:
-    #            comp_price = comp.price
-    #            list_of_competitors_prices_to_show.append(comp_price)
-    #        print('T', list_of_competitors_prices_to_show)
-    #        return list_of_competitors_prices_to_show
+class CompetitorSiteModel(models.Model):
+    site = models.CharField(
+        max_length=30,
+        verbose_name='наименование сайта',
+        null=True,
+        blank=True,
+    )
+    tyre_to_compare = models.ManyToManyField(
+        ComparativeAnalysisTyresModel,
+        related_name='price_tyre_to_compare',
+        #on_delete=models.PROTECT,
+        #null=True,
+        blank=True, 
+    )
+    #tyre = models.ForeignKey(
+    #    tyres_model.Tyre,
+    #    related_name='competitortyre',
+    #    on_delete=models.PROTECT,
+    #)
+    currency = models.ForeignKey(
+        dictionaries_models.Currency,
+        on_delete=models.PROTECT,
+    )
+    price = models.FloatField(
+        verbose_name='цена конкурента',
+        blank=True,
+    )
+    date_period = models.DateField(
+        verbose_name='период действия',    
+        null=False,
+        blank=True, 
+    ) 
+    #developer = models.CharField(
+    #    verbose_name='производитель',
+    #    null=False,
+    #    blank=True, 
+    #    max_length=25,
+    #)
+    developer = models.ForeignKey(
+        dictionaries_models.CompetitorModel,
+        related_name='developer_competitor',
+        on_delete=models.PROTECT,
+        null=False,
+        blank=True, 
+    )
+    tyresize_competitor = models.CharField(
+        verbose_name='типоразмер конкурент',
+        null=False,
+        blank=True, 
+        max_length=25
+    )
+    name_competitor = models.CharField(
+        verbose_name='наименование конкурент',
+        null=False,
+        blank=True, 
+        max_length=25
+    )
+    parametres_competitor = models.CharField(
+        verbose_name='параметры конкурент',
+        null=False,
+        blank=True, 
+        max_length=25
+    )
