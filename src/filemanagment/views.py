@@ -43,17 +43,22 @@ class ExcelTemplateView(TemplateView):
         current_prices = []   # Действующие цены
         contragent_list = []            #контрагент
         column_sell_date = ''           #строка с датой продажи
-        tyretype_row_dict = {}          # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = типоразмер
-        model_row_dict = {}             # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = модель
-        params_row_dict = {}            # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = параметры
-        saless_row_dict = {}            # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = объем продаж
-        planned_costs_row_dict = {}     # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = плановая себестоимость
+        tyretype_row_dict = {}          # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры = типоразмер
+        model_row_dict = {}             # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры = модель
+        params_row_dict = {}            # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры = параметры
+        saless_row_dict = {}            # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры = объем продаж
+        planned_costs_row_dict = {}     # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры = плановая себестоимость
         semi_variable_costs_row_dict = {} # словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = прямые затраты
         belarus902price_costs_row_dict = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = прейскуранты №№9, 902
         tpsrussiafcaprice_costs_row = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = ТПС РФ FCA
         tpskazfcaprice_cost_row = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = ТПС Казахстан FCA
         tpsmiddleasiafcaprice_costs_row = {}# словарь, в который закидываются данные из строк построчно. ключ - номер строки, параметры  = ТПС Средняя Азия, Закавказье, Молдова FCA
         current_prices_row = {}                 # словарь, в который закидываются данные о действующих ценах
+        indexes_row_dict = {}                # словарь индексы ДОПОЛНИТЕЛЬНЫЕ, в который закидываются данные об индексах. ключ - номер строки, параметры = индексы
+        season_row_dict = {}            # словарь сезонность ДОПОЛНИТЕЛЬНЫЕ, в который закидываются данные об сезонность. ключ - номер строки, параметры = сезонность
+        thread_row_dict = {}            # словарь рисунок протектора ДОПОЛНИТЕЛЬНЫЕ, в который закидываются данные об рисунок протектора. ключ - номер строки, параметры = рисунок протектора
+        ax_row_dict = {}            # словарь ось ДОПОЛНИТЕЛЬНЫЕ, в который закидываются данные об ось. ключ - номер строки, параметры = ось
+        usability_row_dict = {}            # словарь применяемость ДОПОЛНИТЕЛЬНЫЕ, в который закидываются данные об применяемость. ключ - номер строки, параметры = применяемость
 
         row_parsing_sales_costs_prices_dict = {}     # словарь, в который закидываются данные из строк построчно. ключ - шина, параметры = данные о продажах, минималках и прайсах
 
@@ -677,7 +682,58 @@ class ExcelTemplateView(TemplateView):
                             current_prices = [float(x) for x in current_prices]    # str значения в float
                             #print(current_prices)
                             #print('current_prices_row', current_prices_row)
+
+
+                        if cell.value == 'индексы':          # получаем колонку 'индексы'   ДОПОЛНИТЕЛЬНЫЕ
+                            indexes_column = cell.column
+                            indexes_row = cell.row
+                            for col in sheet.iter_cols(min_row=indexes_row+1, min_col=indexes_column, max_col=indexes_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    indexes_value = ''
+                                    indexes_value =  cell.value                               
+                                    indexes_row_dict[cell.row] = cell.value
+                        #print('indexes_list', indexes_list)
+                        #print('indexes_row_dict', indexes_row_dict)
+
+                        if cell.value == 'сезонность':          # получаем колонку 'сезонность' ДОПОЛНИТЕЛЬНЫЕ
+                            season_column = cell.column
+                            season_row = cell.row
+                            for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    season_value = ''
+                                    season_value =  cell.value                               
+                                    season_row_dict[cell.row] = cell.value
+                        #print('season_row_dict', season_row_dict)
                         
+                        if cell.value == 'рисунок протектора':          # получаем колонку 'рисунок протектора' ДОПОЛНИТЕЛЬНЫЕ
+                            thread_column = cell.column
+                            thread_row = cell.row
+                            for col in sheet.iter_cols(min_row=thread_row+1, min_col=thread_column, max_col=thread_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    threadn_value = ''
+                                    thread_value =  cell.value                               
+                                    thread_row_dict[cell.row] = cell.value
+                        #print('thread_row_dict', thread_row_dict)
+
+                        if cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
+                            ax_column = cell.column
+                            ax_row = cell.row
+                            for col in sheet.iter_cols(min_row=ax_row+1, min_col=ax_column, max_col=ax_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    ax_value = ''
+                                    ax_value =  cell.value                               
+                                    ax_row_dict[cell.row] = cell.value 
+                        #print('ax_row_dict', ax_row_dict)
+
+                        if cell.value == 'применяемость':          # получаем колонку 'применяемость' ДОПОЛНИТЕЛЬНЫЕ
+                            usability_column = cell.column
+                            usability_row = cell.row
+                            for col in sheet.iter_cols(min_row=usability_row+1, min_col=usability_column, max_col=usability_column, max_row=sheet.max_row):
+                                for cell in col:
+                                    usability_value = ''
+                                    usability_value =  cell.value                               
+                                    usability_row_dict[cell.row] = cell.value
+                        #print('usability_row_dict', usability_row_dict)
                         
                         ##  ПОЛУЧЕНИЕ МОДЕЛИ ТИПОРАЗМЕРА и ТИПА ДЛЯ ФОРМИРОВАНИЯ СЛОВАРЯ И СВЕРКИ СОСПАВШИХ ШИН ИЗ БД ДЛЯ ВЫБОРКИ ДАННЫХ ПРДАЖИ И МИНИМАЛКИ И ПР ИЗ ЭТОЙ СТРОКИ  !!!!!!!!!!!
                         ##
@@ -1150,9 +1206,21 @@ class ExcelTemplateView(TemplateView):
                                 tpskazfcaprice_cost_ddict['tpskazfcaprice_cost_ddict'] = tpskazfcaprice_cost_row.get(n)
                                 tpsmiddleasiafcaprice_costs_ddict = {}
                                 tpsmiddleasiafcaprice_costs_ddict['tpsmiddleasiafcaprice_costs_ddict'] = tpsmiddleasiafcaprice_costs_row.get(n)
+                                indexes_dict = {}
+                                indexes_dict['indexes_dict'] = indexes_row_dict.get(n) 
+                                season_dict = {}
+                                season_dict['season_dict'] = season_row_dict.get(n) 
+                                thread_dict = {}
+                                thread_dict['thread_dict'] = thread_row_dict.get(n) 
+                                ax_dict = {}
+                                ax_dict['ax_dict'] = ax_row_dict.get(n) 
+                                usability_dict = {}
+                                usability_dict['usability_dict'] = usability_row_dict.get(n) 
 
-                                row_parsing_sales_costs_prices_dict[obj] = sales_ddict, planned_costs_ddict, semi_variable_ddict, belarus902price_costs_ddict, tpsrussiafcaprice_costs_ddict, tpskazfcaprice_cost_ddict, tpsmiddleasiafcaprice_costs_ddict, n 
+
+                                row_parsing_sales_costs_prices_dict[obj] = sales_ddict, planned_costs_ddict, semi_variable_ddict, belarus902price_costs_ddict, tpsrussiafcaprice_costs_ddict, tpskazfcaprice_cost_ddict, tpsmiddleasiafcaprice_costs_ddict, n , indexes_dict, season_dict, thread_dict, ax_dict, usability_dict
                 #print('JJJJJJJJJJJJ', current_prices_row, 'current_prices_row')
+                #print('LLLLLLLL', indexes_row_dict)
 
                 current_prices_ddict = {}
                 for n in range(0, len(current_prices_row)):
@@ -1175,7 +1243,7 @@ class ExcelTemplateView(TemplateView):
 
                             
                             if counter_coinc == len(params_row_dict.get(n)):        ###### ЗДЕСЬ ПОЛУЧАЕМ ОБЪЕКТ У КОТОРОГО ВСЕ ПАРАМЕТРЫ СОВПАЛИ СПАРАМЕТРАМИ ШИНЫ В БАЗЕ
-                                #print('MATCHED!!', obj)
+                                print('MATCHED!!', obj)
                                 
                                 #current_prices_ddict['tpsmiddleasiafcaprice_costs_ddict'] = current_prices_row.get(n)
                                 current_prices_ddict[obj] = current_prices_row.get(n)
@@ -1195,16 +1263,36 @@ class ExcelTemplateView(TemplateView):
             # [4]['tpsrussiafcaprice_costs_ddict']      # ТПС РФ
             # [5]['tpskazfcaprice_cost_ddict']          # ТПС Казахстан
             # [6]['tpsmiddleasiafcaprice_costs_ddict']  # ТПС Азия
-            ####### [7]['current_prices_ddict']               # действующие цены
+            # [7]['current_prices_ddict']         # действующие цены
             # [8] = номер строки                        # номер строки из спарсингованной таблицы
+            # [9]['indexes_dict']                       # ДОПОЛНИТЕЛЬНО индексы  
+            # [10]['season_dict']                        # ДОПОЛНИТЕЛЬНО сезонность 
+            # [11]['thread_dict']                       # ДОПОЛНИТЕЛЬНО рисунок протекора
+            # [12]['ax_dict']                           # ДОПОЛНИТЕЛЬНО ось   
+            # [13]['usability_dict']                    # ДОПОЛНИТЕЛЬНО применяемость        
+
+#{'sales_ddict': None},                             0
+#{'planned_costs_ddict': None},                     1
+#{'semi_variable_ddict': 19311},                    2
+#{'belarus902price_costs_ddict': 34589},            3
+#{'tpsrussiafcaprice_costs_ddict': None},           4
+#{'tpskazfcaprice_cost_ddict': None},               5
+#{'tpsmiddleasiafcaprice_costs_ddict': None},       6
+#25,                                                7
+#{'indexes_dict': '164J'},                          8
+#{'season_dict': None},                             9
+#{'thread_dict': 'Повышенная проходимость'},        10
+#{'ax_dict': None},                                 11
+#{'usability_dict': 'самосвал'})                    12 
+
             #########
             #'current_prices_ddict'                     # действующие цены - отдельный словарь
 
-            for k, v in row_parsing_sales_costs_prices_dict.items():       # ПРЕДПРОСМОТР СПИСКА СОВПАВШИХ ШИН И ДАННЫХ
-                parrams = []
-                for par in k.tyre_type.all():
-                    parrams.append(par.tyre_type)
-                print(k.tyre_size.tyre_size, k.tyre_model.model, parrams, v)
+            #for k, v in row_parsing_sales_costs_prices_dict.items():       # ПРЕДПРОСМОТР СПИСКА СОВПАВШИХ ШИН И ДАННЫХ
+            #    parrams = []
+            #    for par in k.tyre_type.all():
+            #        parrams.append(par.tyre_type)
+            #    print(k.tyre_size.tyre_size, k.tyre_model.model, parrams, v)
 
             # ЗАБРАСЫВАЕМ ПОЛНЫЕ ЗАТРАТЫ:
             for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
@@ -1286,6 +1374,22 @@ class ExcelTemplateView(TemplateView):
                             date_period = datetime.now(),   
                             currency = currency_chosen_by_hand[0]         
                         )
+
+            ## СОЗДАЕМ объектыTyreAddedFeatureModel:
+            ## ЗАБРАСЫВАЕМ ИНДЕКСЫ, сезонность, рисунок протектора, ось, применяемость ДОПОЛНИТЕЛЬНОЕ в модель TyreAddedFeatureModel - дополнительная таблица к таблице модели Tyres:
+            if obj_list_el[9] or obj_list_el[10] or obj_list_el[11] or obj_list_el[12] or obj_list_el[13]:
+                for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                    #print('KEY', key)
+                    #if obj_list_el[8]['indexes_dict'] and obj_list_el[9]['season_dict'] and obj_list_el[10]['thread_dict'] and obj_list_el[11]['ax_dict'] and obj_list_el[12]['usability_dict']:
+                    tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
+                        tyre = key,     
+                        indexes_list = obj_list_el[8]['indexes_dict'],
+                        season_usage = obj_list_el[9]['season_dict'],
+                        tyre_thread = obj_list_el[10]['thread_dict'],
+                        ax = obj_list_el[11]['ax_dict'],
+                        usability = obj_list_el[12]['usability_dict'],          
+                        #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ                        
+                    )
 
         # Создаем справочники по базовым валютам:
         base_currencies = ['RUB', 'BYN', 'USD', 'EURO']

@@ -73,3 +73,37 @@ class TyreCard(models.Model):
         return "(%s) %s" % (self.tyre, self.serie_date)
     def __unicode__(self):
         return "(%s) %s" % (self.tyre, self.serie_date)
+
+class TyreAddedFeatureModel(models.Model):
+    tyre = models.ForeignKey(
+        Tyre,
+        verbose_name='дополнительные данные о шине',
+        related_name='added_features',                    
+        on_delete=models.CASCADE,  
+        null=True                       # Заглушка
+    ) 
+    indexes_list = models.CharField(
+        verbose_name='список индексов',
+        max_length=30,
+        null=True 
+    )
+    season_usage = models.CharField(
+        verbose_name='сезонность',
+        max_length=15,
+        null=True, 
+    )
+    tyre_thread = models.CharField(
+        verbose_name='рисунок протектора',
+        max_length=15,
+        null=True,
+    )
+    ax = models.CharField(
+        verbose_name='ось',
+        max_length=15,
+        null=True,
+    )
+    usability = models.CharField(
+        verbose_name='применяемость',
+        max_length=15,
+        null=True,
+    )

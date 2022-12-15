@@ -111,6 +111,21 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     price_cleaned = price.text[start_str_serch : end_str_search]
                     #print('tyre_name', tyre_name_cleaned, 'price', price_cleaned)
 
+            ####### дополнительные праметры ищем: 
+            for data_got in products:
+                tyre_season = data_got.find('div', class_='schema-product__description')
+                seas_list = ['летние', 'зимние', 'всесезонные']
+                studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
+                if tyre_season:
+                    for s_el in seas_list:
+                        if s_el in tyre_season.text:
+                            season = s_el
+                    for studded_el in studded_list:
+                        if studded_el in tyre_season.text:
+                            studded = studded_el
+                    print( season, '          ', studded)            
+
+
             # выдираем типоразмер для добавления в словарь
                     tyresize = str
                     for n in reg_list:
