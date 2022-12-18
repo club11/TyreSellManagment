@@ -75,3 +75,22 @@ class CompetitorModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+
+
+class SeasonUsageModel(models.Model):
+    season_usage_name = models.CharField(
+        verbose_name='сезонность',
+        max_length=20,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:tg_list')
+
+class StuddedUsageModel(models.Model):
+    studded_name = models.CharField(
+        verbose_name='ошиповка',
+        max_length=20,
+    )
+
+    def get_absolute_url(self):
+        return reverse('dictionaries:tg_list')

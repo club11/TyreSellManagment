@@ -99,6 +99,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             time.sleep(4)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
             products = soup.find_all('div', class_='schema-product__group')
+
             for data_got in products:
                 tyre_name = data_got.find('div', class_='schema-product__title')
                 price = data_got.find('div', 'schema-product__price')
@@ -111,20 +112,19 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     price_cleaned = price.text[start_str_serch : end_str_search]
                     #print('tyre_name', tyre_name_cleaned, 'price', price_cleaned)
 
-            ####### дополнительные праметры ищем: 
-            for data_got in products:
-                tyre_season = data_got.find('div', class_='schema-product__description')
-                seas_list = ['летние', 'зимние', 'всесезонные']
-                studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
-                if tyre_season:
-                    for s_el in seas_list:
-                        if s_el in tyre_season.text:
-                            season = s_el
-                    for studded_el in studded_list:
-                        if studded_el in tyre_season.text:
-                            studded = studded_el
-                    print( season, '          ', studded)            
-
+                ###### дополнительные праметры ищем: 
+                #for data_got in products:
+                    tyre_season = data_got.find('div', class_='schema-product__description')
+                    seas_list = ['летние', 'зимние', 'всесезонные']
+                    studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
+                    if tyre_season:
+                        for s_el in seas_list:
+                            if s_el in tyre_season.text:
+                                season = s_el
+                        for studded_el in studded_list:
+                            if studded_el in tyre_season.text:
+                                studded = studded_el
+                        #print( season, '          ', studded)         
 
             # выдираем типоразмер для добавления в словарь
                     tyresize = str
@@ -144,10 +144,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             company_name = product_name.split(' ')[0]
                             tyre_param = str_right_data
 
-                    values = price_cleaned, tyresize, product_name, tyre_param, company_name 
+                    values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, studded 
                     goods_dict[tyre_name_cleaned] = values
-        #for k, v in goods_dict.items():
-        #    print(k, v)
+        #or k, v in goods_dict.items():
+        #   print(k, v, 'KV')
         #print(goods_dict.items())
 
         # формируем отдельный список ПРОИЗВОДИТЕЛИ:
@@ -155,7 +155,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         for v in goods_dict.values():
             if v[4] and v[4].isdigit() is False:
                 onliner_companies_list.append(v[4])
-        onliner_companies_list = list(set(onliner_companies_list))    
+        onliner_companies_list = list(set(onliner_companies_list))  
+        #print(onliner_companies_list, 'onliner_companies_list')
 
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
@@ -173,6 +174,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         tyres_in_bd = tyres_models.Tyre.objects.all()
         for tyre in tyres_in_bd:
             for k, v in chosen_by_company_dict.items():
+                #print('v', v)
                 if tyre.tyre_size.tyre_size == v[1]:
                     #print('TTTT', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                     #Cordiant Polar SL 205/55R16 94T ('165,00', '205/55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
@@ -182,6 +184,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         competitor_name =  v[4]
                     )
                     #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',  name_competitor, 'name_competitor =', v[4])
+
+                    season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
+                    if season_usage:
+                        season_usage = season_usage[0]
+                    else:
+                        season_usage = None 
 
                     if coma:
                         pr = float(v[0].replace(',', '.'))
@@ -196,14 +204,42 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         tyresize_competitor = v[1],
                         name_competitor = v[2], 
                         parametres_competitor = v[3],
+                        season = season_usage
                         #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
                     ) 
-       ###### ЗДЕСЬ СВЯЗЫВАЕМ СПАРСЕННЫЕ ОБЕКТЫ КОНКУРЕНТОВ К ОБЪЕКТАМИ ШИН В БАЗЕ МОДЕЛИ ШИНЫ СРАВНЕНИЕ          
-        for objject in models.CompetitorSiteModel.objects.all():
-            price_tyre_obj = models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=objject.tyresize_competitor)
-            for n in list(price_tyre_obj):
-                objject.tyre_to_compare.add(n) 
-                                        
+       ###### ЗДЕСЬ СВЯЗЫВАЕМ СПАРСЕННЫЕ ОБЕКТЫ КОНКУРЕНТОВ К ОБЪЕКТАМИ ШИН В БАЗЕ МОДЕЛИ ШИНЫ СРАВНЕНИЕ                        ! ВАЖНО - привязка моделей в бд к моделям спарсенным с сайта по критериям
+       #  1 -Я ВЕРСИЯ _ ПРОСТО ПО ТИПОРАЗМЕРУ ВСЕ:        
+        #for objject in models.CompetitorSiteModel.objects.all():
+        #    price_tyre_obj = models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=objject.tyresize_competitor)
+        #    for n in list(price_tyre_obj):
+        #        objject.tyre_to_compare.add(n) 
+
+       #  2 -Я ВЕРСИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
+        #for objject in models.CompetitorSiteModel.objects.all():
+            #if objject.season:
+            #    print('objject.tyre__added_features__season_usage', objject.season.season_usage_name)
+            #price_tyre_obj = models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=objject.tyresize_competitor)
+            #for n in list(price_tyre_obj): 
+            ## 2) совмещаем конкурентов с шинами в базе по сезонности:
+            #    competior_is_found = False
+            #    if n.tyre.added_features.all():
+            #        tyre_in_base_season = n.tyre.added_features.all()[0].season_usage 
+            #        tyre_in_base_index = n.tyre.added_features.all()[0].indexes_list
+            #        if objject.season:
+            #            if tyre_in_base_season.season_usage_name == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1)  1. совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+            #                objject.tyre_to_compare.add(n)
+            #                print('МЯКОТКА МЯКОТКА МЯКОТКА МЯКОТКА')
+            #                continue                        
+            ###            if tyre_in_base_season.season_usage_name == objject.season.season_usage_name:                                                               # 2) 2. если нет, то совмещаем конкурентов с шинами в базе по сезонности
+            ###                objject.tyre_to_compare.add(n)
+            ###                continue
+            #            if tyre_in_base_index == objject.parametres_competitor:                                                                                     # 3) 3. если нет, то  совмещаем конкурентов с шинами в базе по индексам:
+            #                objject.tyre_to_compare.add(n)
+            #                continue
+            #        competior_is_found = True
+            #    if competior_is_found == False:
+            #        objject.tyre_to_compare.add(n)                                                                                                                  # 4) если нет, то совмещаем конкурентов с шинами в базе просто потипоразмерно
+                                                                                                                                                                                                         
         ##### END OF ONLINER PARSING
         return comparative_analysis_table
 
@@ -241,9 +277,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                         list_of_matched_competitors.append(competitor)
                 onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-
-
-
 
                                                               ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  

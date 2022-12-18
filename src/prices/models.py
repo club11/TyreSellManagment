@@ -282,7 +282,6 @@ class ComparativeAnalysisTyresModel(models.Model):
         auto_now_add=True
     )
 
-
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:
             print(self.currentpricesprice.price,  self.planned_costs.price)
@@ -298,12 +297,48 @@ class ComparativeAnalysisTyresModel(models.Model):
             return direct_cost_variance
         return 0
 
+    #def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   Onliner
+    #    if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys() and ONLINER_COMPETITORS_DICTIONARY1.values():
+    #        competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
+    #        list_od_combined_comp_and_prices = []
+    #        for comp in competitors_values_list:
+    #            comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + comp.parametres_competitor
+    #            comp_price = comp.price  
+    #            if type(comp_price) is float:                                                                    # для расчета отклонения
+    #                deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+    #            combined = comp_name, comp_price, deflection
+    #            list_od_combined_comp_and_prices.append(combined)
+    #        list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
+    #        #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
+    #        return list_od_combined_comp_and_prices
+
     def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   Onliner
         if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys() and ONLINER_COMPETITORS_DICTIONARY1.values():
             competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
             list_od_combined_comp_and_prices = []
-            for comp in competitors_values_list:
-                comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + comp.parametres_competitor
+            #print(competitors_values_list,'competitors_values_list ')
+            ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
+            filtered_competitors_values_list = []
+            for objject in competitors_values_list:
+                competior_is_found = False
+                if objject.season and self.tyre.added_features.all():
+                    tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
+                    tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
+                    print('шина в базе ', tyre_in_base_season.season_usage_name, tyre_in_base_index, '||', 'шина конкурент', objject.season.season_usage_name, objject.parametres_competitor)
+                    if tyre_in_base_season.season_usage_name == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                        #print(tyre_in_base_season.season_usage_name == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor)
+                        objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                        filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                        continue
+                    if tyre_in_base_season.season_usage_name == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                        #print(tyre_in_base_season.season_usage_name, objject.season.season_usage_name)
+                        objject.tyre_to_compare.add(self)
+                        filtered_competitors_values_list.append(objject)  
+                        continue
+            #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          
+            #########################
+            for comp in filtered_competitors_values_list:
+                comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor  + ' '+ comp.season.season_usage_name
                 comp_price = comp.price  
                 if type(comp_price) is float:                                                                    # для расчета отклонения
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
@@ -312,6 +347,8 @@ class ComparativeAnalysisTyresModel(models.Model):
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
+
+
 
 class CompetitorSiteModel(models.Model):
     site = models.CharField(
@@ -327,11 +364,6 @@ class CompetitorSiteModel(models.Model):
         #null=True,
         blank=True, 
     )
-    #tyre = models.ForeignKey(
-    #    tyres_model.Tyre,
-    #    related_name='competitortyre',
-    #    on_delete=models.PROTECT,
-    #)
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         on_delete=models.PROTECT,
@@ -345,12 +377,6 @@ class CompetitorSiteModel(models.Model):
         null=False,
         blank=True, 
     ) 
-    #developer = models.CharField(
-    #    verbose_name='производитель',
-    #    null=False,
-    #    blank=True, 
-    #    max_length=25,
-    #)
     developer = models.ForeignKey(
         dictionaries_models.CompetitorModel,
         related_name='developer_competitor',
@@ -375,4 +401,12 @@ class CompetitorSiteModel(models.Model):
         null=False,
         blank=True, 
         max_length=25
+    )
+    season = models.ForeignKey(
+        dictionaries_models.SeasonUsageModel,
+        verbose_name='сезонность',
+        related_name='competitor_site_sseason_uusage',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True, 
     )

@@ -42,6 +42,16 @@ class CompetitorModelAdmin(admin.ModelAdmin):
         'competitor_name',
     ]
 
+class SeasonUsageModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'season_usage_name',
+    ]
+
+class StuddedUsageModelAdmin(admin.ModelAdmin):
+    list_display = [
+        'studded_name',
+    ]
+
 admin.site.register(models.Currency, CurrencyAdmin)
 admin.site.register(models.TyreSizeModel, TyreSizeModelAdmin)
 admin.site.register(models.ModelNameModel, ModelNameModelAdmin)
@@ -50,3 +60,5 @@ admin.site.register(models.TyreGroupModel, TyreGroupModelModelAdmin)
 admin.site.register(models.QantityCountModel, QantityCountModelAdmin)
 admin.site.register(models.ContragentsModel, ContragentsModelAdmin)
 admin.site.register(models.CompetitorModel, CompetitorModelAdmin)
+admin.site.register(models.SeasonUsageModel, SeasonUsageModelAdmin)
+admin.site.register(models.StuddedUsageModel, StuddedUsageModelAdmin)

@@ -9,6 +9,7 @@
         <th scope="col"><span class="align-middle">Номенклатура</span></th>  
         <th scope="col">полные затраты</th>
         <th scope="col">прямые затраты</th>
+        <th scope="col">индексы нагрузки / скорости</th>
         <th scope="col">прейскуранты №№9, 902</th>
         <th scope="col">ТПС РФ FCA</th>
         <th scope="col">ТПС Казахстан FCA</th>
@@ -33,6 +34,7 @@
         {% for param in object.tyre.tyre_type.all %}
           {{ param.tyre_type }}
         {% endfor %}</a></td>
+        <th scope="row">{% for index in object.tyre.added_features.all %} {{ index.indexes_list }} {{ index.season_usage.season_usage_name }} {% endfor %}</th>
         <th scope="row">{{ object.planned_costs.price }}</th>
         <th scope="row">{{ object.semi_variable_prices.price }}</th>
         <th scope="row">{{ object.belarus902price.price }}</th>

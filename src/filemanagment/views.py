@@ -1156,6 +1156,22 @@ class ExcelTemplateView(TemplateView):
             )
             ####
 
+            ## СОЗДАЕМ СЛОВАРЬ СЕЗОННОСТЬ
+            seasons_usage_list = ['летние', 'зимние', 'всесезонные']
+            for seas in seasons_usage_list:
+                season_created = dictionaries_models.SeasonUsageModel.objects.get_or_create(
+                    season_usage_name=seas
+                )
+            ####
+
+            ## СОЗДАЕМ СЛОВАРЬ ОШИПОВКА
+            studded_usage_list = ['без шипов', 'с шипами', 'возможность ошиповки']
+            for studd in studded_usage_list:
+                season_created = dictionaries_models.StuddedUsageModel.objects.get_or_create(
+                    studded_name=studd
+                )
+            ####
+
             #ik = tyres_models.Tyre.objects.all()
             #for n in ik:
             #    print(n.tyre_size.tyre_size, 'TYRE')
@@ -1381,13 +1397,25 @@ class ExcelTemplateView(TemplateView):
                 for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
                     #print('KEY', key)
                     #if obj_list_el[8]['indexes_dict'] and obj_list_el[9]['season_dict'] and obj_list_el[10]['thread_dict'] and obj_list_el[11]['ax_dict'] and obj_list_el[12]['usability_dict']:
+                    season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=obj_list_el[9]['season_dict']) 
+                    if season_usage:
+                        season_usage = season_usage[0]
+                    else:
+                        season_usage = None 
+
+                    #studded_usage = dictionaries_models.StuddedUsageModel.objects.filter(season_usage_name=obj_list_el[9]['ЗДЕСЬ ДОЛЖЕН БЫТЬ СПАРСЕННЫЙ СЛОВАРЬ С ОШИПОВКОЙ]) 
+                    #if studded_usage:
+                    #    studded_usage = studded_usagee[0]
+                    #else:
+                    #    studded_usage = None 
                     tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
-                        tyre = key,     
+                        tyre = key,   
                         indexes_list = obj_list_el[8]['indexes_dict'],
-                        season_usage = obj_list_el[9]['season_dict'],
+                        season_usage = season_usage,
                         tyre_thread = obj_list_el[10]['thread_dict'],
                         ax = obj_list_el[11]['ax_dict'],
-                        usability = obj_list_el[12]['usability_dict'],          
+                        usability = obj_list_el[12]['usability_dict'],
+                        #studded_usage = studded_usage          
                         #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ                        
                     )
 

@@ -87,11 +87,12 @@ class TyreAddedFeatureModel(models.Model):
         max_length=30,
         null=True 
     )
-    season_usage = models.CharField(
-        verbose_name='сезонность',
-        max_length=15,
-        null=True, 
-    )
+    season_usage = models.ForeignKey(
+        dictionaries_models.SeasonUsageModel,
+        related_name='competitor_sseason_uusage',
+        on_delete=models.PROTECT,
+        null=True 
+    )    
     tyre_thread = models.CharField(
         verbose_name='рисунок протектора',
         max_length=15,
@@ -107,3 +108,9 @@ class TyreAddedFeatureModel(models.Model):
         max_length=15,
         null=True,
     )
+    studded_usage = models.ForeignKey(
+        dictionaries_models.StuddedUsageModel,
+        related_name='competitor_studded_uusage',
+        on_delete=models.PROTECT,
+        null=True 
+    )  

@@ -88,6 +88,7 @@ class CompetitorSiteModelAdmin(admin.ModelAdmin):
             'tyresize_competitor',
             'name_competitor',
             'parametres_competitor',
+            'season',
     ]
 
 admin.site.register(models.PlannedCosstModel, PlannedCosstModelAdmin)

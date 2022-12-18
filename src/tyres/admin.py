@@ -21,7 +21,8 @@ class TyreAddedFeatureModelAdmin(admin.ModelAdmin):
         'season_usage',
         'tyre_thread',
         'ax',
-        'usability',      
+        'usability',  
+        'studded_usage'    
     ]
 
 
