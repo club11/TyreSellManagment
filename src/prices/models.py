@@ -11,6 +11,7 @@ ONLINER_COMPETITORS_DICTIONARY1 = {}
 ONLINER_HEADER_NUMBER = int
 #ONLINER UPDATEVIEW:
 ONLINER_COMPETITORS = []
+ONLINER_COMPETITORS_NAMES_FILTER = []
 
 
 class PlannedCosstModel(models.Model):
@@ -324,7 +325,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if objject.season and self.tyre.added_features.all():
                     tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
                     tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
-                    print('шина в базе ', tyre_in_base_season.season_usage_name, tyre_in_base_index, '||', 'шина конкурент', objject.season.season_usage_name, objject.parametres_competitor)
+                    #print('шина в базе ', tyre_in_base_season.season_usage_name, tyre_in_base_index, '||', 'шина конкурент', objject.season.season_usage_name, objject.parametres_competitor)
                     if tyre_in_base_season.season_usage_name == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
                         #print(tyre_in_base_season.season_usage_name == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor)
                         objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
@@ -344,6 +345,9 @@ class ComparativeAnalysisTyresModel(models.Model):
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                 combined = comp_name, comp_price, deflection
                 list_od_combined_comp_and_prices.append(combined)
+
+                ONLINER_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
+
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices

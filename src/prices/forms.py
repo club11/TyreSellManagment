@@ -1,31 +1,15 @@
 from dataclasses import field, fields
 from django import forms
 from dictionaries import models
+from . import models as prices_models
 from django.core.exceptions import ValidationError
-#
+
 from validators.validators import competitor_num_validator
-#
-##class FilterForm(forms.Form):            
-##    #data = forms.CharField(label='контактные данные', widget=forms.TimeInput, disabled=True, required=None,) # вах! изучить
-##    competitor= forms.CharField(label='произодители', required=None, max_length=20,  validators=[competitor_num_validator])
-#
-#class FilterForm(forms.ModelForm):
-#    class Meta:
-#        model = models.CompetitorModel
-#        fields = {
-#            'competitor_name',           
-#        }
-
-
 
 class FilterForm(forms.Form):
     competitors = forms.ModelMultipleChoiceField(
-        #queryset = models.CompetitorModel.objects.all(), 
-        queryset = models.CompetitorModel.objects.all().values_list("competitor_name", flat=True),
-        widget = forms.CheckboxSelectMultiple(),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец
-        #initial={'cometitors':querysetofinitialvalues},                                                                                    #####
-        #initial={"multi_field": [cat for cat in models.CompetitorModel.objects.all().values_list("competitor_name", flat=True)]}           #####
-        #initial=models.CompetitorModel.objects.all().values_list("competitor_name", flat=True)                                             #####
+        queryset = models.CompetitorModel.objects.all().values_list("competitor_name", flat=True), 
+        widget = forms.CheckboxSelectMultiple(),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец                                        #####
     )
 
     #def __init__(self, *args, **kwargs):                                                                                                   #####
@@ -42,7 +26,8 @@ class FilterForm(forms.Form):
     #        raise ValidationError(
     #            "до трех производителей",
     #        )
-    #    return value        
+    #    return value 
+    # 
 
 
     

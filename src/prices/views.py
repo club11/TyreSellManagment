@@ -144,7 +144,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             company_name = product_name.split(' ')[0]
                             tyre_param = str_right_data
 
-                    values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, studded 
+                    values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, #studded 
                     goods_dict[tyre_name_cleaned] = values
         #or k, v in goods_dict.items():
         #   print(k, v, 'KV')
@@ -230,7 +230,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #                objject.tyre_to_compare.add(n)
             #                print('МЯКОТКА МЯКОТКА МЯКОТКА МЯКОТКА')
             #                continue                        
-            ###            if tyre_in_base_season.season_usage_name == objject.season.season_usage_name:                                                               # 2) 2. если нет, то совмещаем конкурентов с шинами в базе по сезонности
+            ###          if tyre_in_base_season.season_usage_name == objject.season.season_usage_name:                                                               # 2) 2. если нет, то совмещаем конкурентов с шинами в базе по сезонности
             ###                objject.tyre_to_compare.add(n)
             ###                continue
             #            if tyre_in_base_index == objject.parametres_competitor:                                                                                     # 3) 3. если нет, то  совмещаем конкурентов с шинами в базе по индексам:
@@ -296,10 +296,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
 
         ##Работа с интефейсом:
-        #list_of_all_competitors_template = []
-        #for t in all_competitors:
-        #    list_of_all_competitors_template.append(t.developer.competitor_name)
-        #context['onliner_competitors'] = list(set(list_of_all_competitors_template))
         list_of_all_competitors_template = []
         all_competitors_in_base = dictionaries_models.CompetitorModel.objects.all()
         for t in all_competitors_in_base:
@@ -307,8 +303,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['onliner_competitors'] = list(set(list_of_all_competitors_template))
         ###
 
-        filter_form = forms.FilterForm
-        context['filter_form'] = filter_form
+        ####### Onliner фильтр для темплейта
+        #print('models.ONLINER_COMPETITORS_NAMES_FILTER', models.ONLINER_COMPETITORS_NAMES_FILTER)           ###### ТАК здесь продолжим
+        filter_form = forms.FilterForm()
+        filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
+        context['onliner_filter_form'] = filter_form
+        #######
 
         return context
 
@@ -316,7 +316,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 class ComparativeAnalysisTableModelUpdateView(View):
 
     def post(self, request):
-        print(request.POST, 'TTT')
+        #print(request.POST, 'TTT')
 
         ## 1 работа с периодами:
         #start_period, end_period = '', ''

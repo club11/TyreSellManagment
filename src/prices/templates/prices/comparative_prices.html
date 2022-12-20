@@ -73,7 +73,7 @@
   выбрать производителя:
   <form action="{% url 'prices:apricestable_update' %}" method="post">
     {% csrf_token %}
-    {% for comp in filter_form %}
+    {% for comp in onliner_filter_form %}
       <div class="form-check">
         {{ comp }}
       </div>
