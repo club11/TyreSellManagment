@@ -439,7 +439,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 comp_price = comp.price  
                 if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
-                    combined = comp_name, comp_price, deflection
+                    combined = comp.developer.competitor_name + ' ' + comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
@@ -488,11 +488,11 @@ class ComparativeAnalysisTyresModel(models.Model):
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
             for comp in filtered_competitors_values_list:
-                comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name
+                comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price  
                 if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
-                    combined = comp_name, comp_price, deflection
+                    combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
@@ -536,7 +536,7 @@ class CompetitorSiteModel(models.Model):
         blank=True, 
     )
     tyresize_competitor = models.CharField(
-        verbose_name='типоразмер конкурент',
+        verbose_name='типоразмер конкурент',                
         null=False,
         blank=True, 
         max_length=25
