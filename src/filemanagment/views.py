@@ -713,7 +713,7 @@ class ExcelTemplateView(TemplateView):
                                     threadn_value = ''
                                     thread_value =  cell.value                               
                                     thread_row_dict[cell.row] = cell.value
-                        #print('thread_row_dict', thread_row_dict)
+                        print('thread_row_dict', thread_row_dict)
 
                         if cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
                             ax_column = cell.column
@@ -1393,31 +1393,30 @@ class ExcelTemplateView(TemplateView):
 
             ## СОЗДАЕМ объектыTyreAddedFeatureModel:
             ## ЗАБРАСЫВАЕМ ИНДЕКСЫ, сезонность, рисунок протектора, ось, применяемость ДОПОЛНИТЕЛЬНОЕ в модель TyreAddedFeatureModel - дополнительная таблица к таблице модели Tyres:
-            if obj_list_el[9] or obj_list_el[10] or obj_list_el[11] or obj_list_el[12] or obj_list_el[13]:
-                for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
-                    #print('KEY', key)
-                    #if obj_list_el[8]['indexes_dict'] and obj_list_el[9]['season_dict'] and obj_list_el[10]['thread_dict'] and obj_list_el[11]['ax_dict'] and obj_list_el[12]['usability_dict']:
-                    season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=obj_list_el[9]['season_dict']) 
-                    if season_usage:
-                        season_usage = season_usage[0]
-                    else:
-                        season_usage = None 
-
-                    #studded_usage = dictionaries_models.StuddedUsageModel.objects.filter(season_usage_name=obj_list_el[9]['ЗДЕСЬ ДОЛЖЕН БЫТЬ СПАРСЕННЫЙ СЛОВАРЬ С ОШИПОВКОЙ]) 
-                    #if studded_usage:
-                    #    studded_usage = studded_usagee[0]
-                    #else:
-                    #    studded_usage = None 
-                    tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
-                        tyre = key,   
-                        indexes_list = obj_list_el[8]['indexes_dict'],
-                        season_usage = season_usage,
-                        tyre_thread = obj_list_el[10]['thread_dict'],
-                        ax = obj_list_el[11]['ax_dict'],
-                        usability = obj_list_el[12]['usability_dict'],
-                        #studded_usage = studded_usage          
-                        #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ                        
-                    )
+            #if obj_list_el[9] or obj_list_el[10] or obj_list_el[11] or obj_list_el[12] or obj_list_el[13]:
+            for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
+                #print('KEY', key)
+                #if obj_list_el[8]['indexes_dict'] and obj_list_el[9]['season_dict'] and obj_list_el[10]['thread_dict'] and obj_list_el[11]['ax_dict'] and obj_list_el[12]['usability_dict']:
+                season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=obj_list_el[9]['season_dict']) 
+                if season_usage:
+                    season_usage = season_usage[0]
+                else:
+                    season_usage = None 
+                #studded_usage = dictionaries_models.StuddedUsageModel.objects.filter(season_usage_name=obj_list_el[9]['ЗДЕСЬ ДОЛЖЕН БЫТЬ СПАРСЕННЫЙ СЛОВАРЬ С ОШИПОВКОЙ]) 
+                #if studded_usage:
+                #    studded_usage = studded_usagee[0]
+                #else:
+                #    studded_usage = None 
+                tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
+                    tyre = key,   
+                    indexes_list = obj_list_el[8]['indexes_dict'],
+                    season_usage = season_usage,
+                    tyre_thread = obj_list_el[10]['thread_dict'],
+                    ax = obj_list_el[11]['ax_dict'],
+                    usability = obj_list_el[12]['usability_dict'],
+                    #studded_usage = studded_usage          
+                    #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ                        
+                )
 
         # Создаем справочники по базовым валютам:
         base_currencies = ['RUB', 'BYN', 'USD', 'EURO']
