@@ -389,7 +389,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 ONLINER_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
-            #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
+            #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices, len(list_od_combined_comp_and_prices))
+            void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
+            for n in range(0, 3-void_data_num):
+                list_od_combined_comp_and_prices.append(('', '', ''))
             return list_od_combined_comp_and_prices
 
 
@@ -444,8 +447,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
+            void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
+            for n in range(0, 3-void_data_num):
+                list_od_combined_comp_and_prices.append(('', '', ''))
             return list_od_combined_comp_and_prices
-
 
     def bagoria_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   BAGORIA
         if self.tyre in BAGORIA_COMPETITORS_DICTIONARY1.keys() and BAGORIA_COMPETITORS_DICTIONARY1.values():
@@ -497,8 +502,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
+            void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
+            for n in range(0, 3-void_data_num):
+                list_od_combined_comp_and_prices.append(('', '', ''))
             return list_od_combined_comp_and_prices
-
 
 
 class CompetitorSiteModel(models.Model):
