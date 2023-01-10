@@ -568,3 +568,44 @@ class CompetitorSiteModel(models.Model):
         null=True,
         blank=True, 
     )
+
+class ChemCurierTyresModel(models.Model):
+    tyre_size_chem = models.CharField(
+        verbose_name='типоразмер химкурьер',
+        max_length=10,
+    )
+    producer_chem = models.CharField(
+        verbose_name='производитель химкурьер',
+        max_length=15,
+    )
+    group_chem = models.CharField(
+        verbose_name='подгруппа химкурьер',
+        max_length=20,
+    )
+    sale_on_data_month_chem = models.DateTimeField(
+        verbose_name='месяц (дата) поставки шт. / деньги',
+        auto_now=False,
+        auto_now_add=True
+    )
+    val_on_moth_chem = models.IntegerField(
+        verbose_name='объем поставки на дату(месяц) шт.',
+        blank=True
+    )
+    money_on_moth_chem = models.FloatField(
+        verbose_name='объем поставки на дату(месяц) деньги',
+        max_length=20,
+        blank=True
+    )
+    currency_chem = models.ForeignKey(
+        dictionaries_models.Currency,
+        on_delete=models.PROTECT,
+    )
+    price_on_date_chem = models.FloatField(
+        verbose_name='цена на дату(месяц) деньги',
+        max_length=20,
+        blank=True
+    )
+
+    def price_on_date(self):
+        self.price_on_date_chem = self.money_on_moth_chem / self.sale_on_data_month_chem
+        return self.price_on_date_chem

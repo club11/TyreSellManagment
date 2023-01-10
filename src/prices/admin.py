@@ -91,6 +91,18 @@ class CompetitorSiteModelAdmin(admin.ModelAdmin):
             'season',
     ]
 
+class ChemCurierTyresModelAdmin(admin.ModelAdmin):
+    list_display = [
+            'tyre_size_chem',
+            'producer_chem',
+            'group_chem',
+            'sale_on_data_month_chem',
+            'val_on_moth_chem',
+            'money_on_moth_chem',
+            'currency_chem',
+            'price_on_date_chem',
+    ]
+
 admin.site.register(models.PlannedCosstModel, PlannedCosstModelAdmin)
 admin.site.register(models.SemiVariableCosstModel, SemiVariableCosstModelAdmin)
 admin.site.register(models.Belarus902PriceModel, Belarus902PriceModelAdmin)
@@ -101,3 +113,4 @@ admin.site.register(models.CurrentPricesModel, CurrentPricesModelAdmin)
 admin.site.register(models.ComparativeAnalysisTableModel, ComparativeAnalysisTableModelAdmin)
 admin.site.register(models.ComparativeAnalysisTyresModel, ComparativeAnalysisTyresModelAdmin)
 admin.site.register(models.CompetitorSiteModel, CompetitorSiteModelAdmin)
+admin.site.register(models.ChemCurierTyresModel, ChemCurierTyresModelAdmin)
