@@ -393,6 +393,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
             for n in range(0, 3-void_data_num):
                 list_od_combined_comp_and_prices.append(('', '', ''))
+            print('AAA', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
 
@@ -450,6 +451,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
             for n in range(0, 3-void_data_num):
                 list_od_combined_comp_and_prices.append(('', '', ''))
+            print('BBB', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
     def bagoria_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   BAGORIA
@@ -505,6 +507,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
             for n in range(0, 3-void_data_num):
                 list_od_combined_comp_and_prices.append(('', '', ''))
+            print('CCC', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
 
@@ -529,6 +532,7 @@ class CompetitorSiteModel(models.Model):
     price = models.FloatField(
         verbose_name='цена конкурента',
         blank=True,
+        null=True,
     )
     date_period = models.DateField(
         verbose_name='период действия',    
@@ -569,6 +573,7 @@ class CompetitorSiteModel(models.Model):
         blank=True, 
     )
 
+
 class ChemCurierTyresModel(models.Model):
     tyre_size_chem = models.CharField(
         verbose_name='типоразмер химкурьер',
@@ -582,30 +587,47 @@ class ChemCurierTyresModel(models.Model):
         verbose_name='подгруппа химкурьер',
         max_length=20,
     )
-    sale_on_data_month_chem = models.DateTimeField(
-        verbose_name='месяц (дата) поставки шт. / деньги',
-        auto_now=False,
-        auto_now_add=True
-    )
-    val_on_moth_chem = models.IntegerField(
-        verbose_name='объем поставки на дату(месяц) шт.',
-        blank=True
-    )
-    money_on_moth_chem = models.FloatField(
-        verbose_name='объем поставки на дату(месяц) деньги',
-        max_length=20,
-        blank=True
-    )
     currency_chem = models.ForeignKey(
         dictionaries_models.Currency,
         on_delete=models.PROTECT,
     )
+    #price_val_money_data = models.ManyToManyField(
+    #    DataPriceValMoneyChemCurierModel,
+    #    #on_delete=models.PROTECT,
+    #    verbose_name='цены, объемы продаж на дату',
+    #    related_name='price_val_money_data_obj',
+    #    #null=True, 
+    #    blank=True
+    #)
+
+class DataPriceValMoneyChemCurierModel(models.Model):
+    data_month_chem = models.DateTimeField(
+        verbose_name='месяц (дата) поставки',
+        auto_now=False,
+        auto_now_add=False
+    )
+    val_on_moth_chem = models.IntegerField(
+        verbose_name='объем поставки на дату(месяц) шт.',
+        blank=True,
+        null=True
+    )
+    money_on_moth_chem = models.FloatField(
+        verbose_name='объем поставки на дату(месяц) деньги',
+        max_length=20,
+        blank=True,
+        null=True
+    )
     price_on_date_chem = models.FloatField(
         verbose_name='цена на дату(месяц) деньги',
         max_length=20,
+        blank=True,
+        null=True
+    )
+    price_val_money_data = models.ForeignKey(
+        ChemCurierTyresModel,
+        on_delete=models.PROTECT,
+        verbose_name='цены, объемы продаж на дату',
+        related_name='price_val_money_data_obj',
+        null=True, 
         blank=True
     )
-
-    def price_on_date(self):
-        self.price_on_date_chem = self.money_on_moth_chem / self.sale_on_data_month_chem
-        return self.price_on_date_chem
