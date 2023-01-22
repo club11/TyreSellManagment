@@ -1118,7 +1118,7 @@ class ExcelTemplateView(TemplateView):
                     pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)
                     money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)
 
-                    MAIN_chemcirier_import_dict[tyr_size] = brand_namee, group_namee, pices_per_month, money_per_month
+                    MAIN_chemcirier_import_dict[tyr_size, row_num] = brand_namee, group_namee, pices_per_month, money_per_month
             
             # перечень всех доступных дат (месяцев):
             month_in_chemcurier_table = list(money_month_chemcurier_dict.keys())
@@ -1128,9 +1128,16 @@ class ExcelTemplateView(TemplateView):
             # 1.1 создать объекты продажа на дату:
             currency_chem = dictionaries_models.Currency.objects.get_or_create(currency = 'USD')[0]
             for key, val in MAIN_chemcirier_import_dict.items():
-                #print(key, val)
+            #    print(key[0], key,  val, 'CHEM', len(key))
             # 1.2 создать объекты типоразмер производитель группа:
+                #if len(key) > 1:            
+                #    tyr_size_key = key[0]
+                ##    print('HOING DOWN')
+                #else:
+                #    tyr_size_key = key
+                ##    print('HOING UP')
                 che_curier_obj_tyre = prices_models.ChemCurierTyresModel.objects.update_or_create(
+                    #tyre_size_chem = tyr_size_key,
                     tyre_size_chem = key,
                     producer_chem = val[0],
                     # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
