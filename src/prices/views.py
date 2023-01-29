@@ -801,12 +801,28 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
     def get_context_data(self, **kwargs):       
         context = super().get_context_data(**kwargs)
         obj = context.get('object')
-        list_of_tyre_comparative_objects = obj.comparative_table.all()
+
+        # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ:   
+        if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
+            id_list = []
+            for n in models.SELF_PRODUCTION:
+                if n.isdigit():                                 
+                    comparativeanalisystyre_object_id = int(n)
+                    id_list.append(comparativeanalisystyre_object_id)
+            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list)
+            #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
+        else:     
+            list_of_tyre_comparative_objects = obj.comparative_table.all()
+                               
 
         ## 1 фильтр конкурентов Onliner:
-        all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by')
-            # 1.1 ФИЛЬТР по дате
-        #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
+        # 1.1 ФИЛЬТР по дате
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
+            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
+            #print('date_filter !!!!!!!!!!!!!!!!!!!!!!!', all_competitors)
+        else:
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by')     
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
@@ -817,12 +833,27 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             list_of_matched_competitors = []
             if models.ONLINER_COMPETITORS:
-                for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                        list_of_matched_competitors.append(competitor)
-                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:  
+                    date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period=date_filter):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                            list_of_matched_competitors.append(competitor)
+                    if len(list_of_matched_competitors) > 3:
+                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    else:
+                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                else:
+                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by'):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                            list_of_matched_competitors.append(competitor)
+                    if len(list_of_matched_competitors) > 3:
+                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    else:
+                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
             else:
                 for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
@@ -830,7 +861,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                         list_of_matched_competitors.append(competitor)
                 onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-
+        #print('onliner_competitors_dict1', onliner_competitors_dict1)
         ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
         #object_unit.onliner_competitor_on_date1() 
@@ -852,7 +883,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
 
         ## 2 фильтр конкурентов Автосеть:
-        all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by')
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
+            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by').filter(date_period=date_filter)
+        else:
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by')
         #print(all_competitors , 'all_competitors ')
             # 1.1 ФИЛЬТР по дате
         #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
@@ -865,12 +900,30 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
             if models.AVTOSET_COMPETITORS:
-                for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                        list_of_matched_competitors.append(competitor)
-                avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER: 
+                    date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period=date_filter):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки Автосеть", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                            list_of_matched_competitors.append(competitor)
+                    #avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    if len(list_of_matched_competitors) > 3:
+                        avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    else:
+                        avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                else:
+                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by'):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки Автосеть", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                            list_of_matched_competitors.append(competitor)
+                    #avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    if len(list_of_matched_competitors) > 3:
+                        avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    else:
+                        avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors                    
+                
             else:
                 for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
@@ -889,6 +942,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             obj_num = len(object_unit.avtoset_competitor_on_date1())
             avtoset_max_lengh_list.append(obj_num)
         avtoset_max_lengh_header = max(avtoset_max_lengh_list)
+        #print('avtoset_max_lengh_header', avtoset_max_lengh_header)
 
         models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
         # print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
@@ -900,7 +954,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ###### END OF AVTOSET
 
         ## 3 фильтр конкурентов BAGORIA:
-        all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by')
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
+            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by').filter(date_period=date_filter)
+        else:
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by')
         #print(all_competitors , 'all_competitors ')
     #        # 1.1 ФИЛЬТР по дате
     #    #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
@@ -913,12 +971,29 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
             if models.BAGORIA_COMPETITORS:
-                for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                        list_of_matched_competitors.append(competitor)
-                bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+                    date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period=date_filter):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки BAGORIA", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                            list_of_matched_competitors.append(competitor)
+                    #bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    if len(list_of_matched_competitors) > 3:
+                        bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    else:
+                        bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                else:
+                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by'):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки BAGORIA", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                            list_of_matched_competitors.append(competitor)
+                    #bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    if len(list_of_matched_competitors) > 3:
+                        bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    else:
+                        bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors                    
             else:
                 for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
@@ -950,6 +1025,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
 
 #       ## 2 фильтр конкурентов CHEMCURIER:
+        # if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:       - ЗАГОТОВКА ДЛЯ ФИЛЬТРА ПО ДАТЕ И В ХИМКУРЬЕР
+
         all_competitors = models.ChemCurierTyresModel.objects.all()
         #print(all_competitors , 'all_competitors ')
 #            # 1.1 ФИЛЬТР по дате
@@ -963,9 +1040,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 #           object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
             if models.CHEMCURIER_COMPETITORS:
-                for competitor in models.ChemCurierTyresModel.objectsfilter(developer__competitor_name__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                for competitor in models.ChemCurierTyresModel.objects.filter(producer_chem__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-                        print("На пол шишечки TTT")
+                        #print("CHEMCURIER На пол шишечки TTT")
                         list_of_matched_competitors.append(competitor)
                 chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
             else:
@@ -983,31 +1060,24 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
             models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-            object_unit.chemcurier_competitors_dict1() 
-#
-#       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
-#        avtoset_max_lengh_list = []
-#        for object_unit in list_of_tyre_comparative_objects:
-#            obj_num = len(object_unit.avtoset_competitor_on_date1())
-#            avtoset_max_lengh_list.append(obj_num)
-#        avtoset_max_lengh_header = max(avtoset_max_lengh_list)
-#
-#        models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
-#        # print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
-#
-#        obj.avtoset_heders_value()
-#        #object_unit.onliner_competitor_price_on_date1()
-#        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-#        #print('avtoset', context['list_of_tyre_comparative_objects'])
-#        ###### END OF CHEMCURIER
+            object_unit.chemcurier_competitor_on_date1()
+            # CCC [('', '', ''), ('', '', ''), ('', '', '')]
+            #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
 
+       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
+        chemcurier_max_lengh_header = 1                                 # chemcurier будет лишь один столбец
+        models.CHEMCURIER_HEADER_NUMBER = chemcurier_max_lengh_header
+        # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
 
-
+        obj.chemcurier_heders_value()
+        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        ###### END OF CHEMCURIER
 
 
         ##################
         ##################
         ##Работа с интефейсом:
+        
         list_of_all_competitors_template = []
         all_competitors_in_base = dictionaries_models.CompetitorModel.objects.all()
         for t in all_competitors_in_base:
@@ -1015,56 +1085,46 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['onliner_competitors'] = list(set(list_of_all_competitors_template))
         ###
 
-        ####### Onliner фильтр для темплейта
+        ####### Формы для фильтров темплейта:
         #print('models.ONLINER_COMPETITORS_NAMES_FILTER', models.ONLINER_COMPETITORS_NAMES_FILTER)           ###### ТАК здесь продолжим
+        # если применен фильтр:
         filter_form = forms.FilterForm()
+        context['producer_filter_form'] = filter_form
+        context['producer_filter_form'].queryset =  dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER)) and list(set(models.AVTOSET_COMPETITORS_NAMES_FILTER)) and list(set(models.BAGORIA_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
         #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
-        filter_form.fields["competitors"].queryset =  dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER)) and list(set(models.AVTOSET_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
-        context['onliner_filter_form'] = filter_form
-        #print('!!!!', context)
-        #######
-
-
+        
+        in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
+        context['in_base_tyres'] = in_base_tyres
+        #######                     
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
 
     def post(self, request):
-        #print(request.POST, 'TTT')
+        #print(request.POST, 'TTTH')
+        #print (request.POST.getlist('competitors'), 'TTTT')
 
         ## 1 работа с периодами:
-        #start_period, end_period = '', ''
-        #periods_list = []
-        #for key, value in request.POST.items():
-        #    if key == 'start_period' and value is not '':
-        #        start_period = value
-        #        periods_list.append(start_period)
-        #    elif key == 'end_period' and value is not '':
-        #        end_period = value
-        #        periods_list.append(end_period)
-        ##print(start_period, '||', end_period, 'RAKAKA', periods_list)
+        comparative_model_parcing_date = request.POST.getlist('parcing_date') 
+        #print('comparative_model_parcing_date', comparative_model_parcing_date , type(comparative_model_parcing_date))
 #
         ## 2-й рабочий вариант  (для некоьких групп)
         #tyre_groups_list = request.POST.getlist('tyre_groups')
 #
-        ## 3 работа с типоразмерами:
-        #tyre_sizes_list = []
-        #tyre_sizes_list = request.POST.getlist('tyre_sizes')
+        ## 3 работа с собственной продукцией:
+        production_tyres_list = request.POST.getlist('self_production')                                                             # фильтр по собственным шинам
+        #print('production_tyres_list', production_tyres_list)
 #
-        ## 4 работа с моделями
-        #tyre_models_list = []
-        #tyre_models_list = request.POST.getlist('tyre_models')
+        # 4 работа с производителями-конкурентами
+        onliner_avtoset_bagoria_chemcurier_competitors_list = request.POST.getlist('competitors')                               # фильтр конкурентов
+        #print('onliner_avtoset_bagoria_chemcurier_competitors_list', onliner_avtoset_bagoria_chemcurier_competitors_list)
 
-        # 5 работа с производителями-конкурентами
-        onliner_competitors_list = []
-        onliner_competitors_list = request.POST.getlist('onliner_competitor')
-        onliner_competitors_list = request.POST.getlist('competitors')
-        #print('onliner_competitors_list', onliner_competitors_list)
-#
-        #if not periods_list:
-        #    #print('EMPTY periods_list')
-        #    pass
-        #else:
-        #    models.PERIOD_UPDATE_SALES = periods_list            # передаем в глобальныую данные и перезапускаем страницу
+        if comparative_model_parcing_date == ['']:
+            pass
+        elif comparative_model_parcing_date:
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER = comparative_model_parcing_date
+            print('{J{J{J{JJ{', comparative_model_parcing_date)
+        else:
+            pass
 #
         #if not tyre_groups_list:
         #    #print('EMPTY tyre_groups_list')
@@ -1073,25 +1133,20 @@ class ComparativeAnalysisTableModelUpdateView(View):
         #    models.TYRE_GROUP_NAMES = tyre_groups_list 
         #    #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO') 
 #
-        #if not tyre_sizes_list:
-        #    #print('EMPTY tyre_sizes_list')
-        #    pass
-        #else:
-        #    models.TYRE_GROUP_SIZES = tyre_sizes_list  
-#
-        #if not tyre_models_list:
-        #    #print('EMPTY tyre_sizes_list')
-        #    pass
-        #else:
-        #    models.TYRE_GROUP_MODELS = tyre_models_list
+        if production_tyres_list:
+            models.SELF_PRODUCTION = production_tyres_list
+        else:
+            pass
 
-        if not onliner_competitors_list:
+        if not onliner_avtoset_bagoria_chemcurier_competitors_list:
             #print('onliner_competitors_list')
             pass
-        #elif len(onliner_competitors_list) > 3:
-        #    raise 'JHHJJHJHGGHFGFG'
         else:
-            models.ONLINER_COMPETITORS = onliner_competitors_list
+            models.ONLINER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            models.AVTOSET_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            models.BAGORIA_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            #models.CHEMCURIER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices'))
 
 

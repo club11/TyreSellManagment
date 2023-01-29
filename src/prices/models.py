@@ -24,7 +24,11 @@ BAGORIA_COMPETITORS_NAMES_FILTER = []
 
 CHEMCURIER_COMPETITORS = []
 CHEMCURIER_COMPETITORS_DICTIONARY1 = {}
+CHEMCURIER_HEADER_NUMBER = int
 
+SELF_PRODUCTION = []
+
+COMPETITORS_DATE_FROM_USER_ON_FILTER = []
 
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
@@ -201,9 +205,6 @@ class CurrentPricesModel(models.Model):
     def get_absolute_url(self):
         return reverse('prices:currentprices')
 
-
-
-#comparative analysis
 class ComparativeAnalysisTableModel(models.Model):
     customer = models.ForeignKey(
         User,
@@ -247,6 +248,19 @@ class ComparativeAnalysisTableModel(models.Model):
             list_bagoria_main_headers.append(bagoria_main_header)
         #print('list_bagoria_main_headers =====================kjhdkfjdsjkhj', list_bagoria_main_headers)
         return list_bagoria_main_headers
+
+    def chemcurier_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Chemcurier
+        #print('CHEMCURIER_HEADER_NUMBER', CHEMCURIER_HEADER_NUMBER)
+        chemcurier_header_1 = 'конкурент Chemcurier'
+        chemcurier_header_2 = 'цена конкурента Chemcurier'
+        chemcurier_header_3 = 'отклонение цены конкурента Chemcurier'
+        list_chemcurier_main_headers = []
+        for header_number in range(0, CHEMCURIER_HEADER_NUMBER):
+            chemcurier_main_header = chemcurier_header_1, chemcurier_header_2, chemcurier_header_3
+            list_chemcurier_main_headers.append(chemcurier_main_header)
+        #print('list_chemcurier_main_headers =====================kjhdkfjdsjkhj', list_chemcurier_main_headers)
+        return list_chemcurier_main_headers
+
 class ComparativeAnalysisTyresModel(models.Model):
     table = models.ForeignKey(
         ComparativeAnalysisTableModel,
@@ -331,32 +345,19 @@ class ComparativeAnalysisTyresModel(models.Model):
             return direct_cost_variance
         return 0
 
-    #def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   Onliner
-    #    if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys() and ONLINER_COMPETITORS_DICTIONARY1.values():
-    #        competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
-    #        list_od_combined_comp_and_prices = []
-    #        for comp in competitors_values_list:
-    #            comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + comp.parametres_competitor
-    #            comp_price = comp.price  
-    #            if type(comp_price) is float:                                                                    # для расчета отклонения
-    #                deflection = self.belarus902price.price / comp_price       # для расчета отклонения
-    #            combined = comp_name, comp_price, deflection
-    #            list_od_combined_comp_and_prices.append(combined)
-    #        list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
-    #        #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
-    #        return list_od_combined_comp_and_prices
-
     def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   Onliner
-        if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys() and ONLINER_COMPETITORS_DICTIONARY1.values():
+        if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys(): #and ONLINER_COMPETITORS_DICTIONARY1.values():
+            #print(ONLINER_COMPETITORS_DICTIONARY1.keys(), 'ONLINER_COMPETITORS_DICTIONARY1.keys() ' )
+            #print(ONLINER_COMPETITORS_DICTIONARY1.values(), 'ONLINER_COMPETITORS_DICTIONARY1.values()')
             competitors_values_list = ONLINER_COMPETITORS_DICTIONARY1[self.tyre]
             list_od_combined_comp_and_prices = []
-            #print(competitors_values_list,'competitors_values_list ')
+            #print(competitors_values_list,'competitors_values_list', 'kk ')
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
                 competior_is_found = False
-                if objject.season and self.tyre.added_features.all():
-
+                tyre_in_base_season = ''
+                if objject.season and self.tyre.added_features.all():            
                     #tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
                     tyre_in_base_season = self.tyre.added_features.all()
                     for n in tyre_in_base_season:
@@ -366,20 +367,19 @@ class ComparativeAnalysisTyresModel(models.Model):
                     tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
                 if tyre_in_base_season is None:
                     filtered_competitors_values_list.append(objject)
-                    #print('LLLLLLLLLLLLLLLLLLLLLLLL')
                 else:
-                    #print('TTTTTTTTTTTTTTTTTTTTTTTTTTTT')
-                    if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
-                        #print('OOOO')
-                        objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
-                        filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
-                        continue
-                    if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
-                        #print('OOIIIIIOO')
-                        #print(tyre_in_base_season, objject.season.season_usage_name)
-                        objject.tyre_to_compare.add(self)
-                        filtered_competitors_values_list.append(objject)  
-                        continue
+                    if objject.season:
+                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                            #print('OOOO')
+                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                            continue
+                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                            #print('OOIIIIIOO')
+                            #print(tyre_in_base_season, objject.season.season_usage_name)
+                            objject.tyre_to_compare.add(self)
+                            filtered_competitors_values_list.append(objject)  
+                            continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          
             #########################
             for comp in filtered_competitors_values_list:
@@ -399,7 +399,6 @@ class ComparativeAnalysisTyresModel(models.Model):
                 list_od_combined_comp_and_prices.append(('', '', ''))
             #print('AAA', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
-
 
     def avtoset_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены AVTOSET (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   AVTOSET
         if self.tyre in AVTOSET_COMPETITORS_DICTIONARY1.keys() and AVTOSET_COMPETITORS_DICTIONARY1.values():
@@ -510,9 +509,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             #print('CCC', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
-
-
-    def chemcurier_competitors_dict1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
+    def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
         if self.tyre in CHEMCURIER_COMPETITORS_DICTIONARY1.keys():                  # Tyre object (1926) [<ChemCurierTyresModel: ChemCurierTyresModel object (98)>, <ChemCurierTyresModel: ChemCurierTyresModel object (99)>, <ChemCurierTyresModel: ChemCurierTyresModel object (100)>, <ChemCurierTyresModel: ChemCurierTyresModel object (101)>]
             min_value = '' # минимальное значение из всех прозодителей последнего периода поставки
             result_min_value_producer = ''  # наименование производителя с наименьшим значением (ценой) в последний период поствки
@@ -662,23 +659,14 @@ class ComparativeAnalysisTyresModel(models.Model):
                         #print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', period_nnum_prod)
                 if min_value:           # если есть значение в периоде - то закончить переборку
                     break
-        print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
-        print('++++')
-        return min_value, index_of_min_value, result_min_value_producer
 
-
-
-#UU {'Michelin': {0: [6184.8358333333335], 1: [6330.329050279329], 2: [6785.764999999999], 3: [None], 4: [None], 5: [None], 6: [None], 7: [None]}, 'Continental': {0: [51.198792250618304], 1: [None], 2: [None], 3: [None], 4: [None], 5: [None], 6: [None], 7: [None]}, 'Bridgestone': {0: [86.76714285714286, 86.76714285714286], 1: [88.36833333333334, 88.36833333333334], 2: [None, None], 3: [None, None], 4: [None, None], 5: [None, None], 6: [None, None], 7: [None, None]}, 'BKT': {0: [86.76714285714286], 1: [88.36833333333334], 2: [None], 3: [None], 4: [None], 5: [None], 6: [None], 7: [None]}}
-
-            #        #print('&&&', objject.producer_chem, '&&&', objject.price_val_money_data_obj.all())
-            #        producer = objject.producer_chem
-            #        for price in objject.price_val_money_data_obj.all():            # цены (если есть) по месяцам (например здесь было 8 месяцев, значит, 8 значений либо None значений)
-            #            price.price_on_date_chem
-            #            print(price.price_on_date_chem, 'price.price_val_money_data')
-
-#            return list_od_combined_comp_and_prices
-
-
+        deflection = ''                                                                                                                      # для расчета отклонения 
+        if type(min_value) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+            deflection = self.belarus902price.price / min_value       # для расчета отклонения
+        #print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
+        #print('++++')
+        chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
+        return chemcurier_unique_result
 
 class CompetitorSiteModel(models.Model):
     site = models.CharField(
@@ -742,7 +730,6 @@ class CompetitorSiteModel(models.Model):
         blank=True, 
     )
 
-
 class ChemCurierTyresModel(models.Model):
     tyre_size_chem = models.CharField(
         verbose_name='типоразмер химкурьер',            
@@ -760,14 +747,6 @@ class ChemCurierTyresModel(models.Model):
         dictionaries_models.Currency,
         on_delete=models.PROTECT,
     )
-    #price_val_money_data = models.ManyToManyField(
-    #    DataPriceValMoneyChemCurierModel,
-    #    #on_delete=models.PROTECT,
-    #    verbose_name='цены, объемы продаж на дату',
-    #    related_name='price_val_money_data_obj',
-    #    #null=True, 
-    #    blank=True
-    #)
 
 class DataPriceValMoneyChemCurierModel(models.Model):
     data_month_chem = models.DateTimeField(

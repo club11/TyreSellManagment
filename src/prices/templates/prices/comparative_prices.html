@@ -31,10 +31,14 @@
         <td>{{ head1 }}</td><td>{{ head2 }}</td><td>{{ head3 }}</td>
         {% endfor %}
 
+        {% for head1, head2, head3 in object.chemcurier_heders_value  %}
+        <td>{{ head1 }}</td><td>{{ head2 }}</td><td>{{ head3 }}</td>
+        {% endfor %}
+
       </tr>
     </thead>
     <tbody>
-      {% for object in list_of_tyre_comparative_objects %}s
+      {% for object in list_of_tyre_comparative_objects %}
       <tr>
         <th scope="row">{{ forloop.counter }}</th>
         <td><a href=""></a>
@@ -65,37 +69,61 @@
         <td>{{ comp }}</td> <td>{{ price }}</td> <td>{{ deflection }}</td>
         {% endfor %}
 
+
+        {% for val in object.chemcurier_competitor_on_date1  %}
+        <td>{{ val }}</td> 
+        {% endfor %}
+
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
 
-   
 
-  выбрать производителя:
-  <form action="{% url 'prices:apricestable_update' %}" method="post">
-    {% csrf_token %}
-    <select name = "onliner_competitor" multiple aria-label="multiple select example">
-      {% for comp in onliner_competitors  %}
-       <option value="{{ comp }}">{{ comp }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit" class="btn btn-success" >Принять</button>
+
+
+    выбрать производителя:
+    <form action="{% url 'prices:apricestable_update' %}" method="post">
+      {% csrf_token %}
+      <select name = "onliner_competitor" multiple aria-label="multiple select example">
+        {% for comp in onliner_competitors  %}
+         <option value="{{ comp }}">{{ comp }}</option>
+          {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-success" >Принять</button>
+
+
+
+
+    выбрать производителя:
+
+      {% csrf_token %}
+      {% for comp in producer_filter_form %}
+        <div class="form-check">
+          {{ comp }}
+        </div>
+      {% endfor %}
+
+
+    выбрать продукцию:
+
+      {% csrf_token %}
+        <select name = "self_production" multiple aria-label="multiple select example">
+          {% for ttyre in in_base_tyres  %}
+          <option value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</option>
+          {% endfor %}
+        </select>
+
+
+
+    {% csrf_token %} 
+    задать дату <input type="date" name="parcing_date">  <input type="hidden" value="select"><br>
+
+    <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
+
   </form>
 
-
-
-  выбрать производителя:
-  <form action="{% url 'prices:apricestable_update' %}" method="post">
-    {% csrf_token %}
-    {% for comp in onliner_filter_form %}
-      <div class="form-check">
-        {{ comp }}
-      </div>
-    {% endfor %}
-    <button type="submit" class="btn btn-success" >Принять</button>
-  </form>
 
 
 {% endblock body %}
