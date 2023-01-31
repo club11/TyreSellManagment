@@ -813,8 +813,22 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
         else:     
             list_of_tyre_comparative_objects = obj.comparative_table.all()
-                               
 
+        # ФИЛЬТР ПО ГРУППАМ ШИН:    
+        if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
+            group_id_list = []
+            for n in models.TYRE_GROUPS:
+                if n.isdigit():                                 
+                    gr_id = int(n)
+                    group_id_list.append(gr_id)
+            existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)
+            if existing_val_check:
+                list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)
+                #print('list_of_tyre_comparative_objects', 'JJ', list_of_tyre_comparative_objects) 
+            else:  
+                #print('АШЫПКА!!!')
+                pass
+                
         ## 1 фильтр конкурентов Onliner:
         # 1.1 ФИЛЬТР по дате
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
@@ -1077,25 +1091,31 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ##################
         ##################
         ##Работа с интефейсом:
-        
-        list_of_all_competitors_template = []
-        all_competitors_in_base = dictionaries_models.CompetitorModel.objects.all()
-        for t in all_competitors_in_base:
-            list_of_all_competitors_template.append(t.competitor_name)
-        context['onliner_competitors'] = list(set(list_of_all_competitors_template))
-        ###
+        #list_of_all_competitors_template = []
+        #all_competitors_in_base = dictionaries_models.CompetitorModel.objects.all()
+        #for t in all_competitors_in_base:
+        #    list_of_all_competitors_template.append(t.competitor_name)
+        #context['onliner_competitors'] = list(set(list_of_all_competitors_template))
+        ####
 
         ####### Формы для фильтров темплейта:
         #print('models.ONLINER_COMPETITORS_NAMES_FILTER', models.ONLINER_COMPETITORS_NAMES_FILTER)           ###### ТАК здесь продолжим
         # если применен фильтр:
+        # 1) выбрать производителя:
         filter_form = forms.FilterForm()
-        context['producer_filter_form'] = filter_form
-        context['producer_filter_form'].queryset =  dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER)) and list(set(models.AVTOSET_COMPETITORS_NAMES_FILTER)) and list(set(models.BAGORIA_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
+        context['producer_filter_form'] = filter_form                                           
+        context['producer_filter_form'].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER)) and list(set(models.AVTOSET_COMPETITORS_NAMES_FILTER)) 
+        and list(set(models.BAGORIA_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
         #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
-        
+        # 2) выбрать продукцию:
         in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
-        context['in_base_tyres'] = in_base_tyres
-        #######                     
+        context['in_base_tyres'] = in_base_tyres.order_by('-tyre')
+        #######  
+        # 3) выбрать группу шин:
+        tyr_groups = dictionaries_models.TyreGroupModel.objects.all()
+        #print('tyr_groups', tyr_groups)
+        context['in_base_tyres_by_group'] = tyr_groups
+        #######                    
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
 
@@ -1107,8 +1127,8 @@ class ComparativeAnalysisTableModelUpdateView(View):
         comparative_model_parcing_date = request.POST.getlist('parcing_date') 
         #print('comparative_model_parcing_date', comparative_model_parcing_date , type(comparative_model_parcing_date))
 #
-        ## 2-й рабочий вариант  (для некоьких групп)
-        #tyre_groups_list = request.POST.getlist('tyre_groups')
+        # 2-й работа с группами шин:
+        tyre_groups_list = request.POST.getlist('self_production_group_id')
 #
         ## 3 работа с собственной продукцией:
         production_tyres_list = request.POST.getlist('self_production')                                                             # фильтр по собственным шинам
@@ -1122,16 +1142,15 @@ class ComparativeAnalysisTableModelUpdateView(View):
             pass
         elif comparative_model_parcing_date:
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER = comparative_model_parcing_date
-            print('{J{J{J{JJ{', comparative_model_parcing_date)
+            #print('{J{J{J{JJ{', comparative_model_parcing_date)
         else:
             pass
 #
-        #if not tyre_groups_list:
-        #    #print('EMPTY tyre_groups_list')
-        #    pass
-        #else:
-        #    models.TYRE_GROUP_NAMES = tyre_groups_list 
-        #    #print(models.TYRE_GROUP_NAMES, 'models.TYRE_GROUP_NAMES', 'ITOGO') 
+        if tyre_groups_list:
+            models.TYRE_GROUPS= tyre_groups_list 
+            print('models.TYRE_GROUPS', models.TYRE_GROUPS)
+        else:
+            pass
 #
         if production_tyres_list:
             models.SELF_PRODUCTION = production_tyres_list

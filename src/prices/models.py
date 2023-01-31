@@ -27,8 +27,8 @@ CHEMCURIER_COMPETITORS_DICTIONARY1 = {}
 CHEMCURIER_HEADER_NUMBER = int
 
 SELF_PRODUCTION = []
-
 COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+TYRE_GROUPS = []
 
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(

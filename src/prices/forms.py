@@ -8,7 +8,7 @@ from validators.validators import competitor_num_validator
 
 class FilterForm(forms.Form):
     competitors = forms.ModelMultipleChoiceField(
-        queryset = models.CompetitorModel.objects.all().values_list("competitor_name", flat=True), 
+        queryset = models.CompetitorModel.objects.all().values_list("competitor_name", flat=True).order_by('competitor_name'), 
         widget = forms.CheckboxSelectMultiple(),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец                                        #####
     )
 

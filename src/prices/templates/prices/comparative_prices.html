@@ -79,52 +79,47 @@
     </tbody>
   </table>
 
+  
 
 
-
-
-    выбрать производителя:
-    <form action="{% url 'prices:apricestable_update' %}" method="post">
+  <form action="{% url 'prices:apricestable_update' %}" method="post">
       {% csrf_token %}
-      <select name = "onliner_competitor" multiple aria-label="multiple select example">
-        {% for comp in onliner_competitors  %}
-         <option value="{{ comp }}">{{ comp }}</option>
-          {% endfor %}
-      </select>
-      <button type="submit" class="btn btn-success" >Принять</button>
 
-
-
-
-    выбрать производителя:
-
-      {% csrf_token %}
+  <div class="dropdown dropstart">  
+    <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      выбрать производителя:
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
       {% for comp in producer_filter_form %}
-        <div class="form-check">
-          {{ comp }}
-        </div>
+        <li>{{ comp }}</li>
       {% endfor %}
+    </ul>
+  </div>
 
+  <div class="dropdown dropstart">  
+    <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      выбрать продукцию:
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+      {% for ttyre in in_base_tyres  %}
+        <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-    выбрать продукцию:
+  <div class="dropdown dropstart">  
+    <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      выбрать группу шин:
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+      {% for group in in_base_tyres_by_group  %}
+        <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}">{{ group.tyre_group }}</li>
+      {% endfor %}
+    </ul>
+  </div>
 
-      {% csrf_token %}
-        <select name = "self_production" multiple aria-label="multiple select example">
-          {% for ttyre in in_base_tyres  %}
-          <option value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</option>
-          {% endfor %}
-        </select>
-
-
-
-    {% csrf_token %} 
-    задать дату <input type="date" name="parcing_date">  <input type="hidden" value="select"><br>
-
-    <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
-
-  </form>
-
-
+  задать дату <input type="date" name="parcing_date">  <input type="hidden" value="select"><br>
+  <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
+</form>
 
 {% endblock body %}
-
