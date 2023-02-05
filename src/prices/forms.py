@@ -28,6 +28,3 @@ class FilterForm(forms.Form):
     #        )
     #    return value 
     # 
-
-
-    

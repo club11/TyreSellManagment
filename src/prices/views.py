@@ -890,6 +890,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
 
         obj.onliner_heders_value()
+        obj.onliner_heders_lengt()
         #object_unit.onliner_competitor_price_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('ONLINER', context['list_of_tyre_comparative_objects'])
@@ -962,6 +963,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
 
         obj.avtoset_heders_value()
+        obj.avtoset_heders_lengt()
         #object_unit.onliner_competitor_price_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('avtoset', context['list_of_tyre_comparative_objects'])
@@ -1031,6 +1033,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # print('models.BAGORIA_HEADER_NUMBER ====+++==', models.BAGORIA_COMPETITORS_NAMES_FILTER)
 
         obj.bagoria_heders_value()
+        obj.bagoria_heders_lengt()
         #object_unit.bagoria_competitor_price_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('bagoria', context['list_of_tyre_comparative_objects'])
@@ -1084,6 +1087,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
 
         obj.chemcurier_heders_value()
+        obj.chemcurier_heders_lengt()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END OF CHEMCURIER
 
@@ -1148,7 +1152,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
 #
         if tyre_groups_list:
             models.TYRE_GROUPS= tyre_groups_list 
-            print('models.TYRE_GROUPS', models.TYRE_GROUPS)
+            #print('models.TYRE_GROUPS', models.TYRE_GROUPS)
         else:
             pass
 #

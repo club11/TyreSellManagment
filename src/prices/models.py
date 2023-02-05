@@ -44,7 +44,7 @@ class PlannedCosstModel(models.Model):
     price = models.FloatField(
         verbose_name='плановая себестоимость',
         blank=True,
-        default=0
+        default=0,
     )
     date_period = models.DateField(
         verbose_name='период действия',    
@@ -225,6 +225,14 @@ class ComparativeAnalysisTableModel(models.Model):
             onliner_main_header = onliner_header_1, onliner_header_2, onliner_header_3
             list_onliner_main_headers.append(onliner_main_header)
         return list_onliner_main_headers
+
+    def onliner_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные Avtoset
+        avtoset_header_2 = 'цена конкурента Onliner'
+        head_lengh = 0
+        for header_number in range(0, ONLINER_HEADER_NUMBER):
+            if avtoset_header_2:
+                head_lengh += 3   
+        return head_lengh        
         
     def avtoset_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Avtoset
         #print('AVTOSET_HEADER_NUMBER', AVTOSET_HEADER_NUMBER)
@@ -233,10 +241,19 @@ class ComparativeAnalysisTableModel(models.Model):
         avtoset_header_3 = 'отклонение цены конкурента Atoset'
         list_avtoset_main_headers = []
         for header_number in range(0, AVTOSET_HEADER_NUMBER):
-            avtoset_main_header = avtoset_header_1, avtoset_header_2, avtoset_header_3
-            list_avtoset_main_headers.append(avtoset_main_header)
+            avtoset_main_header = avtoset_header_1, avtoset_header_2, avtoset_header_3       
+            list_avtoset_main_headers.append(avtoset_main_header)  
         return list_avtoset_main_headers
 
+    def avtoset_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные Avtoset
+        avtoset_header_2 = 'цена конкурента Atoset'
+        head_lengh = 0
+        for header_number in range(0, AVTOSET_HEADER_NUMBER):
+            if avtoset_header_2:
+                head_lengh += 3   
+        #print(head_lengh)
+        return head_lengh
+        
     def bagoria_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Bagoria
         #print('BAGORIA_HEADER_NUMBER', BAGORIA_HEADER_NUMBER)
         bagoria_header_1 = 'конкурент Bagoria'
@@ -249,6 +266,14 @@ class ComparativeAnalysisTableModel(models.Model):
         #print('list_bagoria_main_headers =====================kjhdkfjdsjkhj', list_bagoria_main_headers)
         return list_bagoria_main_headers
 
+    def bagoria_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные Avtoset
+        avtoset_header_2 = 'цена конкурента Bagoria'
+        head_lengh = 0
+        for header_number in range(0, BAGORIA_HEADER_NUMBER):
+            if avtoset_header_2:
+                head_lengh += 3   
+        return head_lengh   
+
     def chemcurier_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Chemcurier
         #print('CHEMCURIER_HEADER_NUMBER', CHEMCURIER_HEADER_NUMBER)
         chemcurier_header_1 = 'конкурент Chemcurier'
@@ -260,6 +285,14 @@ class ComparativeAnalysisTableModel(models.Model):
             list_chemcurier_main_headers.append(chemcurier_main_header)
         #print('list_chemcurier_main_headers =====================kjhdkfjdsjkhj', list_chemcurier_main_headers)
         return list_chemcurier_main_headers
+
+    def chemcurier_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные Avtoset
+        avtoset_header_2 = 'цена конкурента Chemcurier'
+        head_lengh = 0
+        for header_number in range(0, CHEMCURIER_HEADER_NUMBER):
+            if avtoset_header_2:
+                head_lengh += 3   
+        return head_lengh   
 
 class ComparativeAnalysisTyresModel(models.Model):
     table = models.ForeignKey(
@@ -332,7 +365,7 @@ class ComparativeAnalysisTyresModel(models.Model):
 
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:
-            print(self.currentpricesprice.price,  self.planned_costs.price)
+            #print(self.currentpricesprice.price,  self.planned_costs.price)
             planned_profitability = (self.currentpricesprice.price / self.planned_costs.price) - 1 
             planned_profitability = float('{:.2f}'.format(planned_profitability))
             return planned_profitability
