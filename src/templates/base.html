@@ -46,39 +46,58 @@
         } 
 
 
-
-
-
-
-
 #table_container{
   overflow: scroll;
   height: 750px;
+  padding:0;
+  margin:0;
+  border:0;
 }
 
-thead th {
+thead tr:nth-child(1) th {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   top: 0;
 }
 
-thead th:nth-child(-n+2) {
-  left: 0;
-  z-index: 1;
+thead tr:nth-child(2) th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  top: 40px; 
 }
 
-tbody td:nth-child(-n+2) {
+thead th:first-child {
+  left: 0;
+  z-index:1;
+  width: 100px;
+}
+
+thead tr:nth-child(1) th:nth-child(1) {z-index:3;}
+
+thead th:nth-child(2){
+  left: 25px;
+  z-index:1;  
+}
+
+thead tr:nth-child(1) th:nth-child(2) {z-index:3;}
+
+tbody td:first-child {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   left: 0;
+  width: 100px; 
+}
+tbody td:nth-child(2) {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  left: 25px;
 }
 
 
-
-
-
-
-
+thead tr:nth-child(1) th:nth-child(4) {background-color: green}
+thead tr:nth-child(1) th:nth-child(5) {background-color: green}
+tbody td:nth-child(4) {background-color: green}
+tbody td:nth-child(5) {background-color: green}
 
       </style>
     <link href='{% static "css/bootstrap.min.css" %}'rel="stylesheet">
