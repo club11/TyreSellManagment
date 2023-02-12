@@ -3,13 +3,6 @@
 {% block title %} ABC XYZ Table {% endblock title %}fform
 {% block body %} 
 
-<p>дополнительные данные:</p>
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
-  <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
-</div>
-</form>
-
 <h2>Сравнительный анализ цен. Рынок: Республика Беларусь</h2>
 <div class="container" id="table_container">
   <table class="table table align-middle  table-striped table-bordered table-dark table-sm">
@@ -128,6 +121,7 @@
     выбрать производителя:
   </button>
   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+      <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все производители</b></li>
     {% for comp in producer_filter_form %}
       <li>{{ comp }}</li>
     {% endfor %}
@@ -139,6 +133,7 @@
     выбрать продукцию:
   </button>
   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+      <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li>
     {% for ttyre in in_base_tyres  %}
       <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
     {% endfor %}
@@ -150,6 +145,7 @@
     выбрать группу шин:
   </button>
   <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+      <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
     {% for group in in_base_tyres_by_group  %}
       <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}">{{ group.tyre_group }}</li>
     {% endfor %}
@@ -179,7 +175,12 @@
   <label class="form-check-label" for="btncheck4">показать/скрыть  Chemcurier</label> 
 </div>
 
-
+<p>дополнительные данные:</p>
+<div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
+  <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
+</div>
+</form>
 
 {% endblock body %}
 

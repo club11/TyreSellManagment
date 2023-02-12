@@ -811,6 +811,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     id_list.append(comparativeanalisystyre_object_id)
             list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list)
             #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
+        elif models.SELF_PRODUCTION_ALL:
+            list_of_tyre_comparative_objects = obj.comparative_table.all()
         else:     
             list_of_tyre_comparative_objects = obj.comparative_table.all()
 
@@ -828,7 +830,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             else:  
                 #print('АШЫПКА!!!')
                 pass
-                
+        elif models.TYRE_GROUPS_ALL:
+            #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
+            list_of_tyre_comparative_objects = obj.comparative_table.all()                                                  ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+
         ## 1 фильтр конкурентов Onliner:
         # 1.1 ФИЛЬТР по дате
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
@@ -1040,7 +1046,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ###### END OF BAGORIA
 
 
-
 #       ## 2 фильтр конкурентов CHEMCURIER:
         # if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:       - ЗАГОТОВКА ДЛЯ ФИЛЬТРА ПО ДАТЕ И В ХИМКУРЬЕР
 
@@ -1110,6 +1115,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['producer_filter_form'] = filter_form                                           
         context['producer_filter_form'].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER)) and list(set(models.AVTOSET_COMPETITORS_NAMES_FILTER)) 
         and list(set(models.BAGORIA_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
+        context['producer_filter_all'] = dictionaries_models.CompetitorModel.objects.all()
         #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
         # 2) выбрать продукцию:
         in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
@@ -1119,7 +1125,17 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         tyr_groups = dictionaries_models.TyreGroupModel.objects.all()
         #print('tyr_groups', tyr_groups)
         context['in_base_tyres_by_group'] = tyr_groups
-        #######                    
+        #######      
+        # 
+        ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
+        models.TYRE_GROUPS = []     
+        models.TYRE_GROUPS_ALL = [] 
+        models.SELF_PRODUCTION = []
+        models.SELF_PRODUCTION_ALL = []  
+        models.ONLINER_COMPETITORS = [] 
+        models.AVTOSET_COMPETITORS = []
+        models.BAGORIA_COMPETITORS = []
+        models.CHEMCURIER_COMPETITORS = []
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
 
@@ -1132,15 +1148,38 @@ class ComparativeAnalysisTableModelUpdateView(View):
         #print('comparative_model_parcing_date', comparative_model_parcing_date , type(comparative_model_parcing_date))
 #
         # 2-й работа с группами шин:
+        tyre_groups_list_all = request.POST.getlist('self_production_group_id_all')
         tyre_groups_list = request.POST.getlist('self_production_group_id')
-#
+        if tyre_groups_list_all:
+            #print(tyre_groups_list_all, 'tyre_groups_list_all')
+            models.TYRE_GROUPS_ALL= tyre_groups_list_all
+        else:
+            #print(tyre_groups_list, 'tyre_groups_list')
+            models.TYRE_GROUPS= tyre_groups_list 
+
         ## 3 работа с собственной продукцией:
+        production_tyres_list_all = request.POST.getlist('self_production_all')  
         production_tyres_list = request.POST.getlist('self_production')                                                             # фильтр по собственным шинам
-        #print('production_tyres_list', production_tyres_list)
+        if production_tyres_list_all:
+            #print('production_tyres_list_all', production_tyres_list_all)
+            models.SELF_PRODUCTION_ALL = production_tyres_list_all
+        else:
+            #print('production_tyres_list', production_tyres_list)
+            models.SELF_PRODUCTION = production_tyres_list
 #
         # 4 работа с производителями-конкурентами
+        all_onliner_avtoset_bagoria_chemcurier_competitors_list_all = request.POST.getlist('producers_all')
         onliner_avtoset_bagoria_chemcurier_competitors_list = request.POST.getlist('competitors')                               # фильтр конкурентов
-        #print('onliner_avtoset_bagoria_chemcurier_competitors_list', onliner_avtoset_bagoria_chemcurier_competitors_list)
+        if all_onliner_avtoset_bagoria_chemcurier_competitors_list_all:
+        #if not onliner_avtoset_bagoria_chemcurier_competitors_list:
+            #print('onliner_competitors_list')
+            pass
+        else:
+            #print('onliner_avtoset_bagoria_chemcurier_competitors_list', onliner_avtoset_bagoria_chemcurier_competitors_list)
+            models.ONLINER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            models.AVTOSET_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            models.BAGORIA_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            #models.CHEMCURIER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
 
         if comparative_model_parcing_date == ['']:
             pass
@@ -1149,26 +1188,8 @@ class ComparativeAnalysisTableModelUpdateView(View):
             #print('{J{J{J{JJ{', comparative_model_parcing_date)
         else:
             pass
-#
-        if tyre_groups_list:
-            models.TYRE_GROUPS= tyre_groups_list 
-            #print('models.TYRE_GROUPS', models.TYRE_GROUPS)
-        else:
-            pass
-#
-        if production_tyres_list:
-            models.SELF_PRODUCTION = production_tyres_list
-        else:
-            pass
 
-        if not onliner_avtoset_bagoria_chemcurier_competitors_list:
-            #print('onliner_competitors_list')
-            pass
-        else:
-            models.ONLINER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
-            models.AVTOSET_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
-            models.BAGORIA_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
-            #models.CHEMCURIER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+
             
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices'))
 
