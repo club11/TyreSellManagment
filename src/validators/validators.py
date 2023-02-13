@@ -6,3 +6,6 @@ def competitor_num_validator(value):               # самодельный ва
         if value > 3:
             raise ValidationError('выбор до трех производителей')
         return value
+
+
+

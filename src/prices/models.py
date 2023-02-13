@@ -33,6 +33,8 @@ COMPETITORS_DATE_FROM_USER_ON_FILTER = []
 TYRE_GROUPS = []
 TYRE_GROUPS_ALL=[]
 
+DEFLECTION_VAL = None
+
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
@@ -420,8 +422,11 @@ class ComparativeAnalysisTyresModel(models.Model):
             #########################
             for comp in filtered_competitors_values_list:
                 comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor  + ' '+ comp.season.season_usage_name
-                comp_price = comp.price  
-                if comp_price and self.belarus902price != None and type(comp_price) is float:                                                                    # для расчета отклонения
+                if DEFLECTION_VAL:                                                      # если есть введенные данные об скидке торговой надбавки
+                    comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
+                else:
+                    comp_price = comp.price  
+                if comp_price and self.belarus902price != None and type(comp_price) is float: 
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
@@ -477,7 +482,10 @@ class ComparativeAnalysisTyresModel(models.Model):
             ##########################
             for comp in filtered_competitors_values_list:
                 comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name
-                comp_price = comp.price  
+                if DEFLECTION_VAL:                                                      # если есть введенные данные об скидке торговой надбавки
+                    comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
+                else:
+                    comp_price = comp.price  
                 if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp.developer.competitor_name + ' ' + comp_name, comp_price, deflection
@@ -531,7 +539,11 @@ class ComparativeAnalysisTyresModel(models.Model):
             ##########################
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
-                comp_price = comp.price  
+                comp_price = comp.price 
+
+                if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
+                    comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
+                    
                 if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
@@ -697,7 +709,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     break
 
         deflection = ''                                                                                                                      # для расчета отклонения 
-        if type(min_value) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+        if type(min_value) is float and self.belarus902price != None:  
             deflection = self.belarus902price.price / min_value       # для расчета отклонения
         #print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
         #print('++++')

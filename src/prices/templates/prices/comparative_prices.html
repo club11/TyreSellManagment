@@ -5,9 +5,10 @@
 
 <h2>Сравнительный анализ цен. Рынок: Республика Беларусь</h2>
 <div class="container" id="table_container">
-  <table class="table table align-middle  table-striped table-bordered table-dark table-sm">
+  <table class="table table align-middle table-hover table-striped table-bordered table-dark table-sm">
+    <caption></caption>
     <thead>
-      <tr>
+      <tr >
         <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">#</p></span></th> 
         <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">номенклатура</p></span></th>  
         <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">сезонность индексы рисунок и прочее</p></span></th>
@@ -40,19 +41,19 @@
       <tr>
         {% for head1, head2, head3 in object.onliner_heders_value  %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
+        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
         <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
         {% endfor %}
       
         {% for head1, head2, head3 in object.avtoset_heders_value  %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
+        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
         <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
         {% endfor %}
       
         {% for head1, head2, head3 in object.bagoria_heders_value  %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
+        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
         <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
         {% endfor %}
       
@@ -88,7 +89,7 @@
         {% for comp, price, deflection in object.onliner_competitor_on_date1  %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>
+        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
         {% endfor %}
       
         {% for comp, price, deflection in object.avtoset_competitor_on_date1 %}
@@ -154,7 +155,12 @@
 
 задать дату <input type="date" name="parcing_date">  <input type="hidden" value="select"><br>
 <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
+
+
+{{ deflection_form }} 
+
 </form>
+
 
 <form>
 <p>работа с источником данных:</p>

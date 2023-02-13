@@ -1127,6 +1127,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['in_base_tyres_by_group'] = tyr_groups
         #######      
         # 
+        # 4) ввод % отклонения торговой надбавки:
+        deflection_form = forms.DeflectionInputForm(   initial={'deflection_data': models.DEFLECTION_VAL})
+        context['deflection_form'] = deflection_form
+        current_deflection_value = models.DEFLECTION_VAL
+        if current_deflection_value is None:
+            current_deflection_value = 0.0
+        context['current_deflection_value'] = current_deflection_value
         ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
         models.TYRE_GROUPS = []     
         models.TYRE_GROUPS_ALL = [] 
@@ -1146,6 +1153,14 @@ class ComparativeAnalysisTableModelUpdateView(View):
         ## 1 работа с периодами:
         comparative_model_parcing_date = request.POST.getlist('parcing_date') 
         #print('comparative_model_parcing_date', comparative_model_parcing_date , type(comparative_model_parcing_date))
+
+        if comparative_model_parcing_date == ['']:
+            pass
+        elif comparative_model_parcing_date:
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER = comparative_model_parcing_date
+            #print('{J{J{J{JJ{', comparative_model_parcing_date)
+        else:
+            pass
 #
         # 2-й работа с группами шин:
         tyre_groups_list_all = request.POST.getlist('self_production_group_id_all')
@@ -1181,15 +1196,14 @@ class ComparativeAnalysisTableModelUpdateView(View):
             models.BAGORIA_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
             #models.CHEMCURIER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
 
-        if comparative_model_parcing_date == ['']:
-            pass
-        elif comparative_model_parcing_date:
-            models.COMPETITORS_DATE_FROM_USER_ON_FILTER = comparative_model_parcing_date
-            #print('{J{J{J{JJ{', comparative_model_parcing_date)
+
+        # 5 работа с вводимыми данными по отклонению торговой надбавки
+        deflection_data_got = request.POST.get('deflection_data')  
+        #print('deflection_data_got', deflection_data_got)
+        if deflection_data_got:
+            models.DEFLECTION_VAL = float(request.POST.get('deflection_data'))
         else:
             pass
-
-
             
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices'))
 
