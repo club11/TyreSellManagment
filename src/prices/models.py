@@ -34,7 +34,19 @@ TYRE_GROUPS = []
 TYRE_GROUPS_ALL=[]
 
 DEFLECTION_VAL = None
+# ______ RUS_____
 
+EXPRESS_SHINA_COMPETITORS = []
+EXPRESS_SHINA_COMPETITORS_DICTIONARY1 = {}
+EXPRESS_SHINA_HEADER_NUMBER = int
+
+KOLESATYT_COMPETITORS = []
+KOLESATYT_COMPETITORS_DICTIONARY1 = {}
+KOLESATYT_HEADER_NUMBER = int
+
+KOLESA_DAROM_COMPETITORS = []
+KOLESA_DAROM_COMPETITORS_DICTIONARY1 = {}
+KOLESA_DAROM_HEADER_NUMBER = int
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
@@ -219,6 +231,12 @@ class ComparativeAnalysisTableModel(models.Model):
         null=True,
         on_delete=models.PROTECT,
     )
+    market_table = models.CharField(
+        verbose_name='рынок сбыта',
+        max_length=15,
+        blank=True,
+        null=True
+    )
 
     def onliner_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Onliner
         #print('ONLINER_HEADER_NUMBER', ONLINER_HEADER_NUMBER)
@@ -292,12 +310,74 @@ class ComparativeAnalysisTableModel(models.Model):
         return list_chemcurier_main_headers
 
     def chemcurier_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные Avtoset
-        avtoset_header_2 = 'цена конкурента Chemcurier'
+        chemcurier_header_2 = 'цена конкурента Chemcurier'
         head_lengh = 0
         for header_number in range(0, CHEMCURIER_HEADER_NUMBER):
-            if avtoset_header_2:
+            if chemcurier_header_2:
                 head_lengh += 3   
         return head_lengh   
+
+#____RUS____
+
+    def express_shina_heders_value(self):                 # для расчета количества столбцов с заголовками под данные EXPRESS_SHINA
+        #print('EXPRESS_SHINA_HEADER_NUMBER', EXPRESS_SHINA_HEADER_NUMBER)
+        express_shina_header_1 = 'конкурент EXPRESS_SHINA'
+        express_shina_header_2 = 'цена конкурента EXPRESS_SHINA'
+        express_shina_header_3 = 'отклонение цены конкурента EXPRESS_SHINA'
+        list_express_shina__main_headers = []
+        for header_number in range(0, EXPRESS_SHINA_HEADER_NUMBER):
+            express_shina_main_header = express_shina_header_1, express_shina_header_2, express_shina_header_3
+            list_express_shina__main_headers.append(express_shina_main_header)
+        #print('list_express_shina_main_headers =====================kjhdkfjdsjkhj', list_express_shina__main_headers)
+        return list_express_shina__main_headers
+
+    def express_shina_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные EXPRESS_SHINA
+        express_shina_2 = 'цена конкурента EXPRESS_SHINA'
+        head_lengh = 0
+        for header_number in range(0, EXPRESS_SHINA_HEADER_NUMBER):
+            if express_shina_2:
+                head_lengh += 3   
+        return head_lengh   
+
+    def kolesatyt_heders_value(self):                 # для расчета количества столбцов с заголовками под данные KOLESATYT
+        #print('KOLESATYT_HEADER_NUMBER', KOLESATYT_HEADER_NUMBER)
+        kolesatyt_header_1 = 'конкурент KOLESATYT'
+        kolesatyt_header_2 = 'цена конкурента KOLESATYT'
+        kolesatyt_header_3 = 'отклонение цены конкурента KOLESATYT'
+        list_kolesatyt__main_headers = []
+        for header_number in range(0, KOLESATYT_HEADER_NUMBER):
+            kolesatyt_main_header = kolesatyt_header_1, kolesatyt_header_2, kolesatyt_header_3
+            list_kolesatyt__main_headers.append(kolesatyt_main_header)
+        #print('list_kolesatyt_main_headers =====================kjhdkfjdsjkhj', list_kolesatyt__main_headers)
+        return list_kolesatyt__main_headers
+
+    def kolesatyt_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные KOLESATYT
+        kolesatyt_2 = 'цена конкурента KOLESATYT'
+        head_lengh = 0
+        for header_number in range(0,  KOLESATYT_HEADER_NUMBER):
+            if kolesatyt_2:
+                head_lengh += 3   
+        return head_lengh  
+
+    def kolesa_darom_heders_value(self):                 # для расчета количества столбцов с заголовками под данные KOLESA_DAROM
+        #print('KOLESA_DAROM_HEADER_NUMBER', KOLESATYT_HEADER_NUMBER)
+        kolesa_darom_header_1 = 'конкурент KOLESA_DAROM'
+        kolesa_darom_header_2 = 'цена конкурента KOLESA_DAROM'
+        kolesa_darom_header_3 = 'отклонение цены конкурента KOLESA_DAROM'
+        list_kolesa_darom__main_headers = []
+        for header_number in range(0, KOLESA_DAROM_HEADER_NUMBER):
+            kolesa_darom_main_header = kolesa_darom_header_1, kolesa_darom_header_2, kolesa_darom_header_3
+            list_kolesa_darom__main_headers.append(kolesa_darom_main_header)
+        #print('list_kolesa_darom_main_headers =====================kjhdkfjdsjkhj', list_kolesa_darom__main_headers)
+        return list_kolesa_darom__main_headers
+
+    def kolesa_darom_heders_lengt(self):                 # для расчета длинны столбца с заголовками под данные KOLESA_DAROM
+        kolesa_darom_2 = 'цена конкурента KOLESA_DAROM'
+        head_lengh = 0
+        for header_number in range(0,  KOLESA_DAROM_HEADER_NUMBER):
+            if kolesa_darom_2:
+                head_lengh += 3   
+        return head_lengh  
 
 class ComparativeAnalysisTyresModel(models.Model):
     table = models.ForeignKey(
@@ -715,6 +795,182 @@ class ComparativeAnalysisTyresModel(models.Model):
         #print('++++')
         chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
         return chemcurier_unique_result
+# ______ RUS_____
+
+    def express_shina_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   express_shina
+        if self.tyre in EXPRESS_SHINA_COMPETITORS_DICTIONARY1.keys() and EXPRESS_SHINA_COMPETITORS_DICTIONARY1.values():
+            competitors_values_list = EXPRESS_SHINA_COMPETITORS_DICTIONARY1[self.tyre]
+            list_od_combined_comp_and_prices = []
+            ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
+            filtered_competitors_values_list = []
+            for objject in competitors_values_list:
+                #print('objjectobjjectobjjectobjject======================================================', objject, objject.developer , objject.site, objject.season)
+                if objject is None:
+                    pass
+                else:
+                    competior_is_found = False
+                    tyre_in_base_season = str
+                    if objject.season and self.tyre.added_features.all():
+                        tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
+                        tyre_in_base_season = self.tyre.added_features.all()
+                        for n in tyre_in_base_season:
+                            if n.season_usage:
+                                tyre_in_base_season = n.season_usage.season_usage_name 
+                        #print('tyre_in_base_season111', tyre_in_base_season)
+                        tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
+                    if tyre_in_base_season is None or objject.season is None:                       #0 
+                        filtered_competitors_values_list.append(objject)
+                        #print('OOO22222O')
+                    else:
+                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                            #print('OOOO')
+                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                            continue
+                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                            #print('OOIIIIIOO')
+                            #print(tyre_in_base_season, objject.season.season_usage_name)
+                            objject.tyre_to_compare.add(self)
+                            filtered_competitors_values_list.append(objject)  
+                            continue
+            #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
+            ##########################
+            for comp in filtered_competitors_values_list:
+                comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
+                comp_price = comp.price 
+
+                if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
+                    comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
+                    
+                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                    combined = comp_name, comp_price, deflection    
+                    list_od_combined_comp_and_prices.append(combined)
+                BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+            list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
+            #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
+            void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
+            for n in range(0, 3-void_data_num):
+                list_od_combined_comp_and_prices.append(('', '', ''))
+            #print('CCC', list_od_combined_comp_and_prices)
+            return list_od_combined_comp_and_prices
+
+    def kolesatyt_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС) kolesatyt
+        if self.tyre in KOLESATYT_COMPETITORS_DICTIONARY1.keys() and KOLESATYT_COMPETITORS_DICTIONARY1.values():
+            competitors_values_list = KOLESATYT_COMPETITORS_DICTIONARY1[self.tyre]
+            list_od_combined_comp_and_prices = []
+            ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
+            filtered_competitors_values_list = []
+            for objject in competitors_values_list:
+                #print('objjectobjjectobjjectobjject======================================================', objject, objject.developer , objject.site, objject.season)
+                if objject is None:
+                    pass
+                else:
+                    competior_is_found = False
+                    tyre_in_base_season = str
+                    if objject.season and self.tyre.added_features.all():
+                        tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
+                        tyre_in_base_season = self.tyre.added_features.all()
+                        for n in tyre_in_base_season:
+                            if n.season_usage:
+                                tyre_in_base_season = n.season_usage.season_usage_name 
+                        #print('tyre_in_base_season111', tyre_in_base_season)
+                        tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
+                    if tyre_in_base_season is None or objject.season is None:                       #0 
+                        filtered_competitors_values_list.append(objject)
+                        #print('OOO22222O')
+                    else:
+                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                            #print('OOOO')
+                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                            continue
+                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                            #print('OOIIIIIOO')
+                            #print(tyre_in_base_season, objject.season.season_usage_name)
+                            objject.tyre_to_compare.add(self)
+                            filtered_competitors_values_list.append(objject)  
+                            continue
+            #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
+            ##########################
+            for comp in filtered_competitors_values_list:
+                comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
+                comp_price = comp.price 
+
+                if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
+                    comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
+                    
+                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                    combined = comp_name, comp_price, deflection    
+                    list_od_combined_comp_and_prices.append(combined)
+                BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+            list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
+            #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
+            void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
+            for n in range(0, 3-void_data_num):
+                list_od_combined_comp_and_prices.append(('', '', ''))
+            #print('CCC', list_od_combined_comp_and_prices)
+            return list_od_combined_comp_and_prices
+
+    def kolesa_darom_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС) kolesa_darom
+        if self.tyre in KOLESA_DAROM_COMPETITORS_DICTIONARY1.keys() and KOLESA_DAROM_COMPETITORS_DICTIONARY1.values():
+            competitors_values_list = KOLESA_DAROM_COMPETITORS_DICTIONARY1[self.tyre]
+            list_od_combined_comp_and_prices = []
+            ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
+            filtered_competitors_values_list = []
+            for objject in competitors_values_list:
+                #print('objjectobjjectobjjectobjject======================================================', objject, objject.developer , objject.site, objject.season)
+                if objject is None:
+                    pass
+                else:
+                    competior_is_found = False
+                    tyre_in_base_season = str
+                    if objject.season and self.tyre.added_features.all():
+                        tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
+                        tyre_in_base_season = self.tyre.added_features.all()
+                        for n in tyre_in_base_season:
+                            if n.season_usage:
+                                tyre_in_base_season = n.season_usage.season_usage_name 
+                        #print('tyre_in_base_season111', tyre_in_base_season)
+                        tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
+                    if tyre_in_base_season is None or objject.season is None:                       #0 
+                        filtered_competitors_values_list.append(objject)
+                        #print('OOO22222O')
+                    else:
+                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                            #print('OOOO')
+                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                            continue
+                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                            #print('OOIIIIIOO')
+                            #print(tyre_in_base_season, objject.season.season_usage_name)
+                            objject.tyre_to_compare.add(self)
+                            filtered_competitors_values_list.append(objject)  
+                            continue
+            #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
+            ##########################
+            for comp in filtered_competitors_values_list:
+                comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
+                comp_price = comp.price 
+
+                if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
+                    comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
+                    
+                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                    combined = comp_name, comp_price, deflection    
+                    list_od_combined_comp_and_prices.append(combined)
+                BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+            list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
+            #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
+            void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
+            for n in range(0, 3-void_data_num):
+                list_od_combined_comp_and_prices.append(('', '', ''))
+            #print('CCC', list_od_combined_comp_and_prices)
+            return list_od_combined_comp_and_prices
+
 
 class CompetitorSiteModel(models.Model):
     site = models.CharField(

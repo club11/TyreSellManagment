@@ -136,8 +136,8 @@ class ExcelTemplateView(TemplateView):
                                 '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
                                 '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
                                 '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
-                                ' \d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
-                                 ' \d{1}[A-Za-z]-\d{2} ',
+                                '\d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
+                                '\d{1}[A-Za-z]-\d{2}',
                                 '\d{3}[A-Za-z]\d{2}[A-Za-z]',
                                 '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
                                 '\d{2}[A-Za-z][A-Za-z]\d{2}', 
@@ -895,8 +895,8 @@ class ExcelTemplateView(TemplateView):
                                     '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
                                     '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
                                     '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
-                                    ' \d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
-                                     ' \d{1}[A-Za-z]-\d{2} ',
+                                    '\d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
+                                    '\d{1}[A-Za-z]-\d{2} ',
                                     '\d{3}[A-Za-z]\d{2}[A-Za-z]',
                                     '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
                                     '\d{2}[A-Za-z][A-Za-z]\d{2}', 
@@ -1729,13 +1729,19 @@ class ExcelTemplateView(TemplateView):
 
         #0) создадим объект таблицы ComparativeAnalysisTableModel для проверки:
 
-        table_id = self.request.session.get('table_id')             
-        comparative_analysis_table_get = prices_models.ComparativeAnalysisTableModel.objects.filter(pk=table_id)
-        if comparative_analysis_table_get:
-            comparative_analysis_table = comparative_analysis_table_get[0]
-        else:
-            comparative_analysis_table_queryset = prices_models.ComparativeAnalysisTableModel.objects.update_or_create()
-            comparative_analysis_table = comparative_analysis_table_queryset[0]
+        # старый вариант:
+        #table_id = self.request.session.get('table_id')             
+        #comparative_analysis_table_get = prices_models.ComparativeAnalysisTableModel.objects.filter(pk=table_id)
+        #if comparative_analysis_table_get:
+        #    comparative_analysis_table = comparative_analysis_table_get[0]
+        #else:
+        #    comparative_analysis_table_queryset = prices_models.ComparativeAnalysisTableModel.objects.update_or_create()
+        #    comparative_analysis_table = comparative_analysis_table_queryset[0]
+
+        # новый вариант:
+        list_of_market_price_names = ['belarus', 'russia']
+        for market_name in list_of_market_price_names:
+            prices_models.ComparativeAnalysisTableModel.objects.get_or_create(market_table=market_name)
 
         # 1) возмем все объекты шин:
         for key in row_parsing_sales_costs_prices_dict.keys():
@@ -1805,18 +1811,21 @@ class ExcelTemplateView(TemplateView):
             #    currentpricesprice=0,                
             #)
 
-            comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
-                table=comparative_analysis_table,
-                tyre=tyre_obj,
-                planned_costs=planned_costs_obj_set,
-                semi_variable_prices=semi_variable_costs_obj_set,
-                belarus902price=belarus902price_obj_set,
-                tpsrussiafcaprice=tpsrussiafcaprice_obj_set,
-                tpskazfcaprice=tpskazfcaprice_obj_set,
-                tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
-                currentpricesprice=currentpricesprice_obj_set,
-                #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
-                )
+            # новое дополнение:
+            for comparative_analysis_table in prices_models.ComparativeAnalysisTableModel.objects.all():
+
+                comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
+                    table=comparative_analysis_table,
+                    tyre=tyre_obj,
+                    planned_costs=planned_costs_obj_set,
+                    semi_variable_prices=semi_variable_costs_obj_set,
+                    belarus902price=belarus902price_obj_set,
+                    tpsrussiafcaprice=tpsrussiafcaprice_obj_set,
+                    tpskazfcaprice=tpskazfcaprice_obj_set,
+                    tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
+                    currentpricesprice=currentpricesprice_obj_set,
+                    #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
+                    )
 
         #row_value = 0
         #for j in prices_models.ComparativeAnalysisTyresModel.objects.all():

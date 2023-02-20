@@ -61,6 +61,7 @@ class CurrentPricesModelAdmin(admin.ModelAdmin):
 class ComparativeAnalysisTableModelAdmin(admin.ModelAdmin):
     list_display = [
             'customer',
+            'market_table',
     ]
 
 class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):

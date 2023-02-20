@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% block title %} ABC XYZ Table {% endblock title %}fform
+{% block title %} Comparative table Belarus {% endblock title %}fform
 {% block body %} 
 
 <h2>Сравнительный анализ цен. Рынок: Республика Беларусь</h2>
@@ -86,7 +86,7 @@
         <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitabilit|floatformat:2 }}</p></span></td>
         <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance|floatformat:2 }}</p></span></td>
       
-        {% for comp, price, deflection in object.onliner_competitor_on_date1  %}
+        {% for comp, price, deflection in object.onliner_competitor_on_date1 %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
@@ -98,13 +98,13 @@
         <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>
         {% endfor %}
       
-        {% for comp, price, deflection in object.bagoria_competitor_on_date1  %}
+        {% for comp, price, deflection in object.bagoria_competitor_on_date1 %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>
         {% endfor %}
       
-        {% for val in object.chemcurier_competitor_on_date1  %}
+        {% for val in object.chemcurier_competitor_on_date1 %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ val }}</p></span></td> 
         {% endfor %}
       

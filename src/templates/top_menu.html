@@ -6,10 +6,21 @@
     </li>
     <li class="nav-item">
         <a class="nav-link" href="{% url 'abc_table_xyz:abctable' %}">ABCXYZ</a>
-    </li>
+
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'prices:comparative_prices' %}">Цены</a>
-    </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Цены
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+            <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_bel' %}">Рынок РБ</a></li>
+            <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_russia' %}">Рынок РФ</a></li>
+          </ul>
+        </li>
+
+
+
     <li class="nav-item">
         <a class="nav-link" href="{% url 'sales:sales' %}">Продажи</a>
     </li>
