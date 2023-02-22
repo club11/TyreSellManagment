@@ -11,7 +11,7 @@ from validators.validators import competitor_num_validator
 
 class FilterForm(forms.Form):
     competitors = forms.ModelMultipleChoiceField(
-        queryset = models.CompetitorModel.objects.all().values_list("competitor_name", flat=True).order_by('competitor_name'), 
+        queryset = models.CompetitorModel.objects.filter(developer_competitor__site__in=['onliner.by', 'bagoria.by', 'autoset.by']).distinct().values_list("competitor_name", flat=True).order_by('competitor_name'), 
         widget = forms.CheckboxSelectMultiple(),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец                                        #####
     )
 
@@ -31,6 +31,11 @@ class FilterForm(forms.Form):
     #        )
     #    return value 
     # 
+class FilterRussiaForm(forms.Form):
+    competitors = forms.ModelMultipleChoiceField(
+        queryset = models.CompetitorModel.objects.filter(developer_competitor__site__in=['express-shina.ru', 'kolesatyt.ru', 'kolesa-darom.ru']).distinct().values_list("competitor_name", flat=True).order_by('competitor_name'), 
+        widget = forms.CheckboxSelectMultiple(),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец                                        #####
+    )
 
 class DeflectionInputForm(forms.Form):
     deflection_data = forms.FloatField(label='размер снимаемой торговой надбавки, (%)', required=None, max_value=100, min_value=0, 

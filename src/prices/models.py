@@ -39,14 +39,17 @@ DEFLECTION_VAL = None
 EXPRESS_SHINA_COMPETITORS = []
 EXPRESS_SHINA_COMPETITORS_DICTIONARY1 = {}
 EXPRESS_SHINA_HEADER_NUMBER = int
+EXPRESS_SHINA_COMPETITORS_NAMES_FILTER = []
 
 KOLESATYT_COMPETITORS = []
 KOLESATYT_COMPETITORS_DICTIONARY1 = {}
 KOLESATYT_HEADER_NUMBER = int
+KOLESATYT_COMPETITORS_NAMES_FILTER = []
 
 KOLESA_DAROM_COMPETITORS = []
 KOLESA_DAROM_COMPETITORS_DICTIONARY1 = {}
 KOLESA_DAROM_HEADER_NUMBER = int
+KOLESA_DAROM_COMPETITORS_NAMES_FILTER = []
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
@@ -846,7 +849,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
-                BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+                EXPRESS_SHINA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -904,7 +907,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
-                BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+                KOLESATYT_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -962,7 +965,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
-                BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+                KOLESA_DAROM_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -970,7 +973,6 @@ class ComparativeAnalysisTyresModel(models.Model):
                 list_od_combined_comp_and_prices.append(('', '', ''))
             #print('CCC', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
-
 
 class CompetitorSiteModel(models.Model):
     site = models.CharField(

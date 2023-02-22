@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% block title %} Comparative table Russia {% endblock title %}fform
+{% block title %} Comparative table Russia {% endblock title %}
 {% block body %} 
 
 <h2>Сравнительный анализ цен. Рынок: Российская Федерация</h2>
@@ -22,14 +22,20 @@
           <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">плановая рентабельность</p></span></th>
           <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат, %</p></span></th>
         
-          {% if object.express_shina_heders_value %}
+          {% if object.express_shina_heders_lengt %}
           <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.express_shina_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Express_shina</p></span></th>
           {% endif %}
-          {% if object.kolesatyt_heders_value %}
-          <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.kolesatyt_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Kolesatyt</p></span></th>
+
+          {% if object.kolesatyt_heders_lengt%}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.kolesatyt_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Kolesatyt</p></span></th>
           {% endif %}
+
           {% if object.kolesa_darom_heders_lengt %}
-          <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.kolesa_darom_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Kolesa_darom</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.kolesa_darom_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Kolesa_darom</p></span></th>
+          {% endif %}
+          
+          {% if object.chemcurier_heders_lengt %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.chemcurier_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Chemcurier</p></span></th>
           {% endif %}
 
         </tr>
@@ -40,15 +46,20 @@
             <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
             {% endfor %}
             {% for head1, head2, head3 in object.kolesatyt_heders_value %}
-            <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-            <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-            <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
             {% endfor %}          
             {% for head1, head2, head3 in object.kolesa_darom_heders_value %}
-            <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-            <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-            <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
             {% endfor %} 
+            {% for head1, head2, head3 in object.chemcurier_heders_value  %}
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
+            <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+            {% endfor %}
           </tr>
       </thead>
       <tbody>
@@ -79,22 +90,25 @@
           <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
           {% endfor %}          
           {% for comp, price, deflection in object.kolesatyt_competitor_on_date1 %}
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
           {% endfor %} 
           {% for comp, price, deflection in object.kolesa_darom_competitor_on_date1 %}
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
           {% endfor %} 
+          {% for val in object.chemcurier_competitor_on_date1 %}
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ val }}</p></span></td> 
+          {% endfor %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
     </div>
 
-    <form action="{% url 'prices:apricestable_update' %}" method="post">
+    <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
       {% csrf_token %}
   
   <div class="dropdown dropstart">  
@@ -146,15 +160,15 @@
   <p>работа с источником данных:</p>
   <div class="form-check form-switch">
     <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
-    <label class="form-check-label" for="btncheck1">показать/скрыть Onliner</label> 
+    <label class="form-check-label" for="btncheck1">показать/скрыть Express_shina</label> 
   </div>
   <div class="form-check form-switch">
     <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
-    <label class="form-check-label" for="btncheck2">показать/скрыть Avtoset</label> 
+    <label class="form-check-label" for="btncheck2">показать/скрыть Kolesatyt</label> 
   </div>
   <div class="form-check form-switch">
     <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
-    <label class="form-check-label" for="btncheck3">показать/скрыть  Bagoria</label>
+    <label class="form-check-label" for="btncheck3">показать/скрыть Kolesa_darom</label>
   </div>
   <div class="form-check form-switch">
     <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
@@ -166,5 +180,5 @@
     <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
     <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
   </div>
-  </form>
+</form>
 {% endblock body %}

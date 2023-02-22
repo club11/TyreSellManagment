@@ -1925,161 +1925,161 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 #                        #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
 #                    )                                                                                                                                                                                                         
 #        ###### END OF kolesatyt
-
-
-       # 1 ###### ПАРСИНГ KOLESA_DAROM:       kolesa-darom.ru          
-        kolesa_darom_good_num = 0
-        # 1) парсинг легковых зимних шин
-        url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/zima/'       
-        webdriverr = webdriver.Chrome()
-        webdriverr.get(url)
-        time.sleep(2)
-        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)
-        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-        products = soup.find_all('div', class_='product-card__wrapper')      
-        #print('products', products)
-
-        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-        #1. получаем количество страниц:
-        pages = soup.find('ul', class_='main-section__pagination pagination')        
-        urls_get = []
-        links = pages.find_all('li', class_='pagination__item')   
-        for link in links:
-            pageNum = int(link.text) if link.text.isdigit() else None
-            if pageNum != None:
-                urls_get.append(pageNum)#
-        #2. получаем данные со всех страниц:                         
-        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-        for slug in range(1, 2):
-            newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
-            webdriverr.get(newUrl)
-            time.sleep(2)
-            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(4)
-            soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-            products = soup.find_all('div', class_='product-card__wrapper')  
-            for data_got in products:
-                #print('data_got', data_got)
-                tyre_title = str(data_got.find('p', class_='product-card-properties__title').text.replace('tyre_rub_price', ' '))     
-                #print(tyre_title)
-                tyre_rub_price = str(data_got.find('button', 'product-card__button kd-btn kd-btn--small kd-btn--flex kd-btn_primary').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
-                tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
-                #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
-                tyr_model = ''
-                tyr_group = ''
-                tyr_season = ''
-                tyr_indexes = ''
-                tyr_size = ''
-                tyr_producer = ''
-                list_of_prod_names = ['Ling', 'Nokian', 'Royal', 'Киров']
-                if tyre_title and tyre_rub_price:            
-                    tyre_title = tyre_title.split(' ')
-                    t_prod_n = tyre_title[0]
-                    t_index = 0
-                    if t_prod_n in list_of_prod_names:
-                        tyr_producer = tyre_title[0] + tyre_title[1]
-                        t_index = 1
-                    else:
-                        tyr_producer = tyre_title[0]
-                    llen = len(tyr_producer)
-                    for tt in tyre_title[t_index+1 : llen]:
-                        tyr_model += tt
-                    tyr_size_data1 = tyr_size_data1.split(' ')
-                    for kk in tyr_size_data1[0 : 3]:
-                        if tyr_size_data1.index(kk) == 1:
-                            tyr_size = tyr_size + '/'                        
-                        tyr_size += kk
-                    tyr_size_len = len(tyr_size)
-                    if tyr_size[tyr_size_len-1] == 'C':
-                        tyr_group = 'легкогруз'
-                    else:
-                        tyr_group = 'легковые'
-                    tyr_season = 'зимние'
-                    for ii in reversed(tyr_size_data1[3 : ]):
-                        tyr_indexes += ii
-                #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
-                goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
-                kolesa_darom_good_num += 1 
-
-        #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
-        #    print(k, v)
-
-        # 2) парсинг легковых летних шин
-        url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'       
-        webdriverr = webdriver.Chrome()
-        webdriverr.get(url)
-        time.sleep(2)
-        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)
-        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-        products = soup.find_all('div', class_='product-card__wrapper')      
-        #print('products', products)
-
-        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-        #1. получаем количество страниц:
-        pages = soup.find('ul', class_='main-section__pagination pagination')        
-        urls_get = []
-        links = pages.find_all('li', class_='pagination__item')   
-        for link in links:
-            pageNum = int(link.text) if link.text.isdigit() else None
-            if pageNum != None:
-                urls_get.append(pageNum)#
-        #2. получаем данные со всех страниц:                         
-        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-        for slug in range(1, 2):
-            newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
-            webdriverr.get(newUrl)
-            time.sleep(2)
-            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(4)
-            soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-            products = soup.find_all('div', class_='product-card__wrapper')  
-            for data_got in products:
-                #print('data_got', data_got)
-                tyre_title = str(data_got.find('p', class_='product-card-properties__title').text.replace('tyre_rub_price', ' '))     
-                #print(tyre_title)
-                tyre_rub_price = str(data_got.find('button', 'product-card__button kd-btn kd-btn--small kd-btn--flex kd-btn_primary').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
-                tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
-                #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
-                tyr_model = ''
-                tyr_group = ''
-                tyr_season = ''
-                tyr_indexes = ''
-                tyr_size = ''
-                tyr_producer = ''
-                list_of_prod_names = ['Ling', 'Nokian', 'Royal', 'Киров']
-                if tyre_title and tyre_rub_price:            
-                    tyre_title = tyre_title.split(' ')
-                    t_prod_n = tyre_title[0]
-                    t_index = 0
-                    if t_prod_n in list_of_prod_names:
-                        tyr_producer = tyre_title[0] + tyre_title[1]
-                        t_index = 1
-                    else:
-                        tyr_producer = tyre_title[0]
-                    llen = len(tyr_producer)
-                    for tt in tyre_title[t_index+1 : llen]:
-                        tyr_model += tt
-                    tyr_size_data1 = tyr_size_data1.split(' ')
-                    for kk in tyr_size_data1[0 : 3]:
-                        if tyr_size_data1.index(kk) == 1:
-                            tyr_size = tyr_size + '/'                        
-                        tyr_size += kk
-                    tyr_size_len = len(tyr_size)
-                    if tyr_size[tyr_size_len-1] == 'C':
-                        tyr_group = 'легкогруз'
-                    else:
-                        tyr_group = 'легковые'
-                    tyr_season = 'летние'
-                    for ii in reversed(tyr_size_data1[3 : ]):
-                        tyr_indexes += ii
-                #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
-                goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
-                kolesa_darom_good_num += 1 
-
-        #for k, v in goods_dict_kolesa_darom.items():           # ('225/65R16C', 39) ('LingLong', 'Green-MaxVAN', '112R', 'легкогруз', '6590', 'летние'
-        #    print(k, v)
+#
+#
+#       # 1 ###### ПАРСИНГ KOLESA_DAROM:       kolesa-darom.ru          
+#        kolesa_darom_good_num = 0
+#        # 1) парсинг легковых зимних шин
+#        url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/zima/'       
+#        webdriverr = webdriver.Chrome()
+#        webdriverr.get(url)
+#        time.sleep(2)
+#        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+#        time.sleep(5)
+#        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+#        products = soup.find_all('div', class_='product-card__wrapper')      
+#        #print('products', products)
+#
+#        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+#        #1. получаем количество страниц:
+#        pages = soup.find('ul', class_='main-section__pagination pagination')        
+#        urls_get = []
+#        links = pages.find_all('li', class_='pagination__item')   
+#        for link in links:
+#            pageNum = int(link.text) if link.text.isdigit() else None
+#            if pageNum != None:
+#                urls_get.append(pageNum)#
+#        #2. получаем данные со всех страниц:                         
+#        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+#        for slug in range(1, 2):
+#            newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
+#            webdriverr.get(newUrl)
+#            time.sleep(2)
+#            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+#            time.sleep(4)
+#            soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+#            products = soup.find_all('div', class_='product-card__wrapper')  
+#            for data_got in products:
+#                #print('data_got', data_got)
+#                tyre_title = str(data_got.find('p', class_='product-card-properties__title').text.replace('tyre_rub_price', ' '))     
+#                #print(tyre_title)
+#                tyre_rub_price = str(data_got.find('button', 'product-card__button kd-btn kd-btn--small kd-btn--flex kd-btn_primary').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
+#                tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
+#                #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
+#                tyr_model = ''
+#                tyr_group = ''
+#                tyr_season = ''
+#                tyr_indexes = ''
+#                tyr_size = ''
+#                tyr_producer = ''
+#                list_of_prod_names = ['Ling', 'Nokian', 'Royal', 'Киров']
+#                if tyre_title and tyre_rub_price:            
+#                    tyre_title = tyre_title.split(' ')
+#                    t_prod_n = tyre_title[0]
+#                    t_index = 0
+#                    if t_prod_n in list_of_prod_names:
+#                        tyr_producer = tyre_title[0] + tyre_title[1]
+#                        t_index = 1
+#                    else:
+#                        tyr_producer = tyre_title[0]
+#                    llen = len(tyr_producer)
+#                    for tt in tyre_title[t_index+1 : llen]:
+#                        tyr_model += tt
+#                    tyr_size_data1 = tyr_size_data1.split(' ')
+#                    for kk in tyr_size_data1[0 : 3]:
+#                        if tyr_size_data1.index(kk) == 1:
+#                            tyr_size = tyr_size + '/'                        
+#                        tyr_size += kk
+#                    tyr_size_len = len(tyr_size)
+#                    if tyr_size[tyr_size_len-1] == 'C':
+#                        tyr_group = 'легкогруз'
+#                    else:
+#                        tyr_group = 'легковые'
+#                    tyr_season = 'зимние'
+#                    for ii in reversed(tyr_size_data1[3 : ]):
+#                        tyr_indexes += ii
+#                #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
+#                goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
+#                kolesa_darom_good_num += 1 
+#
+#        #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
+#        #    print(k, v)
+#
+#        # 2) парсинг легковых летних шин
+#        url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'       
+#        webdriverr = webdriver.Chrome()
+#        webdriverr.get(url)
+#        time.sleep(2)
+#        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+#        time.sleep(5)
+#        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+#        products = soup.find_all('div', class_='product-card__wrapper')      
+#        #print('products', products)
+#
+#        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+#        #1. получаем количество страниц:
+#        pages = soup.find('ul', class_='main-section__pagination pagination')        
+#        urls_get = []
+#        links = pages.find_all('li', class_='pagination__item')   
+#        for link in links:
+#            pageNum = int(link.text) if link.text.isdigit() else None
+#            if pageNum != None:
+#                urls_get.append(pageNum)#
+#        #2. получаем данные со всех страниц:                         
+#        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+#        for slug in range(1, 2):
+#            newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
+#            webdriverr.get(newUrl)
+#            time.sleep(2)
+#            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+#            time.sleep(4)
+#            soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+#            products = soup.find_all('div', class_='product-card__wrapper')  
+#            for data_got in products:
+#                #print('data_got', data_got)
+#                tyre_title = str(data_got.find('p', class_='product-card-properties__title').text.replace('tyre_rub_price', ' '))     
+#                #print(tyre_title)
+#                tyre_rub_price = str(data_got.find('button', 'product-card__button kd-btn kd-btn--small kd-btn--flex kd-btn_primary').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
+#                tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
+#                #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
+#                tyr_model = ''
+#                tyr_group = ''
+#                tyr_season = ''
+#                tyr_indexes = ''
+#                tyr_size = ''
+#                tyr_producer = ''
+#                list_of_prod_names = ['Ling', 'Nokian', 'Royal', 'Киров']
+#                if tyre_title and tyre_rub_price:            
+#                    tyre_title = tyre_title.split(' ')
+#                    t_prod_n = tyre_title[0]
+#                    t_index = 0
+#                    if t_prod_n in list_of_prod_names:
+#                        tyr_producer = tyre_title[0] + tyre_title[1]
+#                        t_index = 1
+#                    else:
+#                        tyr_producer = tyre_title[0]
+#                    llen = len(tyr_producer)
+#                    for tt in tyre_title[t_index+1 : llen]:
+#                        tyr_model += tt
+#                    tyr_size_data1 = tyr_size_data1.split(' ')
+#                    for kk in tyr_size_data1[0 : 3]:
+#                        if tyr_size_data1.index(kk) == 1:
+#                            tyr_size = tyr_size + '/'                        
+#                        tyr_size += kk
+#                    tyr_size_len = len(tyr_size)
+#                    if tyr_size[tyr_size_len-1] == 'C':
+#                        tyr_group = 'легкогруз'
+#                    else:
+#                        tyr_group = 'легковые'
+#                    tyr_season = 'летние'
+#                    for ii in reversed(tyr_size_data1[3 : ]):
+#                        tyr_indexes += ii
+#                #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
+#                goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
+#                kolesa_darom_good_num += 1 
+#
+#        #for k, v in goods_dict_kolesa_darom.items():           # ('225/65R16C', 39) ('LingLong', 'Green-MaxVAN', '112R', 'легкогруз', '6590', 'летние'
+#        #    print(k, v)
 
 
 
@@ -2147,42 +2147,42 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         context = super().get_context_data(**kwargs)
         obj = context.get('object')
 
-    #    # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ:   
-    #    if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
-    #        id_list = []
-    #        for n in models.SELF_PRODUCTION:
-    #            if n.isdigit():                                 
-    #                comparativeanalisystyre_object_id = int(n)
-    #                id_list.append(comparativeanalisystyre_object_id)
-    #        list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list)
-    #        #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
-    #    elif models.SELF_PRODUCTION_ALL:
-    #        list_of_tyre_comparative_objects = obj.comparative_table.all()
-    #    else:     
-    #        list_of_tyre_comparative_objects = obj.comparative_table.all()
-        list_of_tyre_comparative_objects = obj.comparative_table.all()          # !!!!!!!!!!!!! TEMPORARY
-#
-    #    # ФИЛЬТР ПО ГРУППАМ ШИН:    
-    #    if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
-    #        group_id_list = []
-    #        for n in models.TYRE_GROUPS:
-    #            if n.isdigit():                                 
-    #                gr_id = int(n)
-    #                group_id_list.append(gr_id)
-    #        existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)
-    #        if existing_val_check:
-    #            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)
-    #            #print('list_of_tyre_comparative_objects', 'JJ', list_of_tyre_comparative_objects) 
-    #        else:  
-    #            #print('АШЫПКА!!!')
-    #            pass
-    #    elif models.TYRE_GROUPS_ALL:
-    #        #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
-    #        #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
-    #        list_of_tyre_comparative_objects = obj.comparative_table.all()                                                  ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
-#
+        # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ:   
+        if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
+            id_list = []
+            for n in models.SELF_PRODUCTION:
+                if n.isdigit():                                 
+                    comparativeanalisystyre_object_id = int(n)
+                    id_list.append(comparativeanalisystyre_object_id)
+            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list)
+            #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
+        elif models.SELF_PRODUCTION_ALL:
+            list_of_tyre_comparative_objects = obj.comparative_table.all()
+        else:     
+            list_of_tyre_comparative_objects = obj.comparative_table.all()
+
+
+        # ФИЛЬТР ПО ГРУППАМ ШИН:    
+        if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
+            group_id_list = []
+            for n in models.TYRE_GROUPS:
+                if n.isdigit():                                 
+                    gr_id = int(n)
+                    group_id_list.append(gr_id)
+            existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)
+            if existing_val_check:
+                list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)
+                #print('list_of_tyre_comparative_objects', 'JJ', list_of_tyre_comparative_objects) 
+            else:  
+                #print('АШЫПКА!!!')
+                pass
+        elif models.TYRE_GROUPS_ALL:
+            #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
+            list_of_tyre_comparative_objects = obj.comparative_table.all()                                                  ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+
     #    ################# 1 фильтр конкурентов:
-#
+
         ##  фильтр конкурентов EXPRESS_SHINA:
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
@@ -2240,6 +2240,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         object_unit.express_shina_competitor_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('bagoria', context['list_of_tyre_comparative_objects'])
+
         ###### END EXPRESS_SHINA
 
 
@@ -2304,6 +2305,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         obj.kolesatyt_heders_lengt()
         object_unit.kolesatyt_competitor_on_date1()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+
         ###### END KOLESATYT
 
 
@@ -2367,89 +2369,97 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         obj.kolesa_darom_heders_value()
         obj.kolesa_darom_heders_lengt()
         object_unit.kolesa_darom_competitor_on_date1()
+
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+
         ###### END KOLESA_DAROM
 
-#   ###    ## 2 фильтр конкурентов CHEMCURIER:
-    ###    # if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:       - ЗАГОТОВКА ДЛЯ ФИЛЬТРА ПО ДАТЕ И В ХИМКУРЬЕР
-    ###    all_competitors = models.ChemCurierTyresModel.objects.all()
-    ###    #print(all_competitors , 'all_competitors ')
-#   ###         # 1.1 ФИЛЬТР по дате
-#   ###     #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
-#   ###         # 1.2 ФИЛЬТР список производителей :
-#   ###     # выбор по производителю:                               
-#   ###     # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
-    ###    chemcurier_competitors_dict1 = {}
-    ###    for object_unit in list_of_tyre_comparative_objects:
-#   ###        object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
-#   ###        object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
-    ###        list_of_matched_competitors = []
-    ###        if models.CHEMCURIER_COMPETITORS:
-    ###            for competitor in models.ChemCurierTyresModel.objects.filter(producer_chem__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-    ###                if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-    ###                    #print("CHEMCURIER На пол шишечки TTT")
-    ###                    list_of_matched_competitors.append(competitor)
-    ###            chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-    ###        else:
-    ###            #for competitor in all_competitors[0 : 3]:  
-    ###            for competitor in all_competitors:  
-    ###                #print(object_unit.tyre.tyre_size.tyre_size, '&&&', competitor.tyre_size_chem, 'FINSY ZALIV', competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''))                                                                                                   ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-    ###                #if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-    ###                if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''):
-    ###                    list_of_matched_competitors.append(competitor)
-    ###        #            print('UMNYE LUDY', competitor)
-    ###        chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-    ###        #for mm, vv in chemcurier_competitors_dict1.items():
-    ###        #    print(mm, vv, 'HHH')
-    ###        #print('chemcurier_competitors_dict1', chemcurier_competitors_dict1)     # hemcurier_competitors_dict1 {<Tyre: Tyre object (1899)>: [], <Tyre: Tyre object (1900)>: [],
-    ###   ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-    ###        models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-    ###        object_unit.chemcurier_competitor_on_date1()
-    ###        # CCC [('', '', ''), ('', '', ''), ('', '', '')]
-    ###        #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
-    ###   ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
-    ###    chemcurier_max_lengh_header = 1                                 # chemcurier будет лишь один столбец
-    ###    models.CHEMCURIER_HEADER_NUMBER = chemcurier_max_lengh_header
-    ###    # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
-    ###    obj.chemcurier_heders_value()
-    ###    obj.chemcurier_heders_lengt()
+
+
+
+#       ## 2 фильтр конкурентов CHEMCURIER:
+        # if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:       - ЗАГОТОВКА ДЛЯ ФИЛЬТРА ПО ДАТЕ И В ХИМКУРЬЕР
+        all_competitors = models.ChemCurierTyresModel.objects.all()
+        #print(all_competitors , 'all_competitors ')
+#            # 1.1 ФИЛЬТР по дате
+#        #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
+#            # 1.2 ФИЛЬТР список производителей :
+#        # выбор по производителю:                               
+#        # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
+        chemcurier_competitors_dict1 = {}
+        for object_unit in list_of_tyre_comparative_objects:
+#           object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
+#           object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
+            list_of_matched_competitors = []
+            if models.CHEMCURIER_COMPETITORS:
+                for competitor in models.ChemCurierTyresModel.objects.filter(producer_chem__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
+                        #print("CHEMCURIER На пол шишечки TTT")
+                        list_of_matched_competitors.append(competitor)
+                chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+            else:
+                #for competitor in all_competitors[0 : 3]:  
+                for competitor in all_competitors:  
+                    #print(object_unit.tyre.tyre_size.tyre_size, '&&&', competitor.tyre_size_chem, 'FINSY ZALIV', competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''))                                                                                                   ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                    #if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
+                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''):
+                        list_of_matched_competitors.append(competitor)
+            #            print('UMNYE LUDY', competitor)
+            chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+            #for mm, vv in chemcurier_competitors_dict1.items():
+            #    print(mm, vv, 'HHH')
+            #print('chemcurier_competitors_dict1', chemcurier_competitors_dict1)     # hemcurier_competitors_dict1 {<Tyre: Tyre object (1899)>: [], <Tyre: Tyre object (1900)>: [],
+       ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
+            models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
+            object_unit.chemcurier_competitor_on_date1()
+            # CCC [('', '', ''), ('', '', ''), ('', '', '')]
+            #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
+       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
+        chemcurier_max_lengh_header = 1                                 # chemcurier будет лишь один столбец
+        models.CHEMCURIER_HEADER_NUMBER = chemcurier_max_lengh_header
+        # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
+        obj.chemcurier_heders_value()
+        obj.chemcurier_heders_lengt()
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-    ###    ###### END OF CHEMCURIER
+        ###### END OF CHEMCURIER
 
         # если применен фильтр:
-    #    # 1) выбрать производителя:
-    #    filter_form = forms.FilterForm()
-    #    context['producer_filter_form'] = filter_form                                           
-    #    context['producer_filter_form'].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER)) and list(set(models.AVTOSET_COMPETITORS_NAMES_FILTER)) 
-    #    and list(set(models.BAGORIA_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
-    #    context['producer_filter_all'] = dictionaries_models.CompetitorModel.objects.all()
-    #    #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
+        # 1) выбрать производителя:
+        filter_form = forms.FilterRussiaForm()
+        context['producer_filter_form'] = filter_form                                           
+        #context['producer_filter_form'].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.EXPRESS_SHINA_COMPETITORS_NAMES_FILTER)) and list(set(models.KOLESATYT_COMPETITORS_NAMES_FILTER)) 
+        #and list(set(models.KOLESA_DAROM_COMPETITORS_NAMES_FILTER))).filter(developer_competitor__site__in=['express-shina.ru', 'kolesatyt.ru', 'kolesa-darom.ru']).values_list("competitor_name", flat=True)
+
+        #context['producer_filter_all'] = dictionaries_models.CompetitorModel.objects.all().filter(developer_competitor__site__in=['express-shina.ru', 'kolesatyt.ru', 'kolesa-darom.ru'])
+        context['producer_filter_all'] = dictionaries_models.CompetitorModel.objects.filter(developer_competitor__site__in=['express-shina.ru', 'kolesatyt.ru', 'kolesa-darom.ru'])
+        #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
         # 2) выбрать продукцию:
         in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
         context['in_base_tyres'] = in_base_tyres.order_by('-tyre')
         #######  
-    #    # 3) выбрать группу шин:
-    #    tyr_groups = dictionaries_models.TyreGroupModel.objects.all()
-    #    #print('tyr_groups', tyr_groups)
-    #    context['in_base_tyres_by_group'] = tyr_groups
-    #    #######      
-    #    # 
-    #    # 4) ввод % отклонения торговой надбавки:
-    #    deflection_form = forms.DeflectionInputForm(   initial={'deflection_data': models.DEFLECTION_VAL})
-    #    context['deflection_form'] = deflection_form
-    #    current_deflection_value = models.DEFLECTION_VAL
-    #    if current_deflection_value is None:
-    #        current_deflection_value = 0.0
-    #    context['current_deflection_value'] = current_deflection_value
-    #    ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
-    #    models.TYRE_GROUPS = []     
-    #    models.TYRE_GROUPS_ALL = [] 
-    #    models.SELF_PRODUCTION = []
-    #    models.SELF_PRODUCTION_ALL = []  
-    #    models.ONLINER_COMPETITORS = [] 
-    #    models.AVTOSET_COMPETITORS = []
-    #    models.BAGORIA_COMPETITORS = []
-    #    models.CHEMCURIER_COMPETITORS = []
+        # 3) выбрать группу шин:
+        tyr_groups = dictionaries_models.TyreGroupModel.objects.all()
+        #print('tyr_groups', tyr_groups)
+        context['in_base_tyres_by_group'] = tyr_groups
+        #######      
+        # 
+        # 4) ввод % отклонения торговой надбавки:
+        deflection_form = forms.DeflectionInputForm(initial={'deflection_data': models.DEFLECTION_VAL})
+        context['deflection_form'] = deflection_form
+        current_deflection_value = models.DEFLECTION_VAL
+        if current_deflection_value is None:
+            current_deflection_value = 0.0
+        context['current_deflection_value'] = current_deflection_value
+        ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
+        models.TYRE_GROUPS = []     
+        models.TYRE_GROUPS_ALL = [] 
+        models.SELF_PRODUCTION = []
+        models.SELF_PRODUCTION_ALL = []  
+        models.EXPRESS_SHINA_COMPETITORS = [] 
+        models.KOLESATYT_COMPETITORS = []
+        models.KOLESA_DAROM_COMPETITORS = []
+        models.CHEMCURIER_COMPETITORS = []
+        
         return context
 
 
@@ -2492,16 +2502,16 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
             models.SELF_PRODUCTION = production_tyres_list
 #
         # 4 работа с производителями-конкурентами
-        all_onliner_avtoset_bagoria_chemcurier_competitors_list_all = request.POST.getlist('producers_all')
+        all_express_shina_kolesatyt_kolesa_darom_chemcurier_competitors_list_all = request.POST.getlist('producers_all')
         express_shina_AND_OTHERS_competitors_list = request.POST.getlist('competitors')                               # фильтр конкурентов
-        if all_onliner_avtoset_bagoria_chemcurier_competitors_list_all:
+        if all_express_shina_kolesatyt_kolesa_darom_chemcurier_competitors_list_all:
             pass
         else:
-            #print('onliner_avtoset_bagoria_chemcurier_competitors_list', onliner_avtoset_bagoria_chemcurier_competitors_list)
+            #print('express_shina_AND_OTHERS_competitors_list', express_shina_AND_OTHERS_competitors_list)
             models.EXPRESS_SHINA_COMPETITORS = express_shina_AND_OTHERS_competitors_list
-            ###models.AVTOSET_COMPETITORS = express_shina_AND_OTHERS_competitors_list
-            ###models.BAGORIA_COMPETITORS = express_shina_AND_OTHERS_competitors_list
-            #models.CHEMCURIER_COMPETITORS = onliner_avtoset_bagoria_chemcurier_competitors_list
+            models.KOLESATYT_COMPETITORS = express_shina_AND_OTHERS_competitors_list
+            models.KOLESA_DAROM_COMPETITORS = express_shina_AND_OTHERS_competitors_list
+            models.CHEMCURIER_COMPETITORS = express_shina_AND_OTHERS_competitors_list
 
 
         # 5 работа с вводимыми данными по отклонению торговой надбавки

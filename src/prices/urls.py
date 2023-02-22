@@ -8,5 +8,5 @@ urlpatterns = [
     path('pricestable_update', prices_views.ComparativeAnalysisTableModelUpdateView.as_view(), name='apricestable_update'),
 
     path('prices_russia', prices_views.ComparativeAnalysisTableModelDetailRussiaView.as_view(), name='comparative_prices_russia'),
-    path('prices_russia_update', prices_views.ComparativeAnalysisTableModelRussiaUpdateView.as_view(), name='comparative_prices_russia_update'),
+    path('prices_russia_update', prices_views.ComparativeAnalysisTableModelRussiaUpdateView.as_view(), name='apricestable_russia_update'),
 ]
