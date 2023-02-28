@@ -1,0 +1,36 @@
+{# pagination_table #}
+<nav aria-label="...">
+    <ul class="pagination justify-content-center">
+  
+      {% if list_of_tyre_comparative_objects.previous_page_number > 1 %}
+      <li class="page-item pagination-sm">
+        <a class="page-link" href="?page=1">в начало таблицы</a>
+      </li>
+      {% endif %}
+      {% if list_of_tyre_comparative_objects.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ list_of_tyre_comparative_objects.previous_page_number }}" aria-label="назад">
+          <span aria-hidden="true">&laquo;</span>
+          <span class="sr-only"></span></a>
+      </li>
+      <li class="page-item"><a class="page-link" href="?page={{ list_of_tyre_comparative_objects.previous_page_number }}">{{ list_of_tyre_comparative_objects.previous_page_number }}</a></li>
+      {% endif %}
+      
+      <li class="page-item active" aria-current="page">
+        <a class="page-link" href="#"> {{ list_of_tyre_comparative_objects.number }}</a>
+      </li>
+      {% if list_of_tyre_comparative_objects.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ list_of_tyre_comparative_objects.next_page_number }}">{{ list_of_tyre_comparative_objects.next_page_number }}</a></li>
+      <li class="page-item ">
+        <a class="page-link" href="?page={{ list_of_tyre_comparative_objects.next_page_number }}" aria-label="вперед">
+          <span aria-hidden="true">&raquo;</span>
+          <span class="sr-only"></span></a>
+      </li>
+      {% if not list_of_tyre_comparative_objects.next_page_number is list_of_tyre_comparative_objects.paginator.num_pages %}
+      <li class="page-item pagination-sm">
+        <a class="page-link" href="?page={{ list_of_tyre_comparative_objects.paginator.num_pages }}">в конец таблицы</a>
+      </li>
+      {% endif %}
+      {% endif %}
+    </ul>
+  </nav>

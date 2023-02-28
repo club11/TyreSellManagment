@@ -1511,7 +1511,7 @@ class ExcelTemplateView(TemplateView):
 
                             
                             if counter_coinc == len(params_row_dict.get(n)):        ###### ЗДЕСЬ ПОЛУЧАЕМ ОБЪЕКТ У КОТОРОГО ВСЕ ПАРАМЕТРЫ СОВПАЛИ СПАРАМЕТРАМИ ШИНЫ В БАЗЕ
-                                print('MATCHED!!', obj)
+                                #print('MATCHED!!', obj)
                                 
                                 #current_prices_ddict['tpsmiddleasiafcaprice_costs_ddict'] = current_prices_row.get(n)
                                 current_prices_ddict[obj] = current_prices_row.get(n)
@@ -1743,9 +1743,13 @@ class ExcelTemplateView(TemplateView):
         for market_name in list_of_market_price_names:
             prices_models.ComparativeAnalysisTableModel.objects.get_or_create(market_table=market_name)
 
+        #for key, valluuee in row_parsing_sales_costs_prices_dict.items():
+        #    print(key.tyre_size.tyre_size, key.tyre_model.model, valluuee[8], valluuee[9], valluuee[10], valluuee[12])
+
         # 1) возмем все объекты шин:
         for key in row_parsing_sales_costs_prices_dict.keys():
             tyre_obj = key
+            #print('tyre_obj', tyre_obj.tyre_size.tyre_size )
         # 2.1) возмем все объекты плановой себестоимости:
             planned_costs_obj_set = prices_models.PlannedCosstModel.objects.filter(tyre=tyre_obj)            # !!!! ФИЛЬТР ВСЕХ ОБЪЕКТОВ + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period
             #planned_costs_obj_set = prices_models.PlannedCosstModel.objects.get(tyre=tyre_obj)                  # ОДИН объект на дату + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period
@@ -1811,29 +1815,37 @@ class ExcelTemplateView(TemplateView):
             #    currentpricesprice=0,                
             #)
 
-            # новое дополнение:
+            ## новое дополнение:
+            #for comparative_analysis_table in prices_models.ComparativeAnalysisTableModel.objects.all():
+#
+            #    comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
+            #        table=comparative_analysis_table,
+            #        tyre=tyre_obj,
+            #        planned_costs=planned_costs_obj_set,
+            #        semi_variable_prices=semi_variable_costs_obj_set,
+            #        belarus902price=belarus902price_obj_set,
+            #        tpsrussiafcaprice=tpsrussiafcaprice_obj_set,
+            #        tpskazfcaprice=tpskazfcaprice_obj_set,
+            #        tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
+            #        currentpricesprice=currentpricesprice_obj_set,
+            #        #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
+            #        )
+
+            comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
+                #table=comparative_analysis_table,
+                tyre=tyre_obj,
+                planned_costs=planned_costs_obj_set,
+                semi_variable_prices=semi_variable_costs_obj_set,
+                belarus902price=belarus902price_obj_set,
+                tpsrussiafcaprice=tpsrussiafcaprice_obj_set,
+                tpskazfcaprice=tpskazfcaprice_obj_set,
+                tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
+                currentpricesprice=currentpricesprice_obj_set,
+                #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
+                )
             for comparative_analysis_table in prices_models.ComparativeAnalysisTableModel.objects.all():
+                comparative_analysis_tyres_obj_set[0].table.add(comparative_analysis_table)
 
-                comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
-                    table=comparative_analysis_table,
-                    tyre=tyre_obj,
-                    planned_costs=planned_costs_obj_set,
-                    semi_variable_prices=semi_variable_costs_obj_set,
-                    belarus902price=belarus902price_obj_set,
-                    tpsrussiafcaprice=tpsrussiafcaprice_obj_set,
-                    tpskazfcaprice=tpskazfcaprice_obj_set,
-                    tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
-                    currentpricesprice=currentpricesprice_obj_set,
-                    #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
-                    )
-
-        #row_value = 0
-        #for j in prices_models.ComparativeAnalysisTyresModel.objects.all():
-        #    if j.planned_costs is None:
-        #        pass
-        #    else:
-        #        print(j.planned_costs.price, 'JJJJJJJ', row_value)
-        #    row_value += 1
 
 
         ############################################ Запись данных в существующий файл в столбец:

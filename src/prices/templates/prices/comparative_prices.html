@@ -3,7 +3,7 @@
 {% block title %} Comparative table Belarus {% endblock title %}fform
 {% block body %} 
 
-<h2>Сравнительный анализ цен. Рынок: Республика Беларусь</h2>
+<h2>Маркетплейс-анализ. Рынок: Республика Беларусь</h2>
 <div class="container" id="table_container">
   <table class="table table align-middle table-hover table-striped table-bordered table-dark table-sm">
     <caption></caption>
@@ -67,7 +67,7 @@
     <tbody>
       {% for object in list_of_tyre_comparative_objects %}
       <tr>
-       <td scope="row"; align="center"; valign="middle">{{ forloop.counter }}</td>
+       <td scope="row"; align="center"; valign="middle">{{ forloop.counter0|add:list_of_tyre_comparative_objects.start_index }}</td>
         <td class="sticky-col second-col"><a href=""></a>
         <span class="align-middle">
           {{ object.tyre.tyre_size.tyre_size }} {{ object.tyre.tyre_model.model }}</p></span>
@@ -114,6 +114,8 @@
   </table>
   </div>
 
+
+
 <form action="{% url 'prices:apricestable_update' %}" method="post">
     {% csrf_token %}
 
@@ -157,8 +159,8 @@
 <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
 
 
-{{ deflection_form }} 
-
+<div>{{ deflection_form }}</div>
+<div>{{ pagination_val_per_form }}</div> 
 </form>
 
 
@@ -186,6 +188,14 @@
   <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
   <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
 </div>
+</form>
+
+{% include '../pagination_table.html' %}
+
+<form action="{% url 'prices:apricestable_russia_update' %}" method="post">
+  {% csrf_token %}
+  <input type="text" name="product_search">
+  <button type="submit">Найти</button>
 </form>
 
 {% endblock body %}

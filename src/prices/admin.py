@@ -66,7 +66,7 @@ class ComparativeAnalysisTableModelAdmin(admin.ModelAdmin):
 
 class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
     list_display = [
-            'table',
+            #'table',
             'tyre',
             'planned_costs',
             'semi_variable_prices',

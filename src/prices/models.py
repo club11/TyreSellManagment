@@ -34,6 +34,7 @@ TYRE_GROUPS = []
 TYRE_GROUPS_ALL=[]
 
 DEFLECTION_VAL = None
+PAGINATION_VAL = None
 # ______ RUS_____
 
 EXPRESS_SHINA_COMPETITORS = []
@@ -50,6 +51,8 @@ KOLESA_DAROM_COMPETITORS = []
 KOLESA_DAROM_COMPETITORS_DICTIONARY1 = {}
 KOLESA_DAROM_HEADER_NUMBER = int
 KOLESA_DAROM_COMPETITORS_NAMES_FILTER = []
+
+SEARCH_USER_REQUEST = None
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
@@ -241,6 +244,7 @@ class ComparativeAnalysisTableModel(models.Model):
         null=True
     )
 
+
     def onliner_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Onliner
         #print('ONLINER_HEADER_NUMBER', ONLINER_HEADER_NUMBER)
         onliner_header_1 = 'конкурент Onliner'
@@ -383,13 +387,23 @@ class ComparativeAnalysisTableModel(models.Model):
         return head_lengh  
 
 class ComparativeAnalysisTyresModel(models.Model):
-    table = models.ForeignKey(
+    #table = models.ForeignKey(
+    #    ComparativeAnalysisTableModel,
+    #    verbose_name='Таблица',
+    #    related_name='comparative_table',                    
+    #    on_delete=models.CASCADE,  
+    #    null=True                       # Заглушка
+    #) 
+
+    table = models.ManyToManyField(
         ComparativeAnalysisTableModel,
         verbose_name='Таблица',
-        related_name='comparative_table',                    
-        on_delete=models.CASCADE,  
-        null=True                       # Заглушка
-    ) 
+        related_name='comparative_table',
+        #on_delete=models.PROTECT,
+        #null=True,
+        blank=True, 
+    )
+
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='tyre_comparative',
@@ -450,6 +464,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         auto_now=False,
         auto_now_add=True
     )
+
 
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:

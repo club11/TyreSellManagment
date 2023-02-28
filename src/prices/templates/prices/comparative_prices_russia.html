@@ -3,7 +3,7 @@
 {% block title %} Comparative table Russia {% endblock title %}
 {% block body %} 
 
-<h2>Сравнительный анализ цен. Рынок: Российская Федерация</h2>
+<h2>Маркетплейс-анализ. Рынок: Российская Федерация</h2>
 <div class="container" id="table_container">
     <table class="table table align-middle table-hover table-striped table-bordered table-dark table-sm">
       <caption></caption>
@@ -37,7 +37,6 @@
           {% if object.chemcurier_heders_lengt %}
           <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.chemcurier_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Chemcurier</p></span></th>
           {% endif %}
-
         </tr>
         <tr>
             {% for head1, head2, head3 in object.express_shina_heders_value %}
@@ -65,14 +64,13 @@
       <tbody>
         {% for object in list_of_tyre_comparative_objects %}
         <tr>
-         <td scope="row"; align="center"; valign="middle">{{ forloop.counter }}</td>
+         <td scope="row"; align="center"; valign="middle">{{ forloop.counter0|add:list_of_tyre_comparative_objects.start_index }}</td>
           <td class="sticky-col second-col"><a href=""></a>
           <span class="align-middle">
             {{ object.tyre.tyre_size.tyre_size }} {{ object.tyre.tyre_model.model }}</p></span>
           {% for param in object.tyre.tyre_type.all %}
             {{ param.tyre_type }}
           {% endfor %}</td>
-
           <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{% for index in object.tyre.added_features.all %} {{ index.indexes_list }} {{ index.season_usage.season_usage_name }} {% endfor %}</p></span></td>
           <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs.price|floatformat:"2g" }}</p></span></td>
           <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices.price|floatformat:"2g" }}</p></span></td>
@@ -95,9 +93,9 @@
           <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
           {% endfor %} 
           {% for comp, price, deflection in object.kolesa_darom_competitor_on_date1 %}
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
           {% endfor %} 
           {% for val in object.chemcurier_competitor_on_date1 %}
           <td class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ val }}</p></span></td> 
@@ -106,7 +104,9 @@
         {% endfor %}
       </tbody>
     </table>
-    </div>
+  </div>
+
+ 
 
     <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
       {% csrf_token %}
@@ -151,10 +151,10 @@
   <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
   
   
-  {{ deflection_form }} 
+  <div>{{ deflection_form }}</div>
+  <div>{{ pagination_val_per_form }}</div> 
   
   </form>
-  
   
   <form>
   <p>работа с источником данных:</p>
@@ -181,4 +181,21 @@
     <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
   </div>
 </form>
+
+{% include '../pagination_table.html' %}
+
+<form action="{% url 'prices:apricestable_russia_update' %}" method="post">
+  {% csrf_token %}
+  <input type="text" name="product_search">
+  <button type="submit">Найти</button>
+</form>
+
 {% endblock body %}
+
+
+
+{% for contact in list_of_tyre_comparative_objects  %}
+<ul>
+    <li>{{ contact }}</li>
+</ul>
+{% endfor %}
