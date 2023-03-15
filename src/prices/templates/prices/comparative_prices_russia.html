@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load my_tags %}
 {% block title %} Comparative table Russia {% endblock title %}
 {% block body %} 
 
@@ -147,14 +148,20 @@
     </ul>
   </div>
   
-  задать дату <input type="date" name="parcing_date">  <input type="hidden" value="select"><br>
+  задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br>
   <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
   
   
   <div>{{ deflection_form }}</div>
   <div>{{ pagination_val_per_form }}</div> 
+
+
+  <div>{{  currency_input_form }}
+    {{ shown_date}} ---- {{ curr_value }} ---- {{ currency }}
+  </div>  
   
   </form>
+
   
   <form>
   <p>работа с источником данных:</p>

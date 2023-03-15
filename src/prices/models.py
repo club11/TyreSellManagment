@@ -26,7 +26,6 @@ CHEMCURIER_COMPETITORS = []
 CHEMCURIER_COMPETITORS_DICTIONARY1 = {}
 CHEMCURIER_HEADER_NUMBER = int
 
-
 SELF_PRODUCTION = []
 SELF_PRODUCTION_ALL = []
 COMPETITORS_DATE_FROM_USER_ON_FILTER = []
@@ -53,6 +52,9 @@ KOLESA_DAROM_HEADER_NUMBER = int
 KOLESA_DAROM_COMPETITORS_NAMES_FILTER = []
 
 SEARCH_USER_REQUEST = None
+
+CURRENCY_DATE_GOT_FROM_USER = None
+
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
@@ -244,7 +246,6 @@ class ComparativeAnalysisTableModel(models.Model):
         null=True
     )
 
-
     def onliner_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Onliner
         #print('ONLINER_HEADER_NUMBER', ONLINER_HEADER_NUMBER)
         onliner_header_1 = 'конкурент Onliner'
@@ -385,7 +386,6 @@ class ComparativeAnalysisTableModel(models.Model):
             if kolesa_darom_2:
                 head_lengh += 3   
         return head_lengh  
-
 class ComparativeAnalysisTyresModel(models.Model):
     #table = models.ForeignKey(
     #    ComparativeAnalysisTableModel,
@@ -403,7 +403,6 @@ class ComparativeAnalysisTyresModel(models.Model):
         #null=True,
         blank=True, 
     )
-
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='tyre_comparative',
@@ -459,12 +458,13 @@ class ComparativeAnalysisTyresModel(models.Model):
         blank=True,
         default=0,
     )
-    sale_data = models.DateTimeField(
+    sale_data = models.DateField(
         verbose_name='Дата парсинга',
-        auto_now=False,
-        auto_now_add=True
+        #auto_now=False,
+        #auto_now_add=False,
+        blank=True,
+        null=True
     )
-
 
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:
@@ -988,7 +988,6 @@ class ComparativeAnalysisTyresModel(models.Model):
                 list_od_combined_comp_and_prices.append(('', '', ''))
             #print('CCC', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
-
 class CompetitorSiteModel(models.Model):
     site = models.CharField(
         max_length=30,
@@ -1050,7 +1049,6 @@ class CompetitorSiteModel(models.Model):
         null=True,
         blank=True, 
     )
-
 class ChemCurierTyresModel(models.Model):
     tyre_size_chem = models.CharField(
         verbose_name='типоразмер химкурьер',            
@@ -1068,7 +1066,6 @@ class ChemCurierTyresModel(models.Model):
         dictionaries_models.Currency,
         on_delete=models.PROTECT,
     )
-
 class DataPriceValMoneyChemCurierModel(models.Model):
     data_month_chem = models.DateTimeField(
         verbose_name='месяц (дата) поставки',

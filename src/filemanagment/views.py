@@ -72,7 +72,8 @@ class ExcelTemplateView(TemplateView):
         MAIN_chemcirier_import_dict = {}    # главгый словарь вкуладки импорт ХИМКУРЬЕР
         chemcirier_rows_counter = []        # счетчик строк химкурьер
 
-        #date_period =   #ЗДЕСЬ ПРОtИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ ДЛДЯ СЕБЕСТОИМОСТИ и прайсов
+        date_period_of_doc = None   #ЗДЕСЬ ПРОtИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ ДЛДЯ СЕБЕСТОИМОСТИ и прайсов
+        
         ply_dict = {}
         load_speed_index_dict = {}
         dict_of_param_to_remake_in_standart = {
@@ -604,7 +605,15 @@ class ExcelTemplateView(TemplateView):
                 try:   
                     sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel 
                     for row in sheet.rows:                      
-                        for cell in row:
+                        for cell in row:          
+                           # 1 Парсинг        
+                        
+                            # ПАРСИНГ ДАТЫ ДЛЯ ТАБЛИЦЫ ДАННЫХ МИНИМАЛКИ И ПРОЧЕЕ
+                            if isinstance(cell.value, datetime):
+                                date_period_of_doc = cell.value.date()
+                                #print('cell.is_date === !!!!!!!!!!!!!!!!!!!!!!!!!!!', date_period_of_doc)        
+                            ###############                        
+
                             if cell.value == 'контрагент':          # получаем колонку 'контрагент'
                                 contragent_column = cell.column
                                 contragent_row = cell.row
@@ -613,15 +622,6 @@ class ExcelTemplateView(TemplateView):
                                         contragent_value = ''
                                         contragent_value =  cell.value                               
                                         contragent_list.append(contragent_value)
-
-                            # 1 Парсинг
-                            if cell.value == 'дата':        # получаем строку'дата'
-                                #print(cell.value)    
-                                #print(cell.coordinate) 
-                                cell = sheet.cell(row=cell.row+1, column=cell.column)
-                                column_sell_date = cell.value
-                                date_period = column_sell_date                      # ЗДЕСЬ ПОЛУЧЕНА ДАТА ДЛЯ СЕБЕСТОИМОСТИ И ПРАЙСОВ
-
 
                             elif cell.value == 'объем продаж':
                                 saless_row_temp = int
@@ -821,7 +821,7 @@ class ExcelTemplateView(TemplateView):
                                 #print('current_prices_row', current_prices_row)
 
 
-                            if cell.value == 'индексы':          # получаем колонку 'индексы'   ДОПОЛНИТЕЛЬНЫЕ
+                            elif cell.value == 'индексы':          # получаем колонку 'индексы'   ДОПОЛНИТЕЛЬНЫЕ
                                 indexes_column = cell.column
                                 indexes_row = cell.row
                                 for col in sheet.iter_cols(min_row=indexes_row+1, min_col=indexes_column, max_col=indexes_column, max_row=sheet.max_row):
@@ -832,7 +832,7 @@ class ExcelTemplateView(TemplateView):
                             #print('indexes_list', indexes_list)
                             #print('indexes_row_dict', indexes_row_dict)
 
-                            if cell.value == 'сезонность':          # получаем колонку 'сезонность' ДОПОЛНИТЕЛЬНЫЕ
+                            elif cell.value == 'сезонность':          # получаем колонку 'сезонность' ДОПОЛНИТЕЛЬНЫЕ
                                 season_column = cell.column
                                 season_row = cell.row
                                 for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
@@ -842,7 +842,7 @@ class ExcelTemplateView(TemplateView):
                                         season_row_dict[cell.row] = cell.value
                             #print('season_row_dict', season_row_dict)
 
-                            if cell.value == 'рисунок протектора':          # получаем колонку 'рисунок протектора' ДОПОЛНИТЕЛЬНЫЕ
+                            elif cell.value == 'рисунок протектора':          # получаем колонку 'рисунок протектора' ДОПОЛНИТЕЛЬНЫЕ
                                 thread_column = cell.column
                                 thread_row = cell.row
                                 for col in sheet.iter_cols(min_row=thread_row+1, min_col=thread_column, max_col=thread_column, max_row=sheet.max_row):
@@ -852,7 +852,7 @@ class ExcelTemplateView(TemplateView):
                                         thread_row_dict[cell.row] = cell.value
                             #print('thread_row_dict', thread_row_dict)
 
-                            if cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
+                            elif cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
                                 ax_column = cell.column
                                 ax_row = cell.row
                                 for col in sheet.iter_cols(min_row=ax_row+1, min_col=ax_column, max_col=ax_column, max_row=sheet.max_row):
@@ -862,7 +862,7 @@ class ExcelTemplateView(TemplateView):
                                         ax_row_dict[cell.row] = cell.value 
                             #print('ax_row_dict', ax_row_dict)
 
-                            if cell.value == 'применяемость':          # получаем колонку 'применяемость' ДОПОЛНИТЕЛЬНЫЕ
+                            elif cell.value == 'применяемость':          # получаем колонку 'применяемость' ДОПОЛНИТЕЛЬНЫЕ
                                 usability_column = cell.column
                                 usability_row = cell.row
                                 for col in sheet.iter_cols(min_row=usability_row+1, min_col=usability_column, max_col=usability_column, max_row=sheet.max_row):
@@ -871,6 +871,20 @@ class ExcelTemplateView(TemplateView):
                                         usability_value =  cell.value                               
                                         usability_row_dict[cell.row] = cell.value
                             #print('usability_row_dict', usability_row_dict)
+
+
+                            #if cell.value == 'дата':        # получаем строку'дата'
+                            #    #print(cell.value)    
+                            #    #print(cell.coordinate) 
+                            #    cell = sheet.cell(row=cell.row+1, column=cell.column)
+                            #    column_sell_date = cell.value
+                            #    date_period = column_sell_date                      # ЗДЕСЬ ПОЛУЧЕНА ДАТА ДЛЯ СЕБЕСТОИМОСТИ И ПРАЙСОВ
+
+                            ##elif cell.is_date:          # получаем дату, для работы с периодом действия цен минималок в дальнейшем
+                            ##    date_period_of_doc = cell.value.date()
+                            ##    ##print('cell.is_date ===', cell.is_date, 'cell.is_date ===', cell.value, 'cell.is_date ===', cell.value.date())
+                            ##    print('date_period ======= ', date_period_of_doc)
+
 
                             ##  ПОЛУЧЕНИЕ МОДЕЛИ ТИПОРАЗМЕРА и ТИПА ДЛЯ ФОРМИРОВАНИЯ СЛОВАРЯ И СВЕРКИ СОСПАВШИХ ШИН ИЗ БД ДЛЯ ВЫБОРКИ ДАННЫХ ПРДАЖИ И МИНИМАЛКИ И ПР ИЗ ЭТОЙ СТРОКИ  !!!!!!!!!!!
                             ##
@@ -1562,6 +1576,15 @@ class ExcelTemplateView(TemplateView):
             #        parrams.append(par.tyre_type)
             #    print(k.tyre_size.tyre_size, k.tyre_model.model, parrams, v)
 
+
+            ### глобальная дата документа
+            if date_period_of_doc:
+                date_period_table = date_period_of_doc
+            else:
+                date_period_table = datetime.now()
+            
+            #print('date_period_table TTT', date_period_table)
+
             # ЗАБРАСЫВАЕМ ПОЛНЫЕ ЗАТРАТЫ:
             for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
                 #print(obj_list_el[1]['planned_costs_ddict'] , 'KKK')
@@ -1570,7 +1593,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el[1]['planned_costs_ddict'],
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
 
@@ -1581,7 +1604,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el[2]['semi_variable_ddict'],
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
 
@@ -1592,7 +1615,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el[3]['belarus902price_costs_ddict'],
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
 
@@ -1603,7 +1626,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el[4]['tpsrussiafcaprice_costs_ddict'],
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
             
@@ -1614,7 +1637,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el[5]['tpskazfcaprice_cost_ddict'],
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
 
@@ -1625,7 +1648,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el[6]['tpsmiddleasiafcaprice_costs_ddict'],
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
 
@@ -1639,7 +1662,7 @@ class ExcelTemplateView(TemplateView):
                             tyre = key,     
                             price = obj_list_el,
                             #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ
-                            date_period = datetime.now(),   
+                            date_period = date_period_table,   
                             currency = currency_chosen_by_hand[0]         
                         )
 
@@ -1842,6 +1865,7 @@ class ExcelTemplateView(TemplateView):
                 tpsmiddleasiafcaprice=tpsmiddleasiafcaprice_obj_set,
                 currentpricesprice=currentpricesprice_obj_set,
                 #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
+                sale_data = date_period_table
                 )
             for comparative_analysis_table in prices_models.ComparativeAnalysisTableModel.objects.all():
                 comparative_analysis_tyres_obj_set[0].table.add(comparative_analysis_table)
