@@ -21,7 +21,7 @@
         <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС Средняя Азия, Закавказье, Молдова FCA</p></span></p></span</th>
         <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">действующие цены</p></span></th>
         <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">плановая рентабельность</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат, %</p></span></th>
+        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат</p></span></th>
       
         {% if object.onliner_heders_lengt %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.onliner_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Onliner</p></span></th>
@@ -43,19 +43,19 @@
         {% for head1, head2, head3 in object.onliner_heders_value  %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
         <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
         {% endfor %}
       
         {% for head1, head2, head3 in object.avtoset_heders_value  %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
         <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
         {% endfor %}
       
         {% for head1, head2, head3 in object.bagoria_heders_value  %}
         <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
         <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
         {% endfor %}
       
         {% for head1, head2, head3 in object.chemcurier_heders_value  %}
@@ -77,32 +77,38 @@
         {% endfor %}</td>
 
         <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{% for index in object.tyre.added_features.all %} {{ index.indexes_list }} {{ index.season_usage.season_usage_name }} {% endfor %}</p></span></td>
-        <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs.price|floatformat:"2g" }}</p></span></td>
-        <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices.price|floatformat:"2g" }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price.price|floatformat:"2g" }}</p></span></td>
+        {# <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs.price|floatformat:"2g" }}</p></span></td> #}
+        <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+        {# <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices.price|floatformat:"2g" }}</p></span></td> #}
+        <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+        {#<td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price.price|floatformat:"2g" }}</p></span></td> #}
+        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
         <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpsrussiafcaprice.price|floatformat:"2g" }}</p></span></td>
         <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpskazfcaprice.price|floatformat:"2g" }}</p></span></td>
         <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpsmiddleasiafcaprice.price|floatformat:"2g" }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice.price|floatformat:"2g" }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitabilit|floatformat:2 }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance|floatformat:2 }}</p></span></td>
+        {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice.price|floatformat:"2g" }}</p></span></td> #}
+        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+        {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitabilit|floatformat:2 }}</p></span></td> #}
+        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitability_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
+        {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance|floatformat:2 }}%</p></span></td> #}
+        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
       
         {% for comp, price, deflection in object.onliner_competitor_on_date1 %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>  
+        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>  
         {% endfor %}
       
         {% for comp, price, deflection in object.avtoset_competitor_on_date1 %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>
+        <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
         {% endfor %}
       
         {% for comp, price, deflection in object.bagoria_competitor_on_date1 %}
         <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
         <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}</p></span></td>
+        <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
         {% endfor %}
       
         {% for val in object.chemcurier_competitor_on_date1 %}

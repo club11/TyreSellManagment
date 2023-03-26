@@ -54,6 +54,7 @@ KOLESA_DAROM_COMPETITORS_NAMES_FILTER = []
 SEARCH_USER_REQUEST = None
 
 CURRENCY_DATE_GOT_FROM_USER = None
+CURRENCY_VALUE_RUB = None
 
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
@@ -387,14 +388,6 @@ class ComparativeAnalysisTableModel(models.Model):
                 head_lengh += 3   
         return head_lengh  
 class ComparativeAnalysisTyresModel(models.Model):
-    #table = models.ForeignKey(
-    #    ComparativeAnalysisTableModel,
-    #    verbose_name='Таблица',
-    #    related_name='comparative_table',                    
-    #    on_delete=models.CASCADE,  
-    #    null=True                       # Заглушка
-    #) 
-
     table = models.ManyToManyField(
         ComparativeAnalysisTableModel,
         verbose_name='Таблица',
@@ -466,20 +459,59 @@ class ComparativeAnalysisTyresModel(models.Model):
         null=True
     )
 
+    def currentpricesprice_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
+        if self.currentpricesprice:
+            currentpricesprice_from_currency_to_bel_rub = self.currentpricesprice.price * CURRENCY_VALUE_RUB 
+            return currentpricesprice_from_currency_to_bel_rub
+
+    def planned_costs_from_currency_to_bel_rub(self):                                                                        # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
+        if self.planned_costs:
+            planned_costs_from_currency_to_bel_rub = self.planned_costs.price * CURRENCY_VALUE_RUB 
+            return planned_costs_from_currency_to_bel_rub
+
+    def semi_variable_prices_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
+        if self.semi_variable_prices:
+            semi_variable_prices_from_currency_to_bel_rub = self.semi_variable_prices.price * CURRENCY_VALUE_RUB 
+            return semi_variable_prices_from_currency_to_bel_rub
+
+    def belarus902price_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
+        if self.belarus902price:
+            belarus902price_from_currency_to_bel_rub = self.belarus902price.price * CURRENCY_VALUE_RUB 
+            return belarus902price_from_currency_to_bel_rub
+
+    def planned_profitability_from_currency_to_bel_rub(self):            # плановая рентабьельность                          # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
+        if self.currentpricesprice and self.planned_costs:
+            #print(self.currentpricesprice.price,  self.planned_costs.price)
+            planned_profitability = ((self.currentpricesprice.price / self.planned_costs.price) - 1) * 100
+            planned_profitability = float('{:.2f}'.format(planned_profitability))
+            return planned_profitability
+        return 0
+
+    def direct_cost_variance_from_currency_to_bel_rub(self):             # отклонение прямых затрат                          # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
+        if self.currentpricesprice and self.semi_variable_prices:
+            direct_cost_variance = ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
+            direct_cost_variance = float('{:.2f}'.format(direct_cost_variance))
+            return direct_cost_variance
+        return 0
+
+
+
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:
             #print(self.currentpricesprice.price,  self.planned_costs.price)
-            planned_profitability = (self.currentpricesprice.price / self.planned_costs.price) - 1 
+            planned_profitability = ((self.currentpricesprice.price / self.planned_costs.price) - 1) * 100
             planned_profitability = float('{:.2f}'.format(planned_profitability))
             return planned_profitability
         return 0
 
     def direct_cost_variance(self):             # отклонение прямых затрат
         if self.currentpricesprice and self.semi_variable_prices:
-            direct_cost_variance = (self.currentpricesprice.price / self.semi_variable_prices.price) - 1 
+            direct_cost_variance = ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
             direct_cost_variance = float('{:.2f}'.format(direct_cost_variance))
             return direct_cost_variance
         return 0
+
+
 
     def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   Onliner
         if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys(): #and ONLINER_COMPETITORS_DICTIONARY1.values():
@@ -524,8 +556,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                 else:
                     comp_price = comp.price  
-                if comp_price and self.belarus902price != None and type(comp_price) is float: 
-                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                #if comp_price and self.belarus902price and type(comp_price) is float: 
+                if comp_price and self.currentpricesprice and type(comp_price) is float: 
+                    #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
+                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
                     combined = comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
 
@@ -584,8 +618,11 @@ class ComparativeAnalysisTyresModel(models.Model):
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                 else:
                     comp_price = comp.price  
-                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
-                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                #if type(comp_price) is float and self.belarus902price != None:    
+                if comp_price and self.currentpricesprice and type(comp_price) is float: 
+                    #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       
+                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
+                    #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
                     combined = comp.developer.competitor_name + ' ' + comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
@@ -638,13 +675,17 @@ class ComparativeAnalysisTyresModel(models.Model):
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price 
+                #print('LLL', comp_name, comp_price)
 
                 if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                     
-                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
-                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                #if type(comp_price) is float and self.belarus902price != None:   
+                if comp_price and self.currentpricesprice and type(comp_price) is float:      
+                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100                    
+                    #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
+                    #print('combined!!!!', combined)
                     list_od_combined_comp_and_prices.append(combined)
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
@@ -860,8 +901,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                     
-                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
-                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                #if type(comp_price) is float and self.belarus902price != None:    
+                if comp_price and self.currentpricesprice and type(comp_price) is float:      
+                    deflection = ((self.currentpricesprice.price  / comp_price) -1 ) * 100                                                                                                           # для расчета отклонения
+                    #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 EXPRESS_SHINA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
@@ -918,8 +961,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                     
-                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
-                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                #if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+                if comp_price and self.currentpricesprice and type(comp_price) is float:      
+                    deflection = ((self.currentpricesprice.price  / comp_price) -1 ) * 100  
+                    #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 KOLESATYT_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
@@ -976,8 +1021,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                     
-                if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
-                    deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                #if type(comp_price) is float and self.belarus902price != None:                                                                    # для расчета отклонения
+                if comp_price and self.currentpricesprice and type(comp_price) is float:      
+                    deflection = ((self.currentpricesprice.price  / comp_price) -1 ) * 100  
+                    #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 KOLESA_DAROM_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
