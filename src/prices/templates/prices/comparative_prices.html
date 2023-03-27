@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load my_tags %}
+{% load googlecharts %}
 {% block title %} Comparative table Belarus {% endblock title %}fform
 {% block body %} 
 
@@ -123,6 +124,7 @@
 
 
 
+
 <form action="{% url 'prices:apricestable_update' %}" method="post">
     {% csrf_token %}
 
@@ -211,6 +213,14 @@
   <input type="text" name="product_search">
   <button type="submit">Найти</button>
 </form>
+
+
+
+
+
+
+
+
 
 
 

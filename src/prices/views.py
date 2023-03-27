@@ -886,6 +886,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
             list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)                                                   ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
 
+        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+
         ## 1 фильтр конкурентов Onliner:
         # 1.1 ФИЛЬТР по дате
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
@@ -939,6 +941,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
         #object_unit.onliner_competitor_on_date1() 
 
+
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
         onliner_max_lengh_list = []
         for object_unit in list_of_tyre_comparative_objects:
@@ -955,7 +958,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.onliner_heders_value()
         obj.onliner_heders_lengt()
         #object_unit.onliner_competitor_price_on_date1()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('ONLINER', context['list_of_tyre_comparative_objects'])
         # END ONLINER
 
@@ -1028,7 +1031,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.avtoset_heders_value()
         obj.avtoset_heders_lengt()
         #object_unit.onliner_competitor_price_on_date1()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('avtoset', context['list_of_tyre_comparative_objects'])
         ###### END OF AVTOSET
 
@@ -1099,7 +1102,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.bagoria_heders_value()
         obj.bagoria_heders_lengt()
         #object_unit.bagoria_competitor_price_on_date1()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('bagoria', context['list_of_tyre_comparative_objects'])
         ###### END OF BAGORIA
 
@@ -1150,7 +1153,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         obj.chemcurier_heders_value()
         obj.chemcurier_heders_lengt()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END OF CHEMCURIER
 
         ##################
@@ -1195,17 +1198,17 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
             context['chosen_date'] = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
 
-        ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
-        models.TYRE_GROUPS = []     
-        models.TYRE_GROUPS_ALL = [] 
-        models.SELF_PRODUCTION = []
-        models.SELF_PRODUCTION_ALL = []  
-        models.ONLINER_COMPETITORS = [] 
-        models.AVTOSET_COMPETITORS = []
-        models.BAGORIA_COMPETITORS = []
-        models.CHEMCURIER_COMPETITORS = []
-        models.SEARCH_USER_REQUEST = []
-        models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+        #### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
+        #models.TYRE_GROUPS = []     
+        #models.TYRE_GROUPS_ALL = [] 
+        #models.SELF_PRODUCTION = []
+        #models.SELF_PRODUCTION_ALL = []  
+        #models.ONLINER_COMPETITORS = [] 
+        #models.AVTOSET_COMPETITORS = []
+        #models.BAGORIA_COMPETITORS = []
+        #models.CHEMCURIER_COMPETITORS = []
+        #models.SEARCH_USER_REQUEST = []
+        #models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
 
         # пагинация самодельная:
         current_pagination_value = models.PAGINATION_VAL
@@ -1215,6 +1218,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['pagination_val_per_form'] = pagination_form        
         #context['current_pagination_value'] = current_pagination_value        
         posts = context['list_of_tyre_comparative_objects']
+        #print('1!!!!', len(posts))
         if 'page' in self.request.GET:
             page = self.request.GET['page']
         else:
@@ -1228,8 +1232,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         except EmptyPage:
             posts = paginator.page(paginator.num_pages)
         #print('posts', posts)
-
         context['list_of_tyre_comparative_objects'] = posts  
+        #print('!!!!!!!!!!!!!!!!0', self.request.GET, self.request.GET.urlencode())
+        # END # пагинация самодельная
 
         currency_input_form = forms.CurrencyDateInputForm()
         context['currency_input_form'] = currency_input_form
@@ -1260,25 +1265,38 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
 
         
-        #############   ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS              
-        object_unit = list_of_tyre_comparative_objects.get(id=310)          # import matplotlib.pyplot as plt
-        list_of_filtered_competitors_dates = [] 
-        list_of_filtered_competitors_prices = []
-        for comp in object_unit.price_tyre_to_compare.filter(site='onliner.by'):
-            print(comp.price, comp.date_period, comp )
-            list_of_filtered_competitors_dates.append(comp.date_period)
-            list_of_filtered_competitors_prices.append(comp.price)
-        my_series = pd.DataFrame({'dates':list_of_filtered_competitors_dates, 'prices':list_of_filtered_competitors_prices})
-        plt.plot(my_series['dates'], my_series['prices'])               
-        print(plt.plot(my_series['dates'], my_series['prices']))
-        plt.show()
-        #### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
+        ##############   ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS              
+        #object_unit = list_of_tyre_comparative_objects.get(id=310)          # import matplotlib.pyplot as plt
+        #list_of_filtered_competitors_dates = [] 
+        #list_of_filtered_competitors_prices = []
+        #for comp in object_unit.price_tyre_to_compare.filter(site='onliner.by'):
+        #    print(comp.price, comp.date_period, comp )
+        #    list_of_filtered_competitors_dates.append(comp.date_period)
+        #    list_of_filtered_competitors_prices.append(comp.price)
+        #my_series = pd.DataFrame({'dates':list_of_filtered_competitors_dates, 'prices':list_of_filtered_competitors_prices})
+        #plt.plot(my_series['dates'], my_series['prices'])               
+        ###print(plt.plot(my_series['dates'], my_series['prices']))
+        ##plt.show()
+        ##### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
 
 
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
 
     def post(self, request):
+
+        ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
+        models.TYRE_GROUPS = []     
+        models.TYRE_GROUPS_ALL = [] 
+        models.SELF_PRODUCTION = []
+        models.SELF_PRODUCTION_ALL = []  
+        models.ONLINER_COMPETITORS = [] 
+        models.AVTOSET_COMPETITORS = []
+        models.BAGORIA_COMPETITORS = []
+        models.CHEMCURIER_COMPETITORS = []
+        models.SEARCH_USER_REQUEST = []
+        models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+
         #print(request.POST, 'TTTH')
         #print (request.POST.getlist('competitors'), 'TTTT')
 
@@ -2375,9 +2393,11 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
                 if n.isdigit():                                 
                     gr_id = int(n)
                     group_id_list.append(gr_id)
-            existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            #existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
             if existing_val_check:
-                list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+                list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)
                 #print('list_of_tyre_comparative_objects', 'JJ', list_of_tyre_comparative_objects) 
             else:  
                 #print('АШЫПКА!!!')
@@ -2387,7 +2407,10 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
             list_of_tyre_comparative_objects = obj.comparative_table.all()                                                  ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
 
-    #    ################# 1 фильтр конкурентов:
+        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+
+
+        ################# 1 фильтр конкурентов:
 
         ##  фильтр конкурентов EXPRESS_SHINA:
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
@@ -2448,7 +2471,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         obj.express_shina_heders_value()
         obj.express_shina_heders_lengt()
         #object_unit.express_shina_competitor_on_date1()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         #print('bagoria', context['list_of_tyre_comparative_objects'])
 
         ###### END EXPRESS_SHINA
@@ -2517,8 +2540,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         obj.kolesatyt_heders_value()
         obj.kolesatyt_heders_lengt()
         #object_unit.kolesatyt_competitor_on_date1()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END KOLESATYT
 
 
@@ -2586,8 +2608,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         obj.kolesa_darom_heders_lengt()
         #object_unit.kolesa_darom_competitor_on_date1()
 
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END KOLESA_DAROM
 
 #       ## 2 фильтр конкурентов CHEMCURIER:
@@ -2633,7 +2654,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
         obj.chemcurier_heders_value()
         obj.chemcurier_heders_lengt()
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END OF CHEMCURIER
 
         # если применен фильтр:
@@ -2668,17 +2689,17 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
             context['chosen_date'] = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
 
-        ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
-        models.TYRE_GROUPS = []     
-        models.TYRE_GROUPS_ALL = [] 
-        models.SELF_PRODUCTION = []
-        models.SELF_PRODUCTION_ALL = []  
-        models.EXPRESS_SHINA_COMPETITORS = [] 
-        models.KOLESATYT_COMPETITORS = []
-        models.KOLESA_DAROM_COMPETITORS = []
-        models.CHEMCURIER_COMPETITORS = []
-        models.SEARCH_USER_REQUEST = []
-        models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+        #### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
+        #models.TYRE_GROUPS = []     
+        #models.TYRE_GROUPS_ALL = [] 
+        #models.SELF_PRODUCTION = []
+        #models.SELF_PRODUCTION_ALL = []  
+        #models.EXPRESS_SHINA_COMPETITORS = [] 
+        #models.KOLESATYT_COMPETITORS = []
+        #models.KOLESA_DAROM_COMPETITORS = []
+        #models.CHEMCURIER_COMPETITORS = []
+        #models.SEARCH_USER_REQUEST = []
+        #models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
         
         # пагинация самодельная:
         current_pagination_value = models.PAGINATION_VAL
@@ -2689,6 +2710,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         #context['current_pagination_value'] = current_pagination_value        
 
         posts = context['list_of_tyre_comparative_objects']
+        print(len(posts), 'posts!!!!!!!')
         if 'page' in self.request.GET:
             page = self.request.GET['page']
         else:
@@ -2704,6 +2726,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         #print('posts', posts)
 
         context['list_of_tyre_comparative_objects'] = posts
+        # END # пагинация самодельная
 
         currency, curr_value, shown_date = my_tags.currency_on_date()
         context['currency'] = currency
@@ -2723,6 +2746,20 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 class ComparativeAnalysisTableModelRussiaUpdateView(View):
 
     def post(self, request):
+
+        ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
+        models.TYRE_GROUPS = []     
+        models.TYRE_GROUPS_ALL = [] 
+        models.SELF_PRODUCTION = []
+        models.SELF_PRODUCTION_ALL = []  
+        models.EXPRESS_SHINA_COMPETITORS = [] 
+        models.KOLESATYT_COMPETITORS = []
+        models.KOLESA_DAROM_COMPETITORS = []
+        models.CHEMCURIER_COMPETITORS = []
+        models.SEARCH_USER_REQUEST = []
+        models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+
+
         #print (request.POST.getlist('competitors'), 'TTTT')
         #print (request.POST, 'TTTT')
 
@@ -2770,6 +2807,9 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
         if production_tyres_list_all:
             #print('production_tyres_list_all', production_tyres_list_all)
             models.SELF_PRODUCTION_ALL = production_tyres_list_all
+        else:
+            #print('production_tyres_list', production_tyres_list)
+            models.SELF_PRODUCTION = production_tyres_list
 
         ### ЕСЛИ ПОЛЬЗОВАТЬЕЛЬ ИЩЕТ ЧЕРЕЗ ПОИСК:
         production_tyres_list_one = request.POST.getlist('product_search')

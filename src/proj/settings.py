@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'homepage',
     'prices',
     'crispy_forms',
+    'googlecharts',
+    'spurl',
 
 ]
 
