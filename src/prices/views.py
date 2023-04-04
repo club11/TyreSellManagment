@@ -23,7 +23,7 @@ from . import forms as prices_forms
 
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import json
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -1265,19 +1265,126 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
 
         
-        ##############   ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS              
-        #object_unit = list_of_tyre_comparative_objects.get(id=310)          # import matplotlib.pyplot as plt
-        #list_of_filtered_competitors_dates = [] 
-        #list_of_filtered_competitors_prices = []
+        #############   ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS    
+        # НА ПРИМЕРЕ ОДНОГО ОБЪЕКТА: 
+        object_unit = list_of_tyre_comparative_objects.get(id=310)          # import matplotlib.pyplot as plt           
+        list_of_competitors = []
         #for comp in object_unit.price_tyre_to_compare.filter(site='onliner.by'):
-        #    print(comp.price, comp.date_period, comp )
-        #    list_of_filtered_competitors_dates.append(comp.date_period)
-        #    list_of_filtered_competitors_prices.append(comp.price)
-        #my_series = pd.DataFrame({'dates':list_of_filtered_competitors_dates, 'prices':list_of_filtered_competitors_prices})
-        #plt.plot(my_series['dates'], my_series['prices'])               
-        ###print(plt.plot(my_series['dates'], my_series['prices']))
-        ##plt.show()
-        ##### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
+        for comp in object_unit.price_tyre_to_compare.all():
+            #print('HHHHHHHHHHHH', comp.price, comp.date_period, comp.developer.competitor_name)
+            list_of_competitors.append(comp.developer.competitor_name)                                          #1 получаем наименования всех конкурентов для легенды таблицы
+        start_date = object_unit.price_tyre_to_compare.earliest('date_period').date_period                      #2.1 получаем начальную дату из всех конкурентов
+        last_date = object_unit.price_tyre_to_compare.latest('date_period').date_period                         #2.2 получаем конечную дату из всех конкурентов
+        all_days_in_period = pd.date_range(start=start_date, end=last_date).date                                #2.2 получаем все даты периода
+        list_of_competitors_set = set(list_of_competitors)                                                      #3. получаем список всех имен компаний-производителей
+
+        #print('list_of_competitors_set', list_of_competitors_set)
+    
+        # СОБИРАЕМ ПРЕДВАРИТЕЛЬНЫЙ СПИСОК С ИМЕЮЩИМИСЯ ДАННЫМИ и искуственными пробелами NONE:
+        competit_on_current_date_assembled = []
+        for date_day in all_days_in_period: 
+            competit_on_current_date = []
+            for comp_name in list_of_competitors_set:
+                for comp_obj in object_unit.price_tyre_to_compare.all():     
+                    if comp_obj in object_unit.price_tyre_to_compare.filter(developer__competitor_name=comp_name, date_period=date_day): 
+                        values = comp_name, comp_obj.date_period.strftime("%d.%m.%Y"), comp_obj.price
+                        values = list(values)
+                        break
+                    else:
+                        values = comp_name, date_day.strftime("%d.%m.%Y"), None
+                        values = list(values)
+                competit_on_current_date.append(values)
+            competit_on_current_date_assembled.append(competit_on_current_date)    
+        #print('competit_on_current_date_assembled', competit_on_current_date_assembled)  
+
+        # ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ:
+        complided_data_len = 0  # проверка все ли части равны
+        complided_data_len_el = None
+        if competit_on_current_date_assembled:
+            complided_data_len = len(competit_on_current_date_assembled[0])  
+            complided_data_len_el = len(competit_on_current_date_assembled[0][0]) - 1 
+        all_parts_are_equal = False      
+        for complided_data in competit_on_current_date_assembled:
+            complided_data_len_got = len(complided_data)
+            if complided_data_len_got == complided_data_len:
+                all_parts_are_equal = True
+
+        #for n in competit_on_current_date_assembled:
+        #    print(n)
+
+        work_index = None
+        position_couner = complided_data_len - 1
+        temporary_list = competit_on_current_date_assembled
+        while position_couner > 0 or position_couner == 0:
+            for perr_val in competit_on_current_date_assembled:
+                val = perr_val[position_couner][complided_data_len_el]
+                curr_perr_val_index = competit_on_current_date_assembled.index(perr_val)
+                if val is None:               # если значение  None, поиск в впредыдущих позициях дат этого производителя       # perr_val[3][complided_data_len_el]    # [position_couner] = 3                                 
+                    position_couner_small = position_couner
+                    #print('val', competit_on_current_date_assembled[curr_perr_val_index][position_couner][complided_data_len_el])       # val 124.22
+                    while position_couner_small > 0 or position_couner_small == 0:
+                        if competit_on_current_date_assembled.index(perr_val) == 0:
+                            for perr_val in competit_on_current_date_assembled[competit_on_current_date_assembled.index(perr_val):]:
+                                val_prev = perr_val[position_couner_small][complided_data_len_el]
+                                if val_prev:
+                                    val = val_prev
+                                    break
+                            if val:
+                                break
+                            position_couner_small -= 1
+                        else:
+                            for perr_val in competit_on_current_date_assembled[work_index:]:  
+                                val_prev = perr_val[position_couner_small][complided_data_len_el]
+                                if val_prev:
+                                    val = val_prev
+                                    break
+                            if val:
+                                break
+                            position_couner_small -= 1
+                competit_on_current_date_assembled[curr_perr_val_index][position_couner][complided_data_len_el] = val
+                work_index = competit_on_current_date_assembled.index(perr_val)             # последний на данный момент по дате индекс заполненных вместо None данных поданному производителю
+            #    print(perr_val, perr_val[position_couner][complided_data_len_el], competit_on_current_date_assembled.index(perr_val))
+            #print('NEXT')
+            position_couner -= 1
+        # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                 
+        #for n in competit_on_current_date_assembled:
+        #    print(n)     
+
+        # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
+        assembles_to_dict_data_dict = {}
+        assembles_to_dict_data_dict['competitor_producer_names'] = {}
+        assembles_to_dict_data_dict['dates'] = {}
+        assembles_to_dict_data_dict['competitor_values'] = {}
+        for lists_values in competit_on_current_date_assembled:
+            #print('!', lists_values,'LENGTH = ', len(lists_values))    ! [('Cordiant', None, None), ('LingLong', None, None), ('iLink', None, None), ('Michelin', '20.03.2023', 351.1), ('Arivo', None, None)] LENGTH =  
+            list_of_competitor_producer_names = []
+            list_of_dates = []
+            for vall in lists_values:
+                list_of_competitor_producer_names.append(vall[0])
+                list_of_dates.append(vall[1])
+            #print(list_of_dates)
+            assembles_to_dict_data_dict['competitor_producer_names'] = list_of_competitor_producer_names
+            assembles_to_dict_data_dict['dates'] = list_of_dates
+            break
+        list_of_competitor_values = []
+        chart_data_counter = 0                                              # подмешиваем индекс как для DateFrame # [1,  37.8, 80.8, 41.8], - где 1 - индекс строки условно
+        for lists_values in competit_on_current_date_assembled:
+            list_of_period_competitor_values = []
+            chart_data_counter += 1
+            list_of_period_competitor_values.append(chart_data_counter) 
+            for vall in lists_values:
+                list_of_period_competitor_values.append(vall[2])
+            list_of_competitor_values.append(list_of_period_competitor_values)
+        #assembles_to_dict_data_dict['competitor_values'] = json.dumps(list_of_competitor_values)  
+        assembles_to_dict_data_dict['competitor_values'] = list_of_competitor_values    
+        #print('competitor_producer_name_dict', assembles_to_dict_data_dict['competitor_producer_names'])
+        #print('competitor_date_dict', assembles_to_dict_data_dict['dates'])
+        #print('competitor_valuee_dict', assembles_to_dict_data_dict['competitor_values'])
+        context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
+        context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
+        ##frame = pd.DataFrame(assembles_to_dict_data_dict)
+
+        #### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
 
 
         return context
@@ -2710,7 +2817,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         #context['current_pagination_value'] = current_pagination_value        
 
         posts = context['list_of_tyre_comparative_objects']
-        print(len(posts), 'posts!!!!!!!')
+        #print(len(posts), 'posts!!!!!!!')
         if 'page' in self.request.GET:
             page = self.request.GET['page']
         else:
