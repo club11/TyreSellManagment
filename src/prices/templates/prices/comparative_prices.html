@@ -231,9 +231,8 @@
 
   function drawChart() {
 
-    
     var data = new google.visualization.DataTable();
-      data.addColumn('number', 'Day');
+      data.addColumn('string', 'Day');
 
         for (var values, _pj_c = 0, _pj_a = {{ competitor_names|safe }}, _pj_b = _pj_a.length; _pj_c < _pj_b; _pj_c += 1) {     
           values = _pj_a[_pj_c];                                                                                                
@@ -241,7 +240,7 @@
           data.addColumn('number', values);                                                                                     
         }                                                                                                                       
 
-      data.addRows({{ competitor_values|safe }}); 
+        data.addRows({{ competitor_values|safe }});
 
       var options = {
         chart: {
@@ -250,6 +249,7 @@
         },
         width: 900,
         height: 400
+        
       };
 
     var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));

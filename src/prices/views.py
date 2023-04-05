@@ -1355,31 +1355,40 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         assembles_to_dict_data_dict['competitor_producer_names'] = {}
         assembles_to_dict_data_dict['dates'] = {}
         assembles_to_dict_data_dict['competitor_values'] = {}
+        list_of_dates = []
         for lists_values in competit_on_current_date_assembled:
-            #print('!', lists_values,'LENGTH = ', len(lists_values))    ! [('Cordiant', None, None), ('LingLong', None, None), ('iLink', None, None), ('Michelin', '20.03.2023', 351.1), ('Arivo', None, None)] LENGTH =  
+            #print('!', lists_values,'LENGTH = ', len(lists_values))    #! [('Cordiant', None, None), ('LingLong', None, None), ('iLink', None, None), ('Michelin', '20.03.2023', 351.1), ('Arivo', None, None)] LENGTH =  
             list_of_competitor_producer_names = []
-            list_of_dates = []
             for vall in lists_values:
-                list_of_competitor_producer_names.append(vall[0])
+                #print('vall ', vall)
+                list_of_competitor_producer_names.append(vall[0])    
+            for vall in lists_values:
                 list_of_dates.append(vall[1])
+                break
             #print(list_of_dates)
             assembles_to_dict_data_dict['competitor_producer_names'] = list_of_competitor_producer_names
             assembles_to_dict_data_dict['dates'] = list_of_dates
-            break
+            
+
         list_of_competitor_values = []
-        chart_data_counter = 0                                              # подмешиваем индекс как для DateFrame # [1,  37.8, 80.8, 41.8], - где 1 - индекс строки условно
+        chart_data_counter = 0                                              # подмешиваем дату строкой как  # [1,  37.8, 80.8, 41.8], -
+        number_of_periods = len(assembles_to_dict_data_dict['dates'])                         # old =number_of_periods== 5 ['20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023']       
+        #print('number_of_periods==', number_of_periods, assembles_to_dict_data_dict['dates'])       
         for lists_values in competit_on_current_date_assembled:
             list_of_period_competitor_values = []
-            chart_data_counter += 1
-            list_of_period_competitor_values.append(chart_data_counter) 
+            #print('chart_data_counter', chart_data_counter)
+            list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
+            if chart_data_counter < number_of_periods-1:
+                chart_data_counter += 1
+            #list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter-1])  
             for vall in lists_values:
                 list_of_period_competitor_values.append(vall[2])
             list_of_competitor_values.append(list_of_period_competitor_values)
-        #assembles_to_dict_data_dict['competitor_values'] = json.dumps(list_of_competitor_values)  
+    
         assembles_to_dict_data_dict['competitor_values'] = list_of_competitor_values    
-        #print('competitor_producer_name_dict', assembles_to_dict_data_dict['competitor_producer_names'])
-        #print('competitor_date_dict', assembles_to_dict_data_dict['dates'])
-        #print('competitor_valuee_dict', assembles_to_dict_data_dict['competitor_values'])
+
+        #for n in assembles_to_dict_data_dict['competitor_values']:
+        #    print(n)
         context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
         context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
         ##frame = pd.DataFrame(assembles_to_dict_data_dict)
