@@ -177,6 +177,11 @@
   {{ shown_date}} ---- {{ curr_value }} ---- {{ currency }}
 </div>  
 
+<div class="form-check form-check-inline" >
+  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="true" name="marketplace_on" {{ marketplace_on_checked }}>
+  <label class="form-check-label" for="inlineCheckbox1">Переключить график: вывод данных в разрезе торговых площадок</label>
+</div>
+
 </form>
 
 
@@ -192,11 +197,11 @@
 </div>
 <div class="form-check form-switch">
   <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
-  <label class="form-check-label" for="btncheck3">показать/скрыть  Bagoria</label>
+  <label class="form-check-label" for="btncheck3">показать/скрыть Bagoria</label>
 </div>
 <div class="form-check form-switch">
   <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
-  <label class="form-check-label" for="btncheck4">показать/скрыть  Chemcurier</label> 
+  <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
 </div>
 
 <p>дополнительные данные:</p>
@@ -221,8 +226,13 @@
 
 
 
+
 {# % include 'prices/charts.html' % #}
 {# {% include '../charts.html' %} #}
+
+{{ object_unit }}<br>
+{{ filter_producer }}<br>
+{{ SSSSites }}<br>
 
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
@@ -244,12 +254,12 @@
 
       var options = {
         chart: {
-          title: 'Competitiors ',
+          title: 'Competitiors',
           subtitle: 'in millions of dollars (USD)'
         },
+        title: "{{ chart_title|safe }}",  
         width: 900,
         height: 400
-        
       };
 
     var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));

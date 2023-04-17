@@ -56,6 +56,8 @@ SEARCH_USER_REQUEST = None
 CURRENCY_DATE_GOT_FROM_USER = None
 CURRENCY_VALUE_RUB = None
 
+GOOGLECHART_MARKETPLACE_ON = False
+
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,

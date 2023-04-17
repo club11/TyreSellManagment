@@ -67,6 +67,7 @@ class ComparativeAnalysisTableModelAdmin(admin.ModelAdmin):
 class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
     list_display = [
             #'table',
+            'id',
             'tyre',
             'planned_costs',
             'semi_variable_prices',
@@ -79,6 +80,7 @@ class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
     ]
 
 class CompetitorSiteModelAdmin(admin.ModelAdmin):
+    filter_horizontal = ('tyre_to_compare',)                # MANYTOMANYFIELD display on adminsite
     list_display = [
             'site',
             #'tyre_to_compare',
