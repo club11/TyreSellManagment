@@ -1406,35 +1406,42 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         small_list_for_formating.append(put_data)
                 list_for_formating.append(small_list_for_formating)
             #print('list_for_formating', list_for_formating)
-        #else:                             # ЕСЛИ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
-        #    context['weighted_average_checked'] = 'checked'
-        #    list_for_formating = []
-        #    position_couner = None          # понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем     
-        #    for ddate in all_days_in_period:
-        #        small_list_for_formating = []
-        #        for k, v in new_result_for_comp_dict.items():     ### !!!!!! 
-        #            devvider = 0                                           # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!   
-        #            weighted_average_val = 0                               # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!     
-        #            for compet in list_of_competitors_set:                 # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!           
-        #                if ddate.strftime("%Y-%m-%d") == k[1] and compet == k[0]:
-        #                    devvider += 1 
-        #                    #print('v[1]', v[1])
-        #                    if v[1] is None:
-        #                       v[1] = 0 
-        #                    weighted_average_val += v[1]
-        #                    put_data = k[0], k[1], weighted_average_val            # [['JONWICK', '2023-04-05', None,  # 'onliner.by']   ['SAMURAI', '2023-04-19', 750.0, # 'kolesa-darom.ru']]
-        #                    put_data = list(put_data)
-        #                    position_couner = put_data.index(v[1])
-        #                    #print('!', put_data)
-        #                if put_data[2] and devvider:
-        #                    put_data[2] = put_data[2] / devvider
-        #                else:
-        #                    put_data[2] = None
-        #            print('put_data', put_data)
-        #            small_list_for_formating.append(put_data)
-        #                #print('small_list_for_formating', small_list_for_formating)
-        #        list_for_formating.append(small_list_for_formating)
-        #    #print('list_for_formating!', list_for_formating)
+        else:                             # ЕСЛИ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
+            context['weighted_average_checked'] = 'checked'
+            list_for_formating = []
+            position_couner = None          # понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем     
+            for ddate in all_days_in_period: 
+                small_list_for_formating = []    
+                for compet in list_of_competitors_set:                 # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!      
+                    devvider = 0                                           # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!   
+                    weighted_average_val = 0                               # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!
+                    list_of_sites = []
+                    for k, v in new_result_for_comp_dict.items():     ### !!!!!!          
+                        if ddate.strftime("%Y-%m-%d") == k[1] and compet == k[0]:
+                            devvider += 1 
+                            #print('v[1]', v[1], 'VZO', v, 'KTO', k)
+                            perman_val = 0
+                            if v[1] is None:
+                               perman_val = 0 
+                            else:
+                                perman_val = v[1]
+                            #print('weighted_average_val', weighted_average_val, 'devvider', devvider)
+                            list_of_sites.append(v[0])
+                            weighted_average_val += perman_val
+                            put_data = k[0], k[1], weighted_average_val, f'средневзвешенная по сайтам: {list_of_sites}'            # [['JONWICK', '2023-04-05', None,  # 'onliner.by']   ['SAMURAI', '2023-04-19', 750.0, # 'kolesa-darom.ru']]
+                            put_data = list(put_data)
+                            #########print('put_data', put_data)
+                            position_couner = put_data.index(weighted_average_val)
+                    #print ('put_data', put_data, 'devvider:', devvider)
+                    if put_data[position_couner] and devvider:
+                        put_data[position_couner] = put_data[position_couner] / devvider
+                    else:
+                        put_data[position_couner] = None
+                    #print ('put_data', put_data, 'devvider:', devvider) 
+                    small_list_for_formating.append(put_data)   
+                #print('=======')
+                list_for_formating.append(small_list_for_formating)
+            #print('list_for_formating!', list_for_formating)
 
         competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
         #competit_on_current_date_assembled = []     # ЗАГЛУЩ+ШКА  УДАЛИТЬ       
