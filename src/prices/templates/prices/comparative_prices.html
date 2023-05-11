@@ -5,224 +5,227 @@
 {% block title %} Comparative table Belarus {% endblock title %}
 {% block body %} 
 
-<h2>Маркетплейс-анализ. Рынок: Республика Беларусь</h2>
-<div class="container" id="table_container">
-  <table class="table table align-middle table-hover table-striped table-bordered table-dark table-sm">
-    <caption></caption>
-    <thead>
-      <tr >
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">#</p></span></th> 
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">номенклатура</p></span></th>  
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">сезонность индексы рисунок и прочее</p></span></th>
-        <th class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">полные затраты</p></span></th>
-        <th class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">прямые затраты</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">прейскуранты №№9, 902</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС РФ FCA</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС Казахстан FCA</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС Средняя Азия, Закавказье, Молдова FCA</p></span></p></span</th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">действующие цены</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">плановая рентабельность</p></span></th>
-        <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат</p></span></th>
-      
-        {% if object.onliner_heders_lengt %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.onliner_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Onliner</p></span></th>
-        {% endif %}
-      
-        {% if object.avtoset_heders_lengt %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.avtoset_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Avtoset</p></span></th>
-        {% endif %}
-      
-        {% if object.bagoria_heders_lengt %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.bagoria_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Bagoria</p></span></th>
-        {% endif %}
-      
-        {% if object.chemcurier_heders_lengt %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.chemcurier_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Chemcurier</p></span></th>
-        {% endif %}
-      </tr>
-      <tr>
-        {% for head1, head2, head3 in object.onliner_heders_value  %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
+
+
+  <h2>Маркетплейс-анализ. Рынок: Республика Беларусь</h2>
+  <div class="container" id="table_container">
+    <table class="table table align-middle table-hover table-striped table-bordered table-dark table-sm">
+      <caption></caption>
+      <thead>
+        <tr >
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">#</p></span></th> 
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">номенклатура</p></span></th>  
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">сезонность индексы рисунок и прочее</p></span></th>
+          <th class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">полные затраты</p></span></th>
+          <th class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">прямые затраты</p></span></th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">прейскуранты №№9, 902</p></span></th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС РФ FCA</p></span></th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС Казахстан FCA</p></span></th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">ТПС Средняя Азия, Закавказье, Молдова FCA</p></span></p></span</th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">действующие цены</p></span></th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">плановая рентабельность</p></span></th>
+          <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат</p></span></th>
+        
+          {% if object.onliner_heders_lengt %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.onliner_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Onliner</p></span></th>
+          {% endif %}
+        
+          {% if object.avtoset_heders_lengt %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.avtoset_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Avtoset</p></span></th>
+          {% endif %}
+        
+          {% if object.bagoria_heders_lengt %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.bagoria_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Bagoria</p></span></th>
+          {% endif %}
+        
+          {% if object.chemcurier_heders_lengt %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.chemcurier_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Chemcurier</p></span></th>
+          {% endif %}
+        </tr>
+        <tr>
+          {% for head1, head2, head3 in object.onliner_heders_value  %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
+          {% endfor %}
+        
+          {% for head1, head2, head3 in object.avtoset_heders_value  %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
+          {% endfor %}
+        
+          {% for head1, head2, head3 in object.bagoria_heders_value  %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
+          {% endfor %}
+        
+          {% for head1, head2, head3 in object.chemcurier_heders_value  %}
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
+          <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for object in list_of_tyre_comparative_objects %}
+        <tr>
+         <td scope="row"; align="center"; valign="middle">{{ forloop.counter0|add:list_of_tyre_comparative_objects.start_index }}</td>
+          <td class="sticky-col second-col"><a href=""></a>
+          <span class="align-middle">
+            {{ object.tyre.tyre_size.tyre_size }} {{ object.tyre.tyre_model.model }}</p></span>
+          {% for param in object.tyre.tyre_type.all %}
+            {{ param.tyre_type }}
+          {% endfor %}</td>
+
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{% for index in object.tyre.added_features.all %} {{ index.indexes_list }} {{ index.season_usage.season_usage_name }} {% endfor %}</p></span></td>
+          {# <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs.price|floatformat:"2g" }}</p></span></td> #}
+          <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+          {# <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices.price|floatformat:"2g" }}</p></span></td> #}
+          <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+          {#<td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price.price|floatformat:"2g" }}</p></span></td> #}
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpsrussiafcaprice.price|floatformat:"2g" }}</p></span></td>
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpskazfcaprice.price|floatformat:"2g" }}</p></span></td>
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpsmiddleasiafcaprice.price|floatformat:"2g" }}</p></span></td>
+          {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice.price|floatformat:"2g" }}</p></span></td> #}
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
+          {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitabilit|floatformat:2 }}</p></span></td> #}
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitability_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
+          {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance|floatformat:2 }}%</p></span></td> #}
+          <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
+          
+          {% for comp, price, deflection in object.onliner_competitor_on_date1 %}
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>  
+          {% endfor %}
+          
+          {% for comp, price, deflection in object.avtoset_competitor_on_date1 %}
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
+          {% endfor %}
+          
+          {% for comp, price, deflection in object.bagoria_competitor_on_date1 %}
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
+          {% endfor %}
+          
+          {% for val in object.chemcurier_competitor_on_date1 %}
+          <td class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ val }}</p></span></td> 
+          {% endfor %}    
+        </tr>
         {% endfor %}
-      
-        {% for head1, head2, head3 in object.avtoset_heders_value  %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
+      </tbody>
+    </table>
+    </div>
+
+
+
+
+
+
+    <form action="{% url 'prices:apricestable_update' %}" method="post">
+        {% csrf_token %}
+    
+    <div class="dropdown dropstart">  
+      <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        выбрать производителя:
+      </button>
+      <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+          <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все производители</b></li>
+        {% for comp in producer_filter_form %}
+          <li>{{ comp }}</li>
         {% endfor %}
-      
-        {% for head1, head2, head3 in object.bagoria_heders_value  %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
+      </ul>
+    </div>
+
+    <div class="dropdown dropstart">  
+      <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        выбрать продукцию:
+      </button>
+      <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+          <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li>
+        {% for ttyre in in_base_tyres  %}
+          <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
         {% endfor %}
-      
-        {% for head1, head2, head3 in object.chemcurier_heders_value  %}
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
-        <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
+      </ul>
+    </div>
+
+    <div class="dropdown dropstart">  
+      <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        выбрать группу шин:
+      </button>
+      <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+          <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
+        {% for group in in_base_tyres_by_group  %}
+          <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}">{{ group.tyre_group }}</li>
         {% endfor %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for object in list_of_tyre_comparative_objects %}
-      <tr>
-       <td scope="row"; align="center"; valign="middle">{{ forloop.counter0|add:list_of_tyre_comparative_objects.start_index }}</td>
-        <td class="sticky-col second-col"><a href=""></a>
-        <span class="align-middle">
-          {{ object.tyre.tyre_size.tyre_size }} {{ object.tyre.tyre_model.model }}</p></span>
-        {% for param in object.tyre.tyre_type.all %}
-          {{ param.tyre_type }}
-        {% endfor %}</td>
+      </ul>
+    </div>
 
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{% for index in object.tyre.added_features.all %} {{ index.indexes_list }} {{ index.season_usage.season_usage_name }} {% endfor %}</p></span></td>
-        {# <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs.price|floatformat:"2g" }}</p></span></td> #}
-        <td class="collapse multi-collapse-horizontal" id="collapseWidthExample5" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_costs_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
-        {# <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices.price|floatformat:"2g" }}</p></span></td> #}
-        <td class="collapse multi-collapse-horizontal" id="collapseWidthExample6" scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.semi_variable_prices_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
-        {#<td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price.price|floatformat:"2g" }}</p></span></td> #}
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.belarus902price_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpsrussiafcaprice.price|floatformat:"2g" }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpskazfcaprice.price|floatformat:"2g" }}</p></span></td>
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.tpsmiddleasiafcaprice.price|floatformat:"2g" }}</p></span></td>
-        {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice.price|floatformat:"2g" }}</p></span></td> #}
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.currentpricesprice_from_currency_to_bel_rub|floatformat:"2g" }}</p></span></td>
-        {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitabilit|floatformat:2 }}</p></span></td> #}
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.planned_profitability_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
-        {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance|floatformat:2 }}%</p></span></td> #}
-        <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
-      
-        {% for comp, price, deflection in object.onliner_competitor_on_date1 %}
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>  
-        {% endfor %}
-      
-        {% for comp, price, deflection in object.avtoset_competitor_on_date1 %}
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
-        {% endfor %}
-      
-        {% for comp, price, deflection in object.bagoria_competitor_on_date1 %}
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
-        {% endfor %}
-      
-        {% for val in object.chemcurier_competitor_on_date1 %}
-        <td class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ val }}</p></span></td> 
-        {% endfor %}
-      
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  </div>
+    задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br>
+    <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
+
+
+    <div>{{ deflection_form }}</div>
+    <div>{{ pagination_val_per_form }}</div> 
+
+
+
+    <div>{{ currency_input_form }}
+      {{ shown_date}} ---- {{ curr_value }} ---- {{ currency }}
+    </div>  
+
+
+    <div class="form-check form-check-inline" >
+      <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
+      <label class="form-check-label" for="inlineCheckbox2">Вывести информацию в графике в виде средневзвешенной цены на рынке</label>
+    </div>
 
 
 
 
-<form action="{% url 'prices:apricestable_update' %}" method="post">
-    {% csrf_token %}
 
-<div class="dropdown dropstart">  
-  <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    выбрать производителя:
-  </button>
-  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-      <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все производители</b></li>
-    {% for comp in producer_filter_form %}
-      <li>{{ comp }}</li>
-    {% endfor %}
-  </ul>
-</div>
-
-<div class="dropdown dropstart">  
-  <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    выбрать продукцию:
-  </button>
-  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-      <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li>
-    {% for ttyre in in_base_tyres  %}
-      <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
-    {% endfor %}
-  </ul>
-</div>
-
-<div class="dropdown dropstart">  
-  <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    выбрать группу шин:
-  </button>
-  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-      <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
-    {% for group in in_base_tyres_by_group  %}
-      <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}">{{ group.tyre_group }}</li>
-    {% endfor %}
-  </ul>
-</div>
-
-задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br>
-<button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
+    </form>
 
 
-<div>{{ deflection_form }}</div>
-<div>{{ pagination_val_per_form }}</div> 
+    <form>
+    <p>работа с источником данных:</p>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
+      <label class="form-check-label" for="btncheck1">показать/скрыть Onliner</label> 
+    </div>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
+      <label class="form-check-label" for="btncheck2">показать/скрыть Avtoset</label> 
+    </div>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
+      <label class="form-check-label" for="btncheck3">показать/скрыть Bagoria</label>
+    </div>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
+      <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
+    </div>
 
+    <p>дополнительные данные:</p>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
+      <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
+    </div>
+    </form>
 
+    {% include '../pagination_table.html' %}
 
-<div>{{ currency_input_form }}
-  {{ shown_date}} ---- {{ curr_value }} ---- {{ currency }}
-</div>  
-
-<div class="form-check form-check-inline" >
-  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="true" name="marketplace_on" {{ marketplace_on_checked }}>
-  <label class="form-check-label" for="inlineCheckbox1">Переключить график: вывод данных в разрезе торговых площадок</label>
-</div>
-<div class="form-check form-check-inline" >
-  <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
-  <label class="form-check-label" for="inlineCheckbox2">Показать средневзвешенную цену на рынке</label>
-</div>
-<div>{{ weighted_average_checked }}</div>
-
-</form>
-
-
-<form>
-<p>работа с источником данных:</p>
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
-  <label class="form-check-label" for="btncheck1">показать/скрыть Onliner</label> 
-</div>
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
-  <label class="form-check-label" for="btncheck2">показать/скрыть Avtoset</label> 
-</div>
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
-  <label class="form-check-label" for="btncheck3">показать/скрыть Bagoria</label>
-</div>
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
-  <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
-</div>
-
-<p>дополнительные данные:</p>
-<div class="form-check form-switch">
-  <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
-  <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
-</div>
-</form>
-
-{% include '../pagination_table.html' %}
-
-<form action="{% url 'prices:apricestable_russia_update' %}" method="post">
-  {% csrf_token %}
-  <input type="text" name="product_search">
-  <button type="submit">Найти</button>
-</form>
+    <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
+      {% csrf_token %}
+      <input type="text" name="product_search">
+      <button type="submit">Найти</button>
+    </form>
 
 
 
@@ -235,54 +238,67 @@
 {# % include 'prices/charts.html' % #}
 {# {% include '../charts.html' %} #}
 
-{{ object_unit }}<br>
-{{ filter_producer }}<br>
-{{ SSSSites }}<br>
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-  google.charts.load('current', {'packages':['corechart']});
-  google.charts.setOnLoadCallback(drawChart);
 
-  function drawChart() {
 
-    var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Day');
 
-        for (var values, _pj_c = 0, _pj_a = {{ competitor_names|safe }}, _pj_b = _pj_a.length; _pj_c < _pj_b; _pj_c += 1) {     
-          values = _pj_a[_pj_c];                                                                                                
-          values;                                                                                                               
-          data.addColumn('number', values);                                                                                     
-        }                                                                                                                       
+    {{ object_unit }}<br>
+    {{ filter_producer }}<br>
+    {{ sites_filter_chart }}<br>
 
-        data.addRows({{ competitor_values|safe }});
 
-      var options = {
-        chart: {
-          title: 'Competitiors',
-          subtitle: 'in millions of dollars (USD)'
-        },
-        title: "{{ chart_title|safe }}",  
-        width: 900,
-        height: 400
-      };
 
-    var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
 
-    chart.draw(data, options);
-  }
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable(
+          {{ final_parsed_data_from_sites|safe }}
+        );
+
+        var options = {
+          title: 'Количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+
+
+
+
+
+
+
+
+
+
   
-</script>
-
-<div id="curve_chart" style="width: 900px; height: 500px"></div>
-
-
-
-
 
 
 
 {% endblock body %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 {# <p> #}
@@ -296,13 +312,19 @@
 {# <div class="btn-group-vertical" role="group" aria-label="Базовая группа переключателей флажков Сайты и Химкурьер">  #}
 {#   <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">  #}
 {#   <label class="btn btn-outline-success" for="btncheck1">скрыть/показать Onliner</label>  #}
-{# 
+
 {#   <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="false" aria-controls="collapseWidthExample1">  #}
 {#   <label class="btn btn-outline-success" for="btncheck2">скрыть/показать Avtoset</label> #} 
-{# 
+
 {#   <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="false" aria-controls="collapseWidthExample2"> #}
 {#   <label class="btn btn-outline-success" for="btncheck3">скрыть/показать Bagoria</label> #}
-{# 
+
 {#   <input type="checkbox" class="btn-check" id="btncheck4" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="false" aria-controls="collapseWidthExample3"> #}
 {#   <label class="btn btn-outline-success" for="btncheck4">скрыть/показать Chemcurier</label>  #}
 {# </div>  #}
+
+
+{#  <div class="form-check form-check-inline" >#}
+  {#  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="true" name="marketplace_on" {{ marketplace_on_checked }}>#}
+  {#  <label class="form-check-label" for="inlineCheckbox1">Переключить график: вывод данных в разрезе торговых площадок</label>#}
+  {#</div>  #}
