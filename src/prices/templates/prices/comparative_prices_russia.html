@@ -246,7 +246,10 @@
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-    google.load('visualization', '1', {packages: ['controls']});
+    //google.load('visualization', '1', {packages: ['controls']});
+
+    //google.charts.load('current', {packages: ['corechart', 'line'], 'language': 'ru'});
+    google.charts.load('current', {'packages':['line']});
     google.setOnLoadCallback(drawChart);
 
     function drawChart () {
@@ -272,15 +275,44 @@
         }
         // ЗДЕСЬ САМ ГРАФИК ПРЕДСТАВЛЕНИЕ
         var chart = new google.visualization.ChartWrapper({
-            chartType: 'LineChart',
+
+            //chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!
+            chartType: 'Line',
+
             containerId: 'chart_div',
             dataTable: data,
-            options: {
-                title: "{{ chart_title|safe }}",
-                width: 900,
-                height: 400
-            }
+
+            options: google.charts.Line.convertOptions({
+              chart: {
+                title:"{{ chart_title|safe }}",   
+              },
+              subtitle: "BYN",
+              width: 900,                                       // ширина таблицы
+              height: 400,
+              legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
+              lineWidth: 6,                    // ширина лини
+              vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
+                //gridlines:{color: 'blue'}, // цвет полос оси У
+                format: '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
+              },
+              axes: {                                             // вертикальная ось, дописываем оси здесь
+                  x: {
+                    0: { 
+                      // side: 'top',
+                      label: '',
+                    } 
+                  },
+                  y: {
+                    0: { 
+                      label: 'бел. руб.',
+                      textStyle: {color: 'red'},
+                    } 
+                  }                  
+                },
+          
+            }),  
         });
+
       // ЗДЕСЬ опция выбора:
         var columnFilter = new google.visualization.ControlWrapper({
             controlType: 'CategoryFilter',
@@ -316,6 +348,7 @@
             });
             chart.setView(view);
             chart.draw();
+            
         }
         google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
 

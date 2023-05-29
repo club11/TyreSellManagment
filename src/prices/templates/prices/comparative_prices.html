@@ -5,12 +5,38 @@
 {% block title %} Comparative table Belarus {% endblock title %}
 {% block body %} 
 
+<!---->
+
+<div id="header0"></div>
+
+<div id="header">
 
 
-  <h2>Маркетплейс-анализ. Рынок: Республика Беларусь</h2>
+
+
+
+    <div class="red">1111</div>
+    <div class="green">2222222</div>
+
+        <div class="div1">
+      Маркетплейс-анализ. Рынок: Республика Беларусь
+    </div>
+    <div class="div2">  
+      <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="product_search">
+        <button type="submit">Найти</button>
+      </form>
+    </div>
+    
+</div>
+
+
+<div id="content">
+
   <div class="container" id="table_container">
-    <table class="table table align-middle table-hover table-striped table-bordered table-dark table-sm">
-      <caption></caption>
+    <table class="table caption-top table align-middle table-hover table-striped table-bordered table-dark table-sm">
+      {# <caption></caption> #}
       <thead>
         <tr >
           <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">#</p></span></th> 
@@ -124,9 +150,12 @@
     </div>
 
 
+    {% include '../pagination_table.html' %}
+
+</div>
 
 
-
+<div id="menu">
 
     <form action="{% url 'prices:apricestable_update' %}" method="post">
         {% csrf_token %}
@@ -170,9 +199,9 @@
     задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br>
     <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
 
-
+    <div>{{ pagination_val_per_form }}</div>
     <div>{{ deflection_form }}</div>
-    <div>{{ pagination_val_per_form }}</div> 
+
 
 
 
@@ -185,12 +214,12 @@
       <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
       <label class="form-check-label" for="inlineCheckbox2">Вывести информацию в графике в виде средневзвешенной цены на рынке</label>
     </div>
-
-
-
-
-
     </form>
+
+
+
+
+
 
 
     <form>
@@ -219,13 +248,11 @@
     </div>
     </form>
 
-    {% include '../pagination_table.html' %}
+    
+    
 
-    <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
-      {% csrf_token %}
-      <input type="text" name="product_search">
-      <button type="submit">Найти</button>
-    </form>
+
+</div>
 
 
 
@@ -234,134 +261,138 @@
 
 
 
-
-{# % include 'prices/charts.html' % #}
-{# {% include '../charts.html' %} #}
-
-
-
-
-
-    {{ object_unit }}<br>
-    {{ filter_producer }}<br>
-    {{ sites_filter_chart }}<br>
+  {# % include 'prices/charts.html' % #}
+  {# {% include '../charts.html' %} #}
 
 
 
 
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+  {#     {{ object_unit }}<br> #}
+  {#     {{ filter_producer }}<br> #}
+  {#     {{ sites_filter_chart }}<br> #}
 
-      function drawChart() {
 
-        var data = google.visualization.arrayToDataTable(
-          {{ final_parsed_data_from_sites|safe }}
-        );
 
-        var options = {
-          title: 'Количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}'
-        };
+<div id="first_chart">
 
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
 
-        chart.draw(data, options);
+        function drawChart() {
+
+          var data = google.visualization.arrayToDataTable(
+            {{ final_parsed_data_from_sites|safe }}
+          );
+
+          var options = {
+            title: 'Количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}',
+          };
+
+          var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+          chart.draw(data, options);
+        }
+      </script>
+      <div id="piechart"></div>
+
+</div>
+
+<div id="second_chart">
+
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['controls']});
+      google.setOnLoadCallback(drawChart);
+
+      function drawChart () {
+          var data = new google.visualization.DataTable();
+          data.addColumn('string', 'Year');
+          for (var values, _pj_c = 0, _pj_a = {{ competitor_names|safe }}, _pj_b = _pj_a.length; _pj_c < _pj_b; _pj_c += 1) {     
+                values = _pj_a[_pj_c];                                                                                                
+                values;                                                                                                               
+                data.addColumn('number', values);                                                                                     
+              } 
+          data.addRows({{ competitor_values|safe }});
+
+            
+          var columnsTable = new google.visualization.DataTable();
+          columnsTable.addColumn('number', 'colIndex');
+          columnsTable.addColumn('string', 'colLabel');
+          var initState= {selectedValues: []};
+          // put the columns into this data table (skip column 0)
+          for (var i = 1; i < data.getNumberOfColumns(); i++) {
+              columnsTable.addRow([i, data.getColumnLabel(i)]);
+              // you can comment out this next line if you want to have a default selection other than the whole list
+              initState.selectedValues.push(data.getColumnLabel(i));
+          }
+          // ЗДЕСЬ САМ ГРАФИК ПРЕДСТАВЛЕНИЕ
+          var chart = new google.visualization.ChartWrapper({
+              chartType: 'LineChart',
+              containerId: 'chart_div',
+              dataTable: data,
+              options: {
+                  title: "{{ chart_title|safe }}",
+                  legend: { position: 'bottom' },
+                  //  width: 900,
+                  //  height: 400
+              }
+          });
+        // ЗДЕСЬ опция выбора:
+          var columnFilter = new google.visualization.ControlWrapper({
+              controlType: 'CategoryFilter',
+              containerId: 'colFilter_div',
+              dataTable: columnsTable,
+              options: {
+                  filterColumnLabel: 'colLabel',
+                  ui: {
+                      label: '',
+                      allowTyping: false,
+                      allowMultiple: true,
+                      allowNone: false,
+                      selectedValuesLayout: 'aside',
+                      caption: 'фильтр'
+                  }
+              },
+              state: initState
+          });
+
+          function setChartView () {
+              var state = columnFilter.getState();
+              var row;
+              var view = {
+                  columns: [0]
+              };
+              for (var i = 0; i < state.selectedValues.length; i++) {
+                  row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+                  view.columns.push(columnsTable.getValue(row, 0));
+              }
+              // sort the indices into their original order
+              view.columns.sort(function (a, b) {
+                  return (a - b);
+              });
+              chart.setView(view);
+              chart.draw();
+          }
+          google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
+
+          setChartView();
+          columnFilter.draw();
       }
     </script>
-    <div id="piechart" style="width: 900px; height: 500px;"></div>
 
+  <div id="colFilter_div"></div>
+  <div id="chart_div"></div>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-    google.load('visualization', '1', {packages: ['controls']});
-    google.setOnLoadCallback(drawChart);
-
-    function drawChart () {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Year');
-        for (var values, _pj_c = 0, _pj_a = {{ competitor_names|safe }}, _pj_b = _pj_a.length; _pj_c < _pj_b; _pj_c += 1) {     
-              values = _pj_a[_pj_c];                                                                                                
-              values;                                                                                                               
-              data.addColumn('number', values);                                                                                     
-            } 
-        data.addRows({{ competitor_values|safe }});
-
-    
-        var columnsTable = new google.visualization.DataTable();
-        columnsTable.addColumn('number', 'colIndex');
-        columnsTable.addColumn('string', 'colLabel');
-        var initState= {selectedValues: []};
-        // put the columns into this data table (skip column 0)
-        for (var i = 1; i < data.getNumberOfColumns(); i++) {
-            columnsTable.addRow([i, data.getColumnLabel(i)]);
-            // you can comment out this next line if you want to have a default selection other than the whole list
-            initState.selectedValues.push(data.getColumnLabel(i));
-        }
-        // ЗДЕСЬ САМ ГРАФИК ПРЕДСТАВЛЕНИЕ
-        var chart = new google.visualization.ChartWrapper({
-            chartType: 'LineChart',
-            containerId: 'chart_div',
-            dataTable: data,
-            options: {
-                title: "{{ chart_title|safe }}",
-                width: 900,
-                height: 400
-            }
-        });
-      // ЗДЕСЬ опция выбора:
-        var columnFilter = new google.visualization.ControlWrapper({
-            controlType: 'CategoryFilter',
-            containerId: 'colFilter_div',
-            dataTable: columnsTable,
-            options: {
-                filterColumnLabel: 'colLabel',
-                ui: {
-                    label: '',
-                    allowTyping: false,
-                    allowMultiple: true,
-                    allowNone: false,
-                    selectedValuesLayout: 'aside',
-                    caption: 'фильтр'
-                }
-            },
-            state: initState
-        });
-
-        function setChartView () {
-            var state = columnFilter.getState();
-            var row;
-            var view = {
-                columns: [0]
-            };
-            for (var i = 0; i < state.selectedValues.length; i++) {
-                row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
-                view.columns.push(columnsTable.getValue(row, 0));
-            }
-            // sort the indices into their original order
-            view.columns.sort(function (a, b) {
-                return (a - b);
-            });
-            chart.setView(view);
-            chart.draw();
-        }
-        google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
-
-        setChartView();
-        columnFilter.draw();
-    }
-  </script>
-
-<div id="colFilter_div"></div>
-<div id="chart_div"></div>
+</div>
 
 
 
 
 
-
-
+<div id="footer">xvxcv</div>
   
 
 
