@@ -17,7 +17,7 @@
 }
 
 
-        .bd-placeholder-img {
+.bd-placeholder-img {
           font-size: 1.125rem;
           text-anchor: middle;
           -webkit-user-select: none;
@@ -31,41 +31,66 @@
           }
         }
         main{
-          color: white;
-          background-color: black;
-          height: 200%;
-          background-size: cover;
-        }
-        main > .container {
-          color: white;
-          padding: 60px 15px 0;
+          width: 100%;
           height: auto;
-        }
-        body {
-          display: flex;
-          flex-direction: column;
-          height: auto;
-          
+          background-color: rgb(74, 106, 169);
+          clear: both;
+
         }
         td{
           color: white; 
         }
         footer{
-          background-color: #1dab62;
+          background-color: #9bab1d;
           text-align: center; 
           flex-shrink: 0;
         } 
 
+
+
+        
+        .container {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 20% 80% ;
+
+        }
+        .el {
+          padding: 1px 1px;
+          color: #ffffff;
+          background: rgb(196, 127, 38);
+        }
+
+        .el-1 {
+          grid-column: 1 / span 2;     
+          grid-row: 1;
+          background-color: #ab1d51;
+          
+        }
+        .el-2 {
+          grid-column: 1;
+          grid-row: 2;
+        }
+        .el-3 {
+          height: 96%;
+          width: auto;
+          background-color: #f11f1f;
+        }
+        .el-6 {
+          grid-column: 1 / span 2;     
+          grid-row: 3;
+          background-color: #cd6ae8;
+        }
+
 #table_container{
   overflow: scroll;
-  height:100%;
-  width:100%;
   padding:0;
   margin:0;
   border:0;
+  height: 100%;
+  width: 100%;
+  
 }
-
-
 
 thead tr:nth-child(1) th {
   position: -webkit-sticky; /* for Safari */
@@ -88,7 +113,7 @@ thead th:first-child {
 thead tr:nth-child(1) th:nth-child(1) {z-index:3;}
 
 thead th:nth-child(2){
-  left: 25px;
+  left: 20px;
   z-index:1;  
 }
 
@@ -103,7 +128,7 @@ tbody td:first-child {
 tbody td:nth-child(2) {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
-  left: 25px;
+  left: 20px;
 }
 
 
@@ -119,100 +144,42 @@ table td,
 table th {
   width: 7px;
   height: 3px;
-  font-size: 12px;
-}
-
-#header0{
-background:rgb(30, 139, 0);
-position: fixed;
-top: 0;
-left: 0%;
-width: 27%;
-height: 10%;
-}
-
-#header{
-background:rgb(30, 54, 24);
-position: fixed;
-top: 0;
-left: 27%;
-width: 80%;
-height: 10%;
-
-vertical-align: bottom;
-text-align: center;
+  font-size: 11px;
 }
 
 .div1{
   float: left;
 }
 
-#menu{
-background:rgb(245, 5, 5);
-width:25%;
-height:65%;
-position:absolute;
-left:1%;
-top: 10%;
+footer {
+    position: relative;
+    height: 3%;
+    bottom: 0;
+    width: 100%;
 }
-#content{
-background:rgb(225, 225, 9);
-left:26%;
-width:55%;
-height:75%;
-position:absolute;
-top: 10%;
-}
-
-#first_chart{
-background:rgb(185, 151, 86);
-width:19%;
-height:20%;
-position:absolute;
-left:81%;  
-}
-
-
-#second_chart{
-background:rgb(210, 3, 103);
-height:50%;
-position:absolute;
-left: 0%; 
-width: 100%;
-top: 70%;
-}
-
-
-#footer{
-background:rgb(25, 5, 250);
-width:100%;
-height:5%;
-top: 95%;
-}
-
-
 
 
       </style>
 
     <link href='{% static "css/bootstrap.min.css" %}'rel="stylesheet">
   </head>  
-  <body class="d-flex flex-column h-100">
+  <body>
     <header>
           <!-- Fixed navbar -->
           <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
             {#{% if user.is_authenticated %}#}
             {#{% include './top_menu user.html' %}#}
             {#{% else %}#}
-              {% include './top_menu.html' %}
+              {% include './top_menu.html' %} 
             {#{% endif %}#}
               </div>
             </div>
           </nav>
     </header>
     <!-- Begin page content -->
-    <main class="flex-shrink-0">
-    <div class="container">
+    {#<main class="flex-shrink-0">#}
+      <main>
+
   
       {#{% if messages %}#}
       {#{% for message in messages %}#}
@@ -221,10 +188,10 @@ top: 95%;
       {#{% endif %}#}
   
     {% block body %} Default body {% endblock body %}
-    </div>
+
     </main>
 
-    <footer class="footer mt-auto py-3 bg-black .fixed-bottom ">
+    <footer class="footer mt-auto py-3 bg-black .fixed-bottom " >
       <div class="container-fluid">
         <span class="text-muted">Wlad Filippow, 2023</span>
       </div>

@@ -65,3 +65,9 @@ def currency_on_date():
         return currency, curr_value, shown_date
     return None
 
+
+############# ЗАТЫЧКА  - УБРАТЬ:
+@register.simple_tag
+def currency_on_date():
+    return 'BBBBB', 10, '2012-05-05'
+####################################
