@@ -18,9 +18,8 @@
   <div class="container">
 
         <div class="el el-1">
-          {#<div id="header_body">#}
-                <div class="div1">
-              Маркетплейс-анализ. Рынок: Республика Беларусь
+                <div class="div1"> 
+                  <strong>Маркетплейс-анализ. Рынок: Республика Беларусь</strong>
                 </div>
             <div class="div2">  
               <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
@@ -37,7 +36,7 @@
         
           {#<div class="container" id="table_container">#}
             <div class="table-responsive" id="table_container"> 
-              <table class="table caption-top table align-middle table-hover table-striped table-bordered table-dark table-sm" >
+              <table class="table caption-top table align-middle table-hover table-striped table-bordered table-sm" >
                 {# <caption></caption> #}
                 <thead>
                   <tr >
@@ -151,8 +150,8 @@
               </table>
             </div>
           
-          
-            {% include '../pagination_table.html' %}
+            <div>{% include '../pagination_table.html' %}</div>
+            
           
         </div>
       
@@ -161,12 +160,14 @@
         
             <form action="{% url 'prices:apricestable_update' %}" method="post">
                 {% csrf_token %}
-            
+
+            <div>задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br></div>
+
             <div class="dropdown dropstart">  
-              <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 выбрать производителя:
               </button>
-              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все производители</b></li>
                 {% for comp in producer_filter_form %}
                   <li>{{ comp }}</li>
@@ -175,10 +176,10 @@
             </div>
           
             <div class="dropdown dropstart">  
-              <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 выбрать продукцию:
               </button>
-              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li>
                 {% for ttyre in in_base_tyres  %}
                   <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}">{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
@@ -187,10 +188,10 @@
             </div>
           
             <div class="dropdown dropstart">  
-              <button class="btn btn-secondary  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 выбрать группу шин:
               </button>
-              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
                 {% for group in in_base_tyres_by_group  %}
                   <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}">{{ group.tyre_group }}</li>
@@ -198,15 +199,9 @@
               </ul>
             </div>
           
-            задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br>
-            <button type="submit" class="btn btn-success" name1="change_period" value1="period">Принять</button>
-          
             <div>{{ pagination_val_per_form }}</div>
             <div>{{ deflection_form }}</div>
-          
-          
-          
-          
+             
             <div>{{ currency_input_form }}
               {{ shown_date}} ---- {{ curr_value }} ---- {{ currency }}
             </div>  
@@ -216,9 +211,10 @@
               <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
               <label class="form-check-label" for="inlineCheckbox2">Вывести информацию в графике в виде средневзвешенной цены на рынке</label>
             </div>
+
+            <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
             </form>
-          
-          
+
             <form>
             <p>работа с источником данных:</p>
             <div class="form-check form-switch">
@@ -284,6 +280,8 @@
                   var options = {
                     title: 'Количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}',
                   //  height: 400,
+                  legend: { position: 'bottom' },
+                  
                   };
                 
                   var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -341,10 +339,11 @@
                         title:"{{ chart_title|safe }}",   
                       },
                       subtitle: "BYN",
-                      //width: 900,                                       // ширина таблицы
-                      //height: 400,
-                      legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
-                      lineWidth: 6,                    // ширина лини
+                      //width: 600,                                       // ширина таблицы
+                      height:600,
+                      //legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
+                      legend: { position: 'bottom' },
+                      lineWidth: 7,                    // ширина лини
                       vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
                         //gridlines:{color: 'blue'}, // цвет полос оси У
                         format: '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
@@ -381,7 +380,7 @@
                             allowNone: false,
                             selectedValuesLayout: 'aside',
                           //  selectedValuesLayout:'belowStacked',
-                            caption: 'фильтр'
+                            caption: 'фильтр',
                         }
                     },
                     state: initState

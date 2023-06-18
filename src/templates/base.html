@@ -33,12 +33,12 @@
         main{
           width: 100%;
           height: auto;
-          background-color: rgb(74, 106, 169);
+          background-color: rgb(204, 4, 4);
           clear: both;
-
+        
         }
         td{
-          color: white; 
+          color: rgb(0, 0, 0);        /* <--цвет текста */
         }
         footer{
           background-color: #9bab1d;
@@ -47,39 +47,50 @@
         } 
 
 
-
-        
         .container {
-          width: 100%;
           display: grid;
-          grid-template-columns: 20% 80% ;
+          grid-template-columns: 23% 77% ;
+          background-color: #ffe9e9;
 
+          grid-template-rows: 45px 45% 15% 37% 1fr;
         }
         .el {
           padding: 1px 1px;
-          color: #ffffff;
-          background: rgb(196, 127, 38);
+          color: #000000;
+          background: #ffe9e9;
+          margin:5px;
+          padding: 5px; 
+          border: 15px;
         }
 
         .el-1 {
           grid-column: 1 / span 2;     
           grid-row: 1;
-          background-color: #ab1d51;
-          
+          background-color: #ffe9e9;
+          text-align: right;
         }
+
         .el-2 {
           grid-column: 1;
           grid-row: 2;
         }
         .el-3 {
+          grid-row: 2 / span 2;
           height: 96%;
           width: auto;
-          background-color: #f11f1f;
+          background-color: #ffe9e9;
+        }
+        .el-5 {
+          grid-column: 1 / span 2;     
+          grid-row: 4;
+          height: 96%;
+          width: auto;
+          background-color: #ffe9e9;
         }
         .el-6 {
           grid-column: 1 / span 2;     
-          grid-row: 3;
-          background-color: #cd6ae8;
+          grid-row: 5;
+          background-color: #ffe9e9;
         }
 
 #table_container{
@@ -96,25 +107,29 @@ thead tr:nth-child(1) th {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   top: 0;
+  z-index:2;
+  background-color: #ffe9e9;
 }
 
 thead tr:nth-child(2) th {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   top: 40px; 
+  background-color: #ffe9e9;
 }
 
 thead th:first-child {
   left: 0;
-  z-index:1;
-  width: 100px;
+  z-index:2;
+
+  background-color: #ffe9e9;
 }
 
-thead tr:nth-child(1) th:nth-child(1) {z-index:3;}
+thead tr:nth-child(1) th:nth-child(1) {z-index:2;}
 
 thead th:nth-child(2){
   left: 20px;
-  z-index:1;  
+  z-index:2;  
 }
 
 thead tr:nth-child(1) th:nth-child(2) {z-index:3;}
@@ -123,12 +138,15 @@ tbody td:first-child {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   left: 0;
-  width: 100px; 
+
+  background-color: #ace60c;
 }
 tbody td:nth-child(2) {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   left: 20px;
+
+  background-color: #4812c5;
 }
 
 
@@ -136,8 +154,6 @@ thead tr:nth-child(1) th:nth-child(4) {background-color: green}
 thead tr:nth-child(1) th:nth-child(5) {background-color: green}
 tbody td:nth-child(4) {background-color: green}
 tbody td:nth-child(5) {background-color: green}
-
-
 
 
 table td,
@@ -158,6 +174,29 @@ footer {
     width: 100%;
 }
 
+
+
+  .pagination > li > a
+  {
+    color: rgb(204, 4, 4);
+  }
+  .pagination > li > a:focus,
+  .pagination > li > a:hover,
+  .pagination > li > span:focus,
+  .pagination > li > span:hover
+  {
+    color: white;
+    background-color: #eee;
+    border-color: #ddd;
+}
+  .pagination > .active > a
+  {
+      color: white;
+      background-color:  rgb(204, 4, 4);
+  }
+  .pagination li a:hover:not(.active) {
+    background-color: rgb(204, 4, 4);
+  }
 
       </style>
 
