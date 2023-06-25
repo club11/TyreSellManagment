@@ -1279,24 +1279,26 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # 1.2 какие сайты ввел/не ввел пользователь:
         filter_sites = ['onliner.by', 'kolesa-darom.ru'] #['kolesa-darom.ru'] # ['onliner.by']  # ['onliner.by', 'kolesa-darom.ru'] # ['onliner.by']  # ['kolesa-darom.ru'] #  ['express-shina.ru']     # по дефолту показать этих
 
-        list_off_sizes_to_compare = []                                              # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)
+        list_off_sizes_to_compare = []                                            # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)
         for tyr_sizze in list_of_tyre_comparative_objects:
             list_off_sizes_to_compare.append(tyr_sizze.tyre.tyre_size.tyre_size)
-        list_off_sizes_to_compare = set(list_off_sizes_to_compare)    
+        list_off_sizes_to_compare = set(list_off_sizes_to_compare)   
+        #print('list_off_sizes_to_compare HUSH HUSH HUSH', list_off_sizes_to_compare)
         if len(list_off_sizes_to_compare) == 1:                                     # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)     
-            object_units = list_of_tyre_comparative_objects.filter(id=310)
+            object_units = list_of_tyre_comparative_objects.filter(id=310)          # заглушка на время = пока берем id=310
             #chart_title = str(object_units[0].tyre.tyre_size.tyre_size) 
             chart_title = object_units[0].tyre.tyre_size.tyre_size
-        else:                                                                       # заглушка на время = покберем id=310
-            object_unit = list_of_tyre_comparative_objects.get(id=310) 
-            #print('object_unit IS', object_unit.tyre.tyre_size.tyre_size)
+        else:                                                                       # заглушка на время = пока берем id=310
+            object_units = list_of_tyre_comparative_objects.get(id=310) 
+            print("**********2", object_units)
+            print('object_unit IS', object_unit.tyre.tyre_size.tyre_size)
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=object_unit.tyre.tyre_size.tyre_size) # по типоразмеру
             # или:
             object_units = list_of_tyre_comparative_objects.filter(id=310) # конкретной шине
             #object_units = object_units.filter(price_tyre_to_compare__site__in=['onliner.by', 'kolesa-darom.ru', 'express-shina.ru'])
             #chart_title = str(object_units[0].tyre.tyre_size.tyre_size)
             chart_title = object_units[0].tyre.tyre_size.tyre_size
-            #print('chart_title 11111111111111', object_units)
+            print('chart_title 11111111111111', object_units)
         
         #for comp in object_unit.price_tyre_to_compare.all():
         #    print('compTTT', comp.site, comp.developer.competitor_name, 'YYY', comp.price)
