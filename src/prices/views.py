@@ -205,7 +205,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     for k, v in chosen_by_company_dict.items():
                         #print('v', v)
                         if tyre.tyre_size.tyre_size == v[1]:
-                            #print('TTTTKKK', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
+                            #print('TTTTKKK', k, 'v[1]', v[1])                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             #Cordiant Polar SL 205/55R16 94T ('165,00', '205/55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
                             coma = v[0].find(',')
                             pr = float
@@ -220,7 +220,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 season_usage = None 
                             if coma:
                                 pr = float(v[0].replace(',', '.'))
-                            models.CompetitorSiteModel.objects.update_or_create(
+
+                            competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
                                 site = 'onliner.by',
                                 #tyre = tyre,
                                 currency = dictionaries_models.Currency.objects.get(currency='BYN'),
@@ -231,9 +232,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 tyresize_competitor = v[1],
                                 name_competitor = v[2], 
                                 parametres_competitor = v[3],
-                                season = season_usage
-                                #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
-                            )  
+                                season = season_usage,
+                                #tyre_to_compare = list_comparative_analys_tyres_model_objects_to_bound_with,
+                            )
+                            ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
+                            #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                            ###
+                            print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH2')
+
             except:
                 pass                                                                                                                                                                                                       
             ##### END OF ONLINER PARSING
@@ -528,7 +536,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 parametres_competitor = v[2],
                                 season = season_usage
                                 #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
-                            )      
+                            )    
+                            ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
+                            #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                            ###  
             except:
                 pass                                                                                                                                                                                                                   
             ###### END OF АВТОСЕТЬ PARSING
@@ -808,7 +821,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 parametres_competitor = v[2],                      
                                 #season = season_usage
                                 #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
-                            )   
+                            ) 
+                            ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
+                            #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                            ###  
             except:
                 pass                                                                                                                                                                                                      
             ###### END OF BAGORIA PARSING
@@ -846,19 +864,32 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         ####
 
-        # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ:   
+        # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
+        #competitors_ids = models.CompetitorSiteModel.objects.values_list("id")          #.select_related("tyre_to_compare")
+        #table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__pk__in=competitors_ids).distinct()
+        #table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.all()
+
+
+        table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct()
+        print('table_lookup_only_with_competitors', '++++++++ TABLE LOOKUP COMPETITORS ::::::::', table_lookup_only_with_competitors)
+        #for tt in table_lookup_only_with_competitors:
+        #    print(tt, tt.tyre.tyre_model.model, tt.tyre, tt.planned_costs, tt.semi_variable_prices, tt.belarus902price, tt.tpsrussiafcaprice, tt.tpskazfcaprice, tt.tpsmiddleasiafcaprice, tt.sale_data) #, tt.price_tyre_to_compare.all())
+
+
         if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
             id_list = []
             for n in models.SELF_PRODUCTION:
                 if n.isdigit():                                 
                     comparativeanalisystyre_object_id = int(n)
                     id_list.append(comparativeanalisystyre_object_id)
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-            #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    #только продукция с конкурентами  
         elif models.SELF_PRODUCTION_ALL:
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-        else:     
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами
+        else: 
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами                                         
         # если пользовательищет через поисковик:
         if models.SEARCH_USER_REQUEST:
             user_requested_data = models.SEARCH_USER_REQUEST  
@@ -874,9 +905,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 if n.isdigit():                                 
                     gr_id = int(n)
                     group_id_list.append(gr_id)
-            existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            #existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            existing_val_check = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) #только продукция с конкурентами
             if existing_val_check:
-                list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)
+                list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  #только продукция с конкурентами 
                 #print('list_of_tyre_comparative_objects', 'JJ', list_of_tyre_comparative_objects) 
             else:  
                 #print('АШЫПКА!!!')
@@ -884,7 +917,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         elif models.TYRE_GROUPS_ALL:
             #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)                                                   ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами                                             ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
 
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
 
@@ -913,7 +947,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                     for competitor in got_the_list:                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                         if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                            #print(date_filter, "На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            print(date_filter, "На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
                             #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                             list_of_matched_competitors.append(competitor)
                     if len(list_of_matched_competitors) > 3:
@@ -931,7 +965,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     else:
                         onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
             else:
-                for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
                         #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
                         #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
@@ -1178,7 +1212,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['producer_filter_all'] = dictionaries_models.CompetitorModel.objects.all()
         #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
         # 2) выбрать продукцию:
-        in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
+        #in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
+        # вместо всей продукции в меню отображаться будет лишь та, по которой есть конкуренты:
+        competitors_ids = models.CompetitorSiteModel.objects.values_list("id")
+        in_base_tyres = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__in=competitors_ids).distinct()
         context['in_base_tyres'] = in_base_tyres.order_by('-tyre')
         #######  
         # 3) выбрать группу шин:
@@ -1275,30 +1312,40 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         if listt_prodduccers:
             filter_producer = listt_prodduccers
         else:
-            filter_producer = ['JONWICK', 'SAMURAI', 'Michelin'] # ['JONWICK'] # ['JONWICK', 'SAMURAI'] # ['Michelin', 'JONWICK'] # ['JONWICK'] # #   ['Yokohama', 'LingLong', 'Viatti', 'Michelin', 'JONWICK'] # ['Michelin'] #       # если не ввел - по дефолту показать этих
+            filter_producer = []
+            for n in dictionaries_models.CompetitorModel.objects.values_list('competitor_name'):
+              n = str(n).replace("('", '').replace("',)", '')
+              filter_producer.append(n)   
+            #filter_producer =  ['JONWICK', 'SAMURAI', 'Michelin'] # ['JONWICK'] # ['JONWICK', 'SAMURAI'] # ['Michelin', 'JONWICK'] # ['JONWICK'] # #   ['Yokohama', 'LingLong', 'Viatti', 'Michelin', 'JONWICK'] # ['Michelin'] #       # если не ввел - по дефолту показать этих
         # 1.2 какие сайты ввел/не ввел пользователь:
-        filter_sites = ['onliner.by', 'kolesa-darom.ru'] #['kolesa-darom.ru'] # ['onliner.by']  # ['onliner.by', 'kolesa-darom.ru'] # ['onliner.by']  # ['kolesa-darom.ru'] #  ['express-shina.ru']     # по дефолту показать этих
+        filter_sites = ['onliner.by', 'bagoria.by', 'autoset.by'] #['kolesa-darom.ru'] # ['onliner.by']  # ['onliner.by', 'kolesa-darom.ru'] # ['onliner.by']  # ['kolesa-darom.ru'] #  ['express-shina.ru']     # по дефолту показать этих
 
         list_off_sizes_to_compare = []                                            # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)
+        #print('list_of_tyre_comparative_objects =====', list_of_tyre_comparative_objects) 
         for tyr_sizze in list_of_tyre_comparative_objects:
             list_off_sizes_to_compare.append(tyr_sizze.tyre.tyre_size.tyre_size)
-        list_off_sizes_to_compare = set(list_off_sizes_to_compare)   
+        list_off_sizes_to_compare = set(list_off_sizes_to_compare)  
         #print('list_off_sizes_to_compare HUSH HUSH HUSH', list_off_sizes_to_compare)
+        chart_title = ''
         if len(list_off_sizes_to_compare) == 1:                                     # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)     
-            object_units = list_of_tyre_comparative_objects.filter(id=310)          # заглушка на время = пока берем id=310
+            #object_units = list_of_tyre_comparative_objects.filter(id=310)          # заглушка на время = пока берем id=310
+            object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
             #chart_title = str(object_units[0].tyre.tyre_size.tyre_size) 
             chart_title = object_units[0].tyre.tyre_size.tyre_size
-        else:                                                                       # заглушка на время = пока берем id=310
-            object_units = list_of_tyre_comparative_objects.get(id=310) 
-            print("**********2", object_units)
-            print('object_unit IS', object_unit.tyre.tyre_size.tyre_size)
-            object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=object_unit.tyre.tyre_size.tyre_size) # по типоразмеру
+            #print('OBJECT UNITS =', object_units)
+        else:                                                                       # заглушка на время = пока берем id=340
+            #object_units = list_of_tyre_comparative_objects.get(id=340) 
+            object_units = list_of_tyre_comparative_objects.all()
+            #print("*********2", object_units)
+
+            #object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=object_unit.tyre.tyre_size.tyre_size) # по типоразмеру
             # или:
-            object_units = list_of_tyre_comparative_objects.filter(id=310) # конкретной шине
+
             #object_units = object_units.filter(price_tyre_to_compare__site__in=['onliner.by', 'kolesa-darom.ru', 'express-shina.ru'])
             #chart_title = str(object_units[0].tyre.tyre_size.tyre_size)
             chart_title = object_units[0].tyre.tyre_size.tyre_size
-            print('chart_title 11111111111111', object_units)
+        #print('chart_title 11111111111111', chart_title)
+
         
         #for comp in object_unit.price_tyre_to_compare.all():
         #    print('compTTT', comp.site, comp.developer.competitor_name, 'YYY', comp.price)
@@ -1327,6 +1374,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         list_last_dates = []
         for object_unit in object_units:
             for comp in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites).filter(developer__competitor_name__in=filter_producer):        ## !!!! 2 ФИЛЬТР ПО САЙТАМ  и КОНКУРЕНТАМ
+                #print('COMP', comp)
             #for comp in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites):                                                              ## !!!! 2 ФИЛЬТР ПО САЙТАМ 
             #for comp in object_unit.price_tyre_to_compare.all():     
                 list_of_sites.append(comp.site)                                                                     #0 получаем наименования всех сайтоыдля легенды таблицы (ТИП-2 график по сайтам)   
@@ -1362,7 +1410,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         valuess = None
                         site_comp_obj_dict = {}
                         for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites).filter(developer__competitor_name__in=filter_producer): 
-                            site_comp_obj_dict[comp_obj.site] = comp_obj.site, None, 0     
+                            site_comp_obj_dict[comp_obj.site] = comp_obj.site, None, 0   
                         for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites).filter(developer__competitor_name__in=filter_producer):        ## !!!! 2 ФИЛЬТР ПО САЙТАМ  и КОНКУРЕНТАМ
                         #for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites):                                           ## !!!! 2 ФИЛЬТР ПО САЙТАМ 
                         #for comp_obj in object_unit.price_tyre_to_compare.all():
@@ -1380,7 +1428,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             #print('valuess', valuess, comp_obj)
 
                             # формируем словри:
-                            if site_comp_obj_dict.get(valuess[3]):    
+                            if site_comp_obj_dict.get(valuess[3]):  
                                 current_dict_val = site_comp_obj_dict.get(valuess[3])[1]
                                 dict_site = site_comp_obj_dict.get(valuess[3])[0]
                                 dict_devider = site_comp_obj_dict.get(valuess[3])[2]
@@ -1391,7 +1439,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                         site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, dict_devider
                                     else:
                                         current_dict_val = current_dict_val + valuess[2]
-                                        site_comp_obj_dict.get(valuess[3])[1] = current_dict_val
+                                        site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, current_dict_val
+                                        #site_comp_obj_dict.get(valuess[3])[1] = current_dict_val
                                         current_devider = site_comp_obj_dict.get(valuess[3])[2]
                                         current_devider += 1
                                         site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, dict_devider
@@ -1460,7 +1509,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         complided_data_len_el = None
         if competit_on_current_date_assembled:
             complided_data_len = len(competit_on_current_date_assembled[0])  
-            complided_data_len_el = len(competit_on_current_date_assembled[0][0]) - 1 
+            #complided_data_len_el = len(competit_on_current_date_assembled[0][0]) - 1 
             #print('complided_data_len', complided_data_len)             # количество списков на дату
             #print('complided_data_len_el', complided_data_len_el)       # количество элементов в списке
         all_parts_are_equal = False      
@@ -2676,18 +2725,23 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         ####
 
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ:   
+        competitors_ids = models.CompetitorSiteModel.objects.values_list("id")
+        table_lookup_only_with_competitors =  models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__in=competitors_ids).distinct()
         if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
             id_list = []
             for n in models.SELF_PRODUCTION:
                 if n.isdigit():                                 
                     comparativeanalisystyre_object_id = int(n)
                     id_list.append(comparativeanalisystyre_object_id)
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    #только продукция с конкурентами
             #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)   
         elif models.SELF_PRODUCTION_ALL:
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-        else:     
-            list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами
+        else: 
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)                                              #только продукция с конкурентами
         # если пользовательищет через поисковик:
         if models.SEARCH_USER_REQUEST:
             user_requested_data = models.SEARCH_USER_REQUEST  
@@ -2703,11 +2757,11 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
                 if n.isdigit():                                 
                     gr_id = int(n)
                     group_id_list.append(gr_id)
-            #existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-            existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            #existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+            existing_val_check = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) #только продукция с конкурентами
             if existing_val_check:
-                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-                list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)
+                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)
+                list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  #только продукция с конкурентами 
                 #print('list_of_tyre_comparative_objects', 'JJ', list_of_tyre_comparative_objects) 
             else:  
                 #print('АШЫПКА!!!')
@@ -2715,7 +2769,8 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         elif models.TYRE_GROUPS_ALL:
             #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
-            list_of_tyre_comparative_objects = obj.comparative_table.all()                                                  ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  
+            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами                                             ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
 
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
 
@@ -2978,7 +3033,10 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         context['producer_filter_all'] = dictionaries_models.CompetitorModel.objects.filter(developer_competitor__site__in=['express-shina.ru', 'kolesatyt.ru', 'kolesa-darom.ru'])
         #filter_form.fields["competitors"].queryset = dictionaries_models.CompetitorModel.objects.filter(competitor_name__in=list(set(models.ONLINER_COMPETITORS_NAMES_FILTER))).values_list("competitor_name", flat=True)
         # 2) выбрать продукцию:
-        in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
+        #in_base_tyres = models.ComparativeAnalysisTyresModel.objects.all()
+        # вместо всей продукции в меню отображаться будет лишь та, по которой есть конкуренты:
+        competitors_ids = models.CompetitorSiteModel.objects.values_list("id")
+        in_base_tyres = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__in=competitors_ids).distinct()
         context['in_base_tyres'] = in_base_tyres.order_by('-tyre')
         #######  
         # 3) выбрать группу шин:
@@ -3071,14 +3129,14 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
             list_off_sizes_to_compare.append(tyr_sizze.tyre.tyre_size.tyre_size)
         list_off_sizes_to_compare = set(list_off_sizes_to_compare)    
         if len(list_off_sizes_to_compare) == 1:                                     # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)     
-            object_units = list_of_tyre_comparative_objects.filter(id=310)
+            object_units = list_of_tyre_comparative_objects.filter(id=340)
             chart_title = str(object_units[0].tyre.tyre_size.tyre_size) 
         else:                                                                       # заглушка на время = покберем id=310
-            object_unit = list_of_tyre_comparative_objects.get(id=310) 
+            object_unit = list_of_tyre_comparative_objects.get(id=340) 
             #print('object_unit IS', object_unit.tyre.tyre_size.tyre_size)
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=object_unit.tyre.tyre_size.tyre_size) # по типоразмеру
             # или:
-            object_units = list_of_tyre_comparative_objects.filter(id=310) # конкретной шине
+            object_units = list_of_tyre_comparative_objects.filter(id=340) # конкретной шине
             #object_units = object_units.filter(price_tyre_to_compare__site__in=['onliner.by', 'kolesa-darom.ru', 'express-shina.ru'])
             chart_title = str(object_units[0].tyre.tyre_size.tyre_size)
             #print('chart_title 11111111111111', object_units)
@@ -3235,7 +3293,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
         complided_data_len_el = None
         if competit_on_current_date_assembled:
             complided_data_len = len(competit_on_current_date_assembled[0])  
-            complided_data_len_el = len(competit_on_current_date_assembled[0][0]) - 1 
+            #complided_data_len_el = len(competit_on_current_date_assembled[0][0]) - 1 
             #print('complided_data_len', complided_data_len)             # количество списков на дату
             #print('complided_data_len_el', complided_data_len_el)       # количество элементов в списке
         all_parts_are_equal = False      

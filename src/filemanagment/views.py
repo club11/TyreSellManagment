@@ -149,6 +149,7 @@ class ExcelTemplateView(TemplateView):
                                         tyresize_list.append(result.group(0))
                                         ### удаление среза с типоразмером и всем что написано перед типоразмером
                                         left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
+                                        str_left_data = ''
                                         if left_before_size_data_index > 0:
                                             str_left_data = str(row[cell.column-1].value)[0:left_before_size_data_index-1]
                                         row[cell.column-1].value = str(row[cell.column-1].value).replace(str_left_data, '')
@@ -390,23 +391,32 @@ class ExcelTemplateView(TemplateView):
                         #print('YEAP!', tyre_obj_exist)
                         pass          
                     else:
-                        #print('tyre_type_el_list = ', tyre_type_el_list)           
-                        tyre_obj = tyres_models.Tyre.objects.create(                                                        ####  СОЗДАЕМ объект Tyre
+                        #print('tyre_type_el_list = ', tyre_type_el_list) 
+                        #### СОЗДАТЬ ОБЪЕКТ TYRES. НО! Если уже создан объект Tyres с данными параметрами то не создавать такой же:
+                        tyre_obj, created = tyres_models.Tyre.objects.get_or_create(
                             tyre_model=dictionaries_models.ModelNameModel.objects.get(model=tyre_model_list[n]),
-                            tyre_size=dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size_list[n]), 
+                            tyre_size=dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size_list[n]),
                         )
-                        for n in tyre_type_el_list:
-                            tyre_obj.tyre_type.add(n)
+                        all_params_in_tyre = list(tyre_obj.tyre_type.all())
+                        #print('all_params_in_tyre == tyre_type_el_list', all_params_in_tyre,'//////',  tyre_type_el_list)
+                        if all_params_in_tyre == tyre_type_el_list:
+                            pass
+                        else:
+                            for n in tyre_type_el_list:
+                                tyre_obj.tyre_type.add(n)
 
-                        #tyre_obj = tyres_models.Tyre.objects.update_or_create(
+                        #tyre_obj = tyres_models.Tyre.objects.create(                                                        ####  СОЗДАЕМ объект Tyre
                         #    tyre_model=dictionaries_models.ModelNameModel.objects.get(model=tyre_model_list[n]),
                         #    tyre_size=dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size_list[n]), 
-                        #    ##tyre_type=dictionaries_models.TyreParametersModel.objects.get(tyre_type=tyre_type_el.tyre_type),
                         #)
-                        #print('tyre_obj = ', tyre_obj, type(tyre_obj))
                         #for n in tyre_type_el_list:
-                        #    tyre_obj[0].tyre_type.add(n)
-            
+                        #    tyre_obj.tyre_type.add(n)
+
+                    #####    tyr_to_check = {"tyre_model":tyre_model_list[n], "tyre_size": tyre_size_list[n]}
+                    #####    to_put_data={"tyre_type": tyre_type_el_list}
+                    #####    tyres_models.Tyre.objects.update_or_create(tyr_to_check, defaults=to_put_data)
+                    #################################
+
             ### Создать или проверить наличие групп шин:
             group_names = ['легковые', 'легкогруз', 'с/х', 'грузовые']
             for group_name in group_names:
@@ -1770,6 +1780,9 @@ class ExcelTemplateView(TemplateView):
         #    print(key.tyre_size.tyre_size, key.tyre_model.model, valluuee[8], valluuee[9], valluuee[10], valluuee[12])
 
         # 1) возмем все объекты шин:
+        #for key in row_parsing_sales_costs_prices_dict.keys():
+        #    print('key', key, key.tyre_model.model, key.tyre_size.tyre_size, key.tyre_group.all(), key.tyre_type.all())
+
         for key in row_parsing_sales_costs_prices_dict.keys():
             tyre_obj = key
             #print('tyre_obj', tyre_obj.tyre_size.tyre_size )
