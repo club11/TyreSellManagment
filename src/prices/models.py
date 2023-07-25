@@ -11,16 +11,19 @@ ONLINER_HEADER_NUMBER = int
 #ONLINER UPDATEVIEW:
 ONLINER_COMPETITORS = []
 ONLINER_COMPETITORS_NAMES_FILTER = []
+ONLINER_COMPETITORS_NAMES_FILTER_IDS = {}           # id отфильтрованных для template точно подошедших конкурентов
 
 AVTOSET_COMPETITORS = []
 AVTOSET_COMPETITORS_DICTIONARY1 = {}
 AVTOSET_HEADER_NUMBER = int
 AVTOSET_COMPETITORS_NAMES_FILTER = []
+AVTOSET_COMPETITORS_NAMES_FILTER_IDS = {}
 
 BAGORIA_COMPETITORS = []
 BAGORIA_COMPETITORS_DICTIONARY1 = {}
 BAGORIA_HEADER_NUMBER = int
 BAGORIA_COMPETITORS_NAMES_FILTER = []
+BAGORIA_COMPETITORS_NAMES_FILTER_IDS = {}
 
 CHEMCURIER_COMPETITORS = []
 CHEMCURIER_COMPETITORS_DICTIONARY1 = {}
@@ -40,16 +43,19 @@ EXPRESS_SHINA_COMPETITORS = []
 EXPRESS_SHINA_COMPETITORS_DICTIONARY1 = {}
 EXPRESS_SHINA_HEADER_NUMBER = int
 EXPRESS_SHINA_COMPETITORS_NAMES_FILTER = []
+EXPRESS_SHINA_COMPETITORS_NAMES_FILTER_IDS = {}
 
 KOLESATYT_COMPETITORS = []
 KOLESATYT_COMPETITORS_DICTIONARY1 = {}
 KOLESATYT_HEADER_NUMBER = int
 KOLESATYT_COMPETITORS_NAMES_FILTER = []
+KOLESATYT_COMPETITORS_NAMES_FILTER_IDS = {}
 
 KOLESA_DAROM_COMPETITORS = []
 KOLESA_DAROM_COMPETITORS_DICTIONARY1 = {}
 KOLESA_DAROM_HEADER_NUMBER = int
 KOLESA_DAROM_COMPETITORS_NAMES_FILTER = []
+KOLESA_DAROM_COMPETITORS_NAMES_FILTER_IDS = {}
 
 SEARCH_USER_REQUEST = None
 
@@ -58,6 +64,8 @@ CURRENCY_VALUE_RUB = None
 
 GOOGLECHART_MARKETPLACE_ON = False
 WEIGHTED_AVERAGE_ON = False
+
+FOR_MENU_OBJECTS_LIST = [] # список объектов для вывода в меню (шины с конкурентами)
 
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
@@ -553,6 +561,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          
             #########################
+            list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor  + ' '+ comp.season.season_usage_name
                 if DEFLECTION_VAL:                                                      # если есть введенные данные об скидке торговой надбавки
@@ -566,7 +575,9 @@ class ComparativeAnalysisTyresModel(models.Model):
                     combined = comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
 
-                ONLINER_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
+                ONLINER_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)
+                list_comp_ids.append(comp.id)
+            ONLINER_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices, len(list_od_combined_comp_and_prices))
@@ -615,6 +626,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
+            list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name
                 if DEFLECTION_VAL:                                                      # если есть введенные данные об скидке торговой надбавки
@@ -628,7 +640,9 @@ class ComparativeAnalysisTyresModel(models.Model):
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
                     combined = comp.developer.competitor_name + ' ' + comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
-                AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
+                AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name) 
+                list_comp_ids.append(comp.id)
+            AVTOSET_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -675,6 +689,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
+            list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price 
@@ -691,6 +706,8 @@ class ComparativeAnalysisTyresModel(models.Model):
                     #print('combined!!!!', combined)
                     list_od_combined_comp_and_prices.append(combined)
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
+                list_comp_ids.append(comp.id)
+            BAGORIA_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids          
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -700,6 +717,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             return list_od_combined_comp_and_prices
 
     def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
+        chemcurier_unique_result = ''
         if self.tyre in CHEMCURIER_COMPETITORS_DICTIONARY1.keys():                  # Tyre object (1926) [<ChemCurierTyresModel: ChemCurierTyresModel object (98)>, <ChemCurierTyresModel: ChemCurierTyresModel object (99)>, <ChemCurierTyresModel: ChemCurierTyresModel object (100)>, <ChemCurierTyresModel: ChemCurierTyresModel object (101)>]
             min_value = '' # минимальное значение из всех прозодителей последнего периода поставки
             result_min_value_producer = ''  # наименование производителя с наименьшим значением (ценой) в последний период поствки
@@ -850,12 +868,20 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if min_value:           # если есть значение в периоде - то закончить переборку
                     break
 
-        deflection = ''                                                                                                                      # для расчета отклонения 
-        if type(min_value) is float and self.belarus902price != None:  
-            deflection = self.belarus902price.price / min_value       # для расчета отклонения
+        #deflection = ''                                                                                                                      # для расчета отклонения 
+        #if type(min_value) is float and self.belarus902price != None:  
+        #    deflection = self.belarus902price.price / min_value       # для расчета отклонения
+        ##print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
+        ##print('++++')
+        #chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
+        #return chemcurier_unique_result
+
+            deflection = ''                                                                                                                      # для расчета отклонения 
+            if type(min_value) is float and self.belarus902price != None:  
+                deflection = self.belarus902price.price / min_value       # для расчета отклонения
         #print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
         #print('++++')
-        chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
+            chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
         return chemcurier_unique_result
 # ______ RUS_____
 
@@ -897,6 +923,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
+            list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price 
@@ -911,6 +938,8 @@ class ComparativeAnalysisTyresModel(models.Model):
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 EXPRESS_SHINA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+                list_comp_ids.append(comp.id)
+            EXPRESS_SHINA_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids         
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -957,6 +986,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
+            list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price 
@@ -971,6 +1001,8 @@ class ComparativeAnalysisTyresModel(models.Model):
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 KOLESATYT_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+                list_comp_ids.append(comp.id)
+            KOLESATYT_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
@@ -1017,6 +1049,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
+            list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price 
@@ -1031,6 +1064,8 @@ class ComparativeAnalysisTyresModel(models.Model):
                     combined = comp_name, comp_price, deflection    
                     list_od_combined_comp_and_prices.append(combined)
                 KOLESA_DAROM_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ 
+                list_comp_ids.append(comp.id)
+            KOLESA_DAROM_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids 
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_pricesBAGORIA', list_od_combined_comp_and_prices)
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from . import models
 
+
 class PlannedCosstModelAdmin(admin.ModelAdmin):
     list_display = [
             'tyre',
@@ -65,6 +66,7 @@ class ComparativeAnalysisTableModelAdmin(admin.ModelAdmin):
     ]
 
 class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
+
     list_display = [
             #'table',
             'id',

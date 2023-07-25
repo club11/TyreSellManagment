@@ -305,20 +305,25 @@
             //google.load('visualization', '1', {packages: ['controls']});
             
             //google.charts.load('current', {packages: ['corechart', 'line'], 'language': 'ru'});
-            google.charts.load('current', {'packages':['line']});
+            google.charts.load('current', {'packages':['line', 'controls']});
             google.setOnLoadCallback(drawChart);
             
             function drawChart () {
                 var data = new google.visualization.DataTable();
-                data.addColumn('string', 'Year');
+                data.addColumn('date', 'Month');
                 for (var values, _pj_c = 0, _pj_a = {{ competitor_names|safe }}, _pj_b = _pj_a.length; _pj_c < _pj_b; _pj_c += 1) {     
                       values = _pj_a[_pj_c];                                                                                                
                       values;                                                                                                               
                       data.addColumn('number', values);                                                                                     
                     } 
-                data.addRows({{ competitor_values|safe }});
-                  
-                  
+
+                {% for key, value in list_of_competitor_values_new.items %} 
+                data.addRows([  
+                  [new Date {{ key }}, {{ value|join:", " }} ], 
+                    ]); 
+                {% endfor %}
+                                                                                                              
+      
                 var columnsTable = new google.visualization.DataTable();
                 columnsTable.addColumn('number', 'colIndex');
                 columnsTable.addColumn('string', 'colLabel');
@@ -344,7 +349,7 @@
                       },
                       subtitle: "BYN",
                       //width: 600,                                       // ширина таблицы
-                      height:600,
+                      height:400,
                       //legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
                       legend: { position: 'bottom' },
                       lineWidth: 7,                    // ширина лини
@@ -408,23 +413,102 @@
                     chart.draw();
                   
                 }
-                google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
+
+
+
+                var control = new google.visualization.ControlWrapper({
+                    controlType: 'ChartRangeFilter',
+                    containerId: 'control_div',
+                    options: {
+                        filterColumnIndex: 0,
+                        ui: {
+                            chartOptions: {
+                                height: 50,
+                                width: 900,
+                                chartArea: {
+                                    width: '80%'
+                                }
+                            }
+                        }
+                    }
+                });
+
+
+                function setOptions() {
+                    var firstDate;
+                    var lastDate;
+                    var v = control.getState();
+
+                    if (v.range) {
+                      document.getElementById('dbgchart').innerHTML = v.range.start + ' to ' + v.range.end;
+                      firstDate = new Date(v.range.start.getTime() + 1);
+                      lastDate = new Date(v.range.end.getTime() - 1);
+                      data.setValue(v.range.start.getMonth(), 0, firstDate);
+                      data.setValue(v.range.end.getMonth(), 0, lastDate);
+                    } else {
+                      firstDate = data.getValue(0, 0);
+                      lastDate = data.getValue(data.getNumberOfRows() - 1, 0);
+                    }
+                  
+                    var ticks = [];
+                    for (var i = firstDate.getMonth(); i <= lastDate.getMonth(); i++) {
+                      ticks.push(data.getValue(i, 0));
+                    }
+                  
+                    chart.setOption('hAxis.ticks', ticks);
+                    chart.setOption('hAxis.viewWindow.min', firstDate);
+                    chart.setOption('hAxis.viewWindow.max', lastDate);
+                    if (dash) {
+                      chart.draw();
+                    }
+                }
+               
+
+                google.visualization.events.addListener(columnFilter, 'statechange', setChartView, control, setOptions);
               
                 setChartView();
                 columnFilter.draw();
+
+                var dash = new google.visualization.Dashboard(document.getElementById('dashboard'));
+                dash.bind([control], [chart]);
+                dash.draw(data);
+
+
             }
           </script>
 
           <div id="colFilter_div"></div>
           <div id="chart_div"></div>
+
+
+          <script src="https://www.gstatic.com/charts/loader.js"></script>
+            <div id="dashboard">
+                <div id="chart_div"></div>
+                <div id="control_div"></div>
+                <p><span id='dbgchart'></span></p>
+            </div>
+       
         </div>
 
-        <div class="el el-6"><p> </p></div>
+
+
+
+
+
+
+
+
+
+
+
+        
+        
+
+       <div class="el el-6"><p> dfdfgfdgdfgdfgfdgfd</p></div>
 
   </div>
 
 </div>
-
 
 
 
