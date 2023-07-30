@@ -304,13 +304,14 @@
             <script type="text/javascript">
             //google.load('visualization', '1', {packages: ['controls']});
             
-            //google.charts.load('current', {packages: ['corechart', 'line'], 'language': 'ru'});
+
             google.charts.load('current', {'packages':['line', 'controls']});
+            //google.charts.load('current', {'packages':['line', 'controls'], 'language': 'ru'});
             google.setOnLoadCallback(drawChart);
             
             function drawChart () {
                 var data = new google.visualization.DataTable();
-                data.addColumn('date', 'Month');
+                data.addColumn('date', 'Date');
                 for (var values, _pj_c = 0, _pj_a = {{ competitor_names|safe }}, _pj_b = _pj_a.length; _pj_c < _pj_b; _pj_c += 1) {     
                       values = _pj_a[_pj_c];                                                                                                
                       values;                                                                                                               
@@ -319,7 +320,7 @@
 
                 {% for key, value in list_of_competitor_values_new.items %} 
                 data.addRows([  
-                  [new Date {{ key }}, {{ value|join:", " }} ], 
+                  [new Date{{ key }}, {{ value|join:", " }} ], 
                     ]); 
                 {% endfor %}
                                                                                                               
@@ -357,6 +358,10 @@
                         //gridlines:{color: 'blue'}, // цвет полос оси У
                         format: '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
                       },
+                      hAxis: {
+                          format: 'dd.MM.Y',
+                          gridlines: {count: 15}
+                        },
                       axes: {                                             // вертикальная ось, дописываем оси здесь
                           x: {
                             0: { 
@@ -422,9 +427,10 @@
                     options: {
                         filterColumnIndex: 0,
                         ui: {
+                            
                             chartOptions: {
+                                hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
                                 height: 50,
-                                width: 900,
                                 chartArea: {
                                     width: '80%'
                                 }
@@ -481,7 +487,7 @@
           <div id="chart_div"></div>
 
 
-          <script src="https://www.gstatic.com/charts/loader.js"></script>
+
             <div id="dashboard">
                 <div id="chart_div"></div>
                 <div id="control_div"></div>
@@ -504,7 +510,9 @@
         
         
 
-       <div class="el el-6"><p> dfdfgfdgdfgdfgfdgfd</p></div>
+       <div class="el el-6"><p> 
+          svfsd
+       </p></div>
 
   </div>
 
@@ -515,15 +523,6 @@
 
 
 {% endblock body %}
-
-
-
-
-
-
-
-
-
 
 
 

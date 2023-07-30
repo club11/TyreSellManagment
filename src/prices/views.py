@@ -1682,11 +1682,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #####list_of_period_competitor_values_new.append(str_date_in_int)
 
             date_in_str = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date()
+            #list_of_period_competitor_values_new.append(date_in_str)
             year, month, day = int(date_in_str.strftime('%Y')), int(date_in_str.strftime('%m')), int(date_in_str.strftime('%d'))
 
-            date_prepared_or_js = year, month, day 
+            date_prepared_or_js = year, month-1, day                                # СДВИГАЕМ ЗНАЧЕНИЕ МЕСЯЦ НА ОДИН НАЗАД ДЛЯ GOOGLE CHART 
             list_of_period_competitor_values_new.append(date_prepared_or_js)
 
+        
             #list_only__dates_n_daytime.append(datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date())
             #list_only__dates_n_daytime.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
             #time_obj = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date() 
@@ -1732,9 +1734,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             
 
         context['list_of_competitor_values_new'] = list_of_competitor_values_new_dict  
-        #for n, k in context['list_of_competitor_values_new'].items():
+        for n, k in context['list_of_competitor_values_new'].items():
         #    #print('N',type(n), n[0], n[1:])
-        #    print('DD', n, k) # n[0], n[1])
+            print('DD', n, k, type(n)) # n[0], n[1])
         
 
         #print('context [competitor_names]', context['competitor_names'])
