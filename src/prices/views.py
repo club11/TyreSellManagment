@@ -25,6 +25,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+
+
+
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
         #'\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2}', 
@@ -56,7 +61,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
     template_name = 'prices/comparative_prices.html'
 
     #login_url = reverse_lazy('abc_table_xyz:abctable')
-    def get_object(self, queryset=None):                
+    def get_object(self, queryset=None): 
         # get comparative_analysis_table
 
         #comparative_analysis_table = models.ComparativeAnalysisTableModel.objects.all()[0]              # ПОКА ЧТО ПОЛУЧИМ ПРОСТО ТУПО СОЗДАННУЮ ПЕРВУЮ ТАБЛИЦУ (без филтров по датам и тд)
@@ -84,12 +89,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #        models.ComparativeAnalysisTyresModel.objects.bulk_create([models.ComparativeAnalysisTyresModel(tyre=n, table=comparative_analysis_table)])   
 
             # 1 ###### ПАРСИНГ Onliner:
+            webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             try:
                 url = 'https://catalog.onliner.by/tires?region=bobrujsk'
                 #response = requests.get(url)
                 #soup = BeautifulSoup(response.text,"lxml")
                 ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -250,7 +258,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 avtoset_good_num = 0
                 # 1) Легковые шины
                 url = 'https://autoset.by/tires/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -314,7 +324,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 # 2) Грузовые шины
                 url = 'https://autoset.by/trucks-tires/'
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -371,7 +383,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 # 3) Грузовые индустриальные спец. шины
                 url = 'https://autoset.by/industrial-tires/'
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -428,7 +442,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 # 4) Сельскохозяйственные шины
                 url = 'https://autoset.by/agricultural-tires/'
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -553,7 +569,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 bagoria_good_num = 0
                 # 1) Легковые шины
                 url = 'https://bagoria.by/legkovye-shiny/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -625,7 +643,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #print(goods_dict_bagoria, 'goods_dict_bagoria')
                 # 2) Грузовые шины
                 url = 'https://bagoria.by/gruzovye-shiny/'
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -676,7 +696,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         bagoria_good_num += 1  
                 # 3) Грузовые индустриальные спец. шины
                 url = 'https://bagoria.by/industr-shiny/'
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -725,7 +747,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         bagoria_good_num += 1   
                 # 4) Сельскохозяйственные шины
                 url = 'https://bagoria.by/selhoz-shiny/'
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -1231,7 +1255,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             final_list_of_objects_for_template = models.ComparativeAnalysisTyresModel.objects.filter(pk__in=list_of_tyre_comparative_objects_ids)  
 
         list_of_tyre_comparative_objects = final_list_of_objects_for_template                       # !!  список СomparativeAnalysisTyresModel  у которых отфильтрованы конкуренты
-        print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
+        #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ########END !!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ
 
@@ -1257,6 +1281,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #competitors_ids = models.CompetitorSiteModel.objects.values_list("id")
         #in_base_tyres = list_of_tyre_comparative_objects.filter(price_tyre_to_compare__in=competitors_ids).distinct()
         #context['in_base_tyres'] = in_base_tyres.order_by('-tyre')
+        print('models.FOR_MENU_OBJECTS_LIST', models.FOR_MENU_OBJECTS_LIST)
         context['in_base_tyres'] = models.FOR_MENU_OBJECTS_LIST.order_by('-tyre')
         #######  
         # 3) выбрать группу шин:
@@ -1905,13 +1930,16 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
                                                     #all_comparative_tyre_model_objects = models.ComparativeAnalysisTyresModel.objects.all()
                                                     #for ob in all_comparative_tyre_model_objects:
                                                     #    comparative_analysis_table.comparative_analysis_table.add(ob)
-
+            webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             # 1 ###### ПАРСИНГ express-shina:
             try:
+
                 express_shina_good_num = 0
                 # 1) парсинг грузовых шин
                 url = 'https://express-shina.ru/search/gruzovyie-shinyi'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2004,7 +2032,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
                 # 2) парсинг легковых шин
                 url = 'https://express-shina.ru/search/legkovyie-shinyi'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2075,7 +2105,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
                 # 3) парсинг легкогрузовых шин
                 url = 'https://express-shina.ru/search/legkogruzovyie-shinyi'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2197,7 +2229,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
            #     3) парсинг спец шин
                 url = 'https://express-shina.ru/search/spetcshinyi'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2345,7 +2379,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
                 kolesatyt_good_num = 0
                 # 1) парсинг грузовых шин
                 url = 'https://kolesatyt.ru/podbor/gruzovye-shiny/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2419,7 +2455,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
                 # 2) парсинг легковых шин
                 url = 'https://kolesatyt.ru/podbor/shiny/type-car/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2492,7 +2530,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
                 # 3) парсинг легкогрузовых шин
                 url = 'https://kolesatyt.ru/podbor/shiny/type-light-truck/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2625,7 +2665,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
                 kolesa_darom_good_num = 0
                 # 1) парсинг легковых зимних шин
                 url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/zima/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -2701,7 +2743,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
                 # 2) парсинг легковых летних шин
                 url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'       
-                webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
                 webdriverr.get(url)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
