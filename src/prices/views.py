@@ -833,7 +833,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
     #                               season_usage = None 
                             if coma and len(v) > 3 and v[4]:  #len(v[4]) == 5 :
                                 pr = float(str(v[4]).replace(',', '.'))
-                            models.CompetitorSiteModel.objects.update_or_create(
+                            competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
                                 site = 'bagoria.by',
                                 currency = dictionaries_models.Currency.objects.get(currency='BYN'),
                                 price = pr,
@@ -848,7 +848,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
                             #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
                             for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
-                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)                          
+                                #print(comparative_analys_tyres_model_object.tyre__tyre_size__tyre_size, '+++', competitor_site_model[0].site, competitor_site_model[0].developer.competitor_name, competitor_site_model[0].tyresize_competitor, competitor_site_model[0].price, competitor_site_model[0].developer.competitor_name)
                             ###  
             except:
                 pass                                                                                                                                                                                                      
@@ -900,6 +901,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #    for ttty in tt.price_tyre_to_compare.all():
         #        print(ttty.tyresize_competitor, ttty.site, '////', ttty.name_competitor, '////', ttty.developer.competitor_name)
         #    print('=========================================================')
+
+        #for comp1 in table_lookup_only_with_competitors:
+        #    for comp in comp1.price_tyre_to_compare.all():
+        #        #print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price, comp.tyresize_competitor)
+        #        if comp.developer.competitor_name == 'Continental':
+        #            print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price, comp.tyresize_competitor)
 
 
         if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
@@ -1249,10 +1256,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             proverka = [('', '', ''), ('', '', ''), ('', '', '')] 
             proverka_chem = ('', '', '')
             if onl_result != proverka or avt_result != proverka or bag_result != proverka or chem_result != proverka_chem:
-                list_of_tyre_comparative_objects_ids.append(tt.pk)
+                list_of_tyre_comparative_objects_ids.append(tt.pk)         
             else:
                 pass 
-            final_list_of_objects_for_template = models.ComparativeAnalysisTyresModel.objects.filter(pk__in=list_of_tyre_comparative_objects_ids)  
+            final_list_of_objects_for_template = models.ComparativeAnalysisTyresModel.objects.filter(pk__in=list_of_tyre_comparative_objects_ids).order_by('tyre')  
 
         list_of_tyre_comparative_objects = final_list_of_objects_for_template                       # !!  список СomparativeAnalysisTyresModel  у которых отфильтрованы конкуренты
         #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
@@ -1281,8 +1288,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #competitors_ids = models.CompetitorSiteModel.objects.values_list("id")
         #in_base_tyres = list_of_tyre_comparative_objects.filter(price_tyre_to_compare__in=competitors_ids).distinct()
         #context['in_base_tyres'] = in_base_tyres.order_by('-tyre')
-        print('models.FOR_MENU_OBJECTS_LIST', models.FOR_MENU_OBJECTS_LIST)
-        context['in_base_tyres'] = models.FOR_MENU_OBJECTS_LIST.order_by('-tyre')
+
+        #context['in_base_tyres'] = models.FOR_MENU_OBJECTS_LIST.order_by('tyre')
+        context['in_base_tyres'] = models.FOR_MENU_OBJECTS_LIST
+
         #######  
         # 3) выбрать группу шин:
         tyr_groups = dictionaries_models.TyreGroupModel.objects.all()
@@ -1393,7 +1402,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
-        #print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+        ####print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
 
 
         # НА ПРИМЕРЕ ОДНОГО ОБЪЕКТА: 
@@ -1427,28 +1436,27 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         filter_sites = ['onliner.by', 'bagoria.by', 'autoset.by'] #['kolesa-darom.ru'] # ['onliner.by']  # ['onliner.by', 'kolesa-darom.ru'] # ['onliner.by']  # ['kolesa-darom.ru'] #  ['express-shina.ru']     # по дефолту показать этих
 
         list_off_sizes_to_compare = []                                            # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)
-        #print('list_of_tyre_comparative_objects =====', list_of_tyre_comparative_objects) 
         for tyr_sizze in list_of_tyre_comparative_objects:
             list_off_sizes_to_compare.append(tyr_sizze.tyre.tyre_size.tyre_size)
         list_off_sizes_to_compare = set(list_off_sizes_to_compare)  
         #print('list_off_sizes_to_compare HUSH HUSH HUSH', list_off_sizes_to_compare)
         chart_title = ''
         if len(list_off_sizes_to_compare) == 1:                                     # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)     
-            #object_units = list_of_tyre_comparative_objects.filter(id=310)          # заглушка на время = пока берем id=310
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
             #chart_title = str(object_units[0].tyre.tyre_size.tyre_size) 
             chart_title = object_units[0].tyre.tyre_size.tyre_size
             #print('OBJECT UNITS =', object_units)
-        else:                                                                       # заглушка на время = пока берем id=340
-            #object_units = list_of_tyre_comparative_objects.get(id=340) 
-            object_units = list_of_tyre_comparative_objects.all()
+        else:       
+            print('222222222', list_of_tyre_comparative_objects)  
+            #object_units = list_of_tyre_comparative_objects.all()                                                             
+            object_units = list_of_tyre_comparative_objects
 
             chart_title = object_units[0].tyre.tyre_size.tyre_size
         #print('chart_title 11111111111111', chart_title)
 
         #print('object_units', object_units)
         #for comp in object_unit.price_tyre_to_compare.all():
-        #    print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price)
+        #    print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price, comp.tyresize_competitor)
 
         # дополнительно даем имена чекбоксам сайтов для графика фильтра: 
         check_box_num = 0    
@@ -1504,7 +1512,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('list_of_competitors_set', list_of_competitors_set)                                                              #(ТИП-2 график по сайтам) 
        # СОБИРАЕМ ПРЕДВАРИТЕЛЬНЫЙ СПИСОК С ИМЕЮЩИМИСЯ ДАННЫМИ и искуственными пробелами NONE:
                                                          # если нужно получить усредненное значение
-        
+        #for object_unit in object_units:
+        #    for comp_obj in object_unit.price_tyre_to_compare.all():
+        #        print('++', comp_obj, comp_obj.site, comp_obj.developer.competitor_name, comp_obj.price)
+
+
+
         # ПРОВЕРКА - НУЖЕН ГРАФИК ПО ПРОИЗВОДИТЕЛЯМ ЛИБО ПО ПЛОЩАДКАМ:
         if models.GOOGLECHART_MARKETPLACE_ON is False:      # ЕСЛИ НЕ СТОИТ ГАЛОЧКА ПО ПЛОЩАДКАМ - ФОРМИРУЕМ ГРАФИК ПО ПРОИЗВОДИТЕЛЯМ:
             context['marketplace_on_checked'] = ''
@@ -1512,66 +1525,119 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             new_result_for_comp_dict = {}
  
-            for date_day in all_days_in_period: 
-                for comp_name in list_of_competitors_set:
-                    #print('comp_name', comp_name)
-                    list_valuess = []
-                    for object_unit in object_units:
-                        valuess = None
-                        site_comp_obj_dict = {}
-                        for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites).filter(developer__competitor_name__in=filter_producer): 
-                            site_comp_obj_dict[comp_obj.site] = comp_obj.site, None, 0   
-                        for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites).filter(developer__competitor_name__in=filter_producer):        ## !!!! 2 ФИЛЬТР ПО САЙТАМ  и КОНКУРЕНТАМ
-                        #for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites):                                           ## !!!! 2 ФИЛЬТР ПО САЙТАМ 
-                        #for comp_obj in object_unit.price_tyre_to_compare.all():
-                            #print(comp_name, comp_obj.date_period.strftime("%d.%m.%Y"), comp_obj.price, comp_obj.site) 
-                            if comp_obj in object_unit.price_tyre_to_compare.filter(developer__competitor_name=comp_name, date_period=date_day): 
-                                valuess = comp_name, comp_obj.date_period.strftime("%Y-%m-%d"), comp_obj.price, comp_obj.site
-                                valuess = list(valuess)
-                            else:
-                                valuess = comp_name, date_day.strftime("%Y-%m-%d"), None, comp_obj.site
-                                valuess = list(valuess)
-                            site_val_on_date_for_developer = None, None
-                            if valuess[2]:
-                                site_val_on_date_for_developer = valuess[3], valuess[2]
-                                list_valuess.append(site_val_on_date_for_developer) 
-                            #print('valuess', valuess, comp_obj)
+        ####################    for date_day in all_days_in_period: 
+        ####################        for comp_name in list_of_competitors_set:
+        ####################            #print('comp_name', comp_name)
+        ####################            list_valuess = []
+        ####################            for object_unit in object_units:            # "ИЗБЫТОЧНО _ ПРОВЕРКА ДЛЯ ВСЕХ существующих ComparativeAnalysisTyresModel
+####################
+        ####################                valuess = None
+        ####################                site_comp_obj_dict = {}
+        ####################                for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer): 
+        ####################                    site_comp_obj_dict[comp_obj.site] = comp_obj.site, None, 0 
+        ####################                for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer):        ## !!!! 2 ФИЛЬТР ПО САЙТАМ  и КОНКУРЕНТАМ
+        ####################                #for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites):                                           ## !!!! 2 ФИЛЬТР ПО САЙТАМ 
+        ####################                #for comp_obj in object_unit.price_tyre_to_compare.all():
+        ####################                    #print(comp_name, comp_obj.date_period.strftime("%d.%m.%Y"), comp_obj.price, comp_obj.site) 
+        ####################                    if comp_obj in object_unit.price_tyre_to_compare.filter(developer__competitor_name=comp_name, date_period=date_day): 
+        ####################                        valuess = comp_name, comp_obj.date_period.strftime("%Y-%m-%d"), comp_obj.price, comp_obj.site
+        ####################                        valuess = list(valuess)
+        ####################                    else:
+        ####################                        valuess = comp_name, date_day.strftime("%Y-%m-%d"), None, comp_obj.site
+        ####################                        valuess = list(valuess)
+        ####################                    ####site_val_on_date_for_developer = None, None
+        ####################                    ####if valuess[2]:
+        ####################                    ####    site_val_on_date_for_developer = valuess[3], valuess[2]
+        ####################                    ####    list_valuess.append(site_val_on_date_for_developer) 
+        ####################                    #print('valuess', valuess)
+####################
+        ####################                    # формируем словри:
+        ####################                    if site_comp_obj_dict.get(valuess[3]): 
+        ####################                        #print('XOXOXOXOXO', site_comp_obj_dict) 
+        ####################                        current_dict_val = site_comp_obj_dict.get(valuess[3])[1]
+        ####################                        dict_site = site_comp_obj_dict.get(valuess[3])[0]
+        ####################                        dict_devider = site_comp_obj_dict.get(valuess[3])[2]
+        ####################                        if valuess[2]:
+        ####################                            if current_dict_val is None:
+        ####################                                current_dict_val = valuess[2]
+        ####################                                #site_comp_obj_dict.get(valuess[3])[1] = current_dict_val
+        ####################                                site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, dict_devider
+        ####################                            else:
+        ####################                                current_dict_val = valuess[2]
+        ####################                                #print('current_dict_val1', current_dict_val)
+        ####################                                site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, current_dict_val
+        ####################                                current_devider = site_comp_obj_dict.get(valuess[3])[2]
+        ####################                                #print('current_devider', current_devider)
+        ####################                                current_devider += 1
+        ####################                                site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, dict_devider
+        ####################                    new_result_for_comp_dict[comp_name, date_day.strftime("%Y-%m-%d"), comp_obj.site] = list(site_comp_obj_dict[valuess[3]])        # словарь с скомпанованными данными
+####################
+        #####################print('all_days_in_period', all_days_in_period)                ## готовые параметры для подготовки списков в отрисовку
+        #####################print('list_of_competitors_set', list_of_competitors_set)      ## готовые параметры для подготовки списков в отрисовку  
+        #####################print('list_of_sites', list_of_sites)                          ## готовые параметры для подготовки списков в отрисовку
+        ####################for k, v in new_result_for_comp_dict.items():     ### !!!!!!!!!!!!!!! 
+        ####################    print('==',k, v)
 
-                            # формируем словри:
-                            if site_comp_obj_dict.get(valuess[3]):  
-                                current_dict_val = site_comp_obj_dict.get(valuess[3])[1]
-                                dict_site = site_comp_obj_dict.get(valuess[3])[0]
-                                dict_devider = site_comp_obj_dict.get(valuess[3])[2]
-                                if valuess[2]:
-                                    if current_dict_val is None:
-                                        current_dict_val = valuess[2]
-                                        #site_comp_obj_dict.get(valuess[3])[1] = current_dict_val
-                                        site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, dict_devider
-                                    else:
-                                        current_dict_val = current_dict_val + valuess[2]
-                                        site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, current_dict_val
-                                        #site_comp_obj_dict.get(valuess[3])[1] = current_dict_val
-                                        current_devider = site_comp_obj_dict.get(valuess[3])[2]
-                                        current_devider += 1
-                                        site_comp_obj_dict[valuess[3]] = dict_site, current_dict_val, dict_devider
-                            new_result_for_comp_dict[comp_name, date_day.strftime("%Y-%m-%d"), comp_obj.site] = list(site_comp_obj_dict[valuess[3]])        # словарь с скомпанованными данными
+        ### ###### ####### ###########
 
-        #print('all_days_in_period', all_days_in_period)                ## готовые параметры для подготовки списков в отрисовку
-        #print('list_of_competitors_set', list_of_competitors_set)      ## готовые параметры для подготовки списков в отрисовку  
-        #print('list_of_sites', list_of_sites)                          ## готовые параметры для подготовки списков в отрисовку
-        #for k, v in new_result_for_comp_dict.items():     ### !!!!!!!!!!!!!!! 
+
+        if models.GOOGLECHART_MARKETPLACE_ON is False:      # ЕСЛИ НЕ СТОИТ ГАЛОЧКА ПО ПЛОЩАДКАМ - ФОРМИРУЕМ ГРАФИК ПО ПРОИЗВОДИТЕЛЯМ: 
+            context['marketplace_on_checked'] = ''
+            competit_on_current_date_assembled = []                        ###### В ДАННЫЙ СПИСОК И ФОРМИРУЮТСЯ ДАННЫЕ (ВАЖНО-затем работа по этом списку без обращений к объектам)
+
+            new_result_for_comp_dict = {}
+
+            prices_of_competitors_one_name_producer_dict = {}
+            for date_day in all_days_in_period:                                                              # comp_name WestLake
+                for object_unit_id, comp_obj_ss_id in edyniy_slovar_dict_dlja_pandas_chart_graphic.items(): 
+                    object_unit = models.ComparativeAnalysisTyresModel.objects.get(id=object_unit_id)
+                    list_of_competts = models.CompetitorSiteModel.objects.filter(pk__in=comp_obj_ss_id)
+                    # ТЕКУЩЕЕ РЕШЕНИЕ = БЕРЕИ ВСЕ ЗНАЧЕНИЯ КОНКУРЕНТОВ ПРОИЗВОДИТЕЛЯ С ТАКИМ ИМЕНЕМ И ОСТАВЛЯЕИ МЕНЬШЕЕ
+                    for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer):
+                        #keys_list = comp_obj.developer.competitor_name, comp_obj.date_period, comp_obj.site
+                        for comp_name in list_of_competitors_set: 
+                        #    keys_list = comp_name, comp_obj.developer.competitor_name, comp_obj.date_period, comp_obj.site
+                        #    current_val = prices_of_competitors_one_name_producer_dict.get(keys_list)  # если уже существует такая позиция добавим цену в список и возьмем наименьшую для данного производителя     
+                        #    if current_val is None:
+                        #        current_val = comp_obj.price  
+                        #        prices_of_competitors_one_name_producer_dict[keys_list] = current_val
+                        #    else:
+                        #        min_price = min(current_val, comp_obj.price)
+                        #        prices_of_competitors_one_name_producer_dict[keys_list] = min_price
+                            
+                            keys_list = comp_name, comp_obj.date_period.strftime("%Y-%m-%d"), comp_obj.site
+                            default_values = comp_obj.site, 0, comp_name
+                            prices_of_competitors_one_name_producer_dict.setdefault(keys_list, default_values)
+                            if comp_obj.developer.competitor_name == comp_name:
+                                current_val_exist = prices_of_competitors_one_name_producer_dict.get(keys_list)  # если уже существует такая позиция добавим цену в список и возьмем наименьшую для данного производителя     
+                                if current_val_exist == default_values:
+                                    current_val = comp_obj.price 
+                                    prices_of_competitors_one_name_producer_dict[keys_list] = comp_obj.site, current_val, comp_obj.developer.competitor_name
+                                else:
+                                    cur_site, current_val, cur_comp_name = current_val_exist
+                                    min_price = min(current_val, comp_obj.price)
+                                    prices_of_competitors_one_name_producer_dict[keys_list] = cur_site, min_price, cur_comp_name
+        new_result_for_comp_dict = prices_of_competitors_one_name_producer_dict             
+        #for n, nv in prices_of_competitors_one_name_producer_dict.items():      # == приводим в неулюжий вид такого типа: ('WestLake', '2023-08-05', 'bagoria.by') ['bagoria.by', 188.48, 0]
+        #    print(n, nv)
+            ### ###### ####### ###########             
+
+
+
         if models.WEIGHTED_AVERAGE_ON == False:                             # ЕСЛИ НЕ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
             context['weighted_average_checked'] = ''
             list_for_formating = []
-            position_couner = None          # понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем     
+            position_couner = None          # понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем  
             for ddate in all_days_in_period:
                 small_list_for_formating = []
                 for k, v in new_result_for_comp_dict.items():     ### !!!!!!              
                     if ddate.strftime("%Y-%m-%d") == k[1]:
+                        #if v[1]:
                         put_data = k[0], k[1], v[1], v[0]             # [['JONWICK', '2023-04-05', None,  # 'onliner.by']   ['SAMURAI', '2023-04-19', 750.0, # 'kolesa-darom.ru']]
                         put_data = list(put_data)
                         position_couner = put_data.index(v[1])
                         small_list_for_formating.append(put_data)
+                #print('=======', small_list_for_formating)
                 list_for_formating.append(small_list_for_formating)
             #print('list_for_formating', list_for_formating)
         else:                             # ЕСЛИ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
@@ -1607,12 +1673,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         put_data[position_couner] = None
                     #print ('put_data', put_data, 'devvider:', devvider) 
                     small_list_for_formating.append(put_data)   
-                #print('=======')
+                #print('=======', small_list_for_formating)
                 list_for_formating.append(small_list_for_formating)
             #print('list_for_formating!', list_for_formating)
 
-        competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-        #competit_on_current_date_assembled = []     # ЗАГЛУЩ+ШКА  УДАЛИТЬ       
+        competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!         
+
+        ## т.к. list_for_formating и затем competit_on_current_date_assembled - создает пустые дубляжи производителя для каждого сайта ( например,['Кама', '2023-08-02', None, 'onliner.by'], ['Кама', '2023-08-02', None, 'bagoria.by'])
+        ## исключим те дубляжи , по которым созданы на иных сайтах копии
+        #print('!!!', list_for_formating)
 
         # ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ:
         complided_data_len = 0  # проверка все ли части равны
@@ -1621,7 +1690,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             complided_data_len = len(competit_on_current_date_assembled[0])  
             #complided_data_len_el = len(competit_on_current_date_assembled[0][0]) - 1 
             #print('complided_data_len', complided_data_len)             # количество списков на дату
-            #print('complided_data_len_el', complided_data_len_el)       # количество элементов в списке
         all_parts_are_equal = False      
         for complided_data in competit_on_current_date_assembled:
             complided_data_len_got = len(complided_data)
@@ -1629,9 +1697,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 all_parts_are_equal = True
 
         #competit_on_current_date_assembled = list(reversed(competit_on_current_date_assembled))       # развернуть список чтобы начинать с последней даты
-
-        #for n in competit_on_current_date_assembled:
-        #    print(n)
 
         whole_list_legh = len(competit_on_current_date_assembled)
         if position_couner:
@@ -1659,8 +1724,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         competit_on_current_date_assembled[curr_perr_val_index][curr_ell_val_index][position_couner] = val
                           
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                 
-    #    for n in competit_on_current_date_assembled:
-    #        print(n)     
+        for n in competit_on_current_date_assembled:
+            print('fall behind', n)     
 
         # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
         assembles_to_dict_data_dict = {}
@@ -1732,10 +1797,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             list_to_tuple = list_of_period_competitor_values_new[1:]
             list_of_competitor_values_new_dict[list_of_period_competitor_values_new[0]] = list_to_tuple
-
-
-            
-
 
         assembles_to_dict_data_dict['competitor_values'] = list(list_of_competitor_values)    
 
