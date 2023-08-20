@@ -866,48 +866,39 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         models.CURRENCY_VALUE_RUB = curr_value / 100
 
 
-        #### 0 подбор шин с их данными по минималкам для отображения в таблице на определенный период (не конкуренты , а именно собственная продукция)Ж          
+        #### 0 подбор шин с их данными по минималкам для отображения в таблице на определенный период (не конкуренты , а именно собственная продукция)
+        # ОПРЕДЕЛЕНИЕ ДАТЫ:          
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:  
             # для поиска по собственной продукции с ходом в шаг = месяц       
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
-            year_to_look = date_filter.year
-            month_to_look = date_filter.month
-            #aRRRRR = obj.comparative_table.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-            #print('aRRRRR', aRRRRR)
-            # для поиска по кнкурентампродукции с ходом в шаг = день  
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
+            competitors_exist_all_dates_last_date_latest_date = date_filter    # КОНКУРЕНТЫ ПО СТОСТОЯНИЮ НА ДАТУ
+        #    print('===date_filter===', date_filter, type(date_filter))
+        #    year_to_look = date_filter.year
+        #    month_to_look = date_filter.month
+        #    print('year_to_look', year_to_look, 'month_to_look', month_to_look)     # year_to_look 2023 month_to_look 8
+#
+        #    # для поиска по кнкурентампродукции с ходом в шаг = день  
+        #    all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
         else:
         # 00.1  выборка всех имеющихся периодов с минималками:
-            get_all_dates_year_month = obj.comparative_table.dates('sale_data', 'month')
-            if get_all_dates_year_month:
-                oldest_date = min(get_all_dates_year_month)
-                latesr_date = max(get_all_dates_year_month)
+            competitors_exist_all_dates = models.CompetitorSiteModel.objects.all().dates('date_period', 'day') # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВСЕ ДАТЫ ДОСТУПНЫЕ ВООБЩЕ ВСЕХ КОНКУРЕТОВ все даты доступные вообще всех конкурентов
+            competitors_exist_all_dates_last_date_latest_date = max(competitors_exist_all_dates)  # КОНКУРЕНТЫ ПО СТОСТОЯНИЮ НА ДАТУ
 
-                year_to_look = latesr_date.year
-                month_to_look = latesr_date.month
-
+        ################
+        ################
+        get_all_dates_year_month = obj.comparative_table.dates('sale_data', 'month')
+        if get_all_dates_year_month:
+            #oldest_date = min(get_all_dates_year_month)
+            latesr_date = max(get_all_dates_year_month)
+            year_to_look = latesr_date.year
+            month_to_look = latesr_date.month
+            #print('oldest_date', oldest_date)
+        ################
+        ################
         ####
 
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
-        #competitors_ids = models.CompetitorSiteModel.objects.values_list("id")          #.select_related("tyre_to_compare")
-        #table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__pk__in=competitors_ids).distinct()
-        #table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.all()
-
-        
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
-        ##print('table_lookup_only_with_competitors', '++++++++ TABLE LOOKUP COMPETITORS ::::::::', table_lookup_only_with_competitors)
-        #for tt in table_lookup_only_with_competitors:
-        #    print(tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size, )
-        #    for ttty in tt.price_tyre_to_compare.all():
-        #        print(ttty.tyresize_competitor, ttty.site, '////', ttty.name_competitor, '////', ttty.developer.competitor_name)
-        #    print('=========================================================')
-
-        #for comp1 in table_lookup_only_with_competitors:
-        #    for comp in comp1.price_tyre_to_compare.all():
-        #        #print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price, comp.tyresize_competitor)
-        #        if comp.developer.competitor_name == 'Continental':
-        #            print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price, comp.tyresize_competitor)
-
 
         if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
             id_list = []
@@ -915,13 +906,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 if n.isdigit():                                 
                     comparativeanalisystyre_object_id = int(n)
                     id_list.append(comparativeanalisystyre_object_id)
-            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
             list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(id__in=id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    #только продукция с конкурентами  
-            #print('!!!!!!!!!!!!!! =  333333333333')
-        #elif models.SELF_PRODUCTION_ALL:
-        #    #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-        #    list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами
-        #    print('!!!!!!!!!!!!!! =  111111111111')
         else: 
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    
             list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами 
@@ -960,10 +945,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #print('list_of_tyre_comparative_objects', 'JJ2', list_of_tyre_comparative_objects) 
     #    context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
 #
-    #    for tt in list_of_tyre_comparative_objects:
-    #        print('tt', tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size)
+        #for tt in list_of_tyre_comparative_objects:
+        #    print('tt', tt, tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size)
 
-
+        #0.1 подготовить последнюю доступгую дату с конкурентами:
+        #last_availible_date = models.CompetitorSiteModel.objects.dates('date_period', "day").last()  
+        last_availible_date = competitors_exist_all_dates_last_date_latest_date
         ## 1 фильтр конкурентов Onliner:
         # 1.1 ФИЛЬТР по дате
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
@@ -971,7 +958,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
             #print('date_filter', date_filter,  '!!!!!!!!!!!!!!!!!!!!!!!', all_competitors)
         else:
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by')     
+            #print('last_availible_date', last_availible_date)
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', date_period=last_availible_date)
+
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
@@ -1008,11 +997,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             else:
                 for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                        print("На пол шишечки2", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
                         #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                         list_of_matched_competitors.append(competitor)
                 onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
         #print('onliner_competitors_dict1', onliner_competitors_dict1)
+        for n in onliner_competitors_dict1.values():
+            if n:
+                for current_chosen_date in n:
+                    print('current_chosen_date----', current_chosen_date.date_period)
         ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
         #object_unit.onliner_competitor_on_date1() 
@@ -1043,7 +1036,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
             all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by').filter(date_period=date_filter)
         else:
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by')
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by', date_period=last_availible_date)
         #print(all_competitors , 'all_competitors ')
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
@@ -1108,7 +1101,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.avtoset_heders_lengt()
         #object_unit.onliner_competitor_price_on_date1()
         #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-        #print('avtoset', context['list_of_tyre_comparative_objects'])
+        ##print('avtoset', context['list_of_tyre_comparative_objects'])
         ###### END OF AVTOSET
 
         ## 3 фильтр конкурентов BAGORIA:
@@ -1116,7 +1109,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
             all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by').filter(date_period=date_filter)
         else:
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by')
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by', date_period=last_availible_date)
         #print(all_competitors , 'all_competitors ')
     #        # 1.2 ФИЛЬТР список производителей :
     #    # выбор по производителю:                               
@@ -1378,6 +1371,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #print('ONLINER_COMPETITORS_NAMES_FILTER', models.ONLINER_COMPETITORS_NAMES_FILTER)
         
+
+
         #############   ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS  
         # 0. Получаем объекты и их реально офильтрованные по параметрам конкуренты:
         #print('ONLINER_COMPETITORS_NAMES_FILTER_IDS', models.ONLINER_COMPETITORS_NAMES_FILTER_IDS) # ключ - id объета ComparativeAnalysisTyresModel, згначения - список id отфильтрованных конкурентов CompetitorSiteModel
@@ -1497,7 +1492,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 list_of_competitors.append(ccomp.developer.competitor_name)                                         #1 получаем наименования всех конкурентов для легенды таблицы   
             ooobj = models.ComparativeAnalysisTyresModel.objects.get(id=keys)
             start_date = ooobj.price_tyre_to_compare.earliest('date_period').date_period                      #2.1 получаем начальную дату из всех конкурентов  !ПЕРЕПИСАТЬ НА ВВОДИМЫЕ ПОЛЬЩОВАТЕЛЕМ
-            last_date = ooobj.price_tyre_to_compare.latest('date_period').date_period                         #2.2 получаем конечную дату из всех конкурентов   !ПЕРЕПИСАТЬ НА ВВОДИМЫЕ ПОЛЬЩОВАТЕЛЕМ           
+            #last_date = ooobj.price_tyre_to_compare.latest('date_period').date_period                         #2.2 получаем конечную дату из всех конкурентов   !ПЕРЕПИСАТЬ НА ВВОДИМЫЕ ПОЛЬЩОВАТЕЛЕМ           
+            last_date = competitors_exist_all_dates_last_date_latest_date
             list_of_competitors_set = set(list_of_competitors)   
             list_start_dates.append(start_date)
             list_last_dates.append(last_date)
@@ -1724,8 +1720,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         competit_on_current_date_assembled[curr_perr_val_index][curr_ell_val_index][position_couner] = val
                           
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                 
-        for n in competit_on_current_date_assembled:
-            print('fall behind', n)     
+        #for n in competit_on_current_date_assembled:
+        #    print('fall behind', n)     
 
         # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
         assembles_to_dict_data_dict = {}
@@ -1775,7 +1771,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #list_of_period_competitor_values_new.append(date_in_str)
             year, month, day = int(date_in_str.strftime('%Y')), int(date_in_str.strftime('%m')), int(date_in_str.strftime('%d'))
 
-            date_prepared_or_js = year, month-1, day                                # СДВИГАЕМ ЗНАЧЕНИЕ МЕСЯЦ НА ОДИН НАЗАД ДЛЯ GOOGLE CHART 
+            date_prepared_or_js = year, month-1, day        # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ                        
             list_of_period_competitor_values_new.append(date_prepared_or_js)
 
         
