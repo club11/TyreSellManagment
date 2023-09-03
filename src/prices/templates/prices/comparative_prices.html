@@ -305,7 +305,8 @@
             //google.load('visualization', '1', {packages: ['controls']});
             
 
-            google.charts.load('current', {'packages':['line', 'controls']});
+            //google.charts.load('current', {'packages':['line', 'controls']});
+            google.charts.load('current', {'packages':['line', 'corechart', 'controls']});              // ДОБАВЛЕН 'corechart' в надежде, что заработает InterpolateNulls:
             //google.charts.load('current', {'packages':['line', 'controls'], 'language': 'ru'});
             google.setOnLoadCallback(drawChart);
             
@@ -338,7 +339,7 @@
                 // ЗДЕСЬ САМ ГРАФИК ПРЕДСТАВЛЕНИЕ
                 var chart = new google.visualization.ChartWrapper({
                 
-                    //chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!
+                    //chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!      ///  ВЫБОР КАК ОТОБРАЖАТЬ ГРАФИК
                     chartType: 'Line',
                 
                     containerId: 'chart_div',
@@ -346,8 +347,11 @@
                 
                     options: google.charts.Line.convertOptions({
                       chart: {
-                        title:"{{ chart_title|safe }}",   
+                        title:"{{ chart_title|safe }}", 
                       },
+
+                      interpolateNulls: true,         // автозаполнение 0 значений  
+
                       subtitle: "BYN",
                       //width: 600,                                       // ширина таблицы
                       height:400,
@@ -379,6 +383,7 @@
                       
                     }),  
                 });
+
               
               // ЗДЕСЬ опция выбора:
                 var columnFilter = new google.visualization.ControlWrapper({
@@ -416,6 +421,7 @@
                     });
                     chart.setView(view);
                     chart.draw();
+                    
                   
                 }
 

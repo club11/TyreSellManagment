@@ -1584,25 +1584,18 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             new_result_for_comp_dict = {}
 
             prices_of_competitors_one_name_producer_dict = {}
-            for date_day in all_days_in_period:                                                              # comp_name WestLake
+            for date_day in all_days_in_period:                                                              
                 for object_unit_id, comp_obj_ss_id in edyniy_slovar_dict_dlja_pandas_chart_graphic.items(): 
                     object_unit = models.ComparativeAnalysisTyresModel.objects.get(id=object_unit_id)
                     list_of_competts = models.CompetitorSiteModel.objects.filter(pk__in=comp_obj_ss_id)
-                    # ТЕКУЩЕЕ РЕШЕНИЕ = БЕРЕИ ВСЕ ЗНАЧЕНИЯ КОНКУРЕНТОВ ПРОИЗВОДИТЕЛЯ С ТАКИМ ИМЕНЕМ И ОСТАВЛЯЕИ МЕНЬШЕЕ
+                    # 1. БЛОК ДОРИСОВКИ NULL (ИЛИ 0) ЗНАЧЕНИЙ В ДАТЫ ЕСЛИ ЕСТЬ ХОТЬ ОДНА ДАТА С ТАКИМ ПРОИЗВОДИТЕЛЕМ НА САЙТЕ - сохдание нулевых значений в даты, в которых не получены данные
+                    # ТЕКУЩЕЕ РЕШЕНИЕ = БЕРЕМ ВСЕ ЗНАЧЕНИЯ КОНКУРЕНТОВ ПРОИЗВОДИТЕЛЯ С ТАКИМ ИМЕНЕМ И ОСТАВЛЯЕИ МЕНЬШЕЕ
                     for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer):
-                        #keys_list = comp_obj.developer.competitor_name, comp_obj.date_period, comp_obj.site
                         for comp_name in list_of_competitors_set: 
-                        #    keys_list = comp_name, comp_obj.developer.competitor_name, comp_obj.date_period, comp_obj.site
-                        #    current_val = prices_of_competitors_one_name_producer_dict.get(keys_list)  # если уже существует такая позиция добавим цену в список и возьмем наименьшую для данного производителя     
-                        #    if current_val is None:
-                        #        current_val = comp_obj.price  
-                        #        prices_of_competitors_one_name_producer_dict[keys_list] = current_val
-                        #    else:
-                        #        min_price = min(current_val, comp_obj.price)
-                        #        prices_of_competitors_one_name_producer_dict[keys_list] = min_price
-                            
+                           
                             keys_list = comp_name, comp_obj.date_period.strftime("%Y-%m-%d"), comp_obj.site
-                            default_values = comp_obj.site, 0, comp_name
+                            default_values = comp_obj.site, 'null', comp_name                                          #### !!!! null - если нет значения
+                            #default_values = comp_obj.site, 0, comp_name                                               #### !!!! null - если нет значения
                             prices_of_competitors_one_name_producer_dict.setdefault(keys_list, default_values)
                             if comp_obj.developer.competitor_name == comp_name:
                                 current_val_exist = prices_of_competitors_one_name_producer_dict.get(keys_list)  # если уже существует такая позиция добавим цену в список и возьмем наименьшую для данного производителя     
@@ -1613,12 +1606,105 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                     cur_site, current_val, cur_comp_name = current_val_exist
                                     min_price = min(current_val, comp_obj.price)
                                     prices_of_competitors_one_name_producer_dict[keys_list] = cur_site, min_price, cur_comp_name
-        new_result_for_comp_dict = prices_of_competitors_one_name_producer_dict             
+                        # 2. БЛОК ЗАЧИТСКА ОТ ИЗЛИШНЕ ДОРИСОВАННЫХ СОЗДАННЫХ В БЛОКЕ 1 ПУСТЫХ САЙТ/ПРОИЗВОДИТЕЛЬ БЕЗ ЗНАЧЕНИЙ             
+            # дополнительно проверяем на наличие созданных пустышек сайт/производитель - если на всем пероде значений нет ни одного - значит, создана пустышка - ее убрать: 
+            for ssitte in list_of_sites:
+                for compp in list_of_competitors_set:
+                    val_exist_data_is_true = True
+                    dict_indexes_of_keys_with_no_data_id_list = []
+                    for date_day in all_days_in_period:
+                        kkey = compp, date_day.strftime("%Y-%m-%d"), ssitte
+                        got_value = prices_of_competitors_one_name_producer_dict.get(kkey)
+                        if got_value:
+                            if got_value[1] != 'null': # если есть хоть одно значение - значит создан не пустой клон сайт/производитель , а реальный - закончить проверку данного производиттеля на сайте
+                                dict_indexes_of_keys_with_no_data_id_list = []
+                                break
+                            else:   
+                                dict_indexes_of_keys_with_no_data_id_list.append(kkey)
+                                #print(kkey, 'got_value', got_value)
+                                val_exist_data_is_true = False
+
+                    #print(dict_indexes_of_keys_with_no_data_id_list, len(dict_indexes_of_keys_with_no_data_id_list))            
+                    if val_exist_data_is_true == False:
+                        # удаляем созданные пустышки:
+                        for kkey in dict_indexes_of_keys_with_no_data_id_list:
+                            prices_of_competitors_one_name_producer_dict.pop(kkey)
+                    #print('=======')
+               
+        new_result_for_comp_dict = prices_of_competitors_one_name_producer_dict  
+
         #for n, nv in prices_of_competitors_one_name_producer_dict.items():      # == приводим в неулюжий вид такого типа: ('WestLake', '2023-08-05', 'bagoria.by') ['bagoria.by', 188.48, 0]
-        #    print(n, nv)
-            ### ###### ####### ###########             
+        #    print(n, '====', nv, 'Takim neschasnym')
+        #    ### ###### ####### ###########  
+                   
+        # 3. БЛОК + ДОПОЛНИТЕЛЬНАЯ ДОРИСОВКА ДАННЫХ УЖЕ НА ВЕСЬ ПЕРИОД _ ЧТОБЫ ПЕРЕДАТЬ В ТЕМПЛАЙТ ОДИНАКОВОЕ ЧИСЛО ДАННЫХ ПО КАЖДОМУ ПРОИЗВОДИТЕЛЮ НА САЙТАХ 
+        ############ !!!! ПРОВЕРКА ДОСТАВЛЕНИЕ ДАННЫХ                   Д.О.Р.И.С.О.В.К.А.  Д.А.Н.Н.Ы.Х   WARNING!!!!
+        # 1) дата с наибольшим количеством данных
+        list_of_inputed_dates = [] 
+        list_of_inputed_dates_set = set()
+        list_of_inputed_producers = []
+        list_of_inputed_producers_set = set()
+        list_of_inputed_sites = []
+        list_of_inputed_sites_set = set()
+        for kkkeyy in prices_of_competitors_one_name_producer_dict.keys(): 
+            if kkkeyy[1] in list_of_inputed_dates:
+                pass   
+            else:
+                list_of_inputed_dates.append(kkkeyy[1])
+            list_of_inputed_producers.append(kkkeyy[0])
+            list_of_inputed_sites.append(kkkeyy[2]) 
+        list_of_inputed_dates_set = list_of_inputed_dates
+        list_of_inputed_producers_set = set(list_of_inputed_producers)
+        list_of_inputed_sites_set = set(list_of_inputed_sites)
+        #print('list_of_inputed_dates_set', list_of_inputed_dates_set)
+        #print('list_of_inputed_producers_set', list_of_inputed_producers_set)
+        #print('list_of_inputed_sites_set', list_of_inputed_sites_set)
+        list_of_existing_prod_in_sites = []     # проверка - был ли производитель на сайте/ на одном- нескольких
+        for kkkeeeyy in prices_of_competitors_one_name_producer_dict:
+            ppproodducer, sssiitttteee = kkkeeeyy[0], kkkeeeyy[2]
+            pr_si = ppproodducer, sssiitttteee
+            list_of_existing_prod_in_sites.append(pr_si)
+        list_of_existing_prod_in_sites = list(set(list_of_existing_prod_in_sites))
 
+        ##
+        list_of_inputed_dates_set_sorted = []     # 1) додабвление (достраивание данных из соседних - из предыдущего дня) если в какое то число не спарсено
+        for str_data in list_of_inputed_dates_set:
+            some_data = datetime.datetime.strptime(str_data, '%Y-%m-%d').date()
+            list_of_inputed_dates_set_sorted.append(some_data)
+        mmmin = min(list_of_inputed_dates_set_sorted)
+        mmmax = max(list_of_inputed_dates_set_sorted)
+        datelist_d_pandas_range = pd.date_range(mmmin, mmmax)
+        list_of_dates_with_no_exceptions = []
+        for ddatta in datelist_d_pandas_range:
+            str_date = ddatta.strftime('%Y-%m-%d')
+            list_of_dates_with_no_exceptions.append(str_date)
+        ##    
+        list_of_inputed_dates_set = list_of_dates_with_no_exceptions            # теперь список дат без выпадающих дат
 
+        prices_of_competitors_one_name_producer_dict_temporary_with_missing_data = {}
+        for date_iz_spiska in list_of_inputed_dates_set:                                        # 2) додабвление 0 в другие дни если нет  данных, но в какое то число хоть раз был конкурент на данном сайте
+            for producer_iz_spiska in list_of_inputed_producers_set:
+                for site_iz_spiska in list_of_inputed_sites_set:
+                    prod_in_site_existed_check = producer_iz_spiska, site_iz_spiska
+                    if prod_in_site_existed_check in list_of_existing_prod_in_sites:            # если производитель и сайтодновременно есть в списке(т.е. производитель именно был хоть в какую то дату взят с данного сайта)
+                        what_to_look = producer_iz_spiska, date_iz_spiska, site_iz_spiska
+                        #print(date_iz_spiska)
+                        get_data = prices_of_competitors_one_name_producer_dict.get(what_to_look)
+                        #print(date_iz_spiska, get_data)
+                        if get_data:
+                            #print(date_iz_spiska, get_data )
+                            prices_of_competitors_one_name_producer_dict_temporary_with_missing_data[producer_iz_spiska, date_iz_spiska, site_iz_spiska] = get_data
+                        else:
+                            null_data = site_iz_spiska, 'null', producer_iz_spiska                              #### !!!! null - если нет значения
+                            #null_data = site_iz_spiska, 0, producer_iz_spiska                                  #### !!!! 0 - если нет значения                        
+                            prices_of_competitors_one_name_producer_dict_temporary_with_missing_data[producer_iz_spiska, date_iz_spiska, site_iz_spiska] = null_data 
+
+        # подменяем исходный словарик на словарик с доставленными нулевыми значениями:
+        new_result_for_comp_dict = prices_of_competitors_one_name_producer_dict_temporary_with_missing_data
+        #for hhh, oooo in new_result_for_comp_dict.items():
+        #    print('hhh, oooo ', hhh, oooo )
+    
+        ############ END !!!! ПРОВЕРКА ДОСТАВЛЕНИЕ ДАННЫХ 
 
         if models.WEIGHTED_AVERAGE_ON == False:                             # ЕСЛИ НЕ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
             context['weighted_average_checked'] = ''
@@ -1810,9 +1896,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
 
         
-
-        #for n in context['competitor_values']:
-        #    print('Н',type(n), n[0], n[1:])
+        ##### ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ:
+        #for vvall in list_of_competitor_values_new_dict.values():
+        #    print('vvall', vvall, len(list_of_competitor_values_new_dict.values()))
+        #
+        ##### END ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ
             
 
         context['list_of_competitor_values_new'] = list_of_competitor_values_new_dict  
