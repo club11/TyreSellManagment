@@ -997,15 +997,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             else:
                 for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        print("На пол шишечки2", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+####                        print("На пол шишечки2", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
                         #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                         list_of_matched_competitors.append(competitor)
                 onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
         #print('onliner_competitors_dict1', onliner_competitors_dict1)
-        for n in onliner_competitors_dict1.values():
-            if n:
-                for current_chosen_date in n:
-                    print('current_chosen_date----', current_chosen_date.date_period)
+####        for n in onliner_competitors_dict1.values():
+####            if n:
+####                for current_chosen_date in n:
+####                    print('current_chosen_date----', current_chosen_date.date_period)
         ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
         #object_unit.onliner_competitor_on_date1() 
@@ -1737,7 +1737,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             devvider += 1 
                             #print('v[1]', v[1], 'VZO', v, 'KTO', k)
                             perman_val = 0
-                            if v[1] is None:
+                            if v[1] is None or v[1] == 'null':
                                perman_val = 0 
                             else:
                                 perman_val = v[1]
@@ -1758,6 +1758,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #print('=======', small_list_for_formating)
                 list_for_formating.append(small_list_for_formating)
             #print('list_for_formating!', list_for_formating)
+
+        ### ЕСЛИ НУЖНО ВЫВОДИТЬ ГРФАИК С ДОРИСОВАННЫМИ ЛИНИЯМИ :
+        if models.FULL_LINED_CHART_ON == False:  
+            context['full_lined_chart_checked'] = '' 
+        else: 
+            context['full_lined_chart_checked'] = 'checked' 
+            context['full_lined_chart_checked_flag'] = 'true'
+        ### END ЕСЛИ НУЖНО ВЫВОДИТЬ ГРФАИК С ДОРИСОВАННЫМИ ЛИНИЯМИ
 
         competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!         
 
@@ -1904,9 +1912,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             
 
         context['list_of_competitor_values_new'] = list_of_competitor_values_new_dict  
-        for n, k in context['list_of_competitor_values_new'].items():
+####        for n, k in context['list_of_competitor_values_new'].items():
         #    #print('N',type(n), n[0], n[1:])
-            print('DD', n, k, type(n)) # n[0], n[1])
+####            print('DD', n, k, type(n)) # n[0], n[1])
         
 
         #print('context [competitor_names]', context['competitor_names'])
@@ -2051,6 +2059,15 @@ class ComparativeAnalysisTableModelUpdateView(View):
         else:
             #print('weighted_average_got N', weighted_average_got)
             models.WEIGHTED_AVERAGE_ON = False
+
+        #  работа проверкой - нужен вывод графика c дорисованными линиями
+        full_lined_chart_got = request.POST.get('full_lined_chart')
+        if full_lined_chart_got:
+            #print('full_lined_chart_got Y', full_lined_chart_got)
+            models.FULL_LINED_CHART_ON = True
+        else:
+            #print('full_lined_chart_got N', full_lined_chart_got)
+            models.FULL_LINED_CHART_ON = False
 
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_bel'))
 
@@ -3615,7 +3632,8 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
             #print('list_for_formating!', list_for_formating)
 
         competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    
-        #competit_on_current_date_assembled = []     # ЗАГЛУЩ+ШКА  УДАЛИТЬ       
+        #competit_on_current_date_assembled = []     # ЗАГЛУЩ+ШКА  УДАЛИТЬ  
+
 
         # ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ:
         complided_data_len = 0  # проверка все ли части равны

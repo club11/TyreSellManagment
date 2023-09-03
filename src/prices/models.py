@@ -64,6 +64,8 @@ CURRENCY_VALUE_RUB = None
 
 GOOGLECHART_MARKETPLACE_ON = False
 WEIGHTED_AVERAGE_ON = False
+FULL_LINED_CHART_ON = False
+
 
 FOR_MENU_OBJECTS_LIST = [] # список объектов для вывода в меню (шины с конкурентами)
 
