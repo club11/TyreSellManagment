@@ -337,34 +337,53 @@
                     initState.selectedValues.push(data.getColumnLabel(i));
                 }
                 // ЗДЕСЬ САМ ГРАФИК ПРЕДСТАВЛЕНИЕ
+
+
                 var chart = new google.visualization.ChartWrapper({
                 
-                    //chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!      ///  ВЫБОР КАК ОТОБРАЖАТЬ ГРАФИК
-                    chartType: 'Line',
+                    chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!      ///  ВЫБОР КАК ОТОБРАЖАТЬ ГРАФИК
+                    //chartType: 'Line',
                 
                     containerId: 'chart_div',
                     dataTable: data,
                 
                     options: google.charts.Line.convertOptions({
+                      
                       chart: {
-                        title:"{{ chart_title|safe }}", 
+                        title:"{{ chart_title|safe }}",
+                        subtitle: "BYN",
                       },
-
-                      interpolateNulls: true,         // автозаполнение 0 значений  
+                      
+                    //  interpolateNulls: true,         // автозаполнение 0 значений  
+                      
+                      pointSize: 7,
+                      lineWidth: 8,
+                      title:"Типоразмер {{ chart_title|safe }}",
+                      titleTextStyle: { 
+                          fontSize: 22,
+                          fontName: 'Times New Roman',
+                          bold: true,
+                          },
+                      
+                      chartArea: {
+                        left: 100,
+                        width: '70%',
+                      },
 
                       subtitle: "BYN",
                       //width: 600,                                       // ширина таблицы
                       height:400,
-                      //legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
-                      legend: { position: 'bottom' },
-                      lineWidth: 7,                    // ширина лини
+                      legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
+                      //legend: { position: 'bottom' },
+                      //lineWidth: 20,                    // ширина лини
                       vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
                         //gridlines:{color: 'blue'}, // цвет полос оси У
-                        format: '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
+                        format: '0',  // '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
+                        title:'бел. руб.',
                       },
                       hAxis: {
                           format: 'dd.MM.Y',
-                          gridlines: {count: 15}
+                          gridlines: {count: 15},
                         },
                       axes: {                                             // вертикальная ось, дописываем оси здесь
                           x: {
@@ -377,6 +396,7 @@
                             0: { 
                               label: 'бел. руб.',
                               textStyle: {color: 'red'},
+
                             } 
                           }                  
                         },
@@ -421,11 +441,7 @@
                     });
                     chart.setView(view);
                     chart.draw();
-                    
-                  
                 }
-
-
 
                 var control = new google.visualization.ControlWrapper({
                     controlType: 'ChartRangeFilter',
@@ -438,7 +454,8 @@
                                 hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
                                 height: 50,
                                 chartArea: {
-                                    width: '80%'
+                                    left: 100,
+                                    width: '70%'
                                 }
                             }
                         }
@@ -474,7 +491,6 @@
                       chart.draw();
                     }
                 }
-               
 
                 google.visualization.events.addListener(columnFilter, 'statechange', setChartView, control, setOptions);
               
@@ -484,8 +500,7 @@
                 var dash = new google.visualization.Dashboard(document.getElementById('dashboard'));
                 dash.bind([control], [chart]);
                 dash.draw(data);
-
-
+                
             }
           </script>
 
