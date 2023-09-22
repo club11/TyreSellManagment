@@ -65,6 +65,7 @@ CURRENCY_VALUE_RUB = None
 GOOGLECHART_MARKETPLACE_ON = False
 WEIGHTED_AVERAGE_ON = False
 FULL_LINED_CHART_ON = False
+ONLY_ON_CURRENT_DATE = False
 
 
 FOR_MENU_OBJECTS_LIST = [] # список объектов для вывода в меню (шины с конкурентами)
@@ -561,7 +562,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                             objject.tyre_to_compare.add(self)
                             filtered_competitors_values_list.append(objject)  
                             continue
-            #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          
+
             #########################
             list_comp_ids = []
             for comp in filtered_competitors_values_list:

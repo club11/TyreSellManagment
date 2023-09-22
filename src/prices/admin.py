@@ -85,16 +85,23 @@ class CompetitorSiteModelAdmin(admin.ModelAdmin):
     filter_horizontal = ('tyre_to_compare',)                # MANYTOMANYFIELD display on adminsite
     list_display = [
             'site',
+            'developer',
             #'tyre_to_compare',
             'currency',
             'price',
             'date_period',
-            'developer',
             'tyresize_competitor',
             'name_competitor',
             'parametres_competitor',
             'season',
     ]
+
+    @admin.display()
+    def get_developername(self, obj):
+        
+        return obj.developer.competitor_name
+
+
 class ChemCurierTyresModelAdmin(admin.ModelAdmin):
     list_display = [
             'tyre_size_chem',

@@ -217,6 +217,11 @@
               <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
             </div>
 
+        {#    <div class="form-check form-check-inline" > #}
+        {#      <input class="form-check-input" type="checkbox" id="inlineCheckbox4" value="true" name="only_on_current_date" {{ only_on_current_date_checked }}> #}
+        {#      <label class="form-check-label" for="inlineCheckbox4">Выводить график только на выбранную дату</label> #}
+        {#    </div>      #}      
+
             <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
             </form>
 
@@ -306,7 +311,7 @@
             //google.load('visualization', '1', {packages: ['controls']});
             
 
-            //google.charts.load('current', {'packages':['line', 'controls']});
+            //google.charts.load('current', {'packages':['line', 'controls']});                         // д.б. этот , но пока добавлен еще и 'corechart
             google.charts.load('current', {'packages':['line', 'corechart', 'controls']});              // ДОБАВЛЕН 'corechart' в надежде, что заработает InterpolateNulls:
             //google.charts.load('current', {'packages':['line', 'controls'], 'language': 'ru'});
             google.setOnLoadCallback(drawChart);
@@ -328,6 +333,7 @@
                                                                                                               
       
                 var columnsTable = new google.visualization.DataTable();
+
                 columnsTable.addColumn('number', 'colIndex');
                 columnsTable.addColumn('string', 'colLabel');
                 var initState= {selectedValues: []};
@@ -360,9 +366,9 @@
                     {% endif %}
                       
  
-                      
+                    //  curveType: 'function',    //   сгладить изгиб линии
                       pointSize: 7,
-                      lineWidth: 8,
+                      lineWidth: 7,
                       title:"Типоразмер {{ chart_title|safe }}",
                       titleTextStyle: { 
                           fontSize: 22,

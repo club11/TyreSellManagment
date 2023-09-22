@@ -11,6 +11,10 @@ class Currency(models.Model):
     def get_absolute_url(self):
         return reverse('dictionaries:curr_list')
 
+    def __str__(self):
+        return str(self.currency) 
+
+
 class TyreSizeModel(models.Model):
     tyre_size = models.CharField(
         verbose_name='типоразмер',
@@ -75,6 +79,9 @@ class CompetitorModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+    
+    def __str__(self):
+        return str(self.competitor_name)
 
 
 class SeasonUsageModel(models.Model):

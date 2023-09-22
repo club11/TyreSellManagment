@@ -25,10 +25,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 
+from collections import Counter
+
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-
-
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -54,7 +54,6 @@ goods_dict_bagoria = {}
 goods_dict_express_shina = {}
 goods_dict_kolesatyt = {}
 goods_dict_kolesa_darom= {}
-
 
 class ComparativeAnalysisTableModelDetailView(DetailView):
     model = models.ComparativeAnalysisTableModel
@@ -1007,8 +1006,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 ####                for current_chosen_date in n:
 ####                    print('current_chosen_date----', current_chosen_date.date_period)
         ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1  
-        #object_unit.onliner_competitor_on_date1() 
+        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
+
+
+
 
 
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
@@ -1155,6 +1156,43 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1  
             object_unit.bagoria_competitor_on_date1() 
 
+
+        #######!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМЕНЬШЕЙ ЦЕНОЙ:
+        #### !!!!!!
+        #### !!!!!!
+        #### !!!!!!
+        #### !!!!!!
+        ##    some_temporary_dictonary = {}
+        ##    for aaa, vvv in models.BAGORIA_COMPETITORS_DICTIONARY1.items():         # object (2848) [<CompetitorSiteModel: CompetitorSiteModel object (12401)>, <CompetitorSiteModel: CompetitorSiteModel object (12402)>, <CompetitorSiteModel: CompetitorSiteModel object (12403)>]
+        ##        #print('aaa, vvv', aaa, vvv)
+        ##        names_temporary_unique_dev_dict = {}
+        ##        for tt in vvv:
+        ##            #print('kkk', aaa, 'vvv', tt.developer, tt.price)
+        ##            key_exist = names_temporary_unique_dev_dict.get(tt.developer)
+        ##            if key_exist:
+        ##                dict_values = names_temporary_unique_dev_dict[tt.developer]
+        ##                if tt.price < dict_values[1]:               # если есть значение меньше - берем его
+        ##                    names_temporary_unique_dev_dict[tt.developer] = dict_values[0], tt.price 
+        ##            else: 
+        ##                names_temporary_unique_dev_dict[tt.developer] = tt, tt.price 
+        ##        #print('names_temporary_unique_dev_dict', names_temporary_unique_dev_dict)
+        ##        names_temporary_unique_dev_dict_get_competitor_site_model_object = []
+        ##        for k, v in names_temporary_unique_dev_dict.items():
+        ##            names_temporary_unique_dev_dict_get_competitor_site_model_object.append(v[0])
+        ##        #print('11111', names_temporary_unique_dev_dict_get_competitor_site_model_object)
+        ##        some_temporary_dictonary[aaa] = names_temporary_unique_dev_dict_get_competitor_site_model_object
+        ##        #print('=====', some_temporary_dictonary)
+        ##        #a = set([x for x in names_list if names_list.count(x) > 1])
+        ##        #print('!!!!!')
+        ##        #print('kkk', aaa, 'vvv', tt.developer, tt.price)
+        ##        some_temporary_dictonary[aaa] = vvv
+        ##    #    print('==============')
+        ##    models.BAGORIA_COMPETITORS_DICTIONARY1 = some_temporary_dictonary
+        #### !!!!!!    
+        #### !!!!!!
+        ####### END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМ ЦЕНОЙ:
+
+
        ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
         bagoria_max_lengh_list = []
         for object_unit in list_of_tyre_comparative_objects:
@@ -1214,6 +1252,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_unit.chemcurier_competitor_on_date1()
             # CCC [('', '', ''), ('', '', ''), ('', '', '')]
             #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
+
+
 
        ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
         chemcurier_max_lengh_header = 1                                 # chemcurier будет лишь один столбец
@@ -1388,8 +1428,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #list_keys2 = list(models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.keys())
         #list_keys3 = list(models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.keys())
         #list_keys = list_keys1 + list_keys2 + list_keys3
-        #print('list_keys', list_keys)
-        #print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects_ids)
+        #print('list_keys', list_keys) #
+        print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects_ids)
         #for tyre_for_chart_need_all_checked_competitors in list_keys:
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
@@ -1413,7 +1453,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #      n = str(n).replace("('", '').replace("',)", '')
         #      filter_producer.append(n) 
         ##print('filter_producer', filter_producer)
-
+        no_data_on_date = False             # отсутствуют данные типоразмеры с конкурентами
         filter_producer = []
         all_filtered_competitors_ids = list(edyniy_slovar_dict_dlja_pandas_chart_graphic.values())
         filtered_competitors_ids_list = []
@@ -1425,7 +1465,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
               n = n.developer.competitor_name
               n = str(n).replace("('", '').replace("',)", '')
               filter_producer.append(n)    
-        #print('filter_producer', filter_producer)         
+        #=print('filter_producer', filter_producer)         
 
         # 1.2 какие сайты ввел/не ввел пользователь:
         filter_sites = ['onliner.by', 'bagoria.by', 'autoset.by'] #['kolesa-darom.ru'] # ['onliner.by']  # ['onliner.by', 'kolesa-darom.ru'] # ['onliner.by']  # ['kolesa-darom.ru'] #  ['express-shina.ru']     # по дефолту показать этих
@@ -1438,20 +1478,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         chart_title = ''
         if len(list_off_sizes_to_compare) == 1:                                     # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)     
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
-            #chart_title = str(object_units[0].tyre.tyre_size.tyre_size) 
             chart_title = object_units[0].tyre.tyre_size.tyre_size
-            #print('OBJECT UNITS =', object_units)
-        else:       
-            print('222222222', list_of_tyre_comparative_objects)  
-            #object_units = list_of_tyre_comparative_objects.all()                                                             
-            object_units = list_of_tyre_comparative_objects
+        else:                                                                       # если не 1 типоразмер ИЛИ нет никаких ?? ХМ baby, check this out!
+            if not list_of_tyre_comparative_objects.exists():           #### если объектов с конкурентом на дату нет - для рисовки пустой таблички:
+                no_data_on_date = True
+                object_units  = [None]
+                chart_title = '- нет данных'
+            else:
+                object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
 
-            chart_title = object_units[0].tyre.tyre_size.tyre_size
-        #print('chart_title 11111111111111', chart_title)
-
-        #print('object_units', object_units)
-        #for comp in object_unit.price_tyre_to_compare.all():
-        #    print('compTTT', comp, comp.site, comp.developer.competitor_name, 'YYY', comp.price, comp.tyresize_competitor)
 
         # дополнительно даем имена чекбоксам сайтов для графика фильтра: 
         check_box_num = 0    
@@ -1470,7 +1505,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #### ЕСЛИ модель/типоразмер и 1 ИЛИ несколько объктов ШИН:
         list_of_sites = []                                                                          #(ТИП-2 график по сайтам)            
-
+        list_of_competitors_set = set()
         list_of_competitors = []
         list_start_dates = []
         list_last_dates = []
@@ -1498,14 +1533,29 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_start_dates.append(start_date)
             list_last_dates.append(last_date)
 
-        min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
-        max_date = max(list_last_dates)                                                                         # здесьб д.б. просто данные от пользователя какой день
+        print('list_of_competitors_set', list_of_competitors_set, type(list_of_competitors_set))
+        if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
+            chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
+            list_start_dates.append(chossen_day)
+            list_last_dates.append(chossen_day)
+            min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
+            max_date = max(list_last_dates)  
+
+        else:               # на все остальные случаи - если обект / конкуренты есть на дату:
+            #if models.ONLY_ON_CURRENT_DATE is True and models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         # если нужно выводить график только на выбранную дату (стои галочка):
+            #    print('!!! ===++++ !!!', models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0])
+            #    chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
+            #    list_start_dates.append(chossen_day)
+            #    list_last_dates.append(chossen_day)
+            #    min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
+            #    max_date = max(list_last_dates)                  
+            #else:
+            min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
+            max_date = max(list_last_dates)                                                                         # здесьб д.б. просто данные от пользователя какой день
         all_days_in_period = pd.date_range(start=min_date, end=max_date).date 
-        #print('list_of_competitors_set === 333 ===', list_of_competitors_set)
         #print('all_days_in_period', all_days_in_period)
         list_of_sites = set(list_of_sites)                                                                  #(ТИП-2 график по сайтам) 
-        #print('list_of_sites', list_of_sites) 
-        #print('list_of_competitors_set', list_of_competitors_set)                                                              #(ТИП-2 график по сайтам) 
+        #print('list_of_sites', list_of_sites)                                                               #(ТИП-2 график по сайтам) 
        # СОБИРАЕМ ПРЕДВАРИТЕЛЬНЫЙ СПИСОК С ИМЕЮЩИМИСЯ ДАННЫМИ и искуственными пробелами NONE:
                                                          # если нужно получить усредненное значение
         #for object_unit in object_units:
@@ -1569,7 +1619,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ####################                    new_result_for_comp_dict[comp_name, date_day.strftime("%Y-%m-%d"), comp_obj.site] = list(site_comp_obj_dict[valuess[3]])        # словарь с скомпанованными данными
 ####################
         #####################print('all_days_in_period', all_days_in_period)                ## готовые параметры для подготовки списков в отрисовку
-        #####################print('list_of_competitors_set', list_of_competitors_set)      ## готовые параметры для подготовки списков в отрисовку  
         #####################print('list_of_sites', list_of_sites)                          ## готовые параметры для подготовки списков в отрисовку
         ####################for k, v in new_result_for_comp_dict.items():     ### !!!!!!!!!!!!!!! 
         ####################    print('==',k, v)
@@ -1635,7 +1684,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #for n, nv in prices_of_competitors_one_name_producer_dict.items():      # == приводим в неулюжий вид такого типа: ('WestLake', '2023-08-05', 'bagoria.by') ['bagoria.by', 188.48, 0]
         #    print(n, '====', nv, 'Takim neschasnym')
-        #    ### ###### ####### ###########  
+        #    ### ###### ####### ############  
                    
         # 3. БЛОК + ДОПОЛНИТЕЛЬНАЯ ДОРИСОВКА ДАННЫХ УЖЕ НА ВЕСЬ ПЕРИОД _ ЧТОБЫ ПЕРЕДАТЬ В ТЕМПЛАЙТ ОДИНАКОВОЕ ЧИСЛО ДАННЫХ ПО КАЖДОМУ ПРОИЗВОДИТЕЛЮ НА САЙТАХ 
         ############ !!!! ПРОВЕРКА ДОСТАВЛЕНИЕ ДАННЫХ                   Д.О.Р.И.С.О.В.К.А.  Д.А.Н.Н.Ы.Х   WARNING!!!!
@@ -1654,6 +1703,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_inputed_producers.append(kkkeyy[0])
             list_of_inputed_sites.append(kkkeyy[2]) 
         list_of_inputed_dates_set = list_of_inputed_dates
+        #print('list_of_inputed_dates_set!', list_of_inputed_dates_set)                                     # list_of_inputed_dates_set!
         list_of_inputed_producers_set = set(list_of_inputed_producers)
         list_of_inputed_sites_set = set(list_of_inputed_sites)
         #print('list_of_inputed_dates_set', list_of_inputed_dates_set)
@@ -1671,8 +1721,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         for str_data in list_of_inputed_dates_set:
             some_data = datetime.datetime.strptime(str_data, '%Y-%m-%d').date()
             list_of_inputed_dates_set_sorted.append(some_data)
-        mmmin = min(list_of_inputed_dates_set_sorted)
-        mmmax = max(list_of_inputed_dates_set_sorted)
+        #mmmin = min(list_of_inputed_dates_set_sorted)
+        #mmmax = max(list_of_inputed_dates_set_sorted)
+        mmmin = min(all_days_in_period)                                 ## возьмем отсчет из древнейшей даты в базе вообще НЕОЧЕВИДНОЕ
+        mmmax = max(all_days_in_period)
         datelist_d_pandas_range = pd.date_range(mmmin, mmmax)
         list_of_dates_with_no_exceptions = []
         for ddatta in datelist_d_pandas_range:
@@ -1680,6 +1732,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_dates_with_no_exceptions.append(str_date)
         ##    
         list_of_inputed_dates_set = list_of_dates_with_no_exceptions            # теперь список дат без выпадающих дат
+        #print('list_of_inputed_dates_set', list_of_inputed_dates_set)
 
         prices_of_competitors_one_name_producer_dict_temporary_with_missing_data = {}
         for date_iz_spiska in list_of_inputed_dates_set:                                        # 2) додабвление 0 в другие дни если нет  данных, но в какое то число хоть раз был конкурент на данном сайте
@@ -1695,22 +1748,25 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             #print(date_iz_spiska, get_data )
                             prices_of_competitors_one_name_producer_dict_temporary_with_missing_data[producer_iz_spiska, date_iz_spiska, site_iz_spiska] = get_data
                         else:
-                            null_data = site_iz_spiska, 'null', producer_iz_spiska                              #### !!!! null - если нет значения
-                            #null_data = site_iz_spiska, 0, producer_iz_spiska                                  #### !!!! 0 - если нет значения                        
+                            null_data = site_iz_spiska, 'null', producer_iz_spiska                              ##### !!!! null - если нет значения
+                            #null_data = site_iz_spiska, 0, producer_iz_spiska                                  ##### !!!! 0 - если нет значения                        
                             prices_of_competitors_one_name_producer_dict_temporary_with_missing_data[producer_iz_spiska, date_iz_spiska, site_iz_spiska] = null_data 
 
-        # подменяем исходный словарик на словарик с доставленными нулевыми значениями:
+        # подменяем исходный словарик на словарик с доставленными нулевыми  значениями:
         new_result_for_comp_dict = prices_of_competitors_one_name_producer_dict_temporary_with_missing_data
         #for hhh, oooo in new_result_for_comp_dict.items():
         #    print('hhh, oooo ', hhh, oooo )
     
         ############ END !!!! ПРОВЕРКА ДОСТАВЛЕНИЕ ДАННЫХ 
 
+        #print('all_days_in_period', all_days_in_period)
+
         if models.WEIGHTED_AVERAGE_ON == False:                             # ЕСЛИ НЕ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
             context['weighted_average_checked'] = ''
             list_for_formating = []
             position_couner = None          # понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем  
             for ddate in all_days_in_period:
+            #    print('==========', ddate)
                 small_list_for_formating = []
                 for k, v in new_result_for_comp_dict.items():     ### !!!!!!              
                     if ddate.strftime("%Y-%m-%d") == k[1]:
@@ -1719,18 +1775,19 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         put_data = list(put_data)
                         position_couner = put_data.index(v[1])
                         small_list_for_formating.append(put_data)
-                #print('=======', small_list_for_formating)
+            #    print('=======', small_list_for_formating)
                 list_for_formating.append(small_list_for_formating)
-            #print('list_for_formating', list_for_formating)
+            ##print('list_for_formating1', list_for_formating)
         else:                             # ЕСЛИ НУЖНО ВЫВОДИТЬ СРЕДНЕВЗВЕШЕННОЕ
             context['weighted_average_checked'] = 'checked'
             list_for_formating = []
-            position_couner = None          # понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем     
+            position_couner = None          ## понадобится для определени номера позиции с значением цены в словаре для заполнения пустых None в дальнейшем     
             for ddate in all_days_in_period: 
                 small_list_for_formating = []    
-                for compet in list_of_competitors_set:                 # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!      
+                for compet in list_of_competitors_set:                 # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!  
+                    #print('MENTOR!')    
                     devvider = 0                                           # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!   
-                    weighted_average_val = 0                               # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!!
+                    weighted_average_val = 0                               # УСРЕДНЕННОЕ ПО ПРОИЗВОДИТЕЛЮ !!!!!!!!!!!!!!!!!!
                     list_of_sites = []
                     for k, v in new_result_for_comp_dict.items():     ### !!!!!!          
                         if ddate.strftime("%Y-%m-%d") == k[1] and compet == k[0]:
@@ -1748,7 +1805,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             put_data = list(put_data)
                             #########print('put_data', put_data)
                             position_couner = put_data.index(weighted_average_val)
-                    #print ('put_data', put_data, 'devvider:', devvider)
+                    ##print ('put_data', put_data, 'devvider:', devvider)
                     if put_data[position_couner] and devvider:
                         put_data[position_couner] = put_data[position_couner] / devvider
                     else:
@@ -1757,7 +1814,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     small_list_for_formating.append(put_data)   
                 #print('=======', small_list_for_formating)
                 list_for_formating.append(small_list_for_formating)
-            #print('list_for_formating!', list_for_formating)
+            #print('list_for_formating2!', list_for_formating)
 
         ### ЕСЛИ НУЖНО ВЫВОДИТЬ ГРФАИК С ДОРИСОВАННЫМИ ЛИНИЯМИ :
         if models.FULL_LINED_CHART_ON == False:  
@@ -1767,7 +1824,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             context['full_lined_chart_checked_flag'] = 'true'
         ### END ЕСЛИ НУЖНО ВЫВОДИТЬ ГРФАИК С ДОРИСОВАННЫМИ ЛИНИЯМИ
 
-        competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!         
+        competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   
+        #for n in competit_on_current_date_assembled:
+        #    print('fall behind====', n)   
 
         ## т.к. list_for_formating и затем competit_on_current_date_assembled - создает пустые дубляжи производителя для каждого сайта ( например,['Кама', '2023-08-02', None, 'onliner.by'], ['Кама', '2023-08-02', None, 'bagoria.by'])
         ## исключим те дубляжи , по которым созданы на иных сайтах копии
@@ -1788,6 +1847,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #competit_on_current_date_assembled = list(reversed(competit_on_current_date_assembled))       # развернуть список чтобы начинать с последней даты
 
+        #print('len(competit_on_current_date_assembled)', len(competit_on_current_date_assembled))
+        #print('competit_on_current_date_assembled', competit_on_current_date_assembled) #
         whole_list_legh = len(competit_on_current_date_assembled)
         if position_couner:
             for perr_val in competit_on_current_date_assembled:
@@ -1798,9 +1859,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     #print('ell', ell)                                                          # ell ['SAMURAI', '2023-04-20', 150.0, 'onliner.by']
                     curr_ell_val_index = perr_val.index(ell)                                    # curr_ell_val_index 3              
                     val = ell[position_couner]
+                    #print('val===', val)
                     #curr_val_index = ell.index(val)                                            #здесь индекс и так нам известен = он всегда равен значению position_couner
                     if val is None:                                                             # если значение  None, поиск в впредыдущих позициях дат этого производителя
-                        #print('curr_perr_val_index',curr_perr_val_index)
+                    #    print('curr_perr_val_index!!!!',curr_perr_val_index)
                         curr_perr_val_index_none = curr_perr_val_index
                         while curr_perr_val_index_none < whole_list_legh:                           
                             get_prev_val = competit_on_current_date_assembled[curr_perr_val_index_none][curr_ell_val_index][position_couner]
@@ -1812,10 +1874,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         if val is None:     # если не найдены значения в других периодах
                             val = 0
                         competit_on_current_date_assembled[curr_perr_val_index][curr_ell_val_index][position_couner] = val
-                          
-    #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                 
-        #for n in competit_on_current_date_assembled:
-        #    print('fall behind', n)     
+                #print('perr_val', perr_val)
+                
+
+                
+    #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                  
+    #    for n in competit_on_current_date_assembled:
+    #        print('fall behind', n)     
 
         # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
         assembles_to_dict_data_dict = {}
@@ -1824,7 +1889,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         assembles_to_dict_data_dict['competitor_values'] = {}
         list_of_dates = []
         for lists_values in competit_on_current_date_assembled:
-            #print('!', lists_values,'LENGTH = ', len(lists_values))    #! [('Cordiant', None, None), ('LingLong', None, None), ('iLink', None, None), ('Michelin', '20.03.2023', 351.1), ('Arivo', None, None)] LENGTH =  
+        #    print('!', lists_values,'LENGTH = ', len(lists_values))    #! [('Cordiant', None, None), ('LingLong', None, None), ('iLink', None, None), ('Michelin', '20.03.2023', 351.1), ('Arivo', None, None)] LENGTH =  
             list_of_competitor_producer_names = []
             for vall in lists_values:
                 #print('vall ', vall)
@@ -1843,65 +1908,50 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             assembles_to_dict_data_dict['competitor_producer_names'] = list_of_competitor_producer_names
             assembles_to_dict_data_dict['dates'] = list_of_dates
         
-            
+
+        #print('competit_on_current_date_assembled 999', competit_on_current_date_assembled)    
         list_of_competitor_values = []
-        list_of_competitor_values_new = []
         list_of_competitor_values_new_dict = {}
-        #list_only_values = []
-        #list_only__dates_n_daytime = []
-        chart_data_counter = 0                                              # подмешиваем дату строкой как  # [1,  37.8, 80.8, 41.8], -
-        number_of_periods = len(assembles_to_dict_data_dict['dates'])                         # old =number_of_periods== 5 ['20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023']       
-        #print('number_of_periods==', number_of_periods, assembles_to_dict_data_dict['dates'])      
-        for lists_values in competit_on_current_date_assembled:
-            list_of_period_competitor_values = [] 
-            list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
 
-            list_of_period_competitor_values_new = [] 
-            #####str_date = assembles_to_dict_data_dict['dates'][chart_data_counter].split('-')
-            #####str_date_in_int = [list(map(int, x)) for x in str_date]
-            #####list_of_period_competitor_values_new.append(str_date_in_int)
+        if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
+            print('kogda mne temno gromko gruppu KINO', all_days_in_period)
+            for date_in in all_days_in_period:
+                year, month, day = int(date_in.strftime('%Y')), int(date_in.strftime('%m')), int(date_in.strftime('%d'))
+                date_prepared_or_js = year, month-1, day   # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ     #  
+                list_of_competitor_values_new_dict[date_prepared_or_js] = ['null']
 
-            date_in_str = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date()
-            #list_of_period_competitor_values_new.append(date_in_str)
-            year, month, day = int(date_in_str.strftime('%Y')), int(date_in_str.strftime('%m')), int(date_in_str.strftime('%d'))
+            context['competitor_names'] = ['']
+            context['competitor_values'] = ['']
 
-            date_prepared_or_js = year, month-1, day        # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ                        
-            list_of_period_competitor_values_new.append(date_prepared_or_js)
+        else:
+            chart_data_counter = 0                                              # подмешиваем дату строкой как  # [1,  37.8, 80.8, 41.8], -
+            number_of_periods = len(assembles_to_dict_data_dict['dates'])                         # old =number_of_periods== 5 ['20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023']       
+            #print('number_of_periods==', number_of_periods, assembles_to_dict_data_dict['dates'])      
+            for lists_values in competit_on_current_date_assembled:
+                #print('chart_data_counter', chart_data_counter, assembles_to_dict_data_dict['dates'][chart_data_counter], '==', lists_values)
+                list_of_period_competitor_values = [] 
+                list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
+                list_of_period_competitor_values_new = [] 
+                date_in_str = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date()
+                year, month, day = int(date_in_str.strftime('%Y')), int(date_in_str.strftime('%m')), int(date_in_str.strftime('%d'))
+                date_prepared_or_js = year, month-1, day        # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ     #                   
+                list_of_period_competitor_values_new.append(date_prepared_or_js)
+                if chart_data_counter < number_of_periods-1:
+                    chart_data_counter += 1
+                for vall in lists_values:
+                    list_of_period_competitor_values.append(vall[2])
+                    list_of_period_competitor_values_new.append(vall[2])
+                #per_val = list_of_period_competitor_values[ 1 :]   
+                list_of_competitor_values.append(list_of_period_competitor_values)
+                #print('list_of_period_competitor_values_new', list_of_period_competitor_values_new)
 
-        
-            #list_only__dates_n_daytime.append(datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date())
-            #list_only__dates_n_daytime.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
-            #time_obj = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date() 
-            #list_of_period_competitor_values.append(time_obj)
-            if chart_data_counter < number_of_periods-1:
-                chart_data_counter += 1
-            #list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter-1]) 
-            #per_val = [] 
-            for vall in lists_values:
-                list_of_period_competitor_values.append(vall[2])
-                list_of_period_competitor_values_new.append(vall[2])
-                #per_val.append(vall[2])
-            #per_val = list_of_period_competitor_values[ 1 :]   
-            list_of_competitor_values.append(list_of_period_competitor_values)
-            #print('list_of_period_competitor_values_new', list_of_period_competitor_values_new)
+                list_to_tuple = list_of_period_competitor_values_new[1:]
+                list_of_competitor_values_new_dict[list_of_period_competitor_values_new[0]] = list_to_tuple
 
-            list_to_tuple = list_of_period_competitor_values_new[1:]
-            list_of_competitor_values_new_dict[list_of_period_competitor_values_new[0]] = list_to_tuple
+            assembles_to_dict_data_dict['competitor_values'] = list(list_of_competitor_values) 
 
-        assembles_to_dict_data_dict['competitor_values'] = list(list_of_competitor_values)    
-
-        # пересоберем для вывода в виде типа даты вместо строк в графике:
-        #print('LEN', len(list_only_values), len(list_only__dates_n_daytime))
-        #list_assembled_ata_and_values = []
-        #for k, j in zip(list_only_values, list_only__dates_n_daytime):
-        #    list_assembled_ata_and_values.append((j, k))
-        # list_only_values = [] - список данных на дату
-        # list_only__dates_n_daytime = [] - список в виде дат формата date
-        #context['competitor_values'] = list_assembled_ata_and_values
-
-        
-        context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
-        context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
+            context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
+            context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
 
         
         ##### ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ:
@@ -1912,14 +1962,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             
 
         context['list_of_competitor_values_new'] = list_of_competitor_values_new_dict  
-####        for n, k in context['list_of_competitor_values_new'].items():
-        #    #print('N',type(n), n[0], n[1:])
-####            print('DD', n, k, type(n)) # n[0], n[1])
+        #for n, k in context['list_of_competitor_values_new'].items():
+        ###    #print('N',type(n), n[0], n[1:])
+        #    print('DD', n, k, type(n)) # n[0], n[1])
         
 
         #print('context [competitor_names]', context['competitor_names'])
         #print('context[competitor_values]', context['competitor_values'])
-        ##frame = pd.DataFrame(assembles_to_dict_data_dict)
+        ###frame = pd.DataFrame(assembles_to_dict_data_dict)
 
         #### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
         
@@ -2060,7 +2110,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
             #print('weighted_average_got N', weighted_average_got)
             models.WEIGHTED_AVERAGE_ON = False
 
-        #  работа проверкой - нужен вывод графика c дорисованными линиями
+        # 9 работа проверкой - нужен вывод графика c дорисованными линиями
         full_lined_chart_got = request.POST.get('full_lined_chart')
         if full_lined_chart_got:
             #print('full_lined_chart_got Y', full_lined_chart_got)
@@ -2068,6 +2118,13 @@ class ComparativeAnalysisTableModelUpdateView(View):
         else:
             #print('full_lined_chart_got N', full_lined_chart_got)
             models.FULL_LINED_CHART_ON = False
+
+        ## 10 работа проверкой - вывод графика только на выбранную дату
+        #only_on_current_date_got = request.POST.get('only_on_current_date')
+        #if only_on_current_date_got:
+        #    models.ONLY_ON_CURRENT_DATE = True
+        #else:
+        #    models.ONLY_ON_CURRENT_DATE = False
 
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_bel'))
 
@@ -2189,8 +2246,8 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
                         goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
                         express_shina_good_num += 1 
 
-                for k, v in goods_dict_express_shina.items():
-                    print(k, v, '!!!')
+                #for k, v in goods_dict_express_shina.items():
+                #    print(k, v, '!!!')
 
                 # 2) парсинг легковых шин
                 url = 'https://express-shina.ru/search/legkovyie-shinyi'       
