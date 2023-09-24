@@ -26,6 +26,7 @@ import matplotlib.pyplot as plt
 import json
 
 from collections import Counter
+from operator import itemgetter, attrgetter
 
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
@@ -1533,7 +1534,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_start_dates.append(start_date)
             list_last_dates.append(last_date)
 
-        print('list_of_competitors_set', list_of_competitors_set, type(list_of_competitors_set))
+        #print('list_of_competitors_set', list_of_competitors_set, type(list_of_competitors_set))
         if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
             chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
             list_start_dates.append(chossen_day)
@@ -1914,7 +1915,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         list_of_competitor_values_new_dict = {}
 
         if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
-            print('kogda mne temno gromko gruppu KINO', all_days_in_period)
+            #print('kogda mne temno gromko gruppu KINO', all_days_in_period)
             for date_in in all_days_in_period:
                 year, month, day = int(date_in.strftime('%Y')), int(date_in.strftime('%m')), int(date_in.strftime('%d'))
                 date_prepared_or_js = year, month-1, day   # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ     #  
@@ -1978,15 +1979,48 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         parsed_data_from_sites = ['Сайт', 'Количество спарсенных конкурентов']
         final_parsed_data_from_sites.append(parsed_data_from_sites)
         filter_sites = ['onliner.by', 'bagoria.by', 'autoset.by']
+        final_parsed_data_from_sites_whole = 0
         for sitess in filter_sites:
             get_data_from_site_number = len(models.CompetitorSiteModel.objects.filter(date_period=date_day).filter(site=sitess))  # .filter(site__in=filter_sites))
+            final_parsed_data_from_sites_whole = final_parsed_data_from_sites_whole + get_data_from_site_number
             to_put_in_list_data = sitess, get_data_from_site_number
             to_put_in_list_data = list(to_put_in_list_data)
             final_parsed_data_from_sites.append(to_put_in_list_data)
+            print('final_parsed_data_from_sites_whole', final_parsed_data_from_sites_whole)
+
+        context['final_parsed_data_from_sites_whole'] = final_parsed_data_from_sites_whole   
         context['final_parsed_data_from_sites'] = final_parsed_data_from_sites
         context['final_parsed_data_from_sites_data'] = date_day
         #### END  КРУГОВОЙ ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ С САЙТА: PANDAS
 
+        #### ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
+        all_parsed_brands_developers_queryset = dictionaries_models.CompetitorModel.objects.order_by('competitor_name').values_list('competitor_name', flat=True).distinct()        ### Фильтр уникальных!
+        date_to_look_parsed_data = datetime.datetime.now().date()
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+            date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+            date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
+        list_of_parrsed_brands_sites = []
+        for brand in all_parsed_brands_developers_queryset: 
+            num_of_parsed_brand_onliner = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand, date_period=date_to_look_parsed_data, site='onliner.by').count()
+            num_of_parsed_brand_bagoria = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand, date_period=date_to_look_parsed_data, site='bagoria.by').count()
+            num_of_parsed_brand_autoset = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand, date_period=date_to_look_parsed_data, site='autoset.by').count()
+
+            total_quantity = num_of_parsed_brand_onliner + num_of_parsed_brand_bagoria + num_of_parsed_brand_autoset        # для сортировки по наибольшему кол-ву спарсенных с сайтов
+
+            brand_quantity_per_site = brand, num_of_parsed_brand_onliner, num_of_parsed_brand_bagoria, num_of_parsed_brand_autoset, total_quantity
+
+            list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
+        list_of_parrsed_brands_sites = sorted(list_of_parrsed_brands_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
+        #for n in list_of_parrsed_brands_sites:      # удаляем общее количество спарсенных - список уже по ним отсортирован
+        #    n.pop() # удаляет последний элемнт - общее количество - как раз то, чтомне нужно
+        date_to_look_parsed_data = date_to_look_parsed_data.strftime('%Y.%m.%d')
+        context['brands_from_sites_date'] = date_to_look_parsed_data
+        list_of_parrsed_brands_sites = ','.join(str(x) for x in list_of_parrsed_brands_sites)
+        #print('!!!', list_of_parrsed_brands_sites)
+        context['brands_from_sites'] = list_of_parrsed_brands_sites
+
+
+        #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
 
 
         return context

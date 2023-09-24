@@ -49,49 +49,58 @@
 
         .container {
           display: grid;
-          grid-template-columns: 23% 77% ;
-          background-color: #ffe9e9;
-
-          grid-template-rows: 45px 45% 15% 37% 1fr;  
-        }
-        .el {
-          padding: 1px 1px;
-          color: #000000;
-          background: #ffe9e9;
-          margin:5px;
-          padding: 5px; 
-          border: 15px;
+          grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
+          /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строки для одной и автоматом первую и еще 4 */
+            /* Отступы между рядами */
+          row-gap: 40px;
+          /* Отступы между колонками */
+          column-gap: 5px; 
         }
 
         .el-1 {
-          grid-column: 1 / span 2;     
-          grid-row: 1;
           background-color: #ffe9e9;
           text-align: right;
-        }
 
+          grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+          grid-row: 1;
+        }
         .el-2 {
           grid-column: 1;
-          grid-row: 2;
+          grid-row: 3;
+          background-color: #ffe9e9;
         }
         .el-3 {
-          grid-row: 2 / span 2;
-          height: 96%;
+          grid-column: 2 / span 5;
+          grid-row: 3;
           width: auto;
           background-color: #ffe9e9;
         }
+        .el-4 {
+          grid-column: 1 / span 2;
+          grid-row: 2;
+          background-color: #442d7b;     
+        } 
         .el-5 {
-          grid-column: 1 / span 2;     
+          grid-column: 3 / span 5;
+          grid-row: 2;
+          width: auto;
+          background-color: #1a8c7e;
+        }       
+        .el-6 {
+          grid-column: 1 / span 6;     
           grid-row: 4;
-          height: 96%;
+          height: auto;
           width: auto;
           background-color: #d11616;
         }
-        .el-6 {
-          grid-column: 1 / span 2;     
+        .el-7 {
+          grid-column: 1 / span 6;     
           grid-row: 5;
-          background-color: #ffe9e9;
+          background-color: #a6f22b;
+          height: 1%;
         }
+
+
 
 #table_container{
   overflow: scroll;
