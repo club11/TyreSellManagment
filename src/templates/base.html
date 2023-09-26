@@ -49,20 +49,25 @@
 
         .container {
           display: grid;
-          grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
-          /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строки для одной и автоматом первую и еще 4 */
+          grid-template-columns: repeat(7, 1fr); /* <--6 колонок в сетке*/
+          /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
             /* Отступы между рядами */
           row-gap: 40px;
           /* Отступы между колонками */
           column-gap: 5px; 
         }
 
+        .el-0 {
+          background-color: #ffe9e9;
+          text-align: right;
+          grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+          grid-row: 1;
+        }
         .el-1 {
           background-color: #ffe9e9;
           text-align: right;
-
           grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-          grid-row: 1;
+          grid-row: 2;
         }
         .el-2 {
           grid-column: 1;
@@ -77,14 +82,16 @@
         }
         .el-4 {
           grid-column: 1 / span 2;
-          grid-row: 2;
-          background-color: #442d7b;     
+          grid-row: 5;
+          background-color: #d11616;;
+          height: 380px,     
         } 
         .el-5 {
-          grid-column: 3 / span 5;
-          grid-row: 2;
+          grid-column: 3 / span 4;
+          grid-row: 5;
           width: auto;
-          background-color: #1a8c7e;
+          background-color: #d11616;
+          height: 390px,
         }       
         .el-6 {
           grid-column: 1 / span 6;     
@@ -95,8 +102,8 @@
         }
         .el-7 {
           grid-column: 1 / span 6;     
-          grid-row: 5;
-          background-color: #a6f22b;
+          grid-row: 6;
+          background-color: #05a107;
           height: 1%;
         }
 

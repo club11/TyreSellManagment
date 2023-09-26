@@ -12,12 +12,14 @@
 
   <div class="red">1111</div>  
 
-
     
   {# <div class="container"> #}
   <div class="container">
 
-        <div class="el el-1">
+        <div class="el-0">
+        </div>
+
+        <div class="el-1">
                 <div class="div1"> 
                   <strong>Маркетплейс-анализ. Рынок: Республика Беларусь</strong>
                 </div>
@@ -31,7 +33,7 @@
         </div>
     
  
-        <div class="el el-3">
+        <div class="el-3">
         {#<div id="content">#}
         
           {#<div class="container" id="table_container">#}
@@ -155,7 +157,7 @@
           
         </div>
       
-        <div class="el el-2">
+        <div class="el-2">
         {#<div id="menu">#}
         
             <form action="{% url 'prices:apricestable_update' %}" method="post">
@@ -205,6 +207,7 @@
             <div>{{ currency_input_form }}
               {{ shown_date}} ---- {{ curr_value }} ---- {{ currency }}
             </div>  
+
           
           
             <div class="form-check form-check-inline" >
@@ -217,9 +220,10 @@
               <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
             </div>
 
+
         {#    <div class="form-check form-check-inline" > #}
-        {#      <input class="form-check-input" type="checkbox" id="inlineCheckbox4" value="true" name="only_on_current_date" {{ only_on_current_date_checked }}> #}
-        {#      <label class="form-check-label" for="inlineCheckbox4">Выводить график только на выбранную дату</label> #}
+        {#      <input class="form-check-input" type="checkbox" id="inlineCheckbox5" value="true" name="only_on_current_date" {{ only_on_current_date_checked }}> #}
+        {#      <label class="form-check-label" for="inlineCheckbox5">Выводить график только на выбранную дату</label> #}
         {#    </div>      #}      
 
             <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
@@ -268,7 +272,7 @@
       {#     {{ sites_filter_chart }}<br> #}
 
 
-        <div class="el el-4">
+        <div class="el-4">
         {#<div id="first_chart">#}
         
               <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -286,7 +290,11 @@
                     title: 'Количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                   //  height: 300,
                   legend: { position: 'bottom' },
-                  
+                  slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
+                    2: {offset: 0.05},
+                    3: {offset: 0.05},
+                    },
+                    colors:['#d11616','#05a107','#2307d9']
                   };
                 
                   var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -294,59 +302,119 @@
                   chart.draw(data, options);
                 }
               </script>
-              <div id="piechart"></div>
+              <div id="piechart" style="height: 400px;"></div>
             
         </div>
 
-
+        
         <div class="el-5">
-
           <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
           <script type="text/javascript">
-            google.charts.load('current', {'packages':['bar','corechart',]});
-            google.charts.setOnLoadCallback(drawChart);
-      
-            function drawChart() {
+          google.charts.load('current', {callback: drawChart,packages: ['controls', 'corechart', 'bar']});
+
+          function drawChart() {
               var data = google.visualization.arrayToDataTable([
                 ['', 'onliner.by', 'bagoria.by', 'autoset.by',
-                 { role: 'annotation' }  ],
-
+                // { role: 'annotation' } ],   // общее количество - норм для материальной, но здесь убрано (чтоб вернуть  - снять коммент и во view раскоментить 'list_of_parrsed_brands_sites = ','.join(str(x) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ')
+                ],
                   {{ brands_from_sites|safe }}
-   
-                  ]);
-      
-              var options = {
-                chart: {
-                  title: "Количество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-10", 
-                  subtitle: "источник: сайты 'onliner.by', 'bagoria.by', 'autoset.by'",
-                },
-                bars: 'horizontal', // Required for Material Bar Charts.
+              ]);
 
-                legend: {
-                  position: 'top'  // top не работает, рабочие лишь left, right
-                },
-                colors: ['#d11616', '#ffab91', '#08409c'],              // цвета для ['onliner.by', 'bagoria.by', 'autoset.by']
-                vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
-                      //  title:'бел. руб.',
+          var columnsTable = new google.visualization.DataTable();
+           columnsTable.addColumn('number', 'colIndex');
+           columnsTable.addColumn('string', 'colLabel');
+           var initState= {selectedValues: []};
+           // put the columns into this data table (skip column 0)
+           for (var i = 1; i < data.getNumberOfColumns(); i++) {
+               columnsTable.addRow([i, data.getColumnLabel(i)]);
+           }
+
+           var chart = new google.visualization.ChartWrapper({
+               chartType: 'BarChart',
+              // chartType: 'Bar',
+               containerId: 'chart_div1',
+               dataTable: data,
+               options: {
+                  isStacked: true,
+                  bars: 'horizontal',
+                  howRowNumber: true, //номера строк - но не работает
+                  legend: {
+                  position: 'bottom'  // top не работает, рабочие лишь left, right
+                  },
+                  title:'Количество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                  colors:['#d11616','#05a107','#2307d9'],
+                  theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
+                  // bar: {groupWidth:'40%'},
+                  // chartArea:{left:32,width:'70%'},
+                  vAxis: { 
+                      //  title:'бел. руб.',                              // вертикальная ось, но здесь не все можно прописать в материальной таблице
                         viewWindow: {                                   // количество отображаемых на странице линий  (здесь просто только первые 10 позиций)                      
                           max:10,                                       // ИНДЕКС максимальной отображаемой позиции
                           min:0                                         // ИНДЕКС минимальной отображаемой  позиции
-                      }
                       },
+                    }, 
+                  titleTextStyle: {
+                      color: 'black',    
+                    //  fontName: 'Times New Roman', 
+                      fontSize: 14, 
+                      bold: true,    
+                      italic: false,  
+                  },      
+               }
+           });
+         
+           var columnFilter = new google.visualization.ControlWrapper({
+               controlType: 'CategoryFilter',
+               containerId: 'colFilter_div1',
+               dataTable: columnsTable,
+               options: {
+                   filterColumnLabel: 'colLabel',
+                   filterColumnIndex: 1,
+                  // useFormattedValue: true,
+                   ui: {
+                       label: 'Маркетплейс',
+                       allowTyping: false,
+                       allowMultiple: false,
+                       caption : 'Все маркетплейсы',
+                       allowNone: true,
+                    //   selectedValuesLayout: 'belowStacked'
+                   }
+               },
+               state: initState
+           });
+         
+           function setChartView () {
+               var state = columnFilter.getState();
+               var row;
+               var view = {
+                   columns: [0]
+               };
+               for (var i = 0; i < state.selectedValues.length; i++) {
+                   row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+                   view.columns.push(columnsTable.getValue(row, 0));
+               }
+               // sort the indices into their original order
+               view.columns.sort(function (a, b) {
+                   return (a - b);
+               });
+               if (state.selectedValues.length > 0) {
+                 chart.setView(view);
+               } else {
+                 chart.setView(null);
+               }
+               chart.draw();
+           }
+           google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
 
-              isStacked: true 
-              };
-      
-              var chart = new google.charts.Bar(document.getElementById('barchart_material'));
-      
-              chart.draw(data, google.charts.Bar.convertOptions(options));
-            }
+           setChartView();
+           columnFilter.draw();
+       
+        }
           </script>
+                <div id="chart_div1" style="height: 390px;"></div>
+                <div id="colFilter_div1"></div>
+      </div>    
 
-        
-          <div id="barchart_material" style="height: 400px;"></div>
-
-        </div>         
 
 
         <div class="el-6">
@@ -506,7 +574,6 @@
                     options: {
                         filterColumnIndex: 0,
                         ui: {
-                            
                             chartOptions: {
                                 hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
                                 height: 50,

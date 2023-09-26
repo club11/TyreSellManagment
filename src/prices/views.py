@@ -1980,17 +1980,21 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         final_parsed_data_from_sites.append(parsed_data_from_sites)
         filter_sites = ['onliner.by', 'bagoria.by', 'autoset.by']
         final_parsed_data_from_sites_whole = 0
+        date_to_look_parsed_data = datetime.datetime.now().date()
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+            date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+            date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
         for sitess in filter_sites:
-            get_data_from_site_number = len(models.CompetitorSiteModel.objects.filter(date_period=date_day).filter(site=sitess))  # .filter(site__in=filter_sites))
+            get_data_from_site_number = len(models.CompetitorSiteModel.objects.filter(date_period=date_to_look_parsed_data).filter(site=sitess))  # .filter(site__in=filter_sites))
             final_parsed_data_from_sites_whole = final_parsed_data_from_sites_whole + get_data_from_site_number
             to_put_in_list_data = sitess, get_data_from_site_number
             to_put_in_list_data = list(to_put_in_list_data)
             final_parsed_data_from_sites.append(to_put_in_list_data)
-            print('final_parsed_data_from_sites_whole', final_parsed_data_from_sites_whole)
+            #print('final_parsed_data_from_sites_whole', final_parsed_data_from_sites_whole)
 
         context['final_parsed_data_from_sites_whole'] = final_parsed_data_from_sites_whole   
         context['final_parsed_data_from_sites'] = final_parsed_data_from_sites
-        context['final_parsed_data_from_sites_data'] = date_day
+        context['final_parsed_data_from_sites_data'] = date_to_look_parsed_data
         #### END  КРУГОВОЙ ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ С САЙТА: PANDAS
 
         #### ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
@@ -2000,6 +2004,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
             date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
         list_of_parrsed_brands_sites = []
+        quantity_counter = 0
         for brand in all_parsed_brands_developers_queryset: 
             num_of_parsed_brand_onliner = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand, date_period=date_to_look_parsed_data, site='onliner.by').count()
             num_of_parsed_brand_bagoria = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand, date_period=date_to_look_parsed_data, site='bagoria.by').count()
@@ -2007,16 +2012,30 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             total_quantity = num_of_parsed_brand_onliner + num_of_parsed_brand_bagoria + num_of_parsed_brand_autoset        # для сортировки по наибольшему кол-ву спарсенных с сайтов
 
-            brand_quantity_per_site = brand, num_of_parsed_brand_onliner, num_of_parsed_brand_bagoria, num_of_parsed_brand_autoset, total_quantity
-
+            brand_quantity_per_site = brand, num_of_parsed_brand_onliner, num_of_parsed_brand_bagoria, num_of_parsed_brand_autoset, total_quantity 
             list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
+            quantity_counter += 1
         list_of_parrsed_brands_sites = sorted(list_of_parrsed_brands_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
+        #numeration_index = 1    # добавим нумерационный индекс для графика:
         #for n in list_of_parrsed_brands_sites:      # удаляем общее количество спарсенных - список уже по ним отсортирован
         #    n.pop() # удаляет последний элемнт - общее количество - как раз то, чтомне нужно
-        date_to_look_parsed_data = date_to_look_parsed_data.strftime('%Y.%m.%d')
+        top_brands_counter_for_chart = 0
+        if quantity_counter == 10 or quantity_counter > 10:               # ели брендов более 10 - то берем то 10
+            top_brands_counter_for_chart = 10
+        elif quantity_counter < 10 and quantity_counter > 0:
+            top_brands_counter_for_chart = quantity_counter
+        else:
+            top_brands_counter_for_chart = 'лист без данных'
+        context['top_brands_num'] = top_brands_counter_for_chart
+
+        date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['brands_from_sites_date'] = date_to_look_parsed_data
-        list_of_parrsed_brands_sites = ','.join(str(x) for x in list_of_parrsed_brands_sites)
-        #print('!!!', list_of_parrsed_brands_sites)
+        ###for n in list_of_parrsed_brands_sites:
+        ###    n.insert(5, numeration_index)
+        ###    numeration_index += 1
+        #list_of_parrsed_brands_sites = ','.join(str(x) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
+        list_of_parrsed_brands_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
+        print('!!!', list_of_parrsed_brands_sites)
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
 
