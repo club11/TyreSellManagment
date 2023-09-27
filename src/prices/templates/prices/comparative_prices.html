@@ -56,15 +56,15 @@
                     <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат</p></span></th>
                   
                     {% if object.onliner_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.onliner_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Onliner</p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.onliner_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">Onliner <p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.avtoset_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.avtoset_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Avtoset</p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.avtoset_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Avtoset <p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.bagoria_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.bagoria_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Bagoria</p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.bagoria_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Bagoria <p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.chemcurier_heders_lengt %}
@@ -72,25 +72,25 @@
                     {% endif %}
                   </tr>
                   <tr>
-                    {% for head1, head2, head3 in object.onliner_heders_value  %}
+                    {% for head1, head2, head3 in object.onliner_heders_value %}
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
                     {% endfor %}
                   
-                    {% for head1, head2, head3 in object.avtoset_heders_value  %}
+                    {% for head1, head2, head3 in object.avtoset_heders_value %}
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
                     {% endfor %}
                   
-                    {% for head1, head2, head3 in object.bagoria_heders_value  %}
+                    {% for head1, head2, head3 in object.bagoria_heders_value %}
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}, размер торговой надбавки {{ current_deflection_value }}%</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}</p></span></th>
                     {% endfor %}
                   
-                    {% for head1, head2, head3 in object.chemcurier_heders_value  %}
+                    {% for head1, head2, head3 in object.chemcurier_heders_value %}
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head1 }}</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head2 }}</p></span></th>
                     <th class="collapse collapse-horizontal show" id="collapseWidthExample3" valign="middle"><span class="align-middle"><p class="text-center">{{ head3 }}, %</p></span></th>
@@ -356,7 +356,7 @@
                   titleTextStyle: {
                       color: 'black',    
                     //  fontName: 'Times New Roman', 
-                      fontSize: 14, 
+                      fontSize: 13, 
                       bold: true,    
                       italic: false,  
                   },      

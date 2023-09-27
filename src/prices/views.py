@@ -883,6 +883,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # 00.1  выборка всех имеющихся периодов с минималками:
             competitors_exist_all_dates = models.CompetitorSiteModel.objects.all().dates('date_period', 'day') # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВСЕ ДАТЫ ДОСТУПНЫЕ ВООБЩЕ ВСЕХ КОНКУРЕТОВ все даты доступные вообще всех конкурентов
             competitors_exist_all_dates_last_date_latest_date = max(competitors_exist_all_dates)  # КОНКУРЕНТЫ ПО СТОСТОЯНИЮ НА ДАТУ
+        context['table_current_date_for_header'] = competitors_exist_all_dates_last_date_latest_date.strftime("%d.%m.%Y")
 
         ################
         ################
@@ -1274,7 +1275,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #for t in all_competitors_in_base:
         #    list_of_all_competitors_template.append(t.competitor_name)
         #context['onliner_competitors'] = list(set(list_of_all_competitors_template))
-        ####
+        #####
 
         ######## !!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ ОБЪЕКТОВ ДЛЯ ВЫВОДА НА СТРАНИЦУ (только объекты с отфильтрованными конкурентами only):
         #print('list_of_tyre_comparative_objects =====================1 =', len(list_of_tyre_comparative_objects ), list_of_tyre_comparative_objects)
@@ -1438,7 +1439,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
-        ####print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+        #print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
 
 
         # НА ПРИМЕРЕ ОДНОГО ОБЪЕКТА: 
@@ -1880,8 +1881,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                  
-    #    for n in competit_on_current_date_assembled:
-    #        print('fall behind', n)     
+        for n in competit_on_current_date_assembled:
+            print('fall behind', n)     
 
         # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
         assembles_to_dict_data_dict = {}
@@ -1984,6 +1985,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
             date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
             date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
+
         for sitess in filter_sites:
             get_data_from_site_number = len(models.CompetitorSiteModel.objects.filter(date_period=date_to_look_parsed_data).filter(site=sitess))  # .filter(site__in=filter_sites))
             final_parsed_data_from_sites_whole = final_parsed_data_from_sites_whole + get_data_from_site_number
@@ -1991,7 +1993,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             to_put_in_list_data = list(to_put_in_list_data)
             final_parsed_data_from_sites.append(to_put_in_list_data)
             #print('final_parsed_data_from_sites_whole', final_parsed_data_from_sites_whole)
-
+            
+        date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['final_parsed_data_from_sites_whole'] = final_parsed_data_from_sites_whole   
         context['final_parsed_data_from_sites'] = final_parsed_data_from_sites
         context['final_parsed_data_from_sites_data'] = date_to_look_parsed_data
@@ -2035,7 +2038,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ###    numeration_index += 1
         #list_of_parrsed_brands_sites = ','.join(str(x) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
         list_of_parrsed_brands_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
-        print('!!!', list_of_parrsed_brands_sites)
+        #print('!!!', list_of_parrsed_brands_sites)
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
 
