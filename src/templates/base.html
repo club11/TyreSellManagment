@@ -47,9 +47,15 @@
         } 
 
 
+        .dropdown-menu {          /* <--выпадающие списки меню (бренд, продукция и т.п. - чтоб не на всю ширину экрана)*/
+          max-height: 200px;
+          overflow-y: auto;
+        }
+
+
         .container {
           display: grid;
-          grid-template-columns: repeat(7, 1fr); /* <--6 колонок в сетке*/
+          grid-template-columns: repeat(8, 1fr); /* <--6 колонок в сетке*/
           /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
             /* Отступы между рядами */
           row-gap: 40px;
@@ -63,6 +69,12 @@
           grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
           grid-row: 1;
         }
+        .el-01 {
+          background-color: #eb0707;;
+          text-align: left;
+          grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+          grid-row: 3;
+        }
         .el-1 {
           background-color: #ffe9e9;
           text-align: right;
@@ -71,38 +83,38 @@
         }
         .el-2 {
           grid-column: 1;
-          grid-row: 3;
+          grid-row: 4;
           background-color: #ffe9e9;
         }
         .el-3 {
           grid-column: 2 / span 5;
-          grid-row: 3;
+          grid-row: 4;
           width: auto;
           background-color: #ffe9e9;
         }
         .el-4 {
           grid-column: 1 / span 2;
-          grid-row: 5;
+          grid-row: 6;
           background-color: #d11616;;
           height: 350px,     
         } 
         .el-5 {
           grid-column: 3 / span 4;
-          grid-row: 5;
+          grid-row: 6;
           width: auto;
           background-color: #d11616;
           height: 350px,
         }       
         .el-6 {
           grid-column: 1 / span 6;     
-          grid-row: 4;
+          grid-row: 5;
           height: auto;
           width: auto;
           background-color: #d11616;
         }
         .el-7 {
           grid-column: 1 / span 6;     
-          grid-row: 6;
+          grid-row: 5;
           background-color: #05a107;
           height: 1%;
         }

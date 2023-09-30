@@ -9,11 +9,30 @@ from . import views as prices_views
 from validators.validators import competitor_num_validator
 
 
-class FilterForm(forms.Form):
-    competitors = forms.ModelMultipleChoiceField(
-        queryset = models.CompetitorModel.objects.filter(developer_competitor__site__in=['onliner.by', 'bagoria.by', 'autoset.by']).distinct().values_list("competitor_name", flat=True).order_by('competitor_name'), 
-        widget = forms.CheckboxSelectMultiple(),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец                                        #####
-    )
+
+#class FilterForm(forms.Form):
+#    competitors = forms.ModelMultipleChoiceField(
+#        queryset = models.CompetitorModel.objects.filter(developer_competitor__site__in=['onliner.by', 'bagoria.by', 'autoset.by']).distinct().values_list("competitor_name", flat=True).order_by('competitor_name'), 
+#    #    widget = forms.CheckboxSelectMultiple(attrs={"checked":""}),                                                                                            ### initial не работает, пришлось тупо влесть в queryset. тупо аж капец                                        #####
+#        widget = forms.CheckboxSelectMultiple(), 
+#    )
+
+    #def __init__(self, *args, **kwargs):
+    #    super().__init__(*args, **kwargs)
+    #    a = self.fields['competitors'].choices
+    #    b = self.__iter__()
+    #    print('a', a)
+    #    print('b', b)
+
+
+#class FilterForm(forms.Form):
+#    competitors = forms.MultipleChoiceField(
+#    label=u"Select multiple", 
+#    choices=MY_CHOICES, 
+#    widget=forms.widgets.CheckboxSelectMultiple, 
+#    initial=(c[0] for c in MY_CHOICES)
+#)
+
 
 class FilterRussiaForm(forms.Form):
     competitors = forms.ModelMultipleChoiceField(
