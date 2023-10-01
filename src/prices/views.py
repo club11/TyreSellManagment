@@ -900,9 +900,23 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
+        table_lookup_only_with_competitors_all_parsed = table_lookup_only_with_competitors
+        
+
+        # если пользовательищет через поисковик:
+        if models.SEARCH_USER_REQUEST:
+            user_requested_data = models.SEARCH_USER_REQUEST  
+            search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))
+            #print('search_result', search_result)
+            if search_result:
+                list_of_tyre_comparative_objects = search_result
+
+
 
         # 1. ПРОДУКЦИЯ
+        production_filter_search_flag = False
         if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
+            production_filter_search_flag = True        # значит один вид отбора уже произведен, значит дофильтровывать в группах (если надо) будем уже его
             id_list = []
             for n in models.SELF_PRODUCTION:
                 if n.isdigit():                                 
@@ -914,45 +928,53 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами 
             #print('!!!!!!!!!!!!!! =  2222222222222')                                        
         
-        # если пользовательищет через поисковик:
-        if models.SEARCH_USER_REQUEST:
-            user_requested_data = models.SEARCH_USER_REQUEST  
-            search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))
-            #print('search_result', search_result)
-            if search_result:
-                list_of_tyre_comparative_objects = search_result
-
         # 2. ГРУППЫ
-        # ФИЛЬТР ПО ГРУППАМ ШИН:    
-        if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
-            group_id_list = []
-            for n in models.TYRE_GROUPS:
-                if n.isdigit():                                 
-                    gr_id = int(n)
-                    group_id_list.append(gr_id)
-            #existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
-            existing_val_check = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) #только продукция с конкурентами
-            if existing_val_check:
-                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)
-                list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  #только продукция с конкурентами 
-                #print('list_of_tyre_comparative_objects', 'JJ1', list_of_tyre_comparative_objects) 
-            else:  
-                #print('АШЫПКА!!!')
-                pass
-        elif models.TYRE_GROUPS_ALL:
-            #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
-            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
-            #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  
+        # ФИЛЬТР ПО ГРУППАМ ШИН:
+        if production_filter_search_flag is False:          # значит, отбор по продукции не проводился - ищем из всего (это первый этап фильтрации)
+            if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
+                group_id_list = []
+                for n in models.TYRE_GROUPS:
+                    if n.isdigit():                                 
+                        gr_id = int(n)
+                        group_id_list.append(gr_id)
+                #existing_val_check = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+                existing_val_check = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) #только продукция с конкурентами
+                if existing_val_check:
+                    #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)
+                    list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  #только продукция с конкурентами 
+                    #print('list_of_tyre_comparative_objects', 'JJ1', list_of_tyre_comparative_objects) 
+                else:  
+                    #print('АШЫПКА!!!')
+                    pass
+            elif models.TYRE_GROUPS_ALL:
+                #group_id_list = dictionaries_models.TyreGroupModel.objects.values_list('id', flat=True)                        ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
+                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(tyre__tyre_group__id__in=group_id_list)  ####### !!!  это ПРАВИЛЬНЫЙ ВАРИАНТ ВЫБОРА ВСЕХ ГРУУПП ШИН, НО ТАК КАК НЕ У ВСЕХ ШИН ПРОПИСАНА ГРУППА _ ТО ПРИДЕТСЯ ПРОСТО ВСЕ ШИНЫ В ПОБОР
+                #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  
+                list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #####!!!!! ТОЛЬКО ОБЪЕКТЫ С КОНКУРЕНТАМИ                                             ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+        if production_filter_search_flag is True:          # значит, отбор по продукции проводился  - ищем из всего (это второй этап фильтрации)
+            if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
+                group_id_list = []
+                for n in models.TYRE_GROUPS:
+                    if n.isdigit():                                 
+                        gr_id = int(n)
+                        group_id_list.append(gr_id)
+                existing_val_check = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) #только продукция с конкурентами
+                if existing_val_check:
+                    list_of_tyre_comparative_objects = list_of_tyre_comparative_objects.filter(tyre__tyre_group__id__in=group_id_list).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  #только продукция с конкурентами 
+                else:  
+                    #print('АШЫПКА!!!')
+                    pass
+            elif models.TYRE_GROUPS_ALL:
+                list_of_tyre_comparative_objects = list_of_tyre_comparative_objects.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #####!!!!! ТОЛЬКО ОБЪЕКТЫ С КОНКУРЕНТАМИ                                             ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР            
 
-            list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #####!!!!! ТОЛЬКО ОБЪЕКТЫ С КОНКУРЕНТАМИ                                             ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+
+        list_of_tyre_comparative_objects_is_empty = False       # ПРОВЕРКА_ ЕСЛИ НИЧЕГО НЕ НАЙДЕНО - ставим флаг
+        #print('НУ И ЧТО У НАС ТУТ???', list_of_tyre_comparative_objects_is_empty)
+        if not list_of_tyre_comparative_objects: # если значений нет (отсутствуют моделели с конкурентами):
+            #print('А У НАС ТУТ ПЛОТИТЬ НЕ ХОЧУТ')
+            list_of_tyre_comparative_objects_is_empty = True
 
         #3. ПО БРЕНДАМ ОТБОР БУДЕТ ДАЛЕЕ
-
-            #print('list_of_tyre_comparative_objects', 'JJ2', list_of_tyre_comparative_objects) 
-    #    context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-#
-        #for tt in list_of_tyre_comparative_objects:
-        #    print('tt', tt, tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size)
 
         #0.1 подготовить последнюю доступгую дату с конкурентами:
         #last_availible_date = models.CompetitorSiteModel.objects.dates('date_period', "day").last()  
@@ -1014,9 +1036,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 ####                    print('current_chosen_date----', current_chosen_date.date_period)
         ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
-
-
-
 
 
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
@@ -1346,15 +1365,20 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #if not models.SELF_PRODUCTION:
         models.FOR_MENU_OBJECTS_LIST = final_list_of_objects_for_template              # постоянный список объектов для отображения в меню
         in_base_tyres_check_status_list = []
-        for obj in models.FOR_MENU_OBJECTS_LIST:
-            if not models.SELF_PRODUCTION_ALL:
+        in_base_tyres_check_status_list_checked_bage = []
+        #for obj in models.FOR_MENU_OBJECTS_LIST:       old version
+        for obj in table_lookup_only_with_competitors_all_parsed:           # берем для меню вообще все, для кого хоть когда-либо что-то парсилось хоть раз
+            if models.SELF_PRODUCTION_ALL:
+                objj_and_status = obj, ''
+            elif str(obj.id) in models.SELF_PRODUCTION:
                 objj_and_status = obj, 'checked'
+                in_base_tyres_check_status_list_checked_bage.append(obj)
             else:
                 objj_and_status = obj, ''
             in_base_tyres_check_status_list.append(objj_and_status)
 
         if models.SELF_PRODUCTION:
-            context['in_base_tyres_list_checked_bage'] = models.FOR_MENU_OBJECTS_LIST    # для вплывающей подсказки - значек с выбранными позициями типоразмеров
+            context['in_base_tyres_list_checked_bage'] = in_base_tyres_check_status_list_checked_bage    # для вплывающей подсказки - значек с выбранными позициями типоразмеров
         context['in_base_tyres'] = in_base_tyres_check_status_list
          ### END Отдельная сборка списка всех объеков с конкурентами для меню
 
@@ -1367,7 +1391,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #print('tyr_gr.id', tyr_gr.id)
             if models.TYRE_GROUPS_ALL:
                 tyr_gr_and_status = tyr_gr, ''
-            if str(tyr_gr.id) in models.TYRE_GROUPS:
+            #if str(tyr_gr.id) in models.TYRE_GROUPS:    
+            elif str(tyr_gr.id) in models.TYRE_GROUPS:
                 tyr_gr_and_status = tyr_gr, 'checked'
                 tyr_groups_check_status_list_checked_bage.append(tyr_gr)
             else:
@@ -1475,8 +1500,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #list_keys3 = list(models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.keys())
         #list_keys = list_keys1 + list_keys2 + list_keys3
         #print('list_keys', list_keys) #
-        print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids)
-        #for tyre_for_chart_need_all_checked_competitors in list_keys:
+        print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids , 'list_of_tyre_comparative_objects TRUE', type(list_of_tyre_comparative_objects))
+        ##for tyre_for_chart_need_all_checked_competitors in list_keys:
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
@@ -1526,7 +1551,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
             chart_title = object_units[0].tyre.tyre_size.tyre_size
         else:                                                                       # если не 1 типоразмер ИЛИ нет никаких ?? ХМ baby, check this out!
-            print('GGGG', list_of_tyre_comparative_objects)
+            #print('ГАЛЯ, У НАС ОТМЕНА!!!', type(list_of_tyre_comparative_objects), list_of_tyre_comparative_objects)
+            if list_of_tyre_comparative_objects_is_empty is True:                        
+                list_of_tyre_comparative_objects = models.ComparativeAnalysisTyresModel.objects.none()    # создать пустой queryset
+            #print('GGGGG', list_of_tyre_comparative_objects)            # <QuerySet []> not list []
             if not list_of_tyre_comparative_objects.exists():           #### если объектов с конкурентом на дату нет - для рисовки пустой таблички:
                 no_data_on_date = True
                 object_units  = [None]
@@ -1582,7 +1610,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #print('list_of_competitors_set', list_of_competitors_set, type(list_of_competitors_set))
         if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
-            chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
+            print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+            if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+                chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
+            else:
+                chossen_day = datetime.datetime.today()
             list_start_dates.append(chossen_day)
             list_last_dates.append(chossen_day)
             min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
