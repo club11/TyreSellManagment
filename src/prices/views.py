@@ -1853,8 +1853,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ### END ЕСЛИ НУЖНО ВЫВОДИТЬ ГРФАИК С ДОРИСОВАННЫМИ ЛИНИЯМИ
 
         competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   
-        #for n in competit_on_current_date_assembled:
-        #    print('fall behind====', n)   
+        for n in competit_on_current_date_assembled:
+            print('fall behind====', n)   
 
         ## т.к. list_for_formating и затем competit_on_current_date_assembled - создает пустые дубляжи производителя для каждого сайта ( например,['Кама', '2023-08-02', None, 'onliner.by'], ['Кама', '2023-08-02', None, 'bagoria.by'])
         ## исключим те дубляжи , по которым созданы на иных сайтах копии
@@ -1900,15 +1900,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 val = get_prev_val
                                 break
                         if val is None:     # если не найдены значения в других периодах
-                            val = 0
+                        #    val = 0
+                            val = 'null'
                         competit_on_current_date_assembled[curr_perr_val_index][curr_ell_val_index][position_couner] = val
                 #print('perr_val', perr_val)
                 
 
                 
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                  
-        #for n in competit_on_current_date_assembled:
-        #    print('fall behind', n)     
+        for n in competit_on_current_date_assembled:
+            print('fall behind', n)     
 
         # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
         assembles_to_dict_data_dict = {}
