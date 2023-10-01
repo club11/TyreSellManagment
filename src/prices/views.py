@@ -901,6 +901,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
 
+        # 1. ПРОДУКЦИЯ
         if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
             id_list = []
             for n in models.SELF_PRODUCTION:
@@ -912,6 +913,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    
             list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #только продукция с конкурентами 
             #print('!!!!!!!!!!!!!! =  2222222222222')                                        
+        
         # если пользовательищет через поисковик:
         if models.SEARCH_USER_REQUEST:
             user_requested_data = models.SEARCH_USER_REQUEST  
@@ -920,6 +922,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             if search_result:
                 list_of_tyre_comparative_objects = search_result
 
+        # 2. ГРУППЫ
         # ФИЛЬТР ПО ГРУППАМ ШИН:    
         if models.TYRE_GROUPS:                                                  # если пользователем введены (выбраны) шины:
             group_id_list = []
@@ -942,6 +945,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #list_of_tyre_comparative_objects = obj.comparative_table.all().filter(sale_data__year=year_to_look, sale_data__month=month_to_look)  
 
             list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look)     #####!!!!! ТОЛЬКО ОБЪЕКТЫ С КОНКУРЕНТАМИ                                             ####### !!!  ПРОСТО ВСЕ ШИНЫ В ПОБОР
+
+        #3. ПО БРЕНДАМ ОТБОР БУДЕТ ДАЛЕЕ
 
             #print('list_of_tyre_comparative_objects', 'JJ2', list_of_tyre_comparative_objects) 
     #    context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
@@ -1356,8 +1361,21 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #######  
         # 3) выбрать группу шин:
         tyr_groups = dictionaries_models.TyreGroupModel.objects.all()
-        #print('tyr_groups', tyr_groups)
-        context['in_base_tyres_by_group'] = tyr_groups
+        tyr_groups_check_status_list = []
+        tyr_groups_check_status_list_checked_bage = []
+        for tyr_gr in tyr_groups:
+            #print('tyr_gr.id', tyr_gr.id)
+            if models.TYRE_GROUPS_ALL:
+                tyr_gr_and_status = tyr_gr, ''
+            if str(tyr_gr.id) in models.TYRE_GROUPS:
+                tyr_gr_and_status = tyr_gr, 'checked'
+                tyr_groups_check_status_list_checked_bage.append(tyr_gr)
+            else:
+                tyr_gr_and_status = tyr_gr, ''
+            tyr_groups_check_status_list.append(tyr_gr_and_status)
+        ##print('tyr_groups', tyr_groups)
+        context['in_base_tyres_by_group_checked_bage'] = tyr_groups_check_status_list_checked_bage
+        context['in_base_tyres_by_group'] = tyr_groups_check_status_list
         #######      
         # 
         # 4) ввод % отклонения торговой надбавки:
@@ -1457,7 +1475,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #list_keys3 = list(models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.keys())
         #list_keys = list_keys1 + list_keys2 + list_keys3
         #print('list_keys', list_keys) #
-        print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects_ids)
+        print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids)
         #for tyre_for_chart_need_all_checked_competitors in list_keys:
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
@@ -1465,7 +1483,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
-        #print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+        ##print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
 
 
         # НА ПРИМЕРЕ ОДНОГО ОБЪЕКТА: 
@@ -1508,6 +1526,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
             chart_title = object_units[0].tyre.tyre_size.tyre_size
         else:                                                                       # если не 1 типоразмер ИЛИ нет никаких ?? ХМ baby, check this out!
+            print('GGGG', list_of_tyre_comparative_objects)
             if not list_of_tyre_comparative_objects.exists():           #### если объектов с конкурентом на дату нет - для рисовки пустой таблички:
                 no_data_on_date = True
                 object_units  = [None]
@@ -1853,8 +1872,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ### END ЕСЛИ НУЖНО ВЫВОДИТЬ ГРФАИК С ДОРИСОВАННЫМИ ЛИНИЯМИ
 
         competit_on_current_date_assembled = list_for_formating ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   
-        for n in competit_on_current_date_assembled:
-            print('fall behind====', n)   
+        #for n in competit_on_current_date_assembled:
+        #    print('fall behind====', n)   
 
         ## т.к. list_for_formating и затем competit_on_current_date_assembled - создает пустые дубляжи производителя для каждого сайта ( например,['Кама', '2023-08-02', None, 'onliner.by'], ['Кама', '2023-08-02', None, 'bagoria.by'])
         ## исключим те дубляжи , по которым созданы на иных сайтах копии
@@ -1908,8 +1927,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                  
-        for n in competit_on_current_date_assembled:
-            print('fall behind', n)     
+        #for n in competit_on_current_date_assembled:
+        #    print('fall behind', n)     
 
         # СОБИРЕМ СЛОВАРИ ДЛЯ ПЕРЕЧАЧИ В КОНТНЕКСТ, ДАЛЕЕ В СКРИПТ:
         assembles_to_dict_data_dict = {}
@@ -2089,7 +2108,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         models.SEARCH_USER_REQUEST = []
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
 
-        print(request.POST, 'TTTH')
+        #print(request.POST, 'TTTH')
         #print (request.POST.getlist('competitors'), 'TTTT')
 
         ## 1 работа с периодами:
@@ -2135,12 +2154,12 @@ class ComparativeAnalysisTableModelUpdateView(View):
             #print('production_tyres_list_all', production_tyres_list_all)
             models.SELF_PRODUCTION_ALL = production_tyres_list_all
         else:
-            print('production_tyres_list', production_tyres_list)
+            #print('production_tyres_list', production_tyres_list)
             models.SELF_PRODUCTION = production_tyres_list
 
         ### ЕСЛИ ПОЛЬЗОВАТЬЕЛЬ ИЩЕТ ЧЕРЕЗ ПОИСК:
         production_tyres_list_one = request.POST.getlist('product_search')
-        #print('show me', production_tyres_list_one)
+        ##print('show me', production_tyres_list_one)
         if production_tyres_list_one:
             models.SEARCH_USER_REQUEST = production_tyres_list_one
 #
@@ -2166,8 +2185,6 @@ class ComparativeAnalysisTableModelUpdateView(View):
             else:
                 #print('producer_filter_brand_list_got N', producer_filter_brand_list_got)
                 models.PRODUCER_FILTER_BRAND_LIST_CHECKED_ON = False
-
-
 
         # 5 работа с вводимыми данными по отклонению торговой надбавки
         deflection_data_got = request.POST.get('deflection_data')  

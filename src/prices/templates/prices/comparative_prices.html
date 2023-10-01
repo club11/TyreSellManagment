@@ -22,7 +22,7 @@
 
         <div class="el-1">
                 <div class="div1"> 
-                  <strong>Маркетплейс-анализ. Рынок: Республика Беларусь</strong>
+                  <strong>Маркетплейс-анализ. Рынок: Республика Беларусь на {{ table_current_date_for_header }}</strong>
                 </div>
             <div class="div2">  
               <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
@@ -49,6 +49,14 @@
               <span class="badge bg-light text-dark">{{ production_name.tyre.tyre_size.tyre_size }} {{ production_name.tyre.tyre_model.model }}</span> 
             {% endfor %}
           {% endif %}
+        </span>
+        <span>
+          {% if in_base_tyres_by_group_checked_bage %}
+          Поиск по группа шин:
+            {% for group in in_base_tyres_by_group_checked_bage %}
+              <span class="badge bg-light text-dark">{{ group.tyre_group }} </span> 
+            {% endfor %}
+          {% endif %}          
         </span>
         </div>
  
@@ -214,8 +222,8 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
-                {% for group in in_base_tyres_by_group %}
-                  <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}">{{ group.tyre_group }}</li>
+                {% for group, status in in_base_tyres_by_group %}
+                  <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}" {{ status }}>{{ group.tyre_group }}</li>
                 {% endfor %}
               </ul>
             </div>
@@ -306,7 +314,7 @@
                   );
                 
                   var options = {
-                    title: 'Количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
+                    title: 'Общее количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                   //  height: 300,
                   legend: { position: 'bottom' },
                   slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
@@ -360,7 +368,7 @@
                   legend: {
                   position: 'bottom'  // top не работает, рабочие лишь left, right
                   },
-                  title:'Количество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                  title:'Общее оличество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                   colors:['#d11616','#05a107','#2307d9'],
                   theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                   // bar: {groupWidth:'40%'},
@@ -427,6 +435,7 @@
 
            setChartView();
            columnFilter.draw();
+           
        
         }
           </script>
