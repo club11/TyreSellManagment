@@ -538,6 +538,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
+            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.season)
                 competior_is_found = False
                 tyre_in_base_season = ''
                 if objject.season and self.tyre.added_features.all():            
@@ -662,7 +663,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
-                #print('objjectobjjectobjjectobjject======================================================', objject, objject.developer , objject.site, objject.season)
+            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.season)
                 if objject is None:
                     pass
                 else:
@@ -718,6 +719,10 @@ class ComparativeAnalysisTyresModel(models.Model):
             for n in range(0, 3-void_data_num):
                 list_od_combined_comp_and_prices.append(('', '', ''))
             #print('CCC', list_od_combined_comp_and_prices)
+            #if len(list_od_combined_comp_and_prices) > 3:
+            #    list_od_combined_comp_and_prices = list_od_combined_comp_and_prices[0:3]
+            #else:
+            #    pass
             return list_od_combined_comp_and_prices
 
     def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           

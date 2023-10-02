@@ -8,12 +8,15 @@ class TyreAdmin(admin.ModelAdmin):
 
     ]
 
+
+    
 class TyreCardAdmin(admin.ModelAdmin):
     list_display = [
             'tyre',
             'serie_date',
             'picture',
     ]
+
 class TyreAddedFeatureModelAdmin(admin.ModelAdmin):
     list_display = [
         'tyre',

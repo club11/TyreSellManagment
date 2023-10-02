@@ -35,7 +35,10 @@
 
         <div class="el-01">
           <span>
-          {% if producer_filter_brand_list_checked_bage %}
+            {% if producer_filter_brand_list_checked__only_3_cheapest_chosen_bage %} 
+              {{ producer_filter_brand_list_checked__only_3_cheapest_chosen_bage }}
+            {% endif %}
+          {% if producer_filter_brand_list_checked_bage %}  
           Поиск по брендам:
             {% for brand_name in producer_filter_brand_list_checked_bage %}
               <span class="badge bg-light text-dark">{{ brand_name }}</span>

@@ -30,6 +30,7 @@ from operator import itemgetter, attrgetter
 
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
+from django.db.models import Min
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -214,7 +215,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         #print('v', v)
                         if tyre.tyre_size.tyre_size == v[1]:
                             #print('TTTTKKK', k, 'v[1]', v[1])                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
-                            #Cordiant Polar SL 205/55R16 94T ('165,00', '205/55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
+                            #Cordiant Polar SL 205/ 55R16 94T ('165,00', '205/ 55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
                             coma = v[0].find(',')
                             pr = float
                             name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
@@ -525,7 +526,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         #print(k,v)
                         if tyre.tyre_size.tyre_size == k[0]:
                             #print('TTTT', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
-                            #('235/75R17,5', 90) ('Triangle', 'TR689A', '143/141J', 560.18)                                # Cordiant Polar SL 205/55R16 94T ('165,00', '205/55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
+                            #('235/75R17,5', 90) ('Triangle', 'TR689A', '143/141J', 560.18)                                # Cordiant Polar SL 205/ 55R16 94T ('165,00', '205/ 55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
                             coma = v[0].find(',')           
                             pr = float
                             name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
@@ -901,7 +902,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
         table_lookup_only_with_competitors_all_parsed = table_lookup_only_with_competitors
-        
+        #for kk in table_lookup_only_with_competitors_all_parsed:
+        #    print('kk', kk.tyre.tyre_size.tyre_size)
+
 
         # если пользовательищет через поисковик:
         if models.SEARCH_USER_REQUEST:
@@ -974,6 +977,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #print('А У НАС ТУТ ПЛОТИТЬ НЕ ХОЧУТ')
             list_of_tyre_comparative_objects_is_empty = True
 
+
         #3. ПО БРЕНДАМ ОТБОР БУДЕТ ДАЛЕЕ
 
         #0.1 подготовить последнюю доступгую дату с конкурентами:
@@ -1023,39 +1027,52 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     else:
                         onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
             else:
-                for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-####                        print("На пол шишечки2", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                        list_of_matched_competitors.append(competitor)
+                #for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                #    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+####            #            print("На пол шишечки2", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                #        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+                #        list_of_matched_competitors.append(competitor)
+                # здесьнужно добавить фильтр по мин цене в размере среди всех брендов (1 типоразмер - 1 ммин цена): 
+                #1) шаг первый - собираем типоразмеры и формируем кверисет конкурентов : 1 типоразмер - один бренд с мин ценой       
+                trsz_list = []
+                for competitor in all_competitors:       
+                    trsz_list.append(competitor.tyresize_competitor)
+                #    print('HOY', competitor.tyresize_competitor) 
+                trsz_list = list(set(trsz_list))
+                min_price_competitors_list = [] #список models.CompetitorSiteModel объектов с минимальной ценой по каждому типоразмеру
+                #print('trsz_list =', trsz_list)
+                for trsz in trsz_list:
+                    #min_price = all_competitors.filter(tyresize_competitor=trsz).aggregate(Min('price')) # у каждого типоразмера выбрать самого минимального по цене конкурента (бренд) # vbмин цена в типоразмере
+                    try:
+                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price')[0:3]       # если есть - берем до трех минимальных по цене конкурентов (брендов) в данном типоразмере
+                        got_three_brands = True
+                    except:
+                        got_three_brands = False
+                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price').first()     # если нет - то хотя бы одно самого минимального конкурента (бренд) в данном типоразмере
+                    min_price_competitors_list.append(trsz_wih_min_price)
+                #2) шаг 2 - поиск уже в новом кверисете с минимальными ценами - причем цена может быть в любой дате:
+                for competitor in min_price_competitors_list:
+                    if got_three_brands is False:
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            list_of_matched_competitors.append(competitor)
+                    if got_three_brands is True:
+                        for comp in competitor:
+                            if object_unit.tyre.tyre_size.tyre_size == comp.tyresize_competitor:
+                                #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                                list_of_matched_competitors.append(comp)                        
+                #print('list_of_matched_competitors3',list_of_matched_competitors)
                 onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-        #print('onliner_competitors_dict1', onliner_competitors_dict1)
-####        for n in onliner_competitors_dict1.values():
+        ##print('onliner_competitors_dict1', onliner_competitors_dict1)
+        #for n in onliner_competitors_dict1.values():
+        #    for m in n:
+        #        print(m.tyresize_competitor)
 ####            if n:
 ####                for current_chosen_date in n:
 ####                    print('current_chosen_date----', current_chosen_date.date_period)
         ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
 
-
-        # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
-        onliner_max_lengh_list = []
-        for object_unit in list_of_tyre_comparative_objects:
-            obj_num = len(object_unit.onliner_competitor_on_date1())
-            onliner_max_lengh_list.append(obj_num)
-        #print('onliner_max_lengh_list', onliner_max_lengh_list)
-        if onliner_max_lengh_list:
-            onliner_max_lengh_header = max(onliner_max_lengh_list)
-        else:
-            onliner_max_lengh_header = 0
-
-        models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
-
-        obj.onliner_heders_value()
-        obj.onliner_heders_lengt()
-        #object_unit.onliner_competitor_price_on_date1()
-        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-        #print('ONLINER', context['list_of_tyre_comparative_objects'])
         # END ONLINER
 
         ## 2 фильтр конкурентов Автосеть:
@@ -1096,39 +1113,48 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     if len(list_of_matched_competitors) > 3:
                         avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
                     else:
-                        avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors                    
-                
+                        avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors                               
             else:
-                for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                        list_of_matched_competitors.append(competitor)
+                #for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                #    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                #        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                #        list_of_matched_competitors.append(competitor)
+                ## здесьнужно добавить фильтр по мин цене в размере среди всех брендов (1 типоразмер - 1 ммин цена): 
+                #1) шаг первый - собираем типоразмеры и формируем кверисет конкурентов : 1 типоразмер - один бренд с мин ценой       
+                trsz_list = []
+                for competitor in all_competitors:       
+                    trsz_list.append(competitor.tyresize_competitor)
+            #        print('HOY', competitor.tyresize_competitor) 
+                trsz_list = list(set(trsz_list))
+                min_price_competitors_list = [] #список models.CompetitorSiteModel объектов с минимальной ценой по каждому типоразмеру
+                for trsz in trsz_list:
+                    #min_price = all_competitors.filter(tyresize_competitor=trsz).aggregate(Min('price')) # у каждого типоразмера выбрать самого минимального по цене конкурента (бренд) # vbмин цена в типоразмере
+                    try:
+                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price')[0:3]       # если есть - берем до трех минимальных по цене конкурентов (брендов) в данном типоразмере
+                        got_three_brands = True
+                    except:
+                        got_three_brands = False
+                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price').first()     # если нет - то хотя бы одно самого минимального конкурента (бренд) в данном типоразмере
+                    min_price_competitors_list.append(trsz_wih_min_price)
+                #2) шаг 2 - поиск уже в новом кверисете с минимальными ценами - причем цена может быть в любой дате:
+                for competitor in min_price_competitors_list:
+                    if got_three_brands is False:
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            list_of_matched_competitors.append(competitor)
+                    if got_three_brands is True:
+                        for comp in competitor:
+                            if object_unit.tyre.tyre_size.tyre_size == comp.tyresize_competitor:
+                                #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                                list_of_matched_competitors.append(comp)                        
+                #print('list_of_matched_competitors3',list_of_matched_competitors)
                 avtoset_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
         #print('avtoset_competitors_dict1', avtoset_competitors_dict1)
 
        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-            models.AVTOSET_COMPETITORS_DICTIONARY1 = avtoset_competitors_dict1  
-            object_unit.avtoset_competitor_on_date1() 
+        models.AVTOSET_COMPETITORS_DICTIONARY1 = avtoset_competitors_dict1  
+        #object_unit.avtoset_competitor_on_date1() 
 
-       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
-        avtoset_max_lengh_list = []
-        for object_unit in list_of_tyre_comparative_objects:
-            obj_num = len(object_unit.avtoset_competitor_on_date1())
-            avtoset_max_lengh_list.append(obj_num)
-        if avtoset_max_lengh_list:
-            avtoset_max_lengh_header = max(avtoset_max_lengh_list)
-        else:
-            avtoset_max_lengh_header = 0
-        #print('avtoset_max_lengh_header', avtoset_max_lengh_header)
-
-        models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
-        # print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
-
-        obj.avtoset_heders_value()
-        obj.avtoset_heders_lengt()
-        #object_unit.onliner_competitor_price_on_date1()
-        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-        ##print('avtoset', context['list_of_tyre_comparative_objects'])
         ###### END OF AVTOSET
 
         ## 3 фильтр конкурентов BAGORIA:
@@ -1139,7 +1165,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by', date_period=last_availible_date)
         #print(all_competitors , 'all_competitors ')
     #        # 1.2 ФИЛЬТР список производителей :
-    #    # выбор по производителю:                               
+    #    # выбор по производителю:                            
     #    # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         bagoria_competitors_dict1 = {}
         for object_unit in list_of_tyre_comparative_objects:
@@ -1148,6 +1174,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_matched_competitors = []
             if models.BAGORIA_COMPETITORS:
                 if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+         #           print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER',models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
                     date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                     for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period=date_filter):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                         if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
@@ -1159,6 +1186,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
                     else:
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    #print('list_of_matched_competitors1',list_of_matched_competitors)
                 else:
                     for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by'):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                         if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
@@ -1166,22 +1194,49 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                             list_of_matched_competitors.append(competitor)
                     #bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    #print('list_of_matched_competitors2',list_of_matched_competitors)
                     if len(list_of_matched_competitors) > 3:
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
                     else:
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors                    
-            else:
-                for competitor in all_competitors[0 : 3]:                                                                                                           ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                        list_of_matched_competitors.append(competitor)
+            else:   
+                #for competitor in all_competitors[0 : 3]:  ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                # здесьнужно добавить фильтр по мин цене в размере среди всех брендов (1 типоразмер - 1 ммин цена): 
+                #1) шаг первый - собираем типоразмеры и формируем кверисет конкурентов : 1 типоразмер - один бренд с мин ценой       
+                trsz_list = []
+                for competitor in all_competitors:       
+                    trsz_list.append(competitor.tyresize_competitor)
+        #            print('HOY', competitor.tyresize_competitor) 
+                trsz_list = list(set(trsz_list))
+                min_price_competitors_list = [] #список models.CompetitorSiteModel объектов с минимальной ценой по каждому типоразмеру
+                for trsz in trsz_list:
+                    #min_price = all_competitors.filter(tyresize_competitor=trsz).aggregate(Min('price')) # у каждого типоразмера выбрать самого минимального по цене конкурента (бренд) # vbмин цена в типоразмере
+                    try:
+                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price')[0:3]       # если есть - берем до трех минимальных по цене конкурентов (брендов) в данном типоразмере
+                        got_three_brands = True
+                    except:
+                        got_three_brands = False
+                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price').first()     # если нет - то хотя бы одно самого минимального конкурента (бренд) в данном типоразмере
+                    min_price_competitors_list.append(trsz_wih_min_price)
+                #2) шаг 2 - поиск уже в новом кверисете с минимальными ценами - причем цена может быть в любой дате:
+                for competitor in min_price_competitors_list:
+                    if got_three_brands is False:
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                            #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                            list_of_matched_competitors.append(competitor)
+                    if got_three_brands is True:
+                        for comp in competitor:
+                            if object_unit.tyre.tyre_size.tyre_size == comp.tyresize_competitor:
+                                #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                                list_of_matched_competitors.append(comp)                        
+                #print('list_of_matched_competitors3',list_of_matched_competitors)
                 bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-        #print('bagoria_competitors_dict1', bagoria_competitors_dict1)
+
 
        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-            models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1  
-            object_unit.bagoria_competitor_on_date1() 
-
+        models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1  
+        #object_unit.bagoria_competitor_on_date1() 
+        #print('bagoria_competitors_dict1', bagoria_competitors_dict1)
 
         #######!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМЕНЬШЕЙ ЦЕНОЙ:
         #### !!!!!!
@@ -1218,25 +1273,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #### !!!!!!
         ####### END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМ ЦЕНОЙ:
 
-
-       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
-        bagoria_max_lengh_list = []
-        for object_unit in list_of_tyre_comparative_objects:
-            obj_num = len(object_unit.bagoria_competitor_on_date1())
-            bagoria_max_lengh_list.append(obj_num)
-        if bagoria_max_lengh_list:
-            bagoria_max_lengh_header = max(bagoria_max_lengh_list)
-        else:
-            bagoria_max_lengh_header = 0
-
-        models.BAGORIA_HEADER_NUMBER = bagoria_max_lengh_header
-        # print('models.BAGORIA_HEADER_NUMBER ====+++==', models.BAGORIA_COMPETITORS_NAMES_FILTER)
-
-        obj.bagoria_heders_value()
-        obj.bagoria_heders_lengt()
-        #object_unit.bagoria_competitor_price_on_date1()
-        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
-        #print('bagoria', context['list_of_tyre_comparative_objects'])
         ###### END OF BAGORIA
 
 #       ## 2 фильтр конкурентов CHEMCURIER:
@@ -1274,20 +1310,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #print('chemcurier_competitors_dict1', chemcurier_competitors_dict1)     # hemcurier_competitors_dict1 {<Tyre: Tyre object (1899)>: [], <Tyre: Tyre object (1900)>: [],
 
        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-            models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-            object_unit.chemcurier_competitor_on_date1()
+        models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
+        object_unit.chemcurier_competitor_on_date1()
             # CCC [('', '', ''), ('', '', ''), ('', '', '')]
             #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
 
 
-
-       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
-        chemcurier_max_lengh_header = 1                                 # chemcurier будет лишь один столбец
-        models.CHEMCURIER_HEADER_NUMBER = chemcurier_max_lengh_header
-        # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
-
-        obj.chemcurier_heders_value()
-        obj.chemcurier_heders_lengt()
         #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END OF CHEMCURIER
 
@@ -1304,8 +1332,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ######## !!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ ОБЪЕКТОВ ДЛЯ ВЫВОДА НА СТРАНИЦУ (только объекты с отфильтрованными конкурентами only):
         #print('list_of_tyre_comparative_objects =====================1 =', len(list_of_tyre_comparative_objects ), list_of_tyre_comparative_objects)
 
+        bagor_lengh_list = []
+        avtoset_lengh_list = []
+        onliner_lengh_list = []
+
+        for YYY in list_of_tyre_comparative_objects:
+            print('000===000', YYY) 
+
         list_of_tyre_comparative_objects_ids = []
         final_list_of_objects_for_template = []
+        #print('TTTTTTTTT=====2 list_of_tyre_comparative_objects LEN IS', len(list_of_tyre_comparative_objects),  list_of_tyre_comparative_objects)
         for tt in list_of_tyre_comparative_objects:
             #print('tt', tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size) 
             onl_result = tt.onliner_competitor_on_date1()
@@ -1320,12 +1356,85 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 pass 
             final_list_of_objects_for_template = models.ComparativeAnalysisTyresModel.objects.filter(pk__in=list_of_tyre_comparative_objects_ids).order_by('tyre')  
 
+            bagor_curr_lengh = len(bag_result)
+            bagor_lengh_list.append(bagor_curr_lengh)
+
+            avtoset_curr_lengh = len(avt_result)
+            avtoset_lengh_list.append(avtoset_curr_lengh)
+
+            onliner_curr_lengh = len(onl_result)
+            onliner_lengh_list.append(onliner_curr_lengh)
         list_of_tyre_comparative_objects = final_list_of_objects_for_template                       # !!  список СomparativeAnalysisTyresModel  у которых отфильтрованы конкуренты
         #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        
+        for YYY in list_of_tyre_comparative_objects: ### ( list_of_tyre_comparative_objects из ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ)
+            print('111===111', YYY)        
         ########END !!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ
 
+    #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:  
+        ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
+        #bagoria_max_lengh_list = []
+        #print('TTTTTTTTT=====1 list_of_tyre_comparative_objects LEN IS', len(list_of_tyre_comparative_objects),  list_of_tyre_comparative_objects)
 
+        #for object_unit in list_of_tyre_comparative_objects:
+        #    obj_num = len(object_unit.bagoria_competitor_on_date1())
+        #    bagoria_max_lengh_list.append(obj_num)
+        #if bagoria_max_lengh_list:
+            #bagoria_max_lengh_header = max(bagoria_max_lengh_list)
+        if bagor_lengh_list:     
+            bagoria_max_lengh_header = max(bagor_lengh_list)
+        else:
+            bagoria_max_lengh_header = 0
+
+        models.BAGORIA_HEADER_NUMBER = bagoria_max_lengh_header
+        # print('models.BAGORIA_HEADER_NUMBER ====+++==', models.BAGORIA_COMPETITORS_NAMES_FILTER)
+
+        obj.bagoria_heders_value()
+        obj.bagoria_heders_lengt() 
+        ## END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA:          
+        ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
+        #avtoset_max_lengh_list = []
+        #for object_unit in list_of_tyre_comparative_objects:
+        #    obj_num = len(object_unit.avtoset_competitor_on_date1())
+        #    avtoset_max_lengh_list.append(obj_num)
+        #if avtoset_max_lengh_list:
+        #    avtoset_max_lengh_header = max(avtoset_max_lengh_list)
+        #else:
+        if avtoset_lengh_list:
+            avtoset_max_lengh_header = max(avtoset_lengh_list)
+        else:
+            avtoset_max_lengh_header = 0
+        #print('avtoset_max_lengh_header', avtoset_max_lengh_header)
+        models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
+        # print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
+        obj.avtoset_heders_value()
+        obj.avtoset_heders_lengt()         
+        ##END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
+        # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
+        #onliner_max_lengh_list = []
+        #for object_unit in list_of_tyre_comparative_objects:
+        #    obj_num = len(object_unit.onliner_competitor_on_date1())
+        #    onliner_max_lengh_list.append(obj_num)
+        ##print('onliner_max_lengh_list', onliner_max_lengh_list)
+        #if onliner_max_lengh_list:
+        if onliner_lengh_list:
+            onliner_max_lengh_header = max(onliner_lengh_list)
+        else:
+            onliner_max_lengh_header = 0
+        models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
+
+        obj.onliner_heders_value()
+        obj.onliner_heders_lengt()
+        #END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
+       ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
+        chemcurier_max_lengh_header = 1                                 # chemcurier будет лишь один столбец
+        models.CHEMCURIER_HEADER_NUMBER = chemcurier_max_lengh_header
+        # print('models.CHEMCURIER_HEADER_NUMBER ====+++==', models.CHEMCURIER_HEADER_NUMBER)
+        obj.chemcurier_heders_value()
+        obj.chemcurier_heders_lengt()
+       ##END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ CHEMCURIER: 
+    #### END ЗАГОЛОЛОВКИ ТАБЛИЦЫ   
 
 
         ####### Формы для фильтров темплейта:
@@ -1348,10 +1457,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 else:
                     name_and_status = namee, ''
                     brand_names_check_status_list.append(name_and_status)
+                    context['producer_filter_brand_list_checked__only_3_cheapest_chosen_bage'] = 'поиск по бренду с наименьшей ценой (т.к.конкретный бренд не выбран)'
         else:
             for namee in brand_names:
                 name_and_status = namee, ''
                 brand_names_check_status_list.append(name_and_status)
+                context['producer_filter_brand_list_checked__only_3_cheapest_chosen_bage'] = 'поиск по бренду с наименьшей ценой (т.к.конкретный бренд не выбран)'
 ######        print('brand_names_check_status_list1111', brand_names_check_status_list)
         context['producer_filter_brand_list'] = brand_names_check_status_list
         context['producer_filter_brand_list_checked_bage'] = models.PRODUCER_FILTER_BRAND_LIST_CHECKED_ON        # для вплывающей подсказки - значек с выбранными позициями брендов
@@ -1500,7 +1611,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #list_keys3 = list(models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.keys())
         #list_keys = list_keys1 + list_keys2 + list_keys3
         #print('list_keys', list_keys) #
-        print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids , 'list_of_tyre_comparative_objects TRUE', type(list_of_tyre_comparative_objects))
+        print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids,) #'list_of_tyre_comparative_objects TRUE', list_of_tyre_comparative_objects)
         ##for tyre_for_chart_need_all_checked_competitors in list_keys:
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
