@@ -12,6 +12,22 @@
     <title>{% block title %} default title {% endblock title %}</title>
     <style>
 
+/* для сворачивания выбранных элементов (бренд/прдукция/группа) */
+    .collapse {   
+      &:not(.show) {
+        display: none;
+        color: #ffffff;
+        background-color: #ffe9e9;
+      }
+    }
+
+    .collapsing {
+      height: 0;
+      overflow: hidden;
+    }
+/* <END для сворачивания выбранных элементов (бренд/прдукция/группа)*/
+
+
 .pagination {
   display: inline-block;
 }
@@ -60,6 +76,7 @@
           row-gap: 40px;
           /* Отступы между колонками */
           column-gap: 5px; 
+
         }
 
         .el-0 {

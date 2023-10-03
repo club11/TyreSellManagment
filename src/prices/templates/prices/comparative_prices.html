@@ -19,7 +19,6 @@
         <div class="el-0">
         </div>
 
-
         <div class="el-1">
                 <div class="div1"> 
                   <strong>Маркетплейс-анализ. Рынок: Республика Беларусь на {{ table_current_date_for_header }}</strong>
@@ -34,33 +33,45 @@
         </div>
 
         <div class="el-01">
-          <span>
-            {% if producer_filter_brand_list_checked__only_3_cheapest_chosen_bage %} 
-              {{ producer_filter_brand_list_checked__only_3_cheapest_chosen_bage }}
-            {% endif %}
-          {% if producer_filter_brand_list_checked_bage %}  
-          Поиск по брендам:
-            {% for brand_name in producer_filter_brand_list_checked_bage %}
-              <span class="badge bg-light text-dark">{{ brand_name }}</span>
-            {% endfor %}
-          {% endif %}
-        </span>
-        <span>
-          {% if in_base_tyres_list_checked_bage %}
-          Поиск по продукции:
-            {% for production_name in in_base_tyres_list_checked_bage %}
-              <span class="badge bg-light text-dark">{{ production_name.tyre.tyre_size.tyre_size }} {{ production_name.tyre.tyre_model.model }}</span> 
-            {% endfor %}
-          {% endif %}
-        </span>
-        <span>
-          {% if in_base_tyres_by_group_checked_bage %}
-          Поиск по группа шин:
-            {% for group in in_base_tyres_by_group_checked_bage %}
-              <span class="badge bg-light text-dark">{{ group.tyre_group }} </span> 
-            {% endfor %}
-          {% endif %}          
-        </span>
+          <p>
+            <a class="btn-sm btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+              X
+            </a>
+          <div class=".collapse.show" id="collapseExample">
+              <span>
+                {% if producer_filter_brand_list_checked__only_3_cheapest_chosen_bage %} 
+                  {{ producer_filter_brand_list_checked__only_3_cheapest_chosen_bage }}
+                {% endif %}
+
+                {% if no_chosen_production_checked_bage %} 
+                  {{ no_chosen_production_checked_bage }}
+                {% endif %}
+                
+              {% if producer_filter_brand_list_checked_bage %}  
+              Поиск по брендам:
+                {% for brand_name in producer_filter_brand_list_checked_bage %}
+                  <span class="badge bg-light text-dark">{{ brand_name }}</span>
+                {% endfor %}
+              {% endif %}
+            </span>
+            <span>
+              {% if in_base_tyres_list_checked_bage %}
+              Поиск по продукции:
+
+                {% for production_name in in_base_tyres_list_checked_bage %}
+                  <span class="badge bg-light text-dark">{{ production_name.tyre.tyre_size.tyre_size }} {{ production_name.tyre.tyre_model.model }}</span> 
+                {% endfor %}
+              {% endif %}
+            </span>
+            <span>
+              {% if in_base_tyres_by_group_checked_bage %}
+              Поиск по группа шин:
+                {% for group in in_base_tyres_by_group_checked_bage %}
+                  <span class="badge bg-light text-dark">{{ group.tyre_group }} </span> 
+                {% endfor %}
+              {% endif %}          
+            </span>
+          </div>
         </div>
  
         <div class="el-3">
@@ -197,10 +208,10 @@
 
             <div class="dropdown dropstart">  
               <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                выбрать производителя:
+                выбрать бренд:
               </button>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все производители</b></li>
+                  <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
                 {% for comp, status in producer_filter_brand_list %}
                   <li><input type="checkbox" name="producer_filter_brand_list" value="{{ comp }}" {{ status }}>{{ comp }}</li>
                 {% endfor %}
@@ -212,7 +223,7 @@
                 выбрать продукцию:
               </button>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li>
+          {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
                 {% for ttyre, status in in_base_tyres  %}
                   <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}" {{ status }}>{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
                 {% endfor %}
