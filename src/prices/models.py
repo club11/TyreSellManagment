@@ -74,6 +74,8 @@ ONLY_ON_CURRENT_DATE = False
 FOR_MENU_OBJECTS_LIST = [] # список объектов для вывода в меню (шины с конкурентами)
 PRODUCER_FILTER_BRAND_LIST_CHECKED_ON = False
 
+DEF_GET = True    # первый запуск страницы (не POST запос,а GET)
+
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,

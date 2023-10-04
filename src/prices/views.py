@@ -1344,7 +1344,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #for YYY in list_of_tyre_comparative_objects:
         #    print('000===000', YYY) 
-        def_get = True    # первый запуск страницы (не POST запос,а GET)
+        
 
         list_of_tyre_comparative_objects_ids = []
         #final_list_of_objects_for_template = []
@@ -1374,10 +1374,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             onliner_lengh_list.append(onliner_curr_lengh)
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА:
             if models.SELF_PRODUCTION_FIRST is True and final_list_of_objects_for_template.exists():
-            #    print('WTF?')
+                print('WTF?')
                 break   # обрываем цикл - берем только первого
-            if def_get is True:
-                def_get is False
+            if models.DEF_GET is True:
+                print('=====2')
+                models.DEF_GET = False
                 break   # обрываем цикл - берем только первого
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА
 
