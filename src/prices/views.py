@@ -1161,10 +1161,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
             all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by').filter(date_period=date_filter)
-            print('&&&& 1', date_filter)
+        #    print('&&&& 1', date_filter)
         else:
             all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by', date_period=last_availible_date_today)
-            print('&&&& 2')
+        #    print('&&&& 2')
         #print('WHAT DAy IS TODAY???????', last_availible_date_today)
         #print(all_competitors , 'all_competitors ')
     #        # 1.2 ФИЛЬТР список производителей :
@@ -1342,8 +1342,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         avtoset_lengh_list = []
         onliner_lengh_list = []
 
-        for YYY in list_of_tyre_comparative_objects:
-            print('000===000', YYY) 
+        #for YYY in list_of_tyre_comparative_objects:
+        #    print('000===000', YYY) 
+        def_get = True    # первый запуск страницы (не POST запос,а GET)
 
         list_of_tyre_comparative_objects_ids = []
         #final_list_of_objects_for_template = []
@@ -1373,7 +1374,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             onliner_lengh_list.append(onliner_curr_lengh)
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА:
             if models.SELF_PRODUCTION_FIRST is True and final_list_of_objects_for_template.exists():
-                #print('WTF?')
+            #    print('WTF?')
+                break   # обрываем цикл - берем только первого
+            if def_get is True:
+                def_get is False
                 break   # обрываем цикл - берем только первого
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА
 
@@ -1494,7 +1498,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #for obj in models.FOR_MENU_OBJECTS_LIST:       old version  
         for obj in table_lookup_only_with_competitors_all_parsed:           # берем для меню вообще все, для кого хоть когда-либо что-то парсилось хоть раз
             if models.SELF_PRODUCTION_ALL:
-                objj_and_status = obj, '' 
+                objj_and_status = obj, ''
             elif str(obj.id) in models.SELF_PRODUCTION:
                 objj_and_status = obj, 'checked'
                 in_base_tyres_check_status_list_checked_bage.append(obj)
@@ -1503,9 +1507,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     #print('zloy pinguin')
                     objj_and_status = obj, 'checked'
                     if models.SELF_PRODUCTION_FIRST is True:
-                        context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})'
+                        context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
                 else:    
                     objj_and_status = obj, ''
+                    #if obj == list_of_tyre_comparative_objects[0]:
+                    #    context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})'
 
             in_base_tyres_check_status_list.append(objj_and_status)
 
@@ -1619,18 +1625,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #############   ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS  
         # 0. Получаем объекты и их реально офильтрованные по параметрам конкуренты:
         #print('ONLINER_COMPETITORS_NAMES_FILTER_IDS', models.ONLINER_COMPETITORS_NAMES_FILTER_IDS) # ключ - id объета ComparativeAnalysisTyresModel, згначения - список id отфильтрованных конкурентов CompetitorSiteModel
-        #print('AVTOSET_COMPETITORS_NAMES_FILTER_IDS', models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS)
-        #print('BAGORIA_COMPETITORS_NAMES_FILTER_IDS', models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS)
-        #print('EXPRESS_SHINA_COMPETITORS_NAMES_FILTER_IDS', models.EXPRESS_SHINA_COMPETITORS_NAMES_FILTER_IDS)
-        #print('KOLESATYT_COMPETITORS_NAMES_FILTER_IDS', models.KOLESATYT_COMPETITORS_NAMES_FILTER_IDS)
-        #print('KOLESA_DAROM_COMPETITORS_NAMES_FILTER_IDS', models.KOLESA_DAROM_COMPETITORS_NAMES_FILTER_IDS)  
-        #0.1 собираем единый словарь: ComparativeAnalysisTyresModel - и все его отфильтрованные конкуренты на всех сайтах:
-        edyniy_slovar_dict_dlja_pandas_chart_graphic = {}
+
+        edyniy_slovar_dict_dlja_pandas_chart_graphic = {}               ##### И.С.Х.О.Д.Н.И.К. Д.Л.Я. О.Т.Р.И.С.О.В.К.И. Г.Р.А.Ф.И.К.А. !!!WARNING IMPORTANT
         spisok_competitors_filtered = []
-        #list_keys1 = list(models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.keys())
-        #list_keys2 = list(models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.keys())
-        #list_keys3 = list(models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.keys())
-        #list_keys = list_keys1 + list_keys2 + list_keys3
+
         #print('list_keys', list_keys) #
         print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids,) #'list_of_tyre_comparative_objects TRUE', list_of_tyre_comparative_objects)
         ##for tyre_for_chart_need_all_checked_competitors in list_keys:
@@ -1641,6 +1639,39 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
         ##print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+
+
+        ### ЭТАП ПРОВЕРКИ СЛОВАРЯ НА НАЛИЧИЕ ПРОДУКЦИИ РАЗНЫХ ТИПОРАЗМЕРОВ - ЕСЛИ РАЗНЫЕ ТИПОРАЗМЕРЫ - БЕРЕМ ПЕРВЫЙ (И ВСЕ ОДИНАКОВЫЕ С НИМ МОДЕЛИ), ОТСЕИВАЕМ ПРОДУКЦИЮ С ИНЫМ ТИПОРАЗМЕРОМ   
+        if not edyniy_slovar_dict_dlja_pandas_chart_graphic:         # если словарь пуст
+            pass
+        else:                                                        # если словарь не пуст    
+            #print('edyniy_slovar_dict_dlja_pandas_chart_graphic.keys() = 1',edyniy_slovar_dict_dlja_pandas_chart_graphic.keys())
+            #print('edyniy_slovar_dict_dlja_pandas_chart_graphic.items() = 1',edyniy_slovar_dict_dlja_pandas_chart_graphic.items())
+            prod_id_with_same_tyresize_as_the_first_one_list = []
+            for prod_id in edyniy_slovar_dict_dlja_pandas_chart_graphic.keys():                     
+                production_tyresizes = models.ComparativeAnalysisTyresModel.objects.get(id=prod_id)
+                production_tyresizes = production_tyresizes.tyre.tyre_size.tyre_size
+                prod_id_and_production_tyresize = prod_id, production_tyresizes
+                prod_id_with_same_tyresize_as_the_first_one_list.append(prod_id_and_production_tyresize)        # получаем id и их типоразмер
+            #    print('SSUPER_KEY', prod_id, production_tyresizes)
+            first_prod_id_tyr_size = prod_id_with_same_tyresize_as_the_first_one_list[0]    # сравним полученное с первым типоразмером
+            #print('first_prod_id_tyr_size', first_prod_id_tyr_size)
+            id_with_same_tyre_size_as_first_one_list = []
+            for d_tyrr_size in prod_id_with_same_tyresize_as_the_first_one_list:
+                if d_tyrr_size[1] == first_prod_id_tyr_size[1]:                                 # если одинаковый типоразмер с первым - берем продукцию
+                    id_with_same_tyre_size_as_first_one_list.append(d_tyrr_size[0])
+            #print('id_with_same_tyre_size_as_first_one_list = IS =', id_with_same_tyre_size_as_first_one_list)
+            temorary_id_with_same_tyre_size_as_first_one_dict ={}
+            for same_tyr_size_id in id_with_same_tyre_size_as_first_one_list:
+                temorary_id_with_same_tyre_size_as_first_one_dict[same_tyr_size_id] = edyniy_slovar_dict_dlja_pandas_chart_graphic.get(same_tyr_size_id)
+            #print('temorary_id_with_same_tyre_size_as_first_one_dict.keys() = 2', temorary_id_with_same_tyre_size_as_first_one_dict.keys())
+            #print('temorary_id_with_same_tyre_size_as_first_one_dict.items() = 2', temorary_id_with_same_tyre_size_as_first_one_dict.items())
+
+            ## !!! ПЕРЕПИСЫВАНИЕ СЛОВАРЯ = ТОЛЬКО ПРОДУКЦИЯ ОДНОГО ТИПОРАЗМЕРА:
+            edyniy_slovar_dict_dlja_pandas_chart_graphic = temorary_id_with_same_tyre_size_as_first_one_dict
+            ## END !!! ПЕРЕПИСЫВАНИЕ СЛОВАРЯ = ТОЛЬКО ПРОДУКЦИЯ ОДНОГО ТИПОРАЗМЕРА:
+
+        ### END ЭТАП ПРОВЕРКИ СЛОВАРЯ НА НАЛИЧИЕ ПРОДУКЦИИ РАЗНЫХ ТИПОРАЗМЕРОВ - ЕСЛИ РАЗНЫЕ ТИПОРАЗМЕРЫ - БЕРЕМ ПЕРВЫЙ (И ВСЕ ОДИНАКОВЫЕ С НИМ МОДЕЛИ), ОТСЕИВАЕМ ПРОДУКЦИЮ С ИНЫМ ТИПОРАЗМЕРОМ  
 
 
         # НА ПРИМЕРЕ ОДНОГО ОБЪЕКТА: 
@@ -1674,10 +1705,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         filter_sites = ['onliner.by', 'bagoria.by', 'autoset.by'] #['kolesa-darom.ru'] # ['onliner.by']  # ['onliner.by', 'kolesa-darom.ru'] # ['onliner.by']  # ['kolesa-darom.ru'] #  ['express-shina.ru']     # по дефолту показать этих
 
         list_off_sizes_to_compare = []                                            # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)
-        for tyr_sizze in list_of_tyre_comparative_objects:
-            list_off_sizes_to_compare.append(tyr_sizze.tyre.tyre_size.tyre_size)
+#!!!        for tyr_sizze in list_of_tyre_comparative_objects:
+#!!!            list_off_sizes_to_compare.append(tyr_sizze.tyre.tyre_size.tyre_size)
+        for tyr_sizze in edyniy_slovar_dict_dlja_pandas_chart_graphic.keys():
+            production_tyresizes1 = models.ComparativeAnalysisTyresModel.objects.get(id=tyr_sizze)
+            production_tyresizes1 = production_tyresizes1.tyre.tyre_size.tyre_size
+            list_off_sizes_to_compare.append(production_tyresizes1)
         list_off_sizes_to_compare = set(list_off_sizes_to_compare)  
-        #print('list_off_sizes_to_compare HUSH HUSH HUSH', list_off_sizes_to_compare)
+        print('list_off_sizes_to_compare HUSH HUSH HUSH', list_off_sizes_to_compare)
         chart_title = ''
         if len(list_off_sizes_to_compare) == 1:                                     # если есть типоразмер - роботаем по нему (шина одна или неск шин одного размера)     
             object_units = list_of_tyre_comparative_objects.filter(tyre__tyre_size__tyre_size=list(list_off_sizes_to_compare)[0])
@@ -1701,14 +1736,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             check_box_num += 1
             context[f'site_name'] = site_name, check_box_num
 
-
         context['object_unit'] = object_units
         context['filter_producer'] = filter_producer
         context['sites_filter_chart'] = filter_sites
         context['chart_title'] = chart_title
 
-        ##    #### ЕСЛИ 1 ОБЪЕКТ:       
-        ##    #### END ЕСЛИ 1 ОБЪЕКТ
 
         #### ЕСЛИ модель/типоразмер и 1 ИЛИ несколько объктов ШИН:
         list_of_sites = []                                                                          #(ТИП-2 график по сайтам)            
@@ -1730,7 +1762,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         for keys, values in edyniy_slovar_dict_dlja_pandas_chart_graphic.items():
             list_of_competts = models.CompetitorSiteModel.objects.filter(pk__in=values)
             for ccomp in list_of_competts:
-                list_of_sites.append(ccomp.site)                                                                    #0 получаем наименования всех сайтоыдля легенды таблицы (ТИП-2 график по сайтам)
+                list_of_sites.append(ccomp.site)                                                                    #0 получаем наименования всех сайтов для легенды таблицы (ТИП-2 график по сайтам)
                 list_of_competitors.append(ccomp.developer.competitor_name)                                         #1 получаем наименования всех конкурентов для легенды таблицы   
             ooobj = models.ComparativeAnalysisTyresModel.objects.get(id=keys)
             start_date = ooobj.price_tyre_to_compare.earliest('date_period').date_period                      #2.1 получаем начальную дату из всех конкурентов  !ПЕРЕПИСАТЬ НА ВВОДИМЫЕ ПОЛЬЩОВАТЕЛЕМ
@@ -1742,7 +1774,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #print('list_of_competitors_set', list_of_competitors_set, type(list_of_competitors_set))
         if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
-            print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+            print('models.COMPETITORS_DATE_FROM_USER_ON_FILTERRR', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
             if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
                 chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
             else:

@@ -41,12 +41,12 @@
               <span>
                 {% if producer_filter_brand_list_checked__only_3_cheapest_chosen_bage %} 
                   {{ producer_filter_brand_list_checked__only_3_cheapest_chosen_bage }}
-                {% endif %}
+                {% endif %}<br>
 
                 {% if no_chosen_production_checked_bage %} 
                   {{ no_chosen_production_checked_bage }}
-                {% endif %}
-                
+                {% endif %}<br>
+
               {% if producer_filter_brand_list_checked_bage %}  
               Поиск по брендам:
                 {% for brand_name in producer_filter_brand_list_checked_bage %}
@@ -449,8 +449,7 @@
 
            setChartView();
            columnFilter.draw();
-           
-       
+               
         }
           </script>
                 <div id="chart_div1" style="height: 390px;"></div>
