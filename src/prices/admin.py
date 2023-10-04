@@ -94,6 +94,7 @@ class CompetitorSiteModelAdmin(admin.ModelAdmin):
             'name_competitor',
             'parametres_competitor',
             'season',
+            'group',
     ]
 
     @admin.display()

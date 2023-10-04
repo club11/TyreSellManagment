@@ -1148,6 +1148,14 @@ class CompetitorSiteModel(models.Model):
         null=True,
         blank=True, 
     )
+    group = models.ForeignKey(
+        dictionaries_models.TyreGroupModel,
+        verbose_name='группа шин',
+        related_name='competitor_site_group_uusage',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True, 
+    )    
 class ChemCurierTyresModel(models.Model):
     tyre_size_chem = models.CharField(
         verbose_name='типоразмер химкурьер',            
