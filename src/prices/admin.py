@@ -81,6 +81,7 @@ class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
             'sale_data',
     ]
 
+
 class CompetitorSiteModelAdmin(admin.ModelAdmin):
     filter_horizontal = ('tyre_to_compare',)                # MANYTOMANYFIELD display on adminsite
     list_display = [
