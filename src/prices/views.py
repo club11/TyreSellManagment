@@ -317,11 +317,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
                 #    tyre_size_lt = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
                     tyre_size_lt_text = str(data_got.find('a', class_='size-val link_hov'))
-
                     tyre_size_lt_span_start_index = tyre_size_lt_text.find('<span>') + 6
                     tyre_size_lt_span_end_index = tyre_size_lt_text.find('</span>')
                     tyre_index_lt = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
-
                     tyre_size_lt = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, ''))                
                             #    tyre_index_lt = str(data_got.find('a', class_='size-val link_hov').text) 
                             #    tyre_index_lt = tyre_index_lt.replace(tyre_size_lt, '')
@@ -331,6 +329,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                     tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
                     tyr_group = 'легковые'
+                #    print('=0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
                     goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                     avtoset_good_num += 1
 
@@ -363,12 +362,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     tyre_model_lt = str(data_got.find('a', class_='model link_blue').text.replace('\\n', ''))  
                     tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
                 #    tyre_size_lt = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+
                     tyre_size_lt_text = str(data_got.find('a', class_='size-val link_hov'))
                     tyre_size_lt_span_start_index = tyre_size_lt_text.find('<span>') + 6
                     tyre_size_lt_span_end_index = tyre_size_lt_text.find('</span>')
                     tyre_index_lt = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
+                    tyre_size_lt = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, ''))    
 
-                    tyre_size_lt = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, ''))              
                             #    tyre_index_lt = str(data_got.find('a', class_='size-val link_hov').text) 
                             #    tyre_index_lt = tyre_index_lt.replace(tyre_size_lt, '')
                     tyre_season_lt = str(data_got.find('span', class_='val').text)   
@@ -376,201 +376,235 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                     tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
                     tyr_group = 'легковые'
-                    print(tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+                #    print('=0.1=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
                     goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                     avtoset_good_num += 1
 
-        #        # 2) Грузовые шины
-        #        url = 'https://autoset.by/trucks-tires/'
-        #        #webdriverr = webdriver.Chrome()
-        #        #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        #        webdriverr = webdriverr_global
-        #        webdriverr.get(url)
-        #        time.sleep(2)
-        #        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        #        time.sleep(5)
-        #        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-        #        products_t = soup.find_all('section', class_='container-block product__wrap')
+            #    # 2) Грузовые шины
+            #    url = 'https://autoset.by/trucks-tires/'
+            #    #webdriverr = webdriver.Chrome()
+            #    #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            #    webdriverr = webdriverr_global
+            #    webdriverr.get(url)
+            #    time.sleep(2)
+            #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #    time.sleep(5)
+            #    soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+            #    products_t = soup.find_all('section', class_='container-block product__wrap')
 #
-        #        for data_got in products_t:
-        #            tyre_title_t = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-        #            tyre_title_t = re.sub('\r?\n', '', tyre_title_t)
-        #            tyre_model_t = str(data_got.find('a', class_='model link_blue').text.replace('\\n', '')) 
+            #    for data_got in products_t:
+            #        tyre_title_t = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+            #        tyre_title_t = re.sub('\r?\n', '', tyre_title_t)
+            #        tyre_model_t = str(data_got.find('a', class_='model link_blue').text.replace('\\n', '')) 
+            #        #tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+            #        #tyre_index_t = str(data_got.find('span', class_='index-val').text) 
 #
-        #            #tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
-        #            #tyre_index_t = str(data_got.find('span', class_='index-val').text) 
+            #        tyre_size_t_text = str(data_got.find('a', class_='size-val link_hov'))
+            #        tyre_size_t_span_start_index = tyre_size_t_text.find('<span>') + 6
+            #        tyre_size_t_span_end_index = tyre_size_t_text.find('</span>')
+            #        tyre_index_t = tyre_size_t_text[tyre_size_t_span_start_index : tyre_size_t_span_end_index]
+            #        tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_t, '')) 
 #
-        #            tyre_size_t_text = str(data_got.find('a', class_='size-val link_hov'))
-        #            tyre_size_t_span_start_index = tyre_size_lt_text.find('<span>') + 6
-        #            tyre_size_t_span_end_index = tyre_size_lt_text.find('</span>')
-        #            tyre_index_t = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
+            #        tyre_rub_price_t = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+            #        tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+            #        tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
+            #        tyr_group = 'грузовые'
+            #        print('=1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
+            #        goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyre_price_t, tyr_group
+            #        avtoset_good_num += 1    
 #
-        #            tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, ''))                
-        #            print(tyre_title_t, tyre_size_t, tyre_index_t, tyre_model_t)
-        #            tyre_rub_price_t = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-        #            tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-        #            tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
-        #            tyr_group = 'грузовые'
-        #            #print(tyre_price_t)
-        #            goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyre_price_t, tyr_group
-        #            avtoset_good_num += 1    
+            #    # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+            #    #1. получаем количество страниц:
+            #    pages = soup.find('div', class_='pagination-block__pages')        
+            #    urls_get = []
+            #    links = pages.find_all('a', class_='pagination-block__page') 
+            #    for link in links:
+            #        pageNum = int(link.text) if link.text.isdigit() else None
+            #        if pageNum != None:
+            #            urls_get.append(pageNum)
 #
-        ###        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-        ###        #1. получаем количество страниц:
-        ###        pages = soup.find('div', class_='pagination-block__pages-wrap')        
-        ###        urls_get = []
-        ###        links = pages.find_all('a', class_='pagination-block__page') 
-        ###        for link in links:
-        ###            pageNum = int(link.text) if link.text.isdigit() else None
-        ###            if pageNum != None:
-        ###                urls_get.append(pageNum)
-###
-        ###        #2. получаем данные со всех страниц:                         
-        ###        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        ###        for slug in range(1, 2):
-        ###            newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
-        ###            webdriverr.get(newUrl)
-        ###            time.sleep(2)
-        ###            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        ###            time.sleep(4)
-        ###            soup = BeautifulSoup(webdriverr.page_source,'lxml')
-        ###            products_lt = soup.find_all('section', class_='container-block product__wrap specprice')   
-###
-        ###            for data_got in products_t:
-        ###                tyre_title_t = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-        ###                tyre_title_t = re.sub('\r?\n', '', tyre_title_t)
-        ###                tyre_model_t = str(data_got.find('a', class_='model link_blue').text.replace('\\n', ''))  
-        ###                tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
-        ###                tyre_index_t = str(data_got.find('span', class_='index-val').text) 
-        ###                tyre_rub_price_t = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-        ###                tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-        ###                tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
-        ###                tyr_group = 'грузовые'
-        ###                goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyre_price_t, tyr_group
-        ###                avtoset_good_num += 1 
-###
-        ###        # 3) Грузовые индустриальные спец. шины
-        ###        url = 'https://autoset.by/industrial-tires/'
-        ###        #webdriverr = webdriver.Chrome()
-        ###        #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        ###        webdriverr = webdriverr_global
-        ###        webdriverr.get(url)
-        ###        time.sleep(2)
-        ###        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        ###        time.sleep(5)
-        ###        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-        ###        products_ts = soup.find_all('section', class_='container-block product__wrap')
-###
-        ###        for data_got in products_ts:
-        ###            tyre_title_ts = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-        ###            tyre_title_ts = re.sub('\r?\n', '', tyre_title_ts)
-        ###            tyre_model_ts = str(data_got.find('a', class_='model link_blue').text).replace('\n', '')  
-        ###            tyre_size_ts = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
-        ###            tyre_index_ts = str(data_got.find('span', class_='index-val').text) 
-        ###            #print(tyre_title_ts, tyre_size_ts, tyre_index_ts, tyre_model_ts)
-        ###            tyre_rub_price_ts = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-        ###            tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-        ###            tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
-        ###            tyr_group = 'грузовые'
-        ###            #print(tyre_price_ts)
-        ###            goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyre_price_ts, tyr_group
-###
-        ###   #     ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-        ###        #1. получаем количество страниц:
-        ###        pages = soup.find('div', class_='pagination-block__pages-wrap')        
-        ###        urls_get = []
-        ###        links = pages.find_all('a', class_='pagination-block__page') 
-        ###        for link in links:
-        ###            pageNum = int(link.text) if link.text.isdigit() else None
-        ###            if pageNum != None:
-        ###                urls_get.append(pageNum)
-###
-        ###        #2. получаем данные со всех страниц:                         
-        ###        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        ###        for slug in range(1, 2):
-        ###            newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
-        ###            webdriverr.get(newUrl)
-        ###            time.sleep(2)
-        ###            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        ###            time.sleep(4)
-        ###            soup = BeautifulSoup(webdriverr.page_source,'lxml')
-        ###            products_lt = soup.find_all('section', class_='container-block product__wrap specprice')
-###
-        ###            for data_got in products_ts:
-        ###                tyre_title_ts = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-        ###                tyre_title_ts = re.sub('\r?\n', '', tyre_title_ts)
-        ###                tyre_model_ts = str(data_got.find('a', class_='model link_blue').text).replace('\n', '')  
-        ###                tyre_size_ts = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
-        ###                tyre_index_ts = str(data_got.find('span', class_='index-val').text) 
-        ###                #print(tyre_title_ts, tyre_size_ts, tyre_index_ts, tyre_model_ts)
-        ###                tyre_rub_price_ts = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-        ###                tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-        ###                tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
-        ###                tyr_group = 'грузовые'
-        ###                #print(tyre_price_ts)
-        ###                goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyre_price_ts, tyr_group
-###
-        ###        # 4) Сельскохозяйственные шины
-        ###        url = 'https://autoset.by/agricultural-tires/'
-        ###        #webdriverr = webdriver.Chrome()
-        ###        #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        ###        webdriverr = webdriverr_global
-        ###        webdriverr.get(url)
-        ###        time.sleep(2)
-        ###        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        ###        time.sleep(5)
-        ###        soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-        ###        products_agro = soup.find_all('section', class_='container-block product__wrap')
-###
-        ###        for data_got in products_agro:
-        ###            tyre_title_agro = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-        ###            tyre_title_agro = re.sub('\r?\n', '', tyre_title_agro)
-        ###            tyre_model_agro = str(data_got.find('a', class_='model link_blue').text)
-        ###            tyre_model_agro = tyre_model_agro.replace("\n","")
-        ###            tyre_size_agro = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
-        ###            tyre_index_agro = str(data_got.find('span', class_='index-val').text) 
-        ###            #print(tyre_title_agro, tyre_size_agro, tyre_index_agro, tyre_model_agro, len(tyre_model_agro))
-        ###            tyre_rub_price_agro = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-        ###            tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-        ###            tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
-        ###            tyr_group = 'с/х'
-        ###            #print(tyre_price_agro)
-        ###            goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyre_price_agro, tyr_group
-###
-        ###   #     ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-        ###        #1. получаем количество страниц:
-        ###        pages = soup.find('div', class_='pagination-block__pages-wrap')        
-        ###        urls_get = []
-        ###        links = pages.find_all('a', class_='pagination-block__page') 
-        ###        for link in links:
-        ###            pageNum = int(link.text) if link.text.isdigit() else None
-        ###            if pageNum != None:
-        ###                urls_get.append(pageNum)
-###
-        ###        #2. получаем данные со всех страниц:                         
-        ###        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        ###        for slug in range(1, 2):
-        ###            newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
-        ###            webdriverr.get(newUrl)
-        ###            time.sleep(2)
-        ###            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        ###            time.sleep(4)
-        ###            soup = BeautifulSoup(webdriverr.page_source,'lxml')
-        ###            products_lt = soup.find_all('section', class_='container-block product__wrap specprice')
-###
-        ###            for data_got in products_agro:
-        ###                tyre_title_agro = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-        ###                tyre_title_agro = re.sub('\r?\n', '', tyre_title_agro)
-        ###                tyre_model_agro = str(data_got.find('a', class_='model link_blue').text)
-        ###                tyre_model_agro = tyre_model_agro.replace("\n","")
-        ###                tyre_size_agro = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
-        ###                tyre_index_agro = str(data_got.find('span', class_='index-val').text) 
-        ###                tyre_rub_price_agro = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-        ###                tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-        ###                tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
-        ###                tyr_group = 'с/х'
-        ###                goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyre_price_agro, tyr_group
-###
+            #    #2. получаем данные со всех страниц:                         
+            #    #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
+            #    for slug in range(1, 3):
+            #        newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
+            #        webdriverr.get(newUrl)
+            #        time.sleep(2)
+            #        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #        time.sleep(4)
+            #        soup = BeautifulSoup(webdriverr.page_source,'lxml')
+            #        products_lt = soup.find_all('section', class_='container-block product__wrap specprice')   
+#
+            #        for data_got in products_t:
+            #            tyre_title_t = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+            #            tyre_title_t = re.sub('\r?\n', '', tyre_title_t)
+            #            tyre_model_t = str(data_got.find('a', class_='model link_blue').text.replace('\\n', ''))  
+            #            #tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+            #            #tyre_index_t = str(data_got.find('span', class_='index-val').text) 
+#
+            #            tyre_size_t_text = str(data_got.find('a', class_='size-val link_hov'))
+            #            tyre_size_t_span_start_index = tyre_size_t_text.find('<span>') + 6
+            #            tyre_size_t_span_end_index = tyre_size_t_text.find('</span>')
+            #            tyre_index_t = tyre_size_t_text[tyre_size_t_span_start_index : tyre_size_t_span_end_index]
+            #            tyre_size_t = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_t, '')) 
+#
+            #            tyre_rub_price_t = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+            #            tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+            #            tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
+            #            tyr_group = 'грузовые'
+            #            print('=2=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
+            #            goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyre_price_t, tyr_group
+            #            avtoset_good_num += 1 
+
+            #    # 3) Грузовые индустриальные спец. шины
+            #    url = 'https://autoset.by/industrial-tires/'
+            #    #webdriverr = webdriver.Chrome()
+            #    #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            #    webdriverr = webdriverr_global
+            #    webdriverr.get(url)
+            #    time.sleep(2)
+            #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #    time.sleep(5)
+            #    soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+            #    products_ts = soup.find_all('section', class_='container-block product__wrap')
+#
+            #    for data_got in products_ts:
+            #        tyre_title_ts = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+            #        tyre_title_ts = re.sub('\r?\n', '', tyre_title_ts)
+            #        tyre_model_ts = str(data_got.find('a', class_='model link_blue').text).replace('\n', '')  
+            #        #tyre_size_ts = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+            #        #tyre_index_ts = str(data_got.find('span', class_='index-val').text) 
+#
+            #        tyre_size_ts_text = str(data_got.find('a', class_='size-val link_hov'))
+            #        tyre_size_ts_span_start_index = tyre_size_ts_text.find('<span>') + 6
+            #        tyre_size_ts_span_end_index = tyre_size_ts_text.find('</span>')
+            #        tyre_index_ts = tyre_size_ts_text[tyre_size_ts_span_start_index : tyre_size_ts_span_end_index]
+            #        tyre_size_ts = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_ts, ''))  
+#
+            #        tyre_rub_price_ts = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+            #        tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+            #        tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
+            #        tyr_group = 'грузовые'
+            #        #print('=1=', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
+            #        goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyre_price_ts, tyr_group
+#
+           ##     ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+            #    #1. получаем количество страниц:
+            #    pages = soup.find('div', class_='pagination-block__pages')        
+            #    urls_get = []
+            #    links = pages.find_all('a', class_='pagination-block__page') 
+            #    for link in links:
+            #        pageNum = int(link.text) if link.text.isdigit() else None
+            #        if pageNum != None:
+            #            urls_get.append(pageNum)
+#
+            #    #2. получаем данные со всех страниц:                         
+            #    #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
+            #    for slug in range(1, 2):
+            #        newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
+            #        webdriverr.get(newUrl)
+            #        time.sleep(2)
+            #        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #        time.sleep(4)
+            #        soup = BeautifulSoup(webdriverr.page_source,'lxml')
+            #        products_lt = soup.find_all('section', class_='container-block product__wrap specprice')
+#
+            #        for data_got in products_ts:
+            #            tyre_title_ts = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+            #            tyre_title_ts = re.sub('\r?\n', '', tyre_title_ts)
+            #            tyre_model_ts = str(data_got.find('a', class_='model link_blue').text).replace('\n', '')  
+            #            #tyre_size_ts = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+            #            #tyre_index_ts = str(data_got.find('span', class_='index-val').text) 
+#
+            #            tyre_size_ts_text = str(data_got.find('a', class_='size-val link_hov'))
+            #            tyre_size_ts_span_start_index = tyre_size_ts_text.find('<span>') + 6
+            #            tyre_size_ts_span_end_index = tyre_size_ts_text.find('</span>')
+            #            tyre_index_ts = tyre_size_ts_text[tyre_size_ts_span_start_index : tyre_size_ts_span_end_index]
+            #            tyre_size_ts = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_ts, '')) 
+#
+            #            tyre_rub_price_ts = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+            #            tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+            #            tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
+            #            tyr_group = 'грузовые'
+            #            #print(tyre_price_ts)
+            #        #    print('=2=', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
+            #            goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyre_price_ts, tyr_group
+
+                # 4) Сельскохозяйственные шины
+                url = 'https://autoset.by/agricultural-tires/'
+                #webdriverr = webdriver.Chrome()
+                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                webdriverr = webdriverr_global
+                webdriverr.get(url)
+                time.sleep(2)
+                webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(5)
+                soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+                products_agro = soup.find_all('section', class_='container-block product__wrap')
+
+                for data_got in products_agro:
+                    tyre_title_agro = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+                    tyre_title_agro = re.sub('\r?\n', '', tyre_title_agro)
+                    tyre_model_agro = str(data_got.find('a', class_='model link_blue').text)
+                    tyre_model_agro = tyre_model_agro.replace("\n","")
+                    #tyre_size_agro = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+                    #tyre_index_agro = str(data_got.find('span', class_='index-val').text) 
+
+                    tyre_size_agro_text = str(data_got.find('a', class_='size-val link_hov'))
+                    tyre_size_agro_span_start_index = tyre_size_agro_text.find('<span>') + 6
+                    tyre_size_agro_span_end_index = tyre_size_agro_text.find('</span>')
+                    tyre_index_agro = tyre_size_agro_text[tyre_size_agro_span_start_index : tyre_size_agro_span_end_index]
+                    tyre_size_agro = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_agro, '')) 
+
+                    tyre_rub_price_agro = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                    tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                    tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
+                    tyr_group = 'с/х'
+                    #print(tyre_price_agro)
+                #    print('=0=', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
+                    goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyre_price_agro, tyr_group
+
+           #     ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+                #1. получаем количество страниц:
+                pages = soup.find('div', class_='pagination-block__pages')        
+                urls_get = []
+                links = pages.find_all('a', class_='pagination-block__page') 
+                for link in links:
+                    pageNum = int(link.text) if link.text.isdigit() else None
+                    if pageNum != None:
+                        urls_get.append(pageNum)
+
+                #2. получаем данные со всех страниц:                         
+                #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
+                for slug in range(1, 2):
+                    newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
+                    webdriverr.get(newUrl)
+                    time.sleep(2)
+                    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    time.sleep(4)
+                    soup = BeautifulSoup(webdriverr.page_source,'lxml')
+                    products_lt = soup.find_all('section', class_='container-block product__wrap specprice')
+
+                    for data_got in products_agro:
+                        tyre_title_agro = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+                        tyre_title_agro = re.sub('\r?\n', '', tyre_title_agro)
+                        tyre_model_agro = str(data_got.find('a', class_='model link_blue').text)
+                        tyre_model_agro = tyre_model_agro.replace("\n","")
+                        #tyre_size_agro = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.'))
+                        #tyre_index_agro = str(data_got.find('span', class_='index-val').text) 
+
+                        tyre_size_agro_text = str(data_got.find('a', class_='size-val link_hov'))
+                        tyre_size_agro_span_start_index = tyre_size_agro_text.find('<span>') + 6
+                        tyre_size_agro_span_end_index = tyre_size_agro_text.find('</span>')
+                        tyre_index_agro = tyre_size_agro_text[tyre_size_agro_span_start_index : tyre_size_agro_span_end_index]
+                        tyre_size_agro = str(data_got.find('a', class_='size-val link_hov').text.replace(' ', '').replace(',', '.').replace(tyre_index_agro, '')) 
+
+                        tyre_rub_price_agro = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                        tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                        tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
+                        tyr_group = 'с/х'
+                        print('=007=', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
+                        goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyre_price_agro, tyr_group
+
         ###        #print(goods_dict_avtoset, len(goods_dict_avtoset.keys()))     # СЛОВАРЬ ключи = типоразмер, номер в словаре, данные = производитель, модель, индексы, цена
 ###
         ###        for k, v in goods_dict_avtoset.items():
