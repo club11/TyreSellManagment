@@ -514,8 +514,6 @@ class ComparativeAnalysisTyresModel(models.Model):
             return direct_cost_variance
         return 0
 
-
-
     def planned_profitability(self):            # плановая рентабьельность
         if self.currentpricesprice and self.planned_costs:
             #print(self.currentpricesprice.price,  self.planned_costs.price)
@@ -530,8 +528,6 @@ class ComparativeAnalysisTyresModel(models.Model):
             direct_cost_variance = float('{:.2f}'.format(direct_cost_variance))
             return direct_cost_variance
         return 0
-
-
 
     def onliner_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены Onliner (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   Onliner
         if self.tyre in ONLINER_COMPETITORS_DICTIONARY1.keys(): #and ONLINER_COMPETITORS_DICTIONARY1.values():
@@ -594,7 +590,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
             for n in range(0, 3-void_data_num):
                 list_od_combined_comp_and_prices.append(('', '', ''))
-            #print('AAA', list_od_combined_comp_and_prices)
+            print('AAA', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
     def avtoset_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены AVTOSET (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   AVTOSET
@@ -621,15 +617,15 @@ class ComparativeAnalysisTyresModel(models.Model):
                         tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
                     if tyre_in_base_season is None or objject.season is None:                       #0 
                         filtered_competitors_values_list.append(objject)
-                        #print('OOO22222O')
+                        print('OOO22222O')
                     else:
                         if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
-                            #print('OOOO')
+                            print('OOOO', 'tyre_in_base_season', tyre_in_base_season, 'objject.season.season_usage_name', objject.season.season_usage_name)
                             objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
                             filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
                             continue
                         if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
-                            #print('OOIIIIIOO')
+                            print('OOIIIIIOO')
                             #print(tyre_in_base_season, objject.season.season_usage_name)
                             objject.tyre_to_compare.add(self)
                             filtered_competitors_values_list.append(objject)  
@@ -648,7 +644,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
-                    combined = comp.developer.competitor_name + ' ' + comp_name, comp_price, deflection
+                    combined = comp.developer.competitor_name + ' ' + comp_name + comp.season.season_usage_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name) 
                 list_comp_ids.append(comp.id)
@@ -712,7 +708,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if comp_price and self.currentpricesprice and type(comp_price) is float:      
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100                    
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
-                    combined = comp_name, comp_price, deflection    
+                    combined = comp_name + comp.season.season_usage_name, comp_price, deflection    
                     #print('combined!!!!', combined)
                     list_od_combined_comp_and_prices.append(combined)
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР

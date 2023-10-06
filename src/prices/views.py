@@ -129,7 +129,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         urls.append(pageNum)
                 #2. получаем данные со всех страниц:
                 #for slug in urls[1:4]:                              # c 1 по 4 станицы
-                for slug in urls[1:3]:
+                for slug in urls[1:2]:
                 #for slug in urls:      # рабочий вариант
                     newUrl = url.replace('?', f'?page={slug}') 
                     webdriverr.get(newUrl)
@@ -626,9 +626,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 tyres_in_bd = tyres_models.Tyre.objects.all()
                 for tyre in tyres_in_bd:
                     for k, v in chosen_by_company_dict.items():
-                        print(k,v)
+                    #    print(k,v)
                         if tyre.tyre_size.tyre_size == k[0]:
-                            print('TTTT', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
+                    #        print('TTTT', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             #('235/75R17,5', 90) ('Triangle', 'TR689A', '143/141J', 560.18)                                # Cordiant Polar SL 205/ 55R16 94T ('165,00', '205/ 55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
                             coma = v[0].find(',')           
                             pr = float
@@ -652,14 +652,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                             try:
                                 if v[5]:
-                                    print('v[5]', v[5])
+                                    season_usage = None
                                     if v[5] == 'Зимняя шина':
-                                        v[5] = 'зимние'
-                                    if v[5] == 'Летняя шина':
-                                        v[5] = 'летние'
+                                        season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name='зимние') 
+                                    if v[5] == 'Летняя шина': 
+                                        season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name='летние') 
                                     if v[5] == 'Всесезонная шина':
-                                        v[5] = 'всесезонные'
-                                    season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
+                                        season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name='всесезонные') 
                                 if season_usage:
                                     season_usage = season_usage[0]
                             except:
@@ -1522,17 +1521,17 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             onliner_lengh_list.append(onliner_curr_lengh)
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА:
             if models.SELF_PRODUCTION_FIRST is True and final_list_of_objects_for_template.exists():
-                print('WTF?')
+            #    print('WTF?')
                 break   # обрываем цикл - берем только первого
             if models.DEF_GET is True:
-                print('=====2')
+            #    print('=====2')
                 models.DEF_GET = False
                 break   # обрываем цикл - берем только первого
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА
 
         list_of_tyre_comparative_objects = final_list_of_objects_for_template                       # !!  список СomparativeAnalysisTyresModel  у которых отфильтрованы конкуренты
         #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
-        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects.order_by('tyre__tyre_size__tyre_size')
         
         for YYY in list_of_tyre_comparative_objects: ### ( list_of_tyre_comparative_objects из ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ)
             print('111===111', YYY)        
@@ -1645,32 +1644,33 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         in_base_tyres_check_status_list = []
         in_base_tyres_check_status_list_checked_bage = []
         #for obj in models.FOR_MENU_OBJECTS_LIST:       old version  
-        for obj in table_lookup_only_with_competitors_all_parsed:           # берем для меню вообще все, для кого хоть когда-либо что-то парсилось хоть раз
+        for obj in table_lookup_only_with_competitors_all_parsed.order_by('tyre__tyre_size__tyre_size'):           # берем для меню вообще все, для кого хоть когда-либо что-то парсилось хоть раз
             if models.SELF_PRODUCTION_ALL:
                 objj_and_status = obj, ''
             elif str(obj.id) in models.SELF_PRODUCTION:
                 objj_and_status = obj, 'checked'
                 in_base_tyres_check_status_list_checked_bage.append(obj)
             else: 
-                if obj == list_of_tyre_comparative_objects[0]:    # т.к. в template закоменчен выбор всей продукции - то автоматом ставим галочку на первой в списке и выводим ее:
-                    #print('zloy pinguin')
-                    objj_and_status = obj, 'checked'
-                    if models.SELF_PRODUCTION_FIRST is True:
-                        context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
-                else:    
-                    objj_and_status = obj, ''
-#                if list_of_tyre_comparative_objects:                                                       
-#                    if obj == list_of_tyre_comparative_objects[0]:    # т.к. в template закоменчен выбор всей продукции - то автоматом ставим галочку на первой в списке и выводим ее:
-#                        #print('zloy pinguin')
-#                        objj_and_status = obj, 'checked'
-#                        if models.SELF_PRODUCTION_FIRST is True:
-#                            context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
-#                    else:
-#                        objj_and_status = obj, ''
+#                if obj == list_of_tyre_comparative_objects[0]:    # т.к. в template закоменчен выбор всей продукции - то автоматом ставим галочку на первой в списке и выводим ее:
+#                    #print('zloy pinguin')
+#                    objj_and_status = obj, 'checked'
+#                    if models.SELF_PRODUCTION_FIRST is True:
+#                        context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
 #                else:    
 #                    objj_and_status = obj, ''
-#                    #if obj == list_of_tyre_comparative_objects[0]:
-#                    #    context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})'
+
+                if list_of_tyre_comparative_objects:                                                       
+                    if obj == list_of_tyre_comparative_objects[0]:    # т.к. в template закоменчен выбор всей продукции - то автоматом ставим галочку на первой в списке и выводим ее:
+                        #print('zloy pinguin')
+                        objj_and_status = obj, 'checked'
+                        if models.SELF_PRODUCTION_FIRST is True:
+                            context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
+                    else:
+                        objj_and_status = obj, ''
+                else:    
+                    objj_and_status = obj, ''
+                    #if obj == list_of_tyre_comparative_objects[0]:
+                    #    context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})'
 
             in_base_tyres_check_status_list.append(objj_and_status)
 
@@ -1791,13 +1791,17 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('list_keys', list_keys) #
         print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids,) #'list_of_tyre_comparative_objects TRUE', list_of_tyre_comparative_objects)
         ##for tyre_for_chart_need_all_checked_competitors in list_keys:
+        
+
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
-        ##print('edyniy_slovar_dict_dlja_pandas_chart_graphic', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+        print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+
+
 
 
         ### ЭТАП ПРОВЕРКИ СЛОВАРЯ НА НАЛИЧИЕ ПРОДУКЦИИ РАЗНЫХ ТИПОРАЗМЕРОВ - ЕСЛИ РАЗНЫЕ ТИПОРАЗМЕРЫ - БЕРЕМ ПЕРВЫЙ (И ВСЕ ОДИНАКОВЫЕ С НИМ МОДЕЛИ), ОТСЕИВАЕМ ПРОДУКЦИЮ С ИНЫМ ТИПОРАЗМЕРОМ   
@@ -1931,7 +1935,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_start_dates.append(start_date)
             list_last_dates.append(last_date)
 
-        #print('list_of_competitors_set', list_of_competitors_set, type(list_of_competitors_set))
         if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
             print('models.COMPETITORS_DATE_FROM_USER_ON_FILTERRR', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
             if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
@@ -2027,7 +2030,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         ### ###### ####### ###########
 
-
         if models.GOOGLECHART_MARKETPLACE_ON is False:      # ЕСЛИ НЕ СТОИТ ГАЛОЧКА ПО ПЛОЩАДКАМ - ФОРМИРУЕМ ГРАФИК ПО ПРОИЗВОДИТЕЛЯМ: 
             context['marketplace_on_checked'] = ''
             competit_on_current_date_assembled = []                        ###### В ДАННЫЙ СПИСОК И ФОРМИРУЮТСЯ ДАННЫЕ (ВАЖНО-затем работа по этом списку без обращений к объектам)
@@ -2036,12 +2038,17 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             prices_of_competitors_one_name_producer_dict = {}
             for date_day in all_days_in_period:                                                              
-                for object_unit_id, comp_obj_ss_id in edyniy_slovar_dict_dlja_pandas_chart_graphic.items(): 
+                for object_unit_id, comp_obj_ss_id in edyniy_slovar_dict_dlja_pandas_chart_graphic.items():
+                    #print('object_unit_id', object_unit_id, 'comp_obj_ss_id', comp_obj_ss_id)
                     object_unit = models.ComparativeAnalysisTyresModel.objects.get(id=object_unit_id)
                     list_of_competts = models.CompetitorSiteModel.objects.filter(pk__in=comp_obj_ss_id)
+                    list_of_competts_name_competitor = list_of_competts.values_list('name_competitor')
+                    #print('list_of_competts_name_competitor OT', list_of_competts_name_competitor)
                     # 1. БЛОК ДОРИСОВКИ NULL (ИЛИ 0) ЗНАЧЕНИЙ В ДАТЫ ЕСЛИ ЕСТЬ ХОТЬ ОДНА ДАТА С ТАКИМ ПРОИЗВОДИТЕЛЕМ НА САЙТЕ - сохдание нулевых значений в даты, в которых не получены данные
                     # ТЕКУЩЕЕ РЕШЕНИЕ = БЕРЕМ ВСЕ ЗНАЧЕНИЯ КОНКУРЕНТОВ ПРОИЗВОДИТЕЛЯ С ТАКИМ ИМЕНЕМ И ОСТАВЛЯЕИ МЕНЬШЕЕ
-                    for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer):
+                    #for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer):    # WARNING !!!!!!!!!!!!!!## С.Т.АРЫЙ ВАРИАНТ - РИСОВАТЬ КОНКУРЕНТОВ НА САЙТЕ ДАННОГО ПРОИЗВОДИТЕЛЯ
+                    for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer, name_competitor__in=list_of_competts_name_competitor):      # WARNING !!!!!!!!!!!!!!## Н.О.В.Ы.Й. ВАРИАНТ - РИСОВАТЬ КОНКУРЕНТОВ НА САЙТЕ ДАННОГО ПРОИЗВОДИТЕЛЯ ИМЕННО ДАННОЙ МОДЕЛИ
+                        #print('comp_obj ==', comp_obj.name_competitor)
                         for comp_name in list_of_competitors_set: 
                            
                             keys_list = comp_name, comp_obj.date_period.strftime("%Y-%m-%d"), comp_obj.site
