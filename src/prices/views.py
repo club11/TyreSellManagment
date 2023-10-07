@@ -1053,19 +1053,27 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #    print('kk', kk.tyre.tyre_size.tyre_size)
 
 
-        # если пользовательищет через поисковик:
-        if models.SEARCH_USER_REQUEST:
-            user_requested_data = models.SEARCH_USER_REQUEST  
-            search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))
-            #print('search_result', search_result)
-            if search_result:
-                list_of_tyre_comparative_objects = search_result
-
 
 
         # 1. ПРОДУКЦИЯ
+
         production_filter_search_flag = False
-        if models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
+        # если пользовательищет через поисковик:
+        if models.SEARCH_USER_REQUEST:
+            user_requested_data = models.SEARCH_USER_REQUEST  
+            search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data, tyre__tyre_size__tyre_size__in=user_requested_data)  | Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))    
+            search_result_id = list(search_result.values_list('id', flat=True))
+            if search_result_id:
+                print('+search_result_id', search_result_id)
+                list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(id__in=search_result_id).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    #только продукция с конкурентами и только одна продукция (модель)
+                search_result_id_is_true = True
+            else:
+                models.SEARCH_USER_REQUEST is False
+                list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(sale_data__year=year_to_look, sale_data__month=month_to_look) 
+                search_result_id_is_true = False
+
+
+        elif models.SELF_PRODUCTION:                                                  # если пользователем введены (выбраны) шины:
             production_filter_search_flag = True        # значит один вид отбора уже произведен, значит дофильтровывать в группах (если надо) будем уже его
             id_list = []
             for n in models.SELF_PRODUCTION:
@@ -1422,8 +1430,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ##        some_temporary_dictonary[aaa] = vvv
         ##    #    print('==============')
         ##    models.BAGORIA_COMPETITORS_DICTIONARY1 = some_temporary_dictonary
-        #### !!!!!!    
-        #### !!!!!!
+        ##### !!!!!!    
+        ##### !!!!!!
         ####### END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМ ЦЕНОЙ:
 
         ###### END OF BAGORIA
@@ -1664,7 +1672,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         #print('zloy pinguin')
                         objj_and_status = obj, 'checked'
                         if models.SELF_PRODUCTION_FIRST is True:
-                            context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
+                            if models.SEARCH_USER_REQUEST and search_result_id_is_true:                  # если поиск продукции был через ПОИСК
+                                in_base_tyres_check_status_list_checked_bage.append(obj)
+                                context['in_base_tyres_list_checked_bage'] = in_base_tyres_check_status_list_checked_bage
+                            else:
+                                context['no_chosen_production_checked_bage'] = f'продукция не выбрана (автоматически представлены данные по {obj.tyre.tyre_size.tyre_size} {obj.tyre.tyre_model.model})' 
                     else:
                         objj_and_status = obj, ''
                 else:    
@@ -2494,7 +2506,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = []
 
-        #print(request.POST, 'TTTH')
+        print(request.POST, 'TTTH')
         #print (request.POST.getlist('competitors'), 'TTTT')
 
         ## 1 работа с периодами:
@@ -2544,7 +2556,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
 
         ## 3 работа с собственной продукцией:
         production_tyres_list_all = request.POST.getlist('self_production_all')  
-        production_tyres_list = request.POST.getlist('self_production')                                                             # фильтр по собственным шинам
+        production_tyres_list = request.POST.getlist('self_production')                      # фильтр по собственным шинам
         if production_tyres_list_all:
             models.SELF_PRODUCTION_ALL = production_tyres_list_all
             models.SELF_PRODUCTION = production_tyres_list
@@ -2563,6 +2575,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         ##print('show me', production_tyres_list_one)
         if production_tyres_list_one:
             models.SEARCH_USER_REQUEST = production_tyres_list_one
+
 #
         # 4 работа с производителями-конкурентами (бренды)
         all_onliner_avtoset_bagoria_chemcurier_competitors_list_all = request.POST.getlist('producers_all')

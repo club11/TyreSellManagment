@@ -24,7 +24,7 @@
                   <strong>Маркетплейс-анализ. Рынок: Республика Беларусь на {{ table_current_date_for_header }}</strong>
                 </div>
             <div class="div2">  
-              <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
+              <form action="{% url 'prices:apricestable_update' %}" method="post">
                 {% csrf_token %}
                 <input type="text" name="product_search">
                 <button type="submit">Найти</button>
