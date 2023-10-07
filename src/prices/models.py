@@ -35,6 +35,7 @@ SELF_PRODUCTION = []
 SELF_PRODUCTION_ALL = []
 SELF_PRODUCTION_FIRST = False
 COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+COMPETITORS_DATE_FROM_USER_ON_FILTER_START = False
 TYRE_GROUPS = []
 TYRE_GROUPS_ALL=[]
 
@@ -590,7 +591,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(list_od_combined_comp_and_prices)               # доставить дополнительные пробелы там где инфы нет
             for n in range(0, 3-void_data_num):
                 list_od_combined_comp_and_prices.append(('', '', ''))
-            print('AAA', list_od_combined_comp_and_prices)
+            #print('AAA', list_od_combined_comp_and_prices)
             return list_od_combined_comp_and_prices
 
     def avtoset_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены AVTOSET (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   AVTOSET

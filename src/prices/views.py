@@ -1711,6 +1711,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # 5) выбранное пользователем значение даты:
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
             context['chosen_date'] = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
+            context['chosen_date_start'] = models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0]
 
         #### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
         #models.TYRE_GROUPS = []     
@@ -1943,20 +1945,34 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 chossen_day = datetime.datetime.today()
             list_start_dates.append(chossen_day)
             list_last_dates.append(chossen_day)
-            min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
-            max_date = max(list_last_dates)  
+
+        #    min_date = min(list_start_dates)
+        #    max_date = max(list_last_dates)
+
+            min_date = min(list_start_dates)                    
+            if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
+                chossen_day_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], '%Y-%m-%d').date()
+                min_date = chossen_day_start           
+                                                                      
+            max_date = max(list_last_dates)  # здесьб д.б. просто данные от пользователя какой день
 
         else:               # на все остальные случаи - если обект / конкуренты есть на дату:
-            #if models.ONLY_ON_CURRENT_DATE is True and models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         # если нужно выводить график только на выбранную дату (стои галочка):
-            #    print('!!! ===++++ !!!', models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0])
-            #    chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
-            #    list_start_dates.append(chossen_day)
-            #    list_last_dates.append(chossen_day)
+            if models.ONLY_ON_CURRENT_DATE is True and models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         # если нужно выводить график только на выбранную дату (стои галочка):
+                chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
+                list_start_dates.append(chossen_day)
+                list_last_dates.append(chossen_day)
             #    min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
             #    max_date = max(list_last_dates)                  
             #else:
             min_date = min(list_start_dates)                                                                        # здесьб д.б. просто данные от пользователя какой день
+            
+            if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
+                #print('!!!!models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
+                chossen_day_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], '%Y-%m-%d').date()
+                min_date = chossen_day_start           
+            
             max_date = max(list_last_dates)                                                                         # здесьб д.б. просто данные от пользователя какой день
+        
         all_days_in_period = pd.date_range(start=min_date, end=max_date).date 
         #print('all_days_in_period', all_days_in_period)
         list_of_sites = set(list_of_sites)                                                                  #(ТИП-2 график по сайтам) 
@@ -2045,9 +2061,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     list_of_competts_name_competitor = list_of_competts.values_list('name_competitor')
                     #print('list_of_competts_name_competitor OT', list_of_competts_name_competitor)
                     # 1. БЛОК ДОРИСОВКИ NULL (ИЛИ 0) ЗНАЧЕНИЙ В ДАТЫ ЕСЛИ ЕСТЬ ХОТЬ ОДНА ДАТА С ТАКИМ ПРОИЗВОДИТЕЛЕМ НА САЙТЕ - сохдание нулевых значений в даты, в которых не получены данные
+                    
                     # ТЕКУЩЕЕ РЕШЕНИЕ = БЕРЕМ ВСЕ ЗНАЧЕНИЯ КОНКУРЕНТОВ ПРОИЗВОДИТЕЛЯ С ТАКИМ ИМЕНЕМ И ОСТАВЛЯЕИ МЕНЬШЕЕ
                     #for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer):    # WARNING !!!!!!!!!!!!!!## С.Т.АРЫЙ ВАРИАНТ - РИСОВАТЬ КОНКУРЕНТОВ НА САЙТЕ ДАННОГО ПРОИЗВОДИТЕЛЯ
                     for comp_obj in object_unit.price_tyre_to_compare.all().filter(site__in=filter_sites, developer__competitor_name__in=filter_producer, name_competitor__in=list_of_competts_name_competitor):      # WARNING !!!!!!!!!!!!!!## Н.О.В.Ы.Й. ВАРИАНТ - РИСОВАТЬ КОНКУРЕНТОВ НА САЙТЕ ДАННОГО ПРОИЗВОДИТЕЛЯ ИМЕННО ДАННОЙ МОДЕЛИ
+                    
                         #print('comp_obj ==', comp_obj.name_competitor)
                         for comp_name in list_of_competitors_set: 
                            
@@ -2132,8 +2150,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_inputed_dates_set_sorted.append(some_data)
         #mmmin = min(list_of_inputed_dates_set_sorted)
         #mmmax = max(list_of_inputed_dates_set_sorted)
-        mmmin = min(all_days_in_period)                                 ## возьмем отсчет из древнейшей даты в базе вообще НЕОЧЕВИДНОЕ
-        mmmax = max(all_days_in_period)
+        
+        try:
+            mmmin = min(all_days_in_period)                                 ## возьмем отсчет из древнейшей даты в базе вообще НЕОЧЕВИДНОЕ
+            mmmax = max(all_days_in_period)
+        except:
+            mmmin = datetime.datetime.today()
+            mmmax = datetime.datetime.today()
         datelist_d_pandas_range = pd.date_range(mmmin, mmmax)
         list_of_dates_with_no_exceptions = []
         for ddatta in datelist_d_pandas_range:
@@ -2469,6 +2492,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         models.CHEMCURIER_COMPETITORS = []
         models.SEARCH_USER_REQUEST = []
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
+        models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = []
 
         #print(request.POST, 'TTTH')
         #print (request.POST.getlist('competitors'), 'TTTT')
@@ -2480,7 +2504,16 @@ class ComparativeAnalysisTableModelUpdateView(View):
             pass
         elif comparative_model_parcing_date:
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER = comparative_model_parcing_date
-            #print('{J{J{J{JJ{', comparative_model_parcing_date)
+        #    print('++++++++++++++++', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+        else:
+            pass
+
+        comparative_model_parcing_date_start = request.POST.getlist('parcing_date_start') 
+        if comparative_model_parcing_date_start == ['']:
+            pass
+        if comparative_model_parcing_date_start:
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = comparative_model_parcing_date_start
+        #    print('----------------', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
         else:
             pass
 

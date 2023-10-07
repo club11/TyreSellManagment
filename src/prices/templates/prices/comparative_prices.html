@@ -204,7 +204,8 @@
             <form action="{% url 'prices:apricestable_update' %}" method="post">
                 {% csrf_token %}
 
-            <div>задать дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br></div>
+            <div>задать начальную дату <input type="date" name="parcing_date_start" value="{{ chosen_date_start }}">  <input type="hidden" value="select"><br></div>
+            <div>задать конечную дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br></div>
 
             <div class="dropdown dropstart">  
               <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -656,6 +657,7 @@
                       chart.draw();
                     }
                 }
+
 
                 google.visualization.events.addListener(columnFilter, 'statechange', setChartView, control, setOptions);
               
