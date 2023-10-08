@@ -52,7 +52,7 @@ class PaginationInputForm(forms.Form):
 class CurrencyDateInputForm(forms.Form):
     #chosen_date_for_currency = forms.DateField(widget=forms.DateInput(format='%m-%Y-%d'))
     chosen_date_for_currency = forms.DateField(widget=forms.SelectDateWidget(years=range(2022,2024)),
-    label='курс НБ РБ на дату:',
+    label='курс НБ РБ на:',
     initial='2022-7-7'
 
     )

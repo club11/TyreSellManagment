@@ -1009,9 +1009,26 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         obj = context.get('object')
 
-        my_tags.currency_on_date()                  # ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ
-        currency, curr_value, shown_date = my_tags.currency_on_date()
+        # ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ       
+        if models.CURRENCY_ON_DATE is False:                         # запускаем получение курса валют с НБ РБ только раз за день
+            try:
+                cu, cu_val, sh_date = my_tags.currency_on_date()
+                if datetime.datetime.today().strftime("%Y-%m-%d") == sh_date:       # если на сегодняшнюю дату результат получен - то более не запрашивать
+                    currency, curr_value, shown_date = cu, cu_val, sh_date
+                    models.CURRENCY_IS_CLEANED = currency, curr_value, shown_date   # записываем полученные значения
+                    models.CURRENCY_ON_DATE = True
+            except:
+                currency, curr_value, shown_date = my_tags.currency_on_date()     # если что -то пошло не так - берем данные с сайта        
+        else:
+            currency, curr_value, shown_date = models.CURRENCY_IS_CLEANED      # берем записанные значения 
+
+        if models.CURRENCY_DATE_GOT_FROM_USER:                              # если пользователь вводит данные (получить курс на определенную дату):
+            currency, curr_value, shown_date = my_tags.currency_on_date()
+
+        
         models.CURRENCY_VALUE_RUB = curr_value / 100
+        models.CURRENCY_VALUE_USD = curr_value 
+        # END ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ
 
 
         #### 0 подбор шин с их данными по минималкам для отображения в таблице на определенный период (не конкуренты , а именно собственная продукция)
@@ -1761,15 +1778,18 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             posts = paginator.page(paginator.num_pages)
         #print('posts', posts)
         context['list_of_tyre_comparative_objects'] = posts  
-        #print('!!!!!!!!!!!!!!!!0', self.request.GET, self.request.GET.urlencode())
+        #print('!!!!!!!!!!!!!!!0', self.request.GET, self.request.GET.urlencode())
         # END # пагинация самодельная
 
         currency_input_form = forms.CurrencyDateInputForm()
         context['currency_input_form'] = currency_input_form
 
-        #currency, curr_value, shown_date = my_tags.currency_on_date()
         context['currency'] = currency
         context['curr_value'] = curr_value
+
+        if currency == 'рубль РФ':              #добавить, если валюта - росс. рубль
+            context['RUB'] = '100'
+
         date_exist_true = None
         if shown_date:
             date_exist_true = datetime.datetime.strptime(shown_date, "%Y-%m-%d").date()
@@ -2506,7 +2526,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = []
 
-        print(request.POST, 'TTTH')
+    #    print(request.POST, 'TTTH')
         #print (request.POST.getlist('competitors'), 'TTTT')
 
         ## 1 работа с периодами:
@@ -2537,7 +2557,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         if chosen_date_for_currency:
             #print('chosen_date_for_currency1', chosen_date_for_currency)  
             chosen_date_for_currency = '-'.join(str(x) for x in chosen_date_for_currency)
-            #print('chosen_date_for_currency', chosen_date_for_currency)             # 'parcing_date': ['2023-03-14'],  chosen_date_for_currency 2022-1-30
+            print('chosen_date_for_currency', chosen_date_for_currency)             # 'parcing_date': ['2023-03-14'],  chosen_date_for_currency 2022-1-30
             check_date = datetime.datetime.strptime(chosen_date_for_currency, "%Y-%m-%d").date()        #  если пользователем введена дана превышающая текущую для получения курса валют то нао скинуть на сегодня:
             if check_date > datetime.datetime.now().date():
                 pass
