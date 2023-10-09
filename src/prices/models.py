@@ -715,7 +715,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if comp_price and self.currentpricesprice and type(comp_price) is float:      
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100                    
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
-                    combined = comp_name + comp.season.season_usage_name, comp_price, deflection    
+                    if comp.season is None:
+                        combined = comp_name, comp_price, deflection  
+                    else:
+                        combined = comp_name + comp.season.season_usage_name, comp_price, deflection    
                     #print('combined!!!!', combined)
                     list_od_combined_comp_and_prices.append(combined)
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР

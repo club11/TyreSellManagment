@@ -1087,7 +1087,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # если пользовательищет через поисковик:
         if models.SEARCH_USER_REQUEST:
             user_requested_data = models.SEARCH_USER_REQUEST  
-            search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data, tyre__tyre_size__tyre_size__in=user_requested_data)  | Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))    
+            search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data, tyre__tyre_size__tyre_size__in=user_requested_data) | Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))    
             search_result_id = list(search_result.values_list('id', flat=True))
             if search_result_id:
             #    print('+search_result_id', search_result_id)
@@ -1190,7 +1190,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                     for competitor in got_the_list:                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                         if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                            print(date_filter, "На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+                        #    print(date_filter, "На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
                             #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
                             list_of_matched_competitors.append(competitor)
                     if len(list_of_matched_competitors) > 3:
@@ -1357,7 +1357,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #    object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
             if models.BAGORIA_COMPETITORS:
-                #print('ПЕРВЫЙ ПУТЬ')
+                print('ПЕРВЫЙ ПУТЬ')
                 if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
          #           print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER',models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
                     date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
@@ -1532,7 +1532,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         final_list_of_objects_for_template = models.ComparativeAnalysisTyresModel.objects.none()
         #print('TTTTTTTTT=====2 list_of_tyre_comparative_objects LEN IS', len(list_of_tyre_comparative_objects),  list_of_tyre_comparative_objects)
         for tt in list_of_tyre_comparative_objects:
-            #print('tt', tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size) 
+        #    print('tt', tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size, tt.sale_data, tt.id, tt) 
             onl_result = tt.onliner_competitor_on_date1()
             avt_result = tt.avtoset_competitor_on_date1()
             bag_result = tt.bagoria_competitor_on_date1()
@@ -1569,7 +1569,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         
         for YYY in list_of_tyre_comparative_objects: ### ( list_of_tyre_comparative_objects из ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ)
             print('111===111', YYY)        
-        ########END !!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ
+        ########END !!!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ
 
     #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:  
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
@@ -1840,7 +1840,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
-        print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+        #print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
 
 
 
