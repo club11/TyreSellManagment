@@ -1023,7 +1023,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             currency, curr_value, shown_date = models.CURRENCY_IS_CLEANED      # берем записанные значения 
 
         if models.CURRENCY_DATE_GOT_FROM_USER:                              # если пользователь вводит данные (получить курс на определенную дату):
-            currency, curr_value, shown_date = my_tags.currency_on_date()
+            if models.CURRENCY_DATE_GOT_FROM_USER_CLEANED:                  # если только что получал данные на эту дату - то не надо запускать фунцкию - взять что уже собрано
+                try:
+                    currency_already, curr_value_already, shown_date_already = models.CURRENCY_DATE_GOT_FROM_USER_CLEANED
+                except:
+                    currency_already, curr_value_already, shown_date_already = None, None, None
+                if shown_date_already == models.CURRENCY_DATE_GOT_FROM_USER:
+                   currency, curr_value, shown_date = currency_already, curr_value_already, shown_date_already
+            else:                                                           # если ничего - тогда обращаемся к функции:
+                currency, curr_value, shown_date = my_tags.currency_on_date()
+                models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
 
         
         models.CURRENCY_VALUE_RUB = curr_value / 100
@@ -1081,7 +1090,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             search_result = obj.comparative_table.filter(Q(tyre__tyre_model__model__in=user_requested_data, tyre__tyre_size__tyre_size__in=user_requested_data)  | Q(tyre__tyre_model__model__in=user_requested_data) | Q(tyre__tyre_size__tyre_size__in=user_requested_data))    
             search_result_id = list(search_result.values_list('id', flat=True))
             if search_result_id:
-                print('+search_result_id', search_result_id)
+            #    print('+search_result_id', search_result_id)
                 list_of_tyre_comparative_objects = table_lookup_only_with_competitors.filter(id__in=search_result_id).filter(sale_data__year=year_to_look, sale_data__month=month_to_look)    #только продукция с конкурентами и только одна продукция (модель)
                 search_result_id_is_true = True
             else:
@@ -1787,8 +1796,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['currency'] = currency
         context['curr_value'] = curr_value
 
-        if currency == 'рубль РФ':              #добавить, если валюта - росс. рубль
-            context['RUB'] = '100'
 
         date_exist_true = None
         if shown_date:
