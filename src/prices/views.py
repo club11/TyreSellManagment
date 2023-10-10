@@ -1293,7 +1293,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                 # end работа с датами 
 
-                brand_name_subbrands_list = []    
+                brand_name_subbrands_list = []
+                develop_name_list = []    
+                list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
                 for competitor in got_the_list:
                     if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
                         # доп проверка на сезонность:
@@ -1304,40 +1306,106 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 #print('||', competitor.name_competitor)
                                 list_of_matched_competitors.append(competitor)
                                 brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                                develop_name_list.append((competitor.developer, competitor.name_competitor))                
                         except:     #если сезонности нет:
                             list_of_matched_competitors.append(competitor) 
                             brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                            develop_name_list.append((competitor.developer, competitor.name_competitor))  
                 brand_name_subbrands_list_final = list(set(brand_name_subbrands_list))
-                # подсчет каких моделей(суббренда) конкурента больше есть для данной модели:
-                #print('brand_name_subbrands_list_final', brand_name_subbrands_list_final)
-                comp_brand_model_dict = {}
-                for comp_brand_model in brand_name_subbrands_list_final:
-                    comp_brand_model_list = []
-                    for subbrand_model_competitor in list_of_matched_competitors:
-                        if subbrand_model_competitor.name_competitor == comp_brand_model:
-                            comp_brand_model_list.append(subbrand_model_competitor)
-                #    print('1', comp_brand_model)
-                    comp_brand_model_dict[comp_brand_model] = comp_brand_model_list
-                if len(comp_brand_model_dict.items()) > 1:      #если есть несколько моделей у данного бренда: берем самую спаршенную:
-                    keu = None
-                    v_len = 0
-                    for k, v in comp_brand_model_dict.items():
-                        #print(k, 'MMM', len(v))
-                        if len(v) > v_len:
-                            keu_index = k
-                            v_len = len(v)
-                    #print(keu_index, 'ABBA', v_len)
-                    list_of_matched_competitors_with_one_brand_model = comp_brand_model_dict[keu_index]
-                    #print('BBBBBB===1', list_of_matched_competitors_with_one_brand_model)
-                if len(comp_brand_model_dict.items()) == 1:
-                    list_of_matched_competitors_with_one_brand_model = list(comp_brand_model_dict.values())[0]
-                    #print('BBBBBB===2', list_of_matched_competitors_with_one_brand_model)
-                if len(comp_brand_model_dict.items()) < 1:
-                    list_of_matched_competitors_with_one_brand_model = []
-                    print('BBBBBB===3', list_of_matched_competitors_with_one_brand_model)
-                list_of_matched_competitors = list_of_matched_competitors_with_one_brand_model
-                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-                print('onliner_competitors_dict1', onliner_competitors_dict1)
+                develop_name_list = list(set(develop_name_list))            # # пересобираем список = проверка производитель  сразными моделями
+                develop_name_list_only_comp = []
+                for commm_namme in develop_name_list:
+                    develop_name_list_only_comp.append(commm_namme[0])
+                develop_name_list = develop_name_list_only_comp   
+                list_of_developers_which_brands_more_than_one = []
+                for comp_brand_name in develop_name_list:
+                    if develop_name_list.count(comp_brand_name) > 1: # если наименование производителя более одногораза - значит есть неск брендов у него, надо взять наиб спарсенный
+                        list_of_developers_which_brands_more_than_one.append(comp_brand_name)
+
+                list_of_developers_which_brands_more_than_one = list(set(list_of_developers_which_brands_more_than_one))
+                # если у производителя несколко моделей в типоразмере:
+                if list_of_developers_which_brands_more_than_one:                                                             # [<CompetitorModel: Cordiant>, <CompetitorModel: Continental>,
+            #        # 1) сформировать бренды у данного прозводителя
+            #        # 2) сравнить какой более часто спаршен
+            #        # 3) убрать менее спаршенные компетиторы из общего списка (onliner_competitors_dict1)
+                    for develoooper in list_of_developers_which_brands_more_than_one:                                       #[<CompetitorModel: Goodride>, <CompetitorModel: Matador>,
+                        list_to_delete_cometitors_to_compare = [] #СПИСОК COMPETITORS ДЛЯ УДАЛЕНИЯ ИЗ ОБЩЕГО - сперва сравнить длинну моделей в бренде
+                        for comp_brand_model in brand_name_subbrands_list_final:       # ['Cordiant Comfort 2', Continental ContiPremiumContact ]
+                            brand_in_develoooper_dict = {}       
+                            brand_in_develoooper_list = []
+                            for subbrand_model_competitor in list_of_matched_competitors:
+                            #    print('EEE', subbrand_model_competitor.developer, '|', develoooper, '|', subbrand_model_competitor.name_competitor, '|', comp_brand_model)
+                                if subbrand_model_competitor.developer == develoooper and subbrand_model_competitor.name_competitor == comp_brand_model:
+                                    brand_in_develoooper_list.append(subbrand_model_competitor)
+                            if brand_in_develoooper_list:                       #[<CompetitorModel: Cordiant>, <CompetitorModel: Continental>,
+                            #    brand_in_develoooper_dict[comp_brand_model, develoooper] = brand_in_develoooper_list     #{'Cordiant Road Runner': [<CompetitorSiteModel: CompetitorSiteModel object (10966)>,
+                                brand_in_develoooper_dict = { comp_brand_model : brand_in_develoooper_list, develoooper : develoooper }
+                                print('++--++', brand_in_develoooper_dict.items())
+                            try:
+                                if brand_in_develoooper_dict[develoooper] == develoooper:                           # СВЕРКА ЧАСТОТЫ ПАРСИНГА МОДЕЛЕЙ ДАННОГО ПРОИЗВОДИТЕЛЯ, ВЫБОРКА НАИМю СПАРСЕННЫХ _ ИХ УБРАТЬ ИХ ОБЩЕГО ПЕРЕЧНЯ  list_of_matched_competitors                         
+                                    #print(comp_brand_model, 'LLLL111TTTT', brand_in_develoooper_dict[develoooper], 'PP22',  develoooper)
+                                    len_comparison_got = len(brand_in_develoooper_dict[comp_brand_model])
+                                    print('len_comparison_got', len_comparison_got)
+                                    #compare_to_delete = len_comparison_got
+                                    compare_to_delete = len_comparison_got, brand_in_develoooper_dict[comp_brand_model]
+                                    list_to_delete_cometitors_to_compare.append(compare_to_delete)
+                                    #brand_in_develoooper_dict_new[comp_brand_model] = brand_in_develoooper_dict[comp_brand_model]
+                            except:
+                                pass
+                        list_to_delete_cometitors_to_compare = sorted(list_to_delete_cometitors_to_compare, key=lambda x: x[0])     ## !!!! ОТСОРТИРОВАНЫ ПО ЧАСТОТЕ ПАРСИНГА каждого бренда(модели) внутри ДАННОГО ПРОИЗВОДИТЕЛЯ (т.е производитель Cordiant - но у него бренды Comfort 3, Winter Sport2  и т.д)
+                        #print('!!', list_to_delete_cometitors_to_compare)
+                        list_to_delete_cometitors_to_compare = list_to_delete_cometitors_to_compare[:-1]    ## Competitorы на удаление из перечня
+                        list_to_delete_cometitors_to_compare_with_no_ind_len = []
+                        for ind_len, copet_list in list_to_delete_cometitors_to_compare:                    # убираем индексы длины (количества спасенных)
+                            list_to_delete_cometitors_to_compare_with_no_ind_len.append(copet_list)
+                        #print('Э сюда на111111' , list_to_delete_cometitors_to_compare_with_no_ind_len)
+                        print('===========')
+                        final_list_to_delete_competitors_in_brand = []                                      # финальный список - очищенный от листов - все непопулярные competitors производителя в одном списке
+                        for list_val in list_to_delete_cometitors_to_compare_with_no_ind_len:
+                            for item in list_val:
+                                final_list_to_delete_competitors_in_brand.append(item)
+                        final_list_to_delete_competitors_in_brand = list(set(final_list_to_delete_competitors_in_brand)) 
+                        #print('Э сюда на', final_list_to_delete_competitors_in_brand)
+
+                        list_to_delete_rarely_parsed.extend(final_list_to_delete_competitors_in_brand)          # формируем единый список на удаление
+                        #print('list_to_delete_cometitors', list_to_delete_cometitors_to_compare)
+                        # убираем непопулярных (реже спашенных модели данного бренда, исключая их из списка общего - останутся лишь производители с одной моделью (у тех производ, у которых было несколько моделей- останется лишь самый спашенный наиболее)):
+                    #print('DELETE', list_to_delete_rarely_parsed)
+                    for compet_to_delete in list_to_delete_rarely_parsed:
+                        list_of_matched_competitors.remove(compet_to_delete)
+                    onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                # если у каждого производителя по одной модели:
+                else:
+                    ## подсчет каких моделей(суббренда) конкурента больше есть для данной модели:
+                    ##print('brand_name_subbrands_list_final', brand_name_subbrands_list_final)
+                    #comp_brand_model_dict = {}
+                    #for comp_brand_model in brand_name_subbrands_list_final:
+                    #    comp_brand_model_list = []
+                    #    for subbrand_model_competitor in list_of_matched_competitors:
+                    #        if subbrand_model_competitor.name_competitor == comp_brand_model:
+                    #            comp_brand_model_list.append(subbrand_model_competitor)
+                    ##    print('1', comp_brand_model)
+                    #    comp_brand_model_dict[comp_brand_model] = comp_brand_model_list
+                    #if len(comp_brand_model_dict.items()) > 1:      #если есть несколько моделей у данного бренда: берем самую спаршенную:
+                    #    keu = None
+                    #    v_len = 0
+                    #    for k, v in comp_brand_model_dict.items():
+                    #        #print(k, 'MMM', len(v))
+                    #        if len(v) > v_len:
+                    #            keu_index = k
+                    #            v_len = len(v)
+                    #    #print(keu_index, 'ABBA', v_len)
+                    #    list_of_matched_competitors_with_one_brand_model = comp_brand_model_dict[keu_index]
+                    #    #print('BBBBBB===1', list_of_matched_competitors_with_one_brand_model)
+                    #if len(comp_brand_model_dict.items()) == 1:
+                    #    list_of_matched_competitors_with_one_brand_model = list(comp_brand_model_dict.values())[0]
+                    #    #print('BBBBBB===2', list_of_matched_competitors_with_one_brand_model)
+                    #if len(comp_brand_model_dict.items()) < 1:
+                    #    list_of_matched_competitors_with_one_brand_model = []
+                    #    print('BBBBBB===3', list_of_matched_competitors_with_one_brand_model)
+                    #list_of_matched_competitors = list_of_matched_competitors_with_one_brand_model
+                    onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    #print('onliner_competitors_dict1', onliner_competitors_dict1)
 
             else:
                 # работа с датами без конкурентов (вся продукция)
@@ -1401,6 +1469,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             #    print('||', competitor.name_competitor)
                                 list_of_matched_competitors.append(competitor)
                                 brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                                
                         except:     #если сезонности нет:
                             list_of_matched_competitors.append(competitor) 
                             brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
@@ -1411,8 +1480,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 # доп проверка - так все бренды- у них м.б. по несколько моделей - проверить -есть ли у бреда несколько моделей -взять с наибольшей частотой паринга:
                 list_of_developers_which_brands_more_than_one_for_checking = []
                 for comp_brand in list_of_matched_competitors:
-                    list_of_developers_which_brands_more_than_one_for_checking.append(comp_brand.developer)
+                    list_of_developers_which_brands_more_than_one_for_checking.append(comp_brand.developer, comp_brand.name_competitor)  
                     #print('comp_brand', comp_brand.developer)
+
+                list_of_developers_which_brands_more_than_one_for_checking = list(set(list_of_developers_which_brands_more_than_one_for_checking))            # # пересобираем список = проверка производитель  сразными моделями
+                develop_name_list_only_comp = []
+                for commm_namme in list_of_developers_which_brands_more_than_one_for_checking:
+                    develop_name_list_only_comp.append(commm_namme[0])
+                list_of_developers_which_brands_more_than_one_for_checking = develop_name_list_only_comp   
+
                 list_of_developers_which_brands_more_than_one = []
                 for comp_brand_name in list_of_developers_which_brands_more_than_one_for_checking:
                     if list_of_developers_which_brands_more_than_one_for_checking.count(comp_brand_name) > 1: # если наименование производителя более одногораза - значит есть неск брендов у него, надо взять наиб спарсенный
