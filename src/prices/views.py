@@ -1337,7 +1337,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     print('BBBBBB===3', list_of_matched_competitors_with_one_brand_model)
                 list_of_matched_competitors = list_of_matched_competitors_with_one_brand_model
                 onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-                #print('onliner_competitors_dict1', onliner_competitors_dict1)
+                print('onliner_competitors_dict1', onliner_competitors_dict1)
 
             else:
                 # работа с датами без конкурентов (вся продукция)
@@ -1463,12 +1463,28 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         list_to_delete_rarely_parsed.extend(final_list_to_delete_competitors_in_brand)          # формируем единый список на удаление
                         #print('list_to_delete_cometitors', list_to_delete_cometitors_to_compare)
                         # убираем непопулярных (реже спашенных модели данного бренда, исключая их из списка общего - останутся лишь производители с одной моделью (у тех производ, у которых было несколько моделей- останется лишь самый спашенный наиболее)):
-                print('DELETE', list_to_delete_rarely_parsed)
-                for compet_to_delete in list_to_delete_rarely_parsed:
-                    list_of_matched_competitors.remove(compet_to_delete)
+                    #print('DELETE', list_to_delete_rarely_parsed)
+                    for compet_to_delete in list_to_delete_rarely_parsed:
+                        list_of_matched_competitors.remove(compet_to_delete)
+                    onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+             
+                else:       # если у каждого бренда-производителя по одной модели:
 
-   #
-            onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    print('FFFFFUUUUUCCKKK', brand_name_subbrands_list_final, 'brand_name_subbrands_list_final')
+                    #list_to_delete_cometitors_to_compare = [] #СПИСОК COMPETITORS ДЛЯ УДАЛЕНИЯ ИЗ ОБЩЕГО - сперва сравнить длинну моделей в бренде
+                    #for comp_brand_model in brand_name_subbrands_list_final:       # ['Cordiant Comfort 2', Continental ContiPremiumContact ]
+                    #    brand_in_develoooper_dict = {}       
+                    #    brand_in_develoooper_list = []
+                    #    for subbrand_model_competitor in list_of_matched_competitors:
+                    #        if subbrand_model_competitor.name_competitor == comp_brand_model:
+                    #            brand_in_develoooper_list.append(subbrand_model_competitor)                            
+                    #    if brand_in_develoooper_list:
+                    #    #    brand_in_develoooper_dict[comp_brand_model, develoooper] = brand_in_develoooper_list     #{'Cordiant Road Runner': [<CompetitorSiteModel: CompetitorSiteModel object (10966)>,
+                    #        brand_in_develoooper_dict = { comp_brand_model : brand_in_develoooper_list }
+                    #        print('++--++', brand_in_develoooper_dict.items())
+#
+                    onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+
 
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
     #    print('!!!!!onliner_competitors_dict1', onliner_competitors_dict1)
