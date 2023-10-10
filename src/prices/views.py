@@ -1167,13 +1167,93 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         last_availible_date_today = datetime.datetime.today()
         ## 1 фильтр конкурентов Onliner:
         # 1.1 ФИЛЬТР по дате
+#        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
+#            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
+#            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
+#            #print('date_filter', date_filter,  '!!!!!!!!!!!!!!!!!!!!!!!', all_competitors)
+#        else:
+#            #print('last_availible_date', last_availible_date)
+#            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', date_period=last_availible_date_today)
+#
+#            # 1.2 ФИЛЬТР список производителей :
+#        # выбор по производителю:                               
+#        # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
+#        onliner_competitors_dict1 = {}
+#        for object_unit in list_of_tyre_comparative_objects:
+#            object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
+#            object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
+#            list_of_matched_competitors = []
+#            if models.ONLINER_COMPETITORS:
+#                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:  
+#                    date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+#                    got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period=date_filter)
+#
+#                    for competitor in got_the_list:                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+#                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+#                        #    print(date_filter, "На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+#                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+#                            list_of_matched_competitors.append(competitor)
+#                    if len(list_of_matched_competitors) > 3:
+#                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+#                    else:
+#                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+#                else:
+#                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by', date_period=last_availible_date_today):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+#                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+#                            #print("На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+#                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
+#                            list_of_matched_competitors.append(competitor)
+#                    if len(list_of_matched_competitors) > 3:
+#                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+#                    else:
+#                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+#            else:
+#                #for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
+#                trsz_list = []
+#                for competitor in all_competitors:       
+#                    trsz_list.append(competitor.tyresize_competitor)
+#                #    print('HOY', competitor.tyresize_competitor) 
+#                trsz_list = list(set(trsz_list))
+#                min_price_competitors_list = [] #список models.CompetitorSiteModel объектов с минимальной ценой по каждому типоразмеру
+#                #print('trsz_list =', trsz_list)
+#                for trsz in trsz_list:
+#                    #min_price = all_competitors.filter(tyresize_competitor=trsz).aggregate(Min('price')) # у каждого типоразмера выбрать самого минимального по цене конкурента (бренд) # vbмин цена в типоразмере
+#                    try:
+#                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price')[0:3]       # если есть - берем до трех минимальных по цене конкурентов (брендов) в данном типоразмере
+#                        got_three_brands = True
+#                    except:
+#                        got_three_brands = False
+#                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price').first()     # если нет - то хотя бы одно самого минимального конкурента (бренд) в данном типоразмере
+#                    min_price_competitors_list.append(trsz_wih_min_price)
+#                #2) шаг 2 - поиск уже в новом кверисете с минимальными ценами - причем цена может быть в любой дате:
+#                for competitor in min_price_competitors_list:
+#                    if got_three_brands is False:
+#                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+#                            #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+#                            list_of_matched_competitors.append(competitor)
+#                    if got_three_brands is True:
+#                        for comp in competitor:
+#                            if object_unit.tyre.tyre_size.tyre_size == comp.tyresize_competitor:
+#                                #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
+#                                list_of_matched_competitors.append(comp)                        
+#                #print('list_of_matched_competitors3',list_of_matched_competitors)
+#                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+#        ##print('onliner_competitors_dict1', onliner_competitors_dict1)
+#        #for n in onliner_competitors_dict1.values():
+#        #    for m in n:
+#        #        print(m.tyresize_competitor)
+#####            if n:
+#####                for current_chosen_date in n:
+#####                    print('current_chosen_date----', current_chosen_date.date_period)
+#        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
+#        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
+
+      
         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
             all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
-            #print('date_filter', date_filter,  '!!!!!!!!!!!!!!!!!!!!!!!', all_competitors)
         else:
-            #print('last_availible_date', last_availible_date)
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', date_period=last_availible_date_today)
+            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
 
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
@@ -1184,76 +1264,214 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
             if models.ONLINER_COMPETITORS:
-                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:  
+                print('1.')
+                # работа с датами для конкурентов
+                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+                    print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
                     date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                    got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period=date_filter)
-
-                    for competitor in got_the_list:                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                        #    print(date_filter, "На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                            list_of_matched_competitors.append(competitor)
-                    if len(list_of_matched_competitors) > 3:
-                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
+                        #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
+                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, date_filter]) 
                     else:
-                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                        the_earlest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').earliest('date_period').date_period
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[the_earlest_date_in_competitors, date_filter])
+                
+                elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
+                    print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
+                    date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
+                        #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, date_filter]) 
+                    else:
+                        the_eldest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').latest('date_period').date_period
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                
+                
                 else:
-                    for competitor in models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by', date_period=last_availible_date_today):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                            #print("На пол шишечки Onliner", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                            #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                            list_of_matched_competitors.append(competitor)
-                    if len(list_of_matched_competitors) > 3:
-                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors[0 : 3]
-                    else:
-                        onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-            else:
-                #for competitor in all_competitors[0 : 3]:                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                #    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-####            #            print("На пол шишечки2", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                #        #onliner_competitors_dict[object_unit.tyre] = competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price
-                #        list_of_matched_competitors.append(competitor)
-                # здесьнужно добавить фильтр по мин цене в размере среди всех брендов (1 типоразмер - 1 ммин цена): 
-                #1) шаг первый - собираем типоразмеры и формируем кверисет конкурентов : 1 типоразмер - один бренд с мин ценой       
-                trsz_list = []
-                for competitor in all_competitors:       
-                    trsz_list.append(competitor.tyresize_competitor)
-                #    print('HOY', competitor.tyresize_competitor) 
-                trsz_list = list(set(trsz_list))
-                min_price_competitors_list = [] #список models.CompetitorSiteModel объектов с минимальной ценой по каждому типоразмеру
-                #print('trsz_list =', trsz_list)
-                for trsz in trsz_list:
-                    #min_price = all_competitors.filter(tyresize_competitor=trsz).aggregate(Min('price')) # у каждого типоразмера выбрать самого минимального по цене конкурента (бренд) # vbмин цена в типоразмере
-                    try:
-                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price')[0:3]       # если есть - берем до трех минимальных по цене конкурентов (брендов) в данном типоразмере
-                        got_three_brands = True
-                    except:
-                        got_three_brands = False
-                        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price').first()     # если нет - то хотя бы одно самого минимального конкурента (бренд) в данном типоразмере
-                    min_price_competitors_list.append(trsz_wih_min_price)
-                #2) шаг 2 - поиск уже в новом кверисете с минимальными ценами - причем цена может быть в любой дате:
-                for competitor in min_price_competitors_list:
-                    if got_three_brands is False:
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
-                            #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                            list_of_matched_competitors.append(competitor)
-                    if got_three_brands is True:
-                        for comp in competitor:
-                            if object_unit.tyre.tyre_size.tyre_size == comp.tyresize_competitor:
-                                #print("На пол шишечки", competitor.tyresize_competitor, competitor.name_competitor, competitor.parametres_competitor, competitor.price,)
-                                list_of_matched_competitors.append(comp)                        
-                #print('list_of_matched_competitors3',list_of_matched_competitors)
-                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-        ##print('onliner_competitors_dict1', onliner_competitors_dict1)
-        #for n in onliner_competitors_dict1.values():
-        #    for m in n:
-        #        print(m.tyresize_competitor)
-####            if n:
-####                for current_chosen_date in n:
-####                    print('current_chosen_date----', current_chosen_date.date_period)
-        ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
+                    print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
+                    got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                # end работа с датами 
 
+                brand_name_subbrands_list = []    
+                for competitor in got_the_list:
+                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                        # доп проверка на сезонность:
+                        try:
+                            for get_season in object_unit.tyre.added_features.all():
+                                get_season_is_is = get_season.season_usage.season_usage_name
+                            if get_season_is_is == competitor.season.season_usage_name:
+                                #print('||', competitor.name_competitor)
+                                list_of_matched_competitors.append(competitor)
+                                brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                        except:     #если сезонности нет:
+                            list_of_matched_competitors.append(competitor) 
+                            brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                brand_name_subbrands_list_final = list(set(brand_name_subbrands_list))
+                # подсчет каких моделей(суббренда) конкурента больше есть для данной модели:
+                #print('brand_name_subbrands_list_final', brand_name_subbrands_list_final)
+                comp_brand_model_dict = {}
+                for comp_brand_model in brand_name_subbrands_list_final:
+                    comp_brand_model_list = []
+                    for subbrand_model_competitor in list_of_matched_competitors:
+                        if subbrand_model_competitor.name_competitor == comp_brand_model:
+                            comp_brand_model_list.append(subbrand_model_competitor)
+                #    print('1', comp_brand_model)
+                    comp_brand_model_dict[comp_brand_model] = comp_brand_model_list
+                if len(comp_brand_model_dict.items()) > 1:      #если есть несколько моделей у данного бренда: берем самую спаршенную:
+                    keu = None
+                    v_len = 0
+                    for k, v in comp_brand_model_dict.items():
+                        #print(k, 'MMM', len(v))
+                        if len(v) > v_len:
+                            keu_index = k
+                            v_len = len(v)
+                    #print(keu_index, 'ABBA', v_len)
+                    list_of_matched_competitors_with_one_brand_model = comp_brand_model_dict[keu_index]
+                    #print('BBBBBB===1', list_of_matched_competitors_with_one_brand_model)
+                if len(comp_brand_model_dict.items()) == 1:
+                    list_of_matched_competitors_with_one_brand_model = list(comp_brand_model_dict.values())[0]
+                    #print('BBBBBB===2', list_of_matched_competitors_with_one_brand_model)
+                if len(comp_brand_model_dict.items()) < 1:
+                    list_of_matched_competitors_with_one_brand_model = []
+                    print('BBBBBB===3', list_of_matched_competitors_with_one_brand_model)
+                list_of_matched_competitors = list_of_matched_competitors_with_one_brand_model
+                onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                #print('onliner_competitors_dict1', onliner_competitors_dict1)
+
+            else:
+                # работа с датами без конкурентов (вся продукция)
+                if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+                    print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
+                    date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
+                        #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
+                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                        got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
+                    else:
+                        the_earlest_date_in_competitors =  all_competitors.earliest('date_period').date_period
+                        got_the_list = all_competitors.filter(date_period__range=[the_earlest_date_in_competitors, date_filter])               
+                elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
+                    print('2.2 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
+                    date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
+                        #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                        got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
+                    else:
+                        the_eldest_date_in_competitors = all_competitors.latest('date_period').date_period
+                        got_the_list = all_competitors.filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                               
+                else:
+                    print('2.3 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
+                    got_the_list = all_competitors 
+                    # end работа с датами    
+
+                print('2.4 БРЕНД НЕ ВЫБРАН')                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
+            #    trsz_list = []
+ #
+            #    #for competitor in all_competitors:    
+            #    for competitor in got_the_list:   
+            #        trsz_list.append(competitor.tyresize_competitor)                         #HOY 205/55R16
+            #        print('HOY', competitor.tyresize_competitor, competitor.name_competitor) #HOY 205/55R16 Continental WinterContact TS 870 #HOY 205/55R16 Continental ContiPremiumContact 5
+            #    trsz_list = list(set(trsz_list))            #типоразмеры
+#
+            #    min_price_competitors_list = [] #список models.CompetitorSiteModel объектов с минимальной ценой по каждому типоразмеру
+            #    for trsz in trsz_list:                    #    trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price').first()     # если нет - то хотя бы одно самого минимального конкурента (бренд) в данном типоразмере
+            #        trsz_wih_min_price = all_competitors.filter(tyresize_competitor=trsz).order_by('price')
+            #        min_price_competitors_list.append(trsz_wih_min_price)
+            #    #2) шаг 2 - поиск уже в новом кверисете с минимальными ценами - причем цена может быть в любой дате:
+            #    for competitor in min_price_competitors_list:
+            #        for comp in competitor:
+            #            if object_unit.tyre.tyre_size.tyre_size == comp.tyresize_competitor:
+            #                list_of_matched_competitors.append(comp)                                
+            #    #print('list_of_matched_competitors3',list_of_matched_competitors)
+            #    onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+
+
+
+                brand_name_subbrands_list = []
+                list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
+                for competitor in got_the_list:
+                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyresize_competitor:
+                        # доп проверка на сезонность:
+                        try:
+                            for get_season in object_unit.tyre.added_features.all():
+                                get_season_is_is = get_season.season_usage.season_usage_name
+                            if get_season_is_is == competitor.season.season_usage_name:
+                            #    print('||', competitor.name_competitor)
+                                list_of_matched_competitors.append(competitor)
+                                brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                        except:     #если сезонности нет:
+                            list_of_matched_competitors.append(competitor) 
+                            brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
+                brand_name_subbrands_list_final = list(set(brand_name_subbrands_list))
+            #print('111list_of_matched_competitors', list_of_matched_competitors)
+                #print('22222brand_name_subbrands_list_final', brand_name_subbrands_list_final)
+
+                # доп проверка - так все бренды- у них м.б. по несколько моделей - проверить -есть ли у бреда несколько моделей -взять с наибольшей частотой паринга:
+                list_of_developers_which_brands_more_than_one_for_checking = []
+                for comp_brand in list_of_matched_competitors:
+                    list_of_developers_which_brands_more_than_one_for_checking.append(comp_brand.developer)
+                    #print('comp_brand', comp_brand.developer)
+                list_of_developers_which_brands_more_than_one = []
+                for comp_brand_name in list_of_developers_which_brands_more_than_one_for_checking:
+                    if list_of_developers_which_brands_more_than_one_for_checking.count(comp_brand_name) > 1: # если наименование производителя более одногораза - значит есть неск брендов у него, надо взять наиб спарсенный
+                        list_of_developers_which_brands_more_than_one.append(comp_brand_name)
+                list_of_developers_which_brands_more_than_one = list(set(list_of_developers_which_brands_more_than_one))
+                #print('ISS list_of_developers_which_brands_more_than_one', list_of_developers_which_brands_more_than_one)   #[<CompetitorModel: Goodride>, <CompetitorModel: Matador>,
+                if list_of_developers_which_brands_more_than_one:                                                             #[<CompetitorModel: Goodride>, <CompetitorModel: Matador>,
+            #        # 1) сформировать бренды у данного прозводителя
+            #        # 2) сравнить какой более часто спаршен
+            #        # 3) убрать менее спаршенные компетиторы из общего списка (onliner_competitors_dict1)
+                    for develoooper in list_of_developers_which_brands_more_than_one:                                       #[<CompetitorModel: Goodride>, <CompetitorModel: Matador>,
+                        list_to_delete_cometitors_to_compare = [] #СПИСОК COMPETITORS ДЛЯ УДАЛЕНИЯ ИЗ ОБЩЕГО - сперва сравнить длинну моделей в бренде
+                        for comp_brand_model in brand_name_subbrands_list_final:       # ['Cordiant Comfort 2', Continental ContiPremiumContact ]
+                            brand_in_develoooper_dict = {}       
+                            brand_in_develoooper_list = []
+                            for subbrand_model_competitor in list_of_matched_competitors:
+                            #    print('EEE', subbrand_model_competitor.developer, '|', develoooper, '|', subbrand_model_competitor.name_competitor, '|', comp_brand_model)
+                                if subbrand_model_competitor.developer == develoooper and subbrand_model_competitor.name_competitor == comp_brand_model:
+                                    brand_in_develoooper_list.append(subbrand_model_competitor)
+                            if brand_in_develoooper_list:
+                            #    brand_in_develoooper_dict[comp_brand_model, develoooper] = brand_in_develoooper_list     #{'Cordiant Road Runner': [<CompetitorSiteModel: CompetitorSiteModel object (10966)>,
+                                brand_in_develoooper_dict = { comp_brand_model : brand_in_develoooper_list, develoooper : develoooper }
+                                #print('++--++', brand_in_develoooper_dict.keys())
+                            try:
+                                if brand_in_develoooper_dict[develoooper] == develoooper:                           # СВЕРКА ЧАСТОТЫ ПАРСИНГА МОДЕЛЕЙ ДАННОГО ПРОИЗВОДИТЕЛЯ, ВЫБОРКА НАИМю СПАРСЕННЫХ _ ИХ УБРАТЬ ИХ ОБЩЕГО ПЕРЕЧНЯ  list_of_matched_competitors                         
+                                    #print(comp_brand_model, 'LLLL111TTTT', brand_in_develoooper_dict[develoooper], 'PP22',  develoooper)
+                                    len_comparison_got = len(brand_in_develoooper_dict[comp_brand_model])
+                                    #compare_to_delete = len_comparison_got
+                                    compare_to_delete = len_comparison_got, brand_in_develoooper_dict[comp_brand_model]
+                                    list_to_delete_cometitors_to_compare.append(compare_to_delete)
+                                    #brand_in_develoooper_dict_new[comp_brand_model] = brand_in_develoooper_dict[comp_brand_model]
+                            except:
+                                pass
+                        list_to_delete_cometitors_to_compare = sorted(list_to_delete_cometitors_to_compare, key=lambda x: x[0])     ## !!!! ОТСОРТИРОВАНЫ ПО ЧАСТОТЕ ПАРСИНГА каждого бренда(модели) внутри ДАННОГО ПРОИЗВОДИТЕЛЯ (т.е производитель Cordiant - но у него бренды Comfort 3, Winter Sport2  и т.д)
+                        list_to_delete_cometitors_to_compare = list_to_delete_cometitors_to_compare[:-1]    ## Competitorы на удаление из перечня
+                        list_to_delete_cometitors_to_compare_with_no_ind_len = []
+                        for ind_len, copet_list in list_to_delete_cometitors_to_compare:                    # убираем индексы длины (количества спасенных)
+                            list_to_delete_cometitors_to_compare_with_no_ind_len.append(copet_list)
+                        #print('Э сюда на111111' , list_to_delete_cometitors_to_compare_with_no_ind_len)
+                        
+                        final_list_to_delete_competitors_in_brand = []                                      # финальный список - очищенный от листов - все непопулярные competitors производителя в одном списке
+                        for list_val in list_to_delete_cometitors_to_compare_with_no_ind_len:
+                            for item in list_val:
+                                final_list_to_delete_competitors_in_brand.append(item)
+                        final_list_to_delete_competitors_in_brand = list(set(final_list_to_delete_competitors_in_brand)) 
+                        #print('Э сюда на', final_list_to_delete_competitors_in_brand)
+
+                        list_to_delete_rarely_parsed.extend(final_list_to_delete_competitors_in_brand)          # формируем единый список на удаление
+                        #print('list_to_delete_cometitors', list_to_delete_cometitors_to_compare)
+                        # убираем непопулярных (реже спашенных модели данного бренда, исключая их из списка общего - останутся лишь производители с одной моделью (у тех производ, у которых было несколько моделей- останется лишь самый спашенный наиболее)):
+                print('DELETE', list_to_delete_rarely_parsed)
+                for compet_to_delete in list_to_delete_rarely_parsed:
+                    list_of_matched_competitors.remove(compet_to_delete)
+
+   #
+            onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+
+        models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
+    #    print('!!!!!onliner_competitors_dict1', onliner_competitors_dict1)
         # END ONLINER
 
         ## 2 фильтр конкурентов Автосеть:
