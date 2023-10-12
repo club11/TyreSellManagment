@@ -1167,11 +1167,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         last_availible_date_today = datetime.datetime.today()
         ## 1 фильтр конкурентов Onliner:
  
-        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
-            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by').filter(date_period=date_filter)
-        else:
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
+
+        all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
 
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
@@ -1186,32 +1183,21 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     print('models.ONLINER_COMPETITORS', models.ONLINER_COMPETITORS)   
                     #print('1.')
                     # работа с датами для конкурентов
-                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-                        print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)  
-                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, date_filter]) 
                         else:
-                            the_earlest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').earliest('date_period').date_period
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[the_earlest_date_in_competitors, date_filter])
-
-                    elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                        #print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
-                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                            date_filter_start =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').earliest('date_period').date_period
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
-                            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, date_filter]) 
+                            date_filter_end = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                         else:
-                            the_eldest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').latest('date_period').date_period
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                
+                            date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').latest('date_period').date_period
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by').filter(date_period__range=[date_filter_start, date_filter_end])
 
                     else:
                         #print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.ONLINER_COMPETITORS, site='onliner.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    # end работа с датами 
+                    # end работа с датами '
 
                     brand_name_subbrands_list = []
                     develop_name_list = []    
@@ -1328,30 +1314,22 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 else:
                     # работа с датами без конкурентов (вся продукция)
-                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-                        #print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
-                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
                         else:
-                            the_earlest_date_in_competitors =  all_competitors.earliest('date_period').date_period
-                            got_the_list = all_competitors.filter(date_period__range=[the_earlest_date_in_competitors, date_filter])               
-                    elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                        #print('2.2 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
-                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                            date_filter_start =  all_competitors.earliest('date_period').date_period
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
-                            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
+                            date_filter_end = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                         else:
-                            the_eldest_date_in_competitors = all_competitors.latest('date_period').date_period
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                               
+                            date_filter_end =  all_competitors.latest('date_period').date_period
+                        got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter_end])
+                                                  
                     else:
                         #print('2.3 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = all_competitors 
-                        # end работа с датами    
+                        # end работа с датами      
 
                     brand_name_subbrands_list = []
                     list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
@@ -1441,18 +1419,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
 
                     else:       # если у каждого бренда-производителя по одной модели:
-                        #print('FFFFFUUUUUCCKKK', brand_name_subbrands_list_final, 'brand_name_subbrands_list_final')
-                        #list_to_delete_cometitors_to_compare = [] #СПИСОК COMPETITORS ДЛЯ УДАЛЕНИЯ ИЗ ОБЩЕГО - сперва сравнить длинну моделей в бренде
-                        #for comp_brand_model in brand_name_subbrands_list_final:       # ['Cordiant Comfort 2', Continental ContiPremiumContact ]
-                        #    brand_in_develoooper_dict = {}       
-                        #    brand_in_develoooper_list = []
-                        #    for subbrand_model_competitor in list_of_matched_competitors:
-                        #        if subbrand_model_competitor.name_competitor == comp_brand_model:
-                        #            brand_in_develoooper_list.append(subbrand_model_competitor)                            
-                        #    if brand_in_develoooper_list:
-                        #    #    brand_in_develoooper_dict[comp_brand_model, develoooper] = brand_in_develoooper_list     #{'Cordiant Road Runner': [<CompetitorSiteModel: CompetitorSiteModel object (10966)>,
-                        #        brand_in_develoooper_dict = { comp_brand_model : brand_in_develoooper_list }
-                        #        print('++--++', brand_in_develoooper_dict.items())  
+
                         onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
             except:
                 pass
@@ -1465,11 +1432,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # END ONLINER
 
         ## 2 фильтр конкурентов Автосеть:
-        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
-            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by').filter(date_period=date_filter)
-        else:
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
+
+        all_competitors = models.CompetitorSiteModel.objects.filter(site='autoset.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
 
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
@@ -1481,35 +1445,25 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_matched_competitors = []
             try:
                 if models.AVTOSET_COMPETITORS:
+                    print('models.AVTOSET_COMPETITORS', models.AVTOSET_COMPETITORS)   
                     #print('1.')
-                    print('models.AVTOSET_COMPETITORS', models.AVTOSET_COMPETITORS)
                     # работа с датами для конкурентов
-                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-                        #print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
-                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[date_filter_start, date_filter]) 
                         else:
-                            the_earlest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').earliest('date_period').date_period
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[the_earlest_date_in_competitors, date_filter])
-
-                    elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                        #print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
-                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                            date_filter_start =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').earliest('date_period').date_period
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
-                            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[date_filter_start, date_filter]) 
+                            date_filter_end = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                         else:
-                            the_eldest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').latest('date_period').date_period
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                
+                            date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').latest('date_period').date_period
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[date_filter_start, date_filter_end])
 
                     else:
                         #print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    # end работа с датами 
+                    # end работа с датами '
+
 
                     brand_name_subbrands_list = []
                     develop_name_list = []    
@@ -1598,30 +1552,22 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 else:
                     # работа с датами без конкурентов (вся продукция)
-                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-                        #print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
-                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
                         else:
-                            the_earlest_date_in_competitors =  all_competitors.earliest('date_period').date_period
-                            got_the_list = all_competitors.filter(date_period__range=[the_earlest_date_in_competitors, date_filter])               
-                    elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                        #print('2.2 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
-                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                            date_filter_start =  all_competitors.earliest('date_period').date_period
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
-                            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
+                            date_filter_end = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                         else:
-                            the_eldest_date_in_competitors = all_competitors.latest('date_period').date_period
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                               
+                            date_filter_end =  all_competitors.latest('date_period').date_period
+                        got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter_end])
+                                                  
                     else:
                         #print('2.3 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = all_competitors 
-                        # end работа с датами    
+                        # end работа с датами       
 
                     #print('2.4 БРЕНД НЕ ВЫБРАН')                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
 
@@ -1720,11 +1666,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ###### END OF AVTOSET
 
         ## 3 фильтр конкурентов BAGORIA:
-        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:         
-            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by').filter(date_period=date_filter)
-        else:
-            all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
+
+        all_competitors = models.CompetitorSiteModel.objects.filter(site='bagoria.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
 
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
@@ -1735,36 +1678,25 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
             try:
-                if models.BAGORIA_COMPETITORS:
-                    print('models.BAGORIA_COMPETITORS', models.BAGORIA_COMPETITORS)
+                if models.BAGORIA_COMPETITORS: 
+                    print('models.BAGORIA_COMPETITORS', models.BAGORIA_COMPETITORS)   
                     #print('1.')
                     # работа с датами для конкурентов
-                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-                        #print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
-                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[date_filter_start, date_filter]) 
                         else:
-                            the_earlest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').earliest('date_period').date_period
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[the_earlest_date_in_competitors, date_filter])
-
-                    elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                        #print('1.1 ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
-                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                            date_filter_start =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').earliest('date_period').date_period
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
-                            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[date_filter_start, date_filter]) 
+                            date_filter_end = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                         else:
-                            the_eldest_date_in_competitors =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').latest('date_period').date_period
-                            got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                
+                            date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').latest('date_period').date_period
+                        got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[date_filter_start, date_filter_end])
 
                     else:
                         #print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    # end работа с датами 
+                    # end работа с датами '
 
                     brand_name_subbrands_list = []
                     develop_name_list = []    
@@ -1853,30 +1785,22 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 else:
                     # работа с датами без конкурентов (вся продукция)
-                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-                        #print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА КОНЕЧНАЯ')  
-                        date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
+
+                    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
                         else:
-                            the_earlest_date_in_competitors =  all_competitors.earliest('date_period').date_period
-                            got_the_list = all_competitors.filter(date_period__range=[the_earlest_date_in_competitors, date_filter])               
-                    elif models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
-                        #print('2.2 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА НАЧАЛЬНАЯ')  
-                        date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
+                            date_filter_start =  all_competitors.earliest('date_period').date_period
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER and models.COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
-                            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
-                            date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter]) 
+                            date_filter_end = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
                         else:
-                            the_eldest_date_in_competitors = all_competitors.latest('date_period').date_period
-                            got_the_list = all_competitors.filter(date_period__range=[date_filter_start, the_eldest_date_in_competitors])                               
+                            date_filter_end =  all_competitors.latest('date_period').date_period
+                        got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter_end])
+                                                  
                     else:
                         #print('2.3 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = all_competitors 
-                        # end работа с датами    
+                        # end работа с датами       
 
                     #print('2.4 БРЕНД НЕ ВЫБРАН')                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
 
@@ -2810,7 +2734,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             sites_titles_list = []       # список сайтов для проверки
             producer_titles_list = []
             for hhh, oooo in new_result_for_comp_dict.items():
-                print('hhh, oooo ', hhh, '||', hhh[0], hhh[2], '||', oooo, '||', oooo[1] )
+            #    print('hhh, oooo ', hhh, '||', hhh[0], hhh[2], '||', oooo, '||', oooo[1] )
                 sites_titles_list.append(hhh[2]), producer_titles_list.append(hhh[0])
             sites_titles_list = list(set(sites_titles_list))
             producer_titles_list = list(set(producer_titles_list))
@@ -2849,7 +2773,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             for key, val in new_result_for_comp_dict.items():
                 for bbrand_ghost_site_ghost in ghost_comp_site_with_only_null_to_delete_from_dict: 
                     if key[0] == bbrand_ghost_site_ghost[0] and key[2] == bbrand_ghost_site_ghost[1]:
-                        print('key[0]', key[0], 'bbrand_ghost_site_ghost[0]', bbrand_ghost_site_ghost[0], 'key[2]', key[2], 'bbrand_ghost_site_ghost[1]', bbrand_ghost_site_ghost[1])
+                    #    print('key[0]', key[0], 'bbrand_ghost_site_ghost[0]', bbrand_ghost_site_ghost[0], 'key[2]', key[2], 'bbrand_ghost_site_ghost[1]', bbrand_ghost_site_ghost[1])
                         #print("ШОККОНТЕНТ")
                         new_result_for_comp_dict_temporary_keys_to_delete_list.append(key)
             for key_to_delete in new_result_for_comp_dict_temporary_keys_to_delete_list:
