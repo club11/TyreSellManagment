@@ -651,7 +651,10 @@ class ComparativeAnalysisTyresModel(models.Model):
                     #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
-                    combined = comp.developer.competitor_name + ' ' + comp_name + comp.season.season_usage_name, comp_price, deflection
+                    if comp.season:
+                        combined = comp.developer.competitor_name + ' ' + comp_name + comp.season.season_usage_name, comp_price, deflection
+                    else:
+                        combined = comp.developer.competitor_name + ' ' + comp_name, comp_price, deflection
                     list_od_combined_comp_and_prices.append(combined)
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name) 
                 list_comp_ids.append(comp.id)
