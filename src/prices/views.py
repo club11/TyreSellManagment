@@ -2328,7 +2328,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #print('++++competitors_ids1', competitors_ids1)
             for ididid in competitors_ids1:
                 what_we_gotta_here= models.CompetitorSiteModel.objects.get(pk=ididid)
-                print('я горячий мексиканец', what_we_gotta_here.developer)
+            #    print('я горячий мексиканец', what_we_gotta_here.developer)
             competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids2 is None:
                 competitors_ids2 = []  
@@ -2341,12 +2341,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
         #print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
 
-        ### СБРОС СЛОВАРЕЙ
-        models.ONLINER_COMPETITORS_NAMES_FILTER_IDS = {}
-        models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS = {}
-        models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS = {}
 
-        ### END СБРОС СЛОВАРЕЙ
 
         #for look_at_this_dude in edyniy_slovar_dict_dlja_pandas_chart_graphic.values():
         #    for ii in look_at_this_dude:
@@ -2999,8 +2994,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
             print('context[competitor_names]!!!!', assembles_to_dict_data_dict['competitor_producer_names'], len(assembles_to_dict_data_dict['competitor_producer_names']))
             context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
-            for bbb in assembles_to_dict_data_dict['competitor_values']:
-                print('LEN GRAPHIC VAL', len(bbb))
+            #for bbb in assembles_to_dict_data_dict['competitor_values']:
+            #    print('LEN GRAPHIC VAL', len(bbb))
             #print('context[competitor_values] ++--+-+-+-', assembles_to_dict_data_dict['competitor_values'], len(assembles_to_dict_data_dict['competitor_values']))
 
         
@@ -3089,8 +3084,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('!!!', list_of_parrsed_brands_sites)
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
-
-
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
 
 
@@ -3111,6 +3104,13 @@ class ComparativeAnalysisTableModelUpdateView(View):
         models.SEARCH_USER_REQUEST = []
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER = []
         models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = []
+
+        ### СБРОС СЛОВАРЕЙ
+        models.ONLINER_COMPETITORS_NAMES_FILTER_IDS = {}
+        models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS = {}
+        models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS = {}
+        ### END СБРОС СЛОВАРЕЙ
+
 
     #    print(request.POST, 'TTTH')
         #print (request.POST.getlist('competitors'), 'TTTT')
