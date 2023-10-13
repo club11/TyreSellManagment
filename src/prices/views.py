@@ -1426,10 +1426,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
 
-        print('models.ONLINER_COMPETITORS_DICTIONARY1', models.ONLINER_COMPETITORS_DICTIONARY1)
-        for k, v in models.ONLINER_COMPETITORS_DICTIONARY1.items():
-            for n in v:
-                print('+-=-+= ASS', n.developer)
+        #print('models.ONLINER_COMPETITORS_DICTIONARY1', models.ONLINER_COMPETITORS_DICTIONARY1)
+        #for k, v in models.ONLINER_COMPETITORS_DICTIONARY1.items():
+        #    for n in v:
+        #        print('+-=-+= ASS', n.developer)
         # END ONLINER
 
         ## 2 фильтр конкурентов Автосеть:
@@ -2000,7 +2000,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #for YYY in list_of_tyre_comparative_objects:
         #    print('000===000', YYY) 
         
-
+        #print('models.ONLINER_COMPETITORS_NAMES_FILTER_IDS ', models.ONLINER_COMPETITORS_NAMES_FILTER_IDS)
         list_of_tyre_comparative_objects_ids = []
         #final_list_of_objects_for_template = []
         final_list_of_objects_for_template = models.ComparativeAnalysisTyresModel.objects.none()
@@ -2318,17 +2318,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('list_keys', list_keys) #
         #print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids,) #'list_of_tyre_comparative_objects TRUE', list_of_tyre_comparative_objects)      
 
-        print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)
-        print('models.ONLINER_COMPETITORS_NAMES_FILTER_IDS', models.ONLINER_COMPETITORS_NAMES_FILTER_IDS)
+        #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)
 
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids1 is None:
                 competitors_ids1 = []
-            #print('++++competitors_ids1', competitors_ids1)
-            for ididid in competitors_ids1:
-                what_we_gotta_here= models.CompetitorSiteModel.objects.get(pk=ididid)
-            #    print('я горячий мексиканец', what_we_gotta_here.developer)
+        #    print('++++competitors_ids1', competitors_ids1)
             competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids2 is None:
                 competitors_ids2 = []  
@@ -2336,7 +2332,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids3 is None:
                 competitors_ids3 = []
-            #print('++++competitors_ids3', competitors_ids3)      
+        #    print('++++competitors_ids3', competitors_ids3)      
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
         #print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
@@ -2724,11 +2720,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     prod_in_site_existed_check = producer_iz_spiska, site_iz_spiska
                     if prod_in_site_existed_check in list_of_existing_prod_in_sites:            # если производитель и сайтодновременно есть в списке(т.е. производитель именно был хоть в какую то дату взят с данного сайта)
                         what_to_look = producer_iz_spiska, date_iz_spiska, site_iz_spiska
-                        #print(date_iz_spiska, type(date_iz_spiska))
+                        #print(date_iz_spiska, type(date_iz_spiska), '||', prod_in_site_existed_check)
                         get_data = prices_of_competitors_one_name_producer_dict.get(what_to_look)
-                        #print(date_iz_spiska, get_data)
+                        #print(date_iz_spiska,  '||', prod_in_site_existed_check,   '|==|',  get_data)
                         if get_data:
-                            #print(date_iz_spiska, get_data )
+                            #print(date_iz_spiska,  '||', prod_in_site_existed_check,   '|==|',  get_data)
                             prices_of_competitors_one_name_producer_dict_temporary_with_missing_data[producer_iz_spiska, date_iz_spiska, site_iz_spiska] = get_data
                         else:
                             null_data = site_iz_spiska, 'null', producer_iz_spiska                              ##### !!!! null - если нет значения
@@ -2751,31 +2747,40 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('sites_titles_list', sites_titles_list, 'producer_titles_list', producer_titles_list)
         # посчитать количество (длину) в словаре:
         some_counter = 0
-        for producer_title in producer_titles_list:  
-            for sites_title in sites_titles_list:
-                some_counter = 0
-                for key, val in new_result_for_comp_dict.items():   
-                    if key[0] == producer_title and key[2] == sites_title:   
-                        some_counter += 1
-                break
-        #print('some_counter is', some_counter)
+        one_site_name = None
+        one_vrand_name = None 
+        if producer_titles_list and sites_titles_list: 
+            one_site_name = sites_titles_list[0]     
+            one_vrand_name = producer_titles_list[0]  
+            for key in new_result_for_comp_dict.keys():
+                if key[0] == one_vrand_name and key[2] == one_site_name:
+                    #print('OPOPOPO', key)
+                    some_counter += 1
+        print('some_counter is', some_counter)
         #end  посчитать количество (длину) в словаре:           
         # ищем призраки:
         ghost_comp_site_with_only_null_to_delete_from_dict = []     #! список кортежей (Бренд, Сайт) с одними null для удаления как призрак
         for producer_title in producer_titles_list:  
             for sites_title in sites_titles_list:
                 null_counter = 0    # расчет количества нулевых значений у сайт-производителя в словаре
+                potential_to_delete = []        #набиваем нулевыми данного производителя на данном сайте - если их количество равно длине всего периода (some_counter is) - помечаем их на удаление внося в ghost_comp_site_with_only_null_to_delete_from_dict
                 for key, val in new_result_for_comp_dict.items():   
                     if key[0] == producer_title and key[2] == sites_title:   
                         if val[1] == 'null':
                             null_counter += 1
+                            potential_to_delete.append(key)
                         #    print('null_counter', null_counter, '-----', 'val[1]', val[1], key[0], key[2])
                         if null_counter == some_counter:      # если количество null значений у всех позиций сайт-производителя в словаре - он пустой призрак
-                            #print('777', key[0], key[2])
+                        #    print('777')
                             #ghost_comp_site_with_only_null_to_delete_from_dict.append((key[0], key[2])) # Cordiant bagoria.by
-                            ghost_comp_site_with_only_null_to_delete_from_dict.append(key) # Cordiant bagoria.by
+                            ghost_comp_site_with_only_null_to_delete_from_dict.extend(potential_to_delete) 
                 #print('=================')
         #END ищем призраки
+    #    for key, val in new_result_for_comp_dict.items():
+    #        print('ASS', key, val)
+    #    for bbrand_ghost_site_ghost in ghost_comp_site_with_only_null_to_delete_from_dict:
+    #        print('JOPA', bbrand_ghost_site_ghost)
+
         # удаление призраков из словаря (пересоздание словаря):
         new_result_for_comp_dict_temporary_keys_to_delete_list = []
         for key, val in new_result_for_comp_dict.items():
@@ -2783,13 +2788,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #if key[0] == bbrand_ghost_site_ghost[0] and key[2] == bbrand_ghost_site_ghost[1]:
                 if key == bbrand_ghost_site_ghost:
                 #    print('key[0]', key[0], 'bbrand_ghost_site_ghost[0]', bbrand_ghost_site_ghost[0], 'key[2]', key[2], 'bbrand_ghost_site_ghost[1]', bbrand_ghost_site_ghost[1])
+                #    print('key', key, 'val', val)
                     #print("ШОККОНТЕНТ")
                     new_result_for_comp_dict_temporary_keys_to_delete_list.append(key)
         for key_to_delete in new_result_for_comp_dict_temporary_keys_to_delete_list:
             new_result_for_comp_dict.pop(key_to_delete)
-        print('УДАЧА, ИСПААААНЦЫ! ==================================================')
-        #for a, b in new_result_for_comp_dict.items():
-        #    print('==', a, b)
+        #print('УДАЧА, ИСПААААНЦЫ! ==================================================')
+    #    for a, b in new_result_for_comp_dict.items():
+    #        print('==', a, b)
         #END удаление призраков из словаря:
     ##    except:
     ##        pass
@@ -2994,8 +3000,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
             print('context[competitor_names]!!!!', assembles_to_dict_data_dict['competitor_producer_names'], len(assembles_to_dict_data_dict['competitor_producer_names']))
             context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
-            #for bbb in assembles_to_dict_data_dict['competitor_values']:
-            #    print('LEN GRAPHIC VAL', len(bbb))
+            for bbb in assembles_to_dict_data_dict['competitor_values']:
+                print('LEN GRAPHIC VAL', bbb)
             #print('context[competitor_values] ++--+-+-+-', assembles_to_dict_data_dict['competitor_values'], len(assembles_to_dict_data_dict['competitor_values']))
 
         
