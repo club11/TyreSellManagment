@@ -166,19 +166,22 @@
                     {# <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance|floatformat:2 }}%</p></span></td> #}
                     <td scope="row" valign="middle"><span class="align-middle"><p class="text-center">{{ object.direct_cost_variance_from_currency_to_bel_rub|floatformat:2 }}%</p></span></td>
                     
-                    {% for comp, price, deflection in object.onliner_competitor_on_date1 %}
+                  {# {% for comp, price, deflection in object.onliner_competitor_on_date1 %} #} 
+                    {% for comp, price, deflection in object.onliner_table_header %}
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>  
                     {% endfor %}
                     
-                    {% for comp, price, deflection in object.avtoset_competitor_on_date1 %}
+                  {# {% for comp, price, deflection in object.avtoset_competitor_on_date1 %} #} 
+                    {% for comp, price, deflection in object.avtoset_table_heade %}
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>
                     {% endfor %}
                     
-                    {% for comp, price, deflection in object.bagoria_competitor_on_date1 %}
+                  {# {% for comp, price, deflection in object.bagoria_competitor_on_date1 %} #}
+                    {% for comp, price, deflection in object.bagoria_table_header %}
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample2" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>

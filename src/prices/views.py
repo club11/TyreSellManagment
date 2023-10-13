@@ -2007,9 +2007,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('TTTTTTTTT=====2 list_of_tyre_comparative_objects LEN IS', len(list_of_tyre_comparative_objects),  list_of_tyre_comparative_objects)
         for tt in list_of_tyre_comparative_objects:
         #    print('tt', tt.tyre.tyre_model.model, tt.tyre.tyre_size.tyre_size, tt.sale_data, tt.id, tt) 
-            onl_result = tt.onliner_competitor_on_date1()
-            avt_result = tt.avtoset_competitor_on_date1()
-            bag_result = tt.bagoria_competitor_on_date1()
+            tt.onliner_competitor_on_date1()
+            tt.avtoset_competitor_on_date1()
+            tt.bagoria_competitor_on_date1()
+            onl_result = tt.onliner_table_header()
+            avt_result = tt.avtoset_table_header()
+            bag_result = tt.bagoria_table_header()
+            #for yyy in bag_result:
+            #    print(yyy)
             chem_result = tt.chemcurier_competitor_on_date1()
             proverka = [('', '', ''), ('', '', ''), ('', '', '')] 
             proverka_chem = ('', '', '')
@@ -2038,31 +2043,34 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #    print('=====2')
                 models.DEF_GET = False
                 break   # обрываем цикл - берем только первого
+
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА
+
+
+   
+
 
         list_of_tyre_comparative_objects = final_list_of_objects_for_template                       # !!  список СomparativeAnalysisTyresModel  у которых отфильтрованы конкуренты
         #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects.order_by('tyre__tyre_size__tyre_size')
-        
-        for YYY in list_of_tyre_comparative_objects: ### ( list_of_tyre_comparative_objects из ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ)
-            print('111===111', YYY)        
+
+        #for ttt in list_of_tyre_comparative_objects: ### ( list_of_tyre_comparative_objects из ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ)
+        #    print('111===111', YYY)         
+
+
+
         ########END !!!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ
 
-    #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:  
+    #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
-        #bagoria_max_lengh_list = []
-        #print('TTTTTTTTT=====1 list_of_tyre_comparative_objects LEN IS', len(list_of_tyre_comparative_objects),  list_of_tyre_comparative_objects)
 
-        #for object_unit in list_of_tyre_comparative_objects:
-        #    obj_num = len(object_unit.bagoria_competitor_on_date1())
-        #    bagoria_max_lengh_list.append(obj_num)
-        #if bagoria_max_lengh_list:
-            #bagoria_max_lengh_header = max(bagoria_max_lengh_list)
-        if bagor_lengh_list:                                          
-            if bagor_lengh_list[0] > 3:        
-                bagoria_max_lengh_header = 3                            # Количество колонок (обрезает до первых 3)
-            else:
-                bagoria_max_lengh_header = max(bagor_lengh_list)
+
+        if bagor_lengh_list:  
+            bagoria_max_lengh_header = max(bagor_lengh_list)                                        
+            #if bagor_lengh_list[0] > 3:        
+            #    bagoria_max_lengh_header = 3                            # Количество колонок (обрезает до первых 3)
+            #else:
+            #    bagoria_max_lengh_header = max(bagor_lengh_list)
         else:
             bagoria_max_lengh_header = 0
 
@@ -2073,18 +2081,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.bagoria_heders_lengt() 
         ## END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA:          
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
-        #avtoset_max_lengh_list = []
-        #for object_unit in list_of_tyre_comparative_objects:
-        #    obj_num = len(object_unit.avtoset_competitor_on_date1())
-        #    avtoset_max_lengh_list.append(obj_num)
-        #if avtoset_max_lengh_list:
-        #    avtoset_max_lengh_header = max(avtoset_max_lengh_list)
-        #else:
+
         if avtoset_lengh_list:
-            if avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
-                avtoset_max_lengh_header = 3
-            else:
-                avtoset_max_lengh_header = max(avtoset_lengh_list)
+            avtoset_max_lengh_header = max(avtoset_lengh_list)
+            #if avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
+            #    avtoset_max_lengh_header = 3
+            #else:
+            #    avtoset_max_lengh_header = max(avtoset_lengh_list)
         else:
             avtoset_max_lengh_header = 0
         #print('avtoset_max_lengh_header', avtoset_max_lengh_header)
@@ -2094,17 +2097,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.avtoset_heders_lengt()         
         ##END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
-        #onliner_max_lengh_list = []
-        #for object_unit in list_of_tyre_comparative_objects:
-        #    obj_num = len(object_unit.onliner_competitor_on_date1())
-        #    onliner_max_lengh_list.append(obj_num)
-        ##print('onliner_max_lengh_list', onliner_max_lengh_list)
-        #if onliner_max_lengh_list:
+
         if onliner_lengh_list:
-            if onliner_lengh_list[0] > 3:
-                onliner_max_lengh_header = 3                        # Количество колонок (обрезает до первых 3)
-            else:
-                onliner_max_lengh_header = max(onliner_lengh_list)
+            onliner_max_lengh_header = max(onliner_lengh_list)
+            #if onliner_lengh_list[0] > 3:
+            #    onliner_max_lengh_header = 3                        # Количество колонок (обрезает до первых 3)
+            #else:
+            #    onliner_max_lengh_header = max(onliner_lengh_list)
         else:
             onliner_max_lengh_header = 0
         models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
@@ -3000,8 +2999,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
             print('context[competitor_names]!!!!', assembles_to_dict_data_dict['competitor_producer_names'], len(assembles_to_dict_data_dict['competitor_producer_names']))
             context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
-            for bbb in assembles_to_dict_data_dict['competitor_values']:
-                print('LEN GRAPHIC VAL', bbb)
+            #for bbb in assembles_to_dict_data_dict['competitor_values']:
+            #    print('LEN GRAPHIC VAL', bbb)
             #print('context[competitor_values] ++--+-+-+-', assembles_to_dict_data_dict['competitor_values'], len(assembles_to_dict_data_dict['competitor_values']))
 
         
