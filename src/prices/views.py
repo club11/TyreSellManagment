@@ -1426,9 +1426,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         models.ONLINER_COMPETITORS_DICTIONARY1 = onliner_competitors_dict1 
 
-        #for k, v in onliner_competitors_dict1.items():
-        #    for n in v:
-        #        print('+-=-+=', n.developer)
+        print('models.ONLINER_COMPETITORS_DICTIONARY1', models.ONLINER_COMPETITORS_DICTIONARY1)
+        for k, v in models.ONLINER_COMPETITORS_DICTIONARY1.items():
+            for n in v:
+                print('+-=-+= ASS', n.developer)
         # END ONLINER
 
         ## 2 фильтр конкурентов Автосеть:
@@ -2315,23 +2316,37 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         spisok_competitors_filtered = []
 
         #print('list_keys', list_keys) #
-        #print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids,) #'list_of_tyre_comparative_objects TRUE', list_of_tyre_comparative_objects)
+        #print('list_of_tyre_comparative_objects ====!',  list_of_tyre_comparative_objects_ids,) #'list_of_tyre_comparative_objects TRUE', list_of_tyre_comparative_objects)      
 
-        
+        print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)
+        print('models.ONLINER_COMPETITORS_NAMES_FILTER_IDS', models.ONLINER_COMPETITORS_NAMES_FILTER_IDS)
 
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids1 is None:
                 competitors_ids1 = []
+            #print('++++competitors_ids1', competitors_ids1)
+            for ididid in competitors_ids1:
+                what_we_gotta_here= models.CompetitorSiteModel.objects.get(pk=ididid)
+                print('я горячий мексиканец', what_we_gotta_here.developer)
             competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids2 is None:
-                competitors_ids2 = []            
+                competitors_ids2 = []  
+            #print('++++competitors_ids2', competitors_ids2)              
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids3 is None:
                 competitors_ids3 = []
+            #print('++++competitors_ids3', competitors_ids3)      
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
         #print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
+
+        ### СБРОС СЛОВАРЕЙ
+        models.ONLINER_COMPETITORS_NAMES_FILTER_IDS = {}
+        models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS = {}
+        models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS = {}
+
+        ### END СБРОС СЛОВАРЕЙ
 
         #for look_at_this_dude in edyniy_slovar_dict_dlja_pandas_chart_graphic.values():
         #    for ii in look_at_this_dude:
@@ -2641,7 +2656,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         new_result_for_comp_dict = prices_of_competitors_one_name_producer_dict  
 
         #for n, nv in prices_of_competitors_one_name_producer_dict.items():      # == приводим в неулюжий вид такого типа: ('WestLake', '2023-08-05', 'bagoria.by') ['bagoria.by', 188.48, 0]
-        #    print(n, '====', nv, 'Takim neschasnym')
+        #    print(n, '==++==', nv, 'Takim neschasnym')
         #    ### ###### ####### ############  
                    
         # 3. БЛОК + ДОПОЛНИТЕЛЬНАЯ ДОРИСОВКА ДАННЫХ УЖЕ НА ВЕСЬ ПЕРИОД _ ЧТОБЫ ПЕРЕДАТЬ В ТЕМПЛАЙТ ОДИНАКОВОЕ ЧИСЛО ДАННЫХ ПО КАЖДОМУ ПРОИЗВОДИТЕЛЮ НА САЙТАХ 
@@ -2730,61 +2745,59 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
 
             ##### УДАЛЕНИЕ ДУБЛЯЖЕЙ_ПРИЗРАКОВ на параллельных сайтах С NULL НА ВСЕМ ОТРЕЗКЕ:
-        try:    
-            sites_titles_list = []       # список сайтов для проверки
-            producer_titles_list = []
-            for hhh, oooo in new_result_for_comp_dict.items():
-            #    print('hhh, oooo ', hhh, '||', hhh[0], hhh[2], '||', oooo, '||', oooo[1] )
-                sites_titles_list.append(hhh[2]), producer_titles_list.append(hhh[0])
-            sites_titles_list = list(set(sites_titles_list))
-            producer_titles_list = list(set(producer_titles_list))
-            #print('sites_titles_list', sites_titles_list, 'producer_titles_list', producer_titles_list)
-            
-            # посчитать количество (длину) в словаре:
-            some_counter = 0
-            for producer_title in producer_titles_list:  
-                for sites_title in sites_titles_list:
-                    some_counter = 0
-                    for key, val in new_result_for_comp_dict.items():   
-                        if key[0] == producer_title and key[2] == sites_title:   
-                            some_counter += 1
-                    break
-            print('some_counter is', some_counter)
-            #end  посчитать количество (длину) в словаре:           
-
-            # ищем призраки:
-            ghost_comp_site_with_only_null_to_delete_from_dict = []     #! список кортежей (Бренд, Сайт) с одними null для удаления как призрак
-            for producer_title in producer_titles_list:  
-                for sites_title in sites_titles_list:
-                    null_counter = 0    # расчет количества нулевых значений у сайт-производителя в словаре
-                    for key, val in new_result_for_comp_dict.items():   
-                        if key[0] == producer_title and key[2] == sites_title:   
-                            if val[1] is 'null':
-                                null_counter += 1
-                            #    print('null_counter', null_counter, '-----', 'val[1]', val[1], key[0], key[2])
-                            if null_counter == some_counter:      # если количество null значений у всех позиций сайт-производителя в словаре - он пустой призрак
-                                #print('777', key[0], key[2])
-                                ghost_comp_site_with_only_null_to_delete_from_dict.append((key[0], key[2])) # Cordiant bagoria.by
-                    #print('=================')
-            #END ищем призраки
-
-            # удаление призраков из словаря (пересоздание словаря):
-            new_result_for_comp_dict_temporary_keys_to_delete_list = []
-            for key, val in new_result_for_comp_dict.items():
-                for bbrand_ghost_site_ghost in ghost_comp_site_with_only_null_to_delete_from_dict: 
-                    if key[0] == bbrand_ghost_site_ghost[0] and key[2] == bbrand_ghost_site_ghost[1]:
-                    #    print('key[0]', key[0], 'bbrand_ghost_site_ghost[0]', bbrand_ghost_site_ghost[0], 'key[2]', key[2], 'bbrand_ghost_site_ghost[1]', bbrand_ghost_site_ghost[1])
-                        #print("ШОККОНТЕНТ")
-                        new_result_for_comp_dict_temporary_keys_to_delete_list.append(key)
-            for key_to_delete in new_result_for_comp_dict_temporary_keys_to_delete_list:
-                    new_result_for_comp_dict.pop(key_to_delete)
-
-            print('УДАЧА, ИСПААААНЦЫ!')
-            #for a, b in new_result_for_comp_dict.items():
-            #    print(a, b)
-            #END удаление призраков из словаря:
-        except:
-            pass
+    ##    try:    
+        sites_titles_list = []       # список сайтов для проверки
+        producer_titles_list = []
+        for hhh, oooo in new_result_for_comp_dict.items():
+        #    print('hhh, oooo ', hhh, '||', hhh[0], hhh[2], '||', oooo, '||', oooo[1] )
+            sites_titles_list.append(hhh[2]), producer_titles_list.append(hhh[0])
+        sites_titles_list = list(set(sites_titles_list))
+        producer_titles_list = list(set(producer_titles_list))
+        #print('sites_titles_list', sites_titles_list, 'producer_titles_list', producer_titles_list)
+        # посчитать количество (длину) в словаре:
+        some_counter = 0
+        for producer_title in producer_titles_list:  
+            for sites_title in sites_titles_list:
+                some_counter = 0
+                for key, val in new_result_for_comp_dict.items():   
+                    if key[0] == producer_title and key[2] == sites_title:   
+                        some_counter += 1
+                break
+        #print('some_counter is', some_counter)
+        #end  посчитать количество (длину) в словаре:           
+        # ищем призраки:
+        ghost_comp_site_with_only_null_to_delete_from_dict = []     #! список кортежей (Бренд, Сайт) с одними null для удаления как призрак
+        for producer_title in producer_titles_list:  
+            for sites_title in sites_titles_list:
+                null_counter = 0    # расчет количества нулевых значений у сайт-производителя в словаре
+                for key, val in new_result_for_comp_dict.items():   
+                    if key[0] == producer_title and key[2] == sites_title:   
+                        if val[1] == 'null':
+                            null_counter += 1
+                        #    print('null_counter', null_counter, '-----', 'val[1]', val[1], key[0], key[2])
+                        if null_counter == some_counter:      # если количество null значений у всех позиций сайт-производителя в словаре - он пустой призрак
+                            #print('777', key[0], key[2])
+                            #ghost_comp_site_with_only_null_to_delete_from_dict.append((key[0], key[2])) # Cordiant bagoria.by
+                            ghost_comp_site_with_only_null_to_delete_from_dict.append(key) # Cordiant bagoria.by
+                #print('=================')
+        #END ищем призраки
+        # удаление призраков из словаря (пересоздание словаря):
+        new_result_for_comp_dict_temporary_keys_to_delete_list = []
+        for key, val in new_result_for_comp_dict.items():
+            for bbrand_ghost_site_ghost in ghost_comp_site_with_only_null_to_delete_from_dict: 
+                #if key[0] == bbrand_ghost_site_ghost[0] and key[2] == bbrand_ghost_site_ghost[1]:
+                if key == bbrand_ghost_site_ghost:
+                #    print('key[0]', key[0], 'bbrand_ghost_site_ghost[0]', bbrand_ghost_site_ghost[0], 'key[2]', key[2], 'bbrand_ghost_site_ghost[1]', bbrand_ghost_site_ghost[1])
+                    #print("ШОККОНТЕНТ")
+                    new_result_for_comp_dict_temporary_keys_to_delete_list.append(key)
+        for key_to_delete in new_result_for_comp_dict_temporary_keys_to_delete_list:
+            new_result_for_comp_dict.pop(key_to_delete)
+        print('УДАЧА, ИСПААААНЦЫ! ==================================================')
+        #for a, b in new_result_for_comp_dict.items():
+        #    print('==', a, b)
+        #END удаление призраков из словаря:
+    ##    except:
+    ##        pass
                    
             ##### END УДАЛЕНИЕ ДУБЛЯЖЕЙ_ПРИЗРАКОВ на параллельных сайтах С NULL НА ВСЕМ ОТРЕЗКЕ:
 
@@ -2984,7 +2997,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             assembles_to_dict_data_dict['competitor_values'] = list(list_of_competitor_values) 
 
             context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
+            print('context[competitor_names]!!!!', assembles_to_dict_data_dict['competitor_producer_names'], len(assembles_to_dict_data_dict['competitor_producer_names']))
             context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
+            for bbb in assembles_to_dict_data_dict['competitor_values']:
+                print('LEN GRAPHIC VAL', len(bbb))
+            #print('context[competitor_values] ++--+-+-+-', assembles_to_dict_data_dict['competitor_values'], len(assembles_to_dict_data_dict['competitor_values']))
 
         
         ##### ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ:
@@ -3071,6 +3088,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         list_of_parrsed_brands_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
         #print('!!!', list_of_parrsed_brands_sites)
         context['brands_from_sites'] = list_of_parrsed_brands_sites
+
 
 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
