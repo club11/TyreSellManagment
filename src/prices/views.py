@@ -1459,7 +1459,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         else:
                             date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').latest('date_period').date_period
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[date_filter_start, date_filter_end])
-
+                        print('BAGORIA', date_filter_start, '-', date_filter_end)
                     else:
                         #print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
@@ -1680,8 +1680,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_matched_competitors = []
             try:
                 if models.BAGORIA_COMPETITORS: 
-                    print('models.BAGORIA_COMPETITORS', models.BAGORIA_COMPETITORS)   
-                    #print('1.')
+                    #print('models.BAGORIA_COMPETITORS', models.BAGORIA_COMPETITORS)   
+                    print('1.ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА - BAGORIA')
                     # работа с датами для конкурентов
                     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
@@ -1693,9 +1693,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         else:
                             date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').latest('date_period').date_period
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[date_filter_start, date_filter_end])
-
+                        print('date_filter_start', date_filter_start, '===', 'date_filter_end', date_filter_end)
                     else:
-                        #print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
+                        print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     # end работа с датами '
 
@@ -1728,6 +1728,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         if develop_name_list.count(comp_brand_name) > 1: # если наименование производителя более одногораза - значит есть неск брендов у него, надо взять наиб спарсенный
                             list_of_developers_which_brands_more_than_one.append(comp_brand_name)
 
+######################                    for subbrand_model_competitor in list_of_matched_competitors:
+######################                        print('PPPOOOPPPP', subbrand_model_competitor.developer, '|', subbrand_model_competitor.name_competitor, '|', subbrand_model_competitor.date_period)
+
                     list_of_developers_which_brands_more_than_one = list(set(list_of_developers_which_brands_more_than_one))
                     # если у производителя несколко моделей в типоразмере:
                     if list_of_developers_which_brands_more_than_one:                                                             # [<CompetitorModel: Cordiant>, <CompetitorModel: Continental>,
@@ -1740,7 +1743,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 brand_in_develoooper_dict = {}       
                                 brand_in_develoooper_list = []
                                 for subbrand_model_competitor in list_of_matched_competitors:
-                                #    print('EEE', subbrand_model_competitor.developer, '|', develoooper, '|', subbrand_model_competitor.name_competitor, '|', comp_brand_model)
+                            #        print('EEE', subbrand_model_competitor.developer, '|', develoooper, '|', subbrand_model_competitor.name_competitor, '|', comp_brand_model, '|', subbrand_model_competitor.date_period)
                                     if subbrand_model_competitor.developer == develoooper and subbrand_model_competitor.name_competitor == comp_brand_model:
                                         brand_in_develoooper_list.append(subbrand_model_competitor)
                                 if brand_in_develoooper_list:                       #[<CompetitorModel: Cordiant>, <CompetitorModel: Continental>,
@@ -1785,8 +1788,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
 
                 else:
-                    # работа с датами без конкурентов (вся продукция)
-
+                    # 2.1 работа с датами без конкурентов (вся продукция)
+                    print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА  - BAGORIA')
                     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
@@ -1799,11 +1802,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter_end])
                                                   
                     else:
-                        #print('2.3 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
+                        print('2.2 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
                         got_the_list = all_competitors 
                         # end работа с датами       
-
-                    #print('2.4 БРЕНД НЕ ВЫБРАН')                                                                                                         ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
+                                                                                                       ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
 
                     brand_name_subbrands_list = []
                     list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
@@ -1892,10 +1894,18 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     else:       # если у каждого бренда-производителя по одной модели:
                         bagoria_competitors_dict1 [object_unit.tyre] = list_of_matched_competitors
             except:
+                print('3. EXCEPTION  - BAGORIA')
                 pass
 
 
-        models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1  
+
+        models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1
+
+        #print('models.BAGORIA_COMPETITORS_DICTIONARY1', models.BAGORIA_COMPETITORS_DICTIONARY1)
+        #for k, v in models.BAGORIA_COMPETITORS_DICTIONARY1.items():
+        #    for n in v:
+        #        print('+-=-+= ASS', n.developer, n.date_period)        
+
         #object_unit.bagoria_competitor_on_date1() 
         #print('bagoria_competitors_dict1', bagoria_competitors_dict1)
 
@@ -2063,14 +2073,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
     #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
-
-
-        if bagor_lengh_list:  
-            bagoria_max_lengh_header = max(bagor_lengh_list)                                        
-            #if bagor_lengh_list[0] > 3:        
-            #    bagoria_max_lengh_header = 3                            # Количество колонок (обрезает до первых 3)
-            #else:
-            #    bagoria_max_lengh_header = max(bagor_lengh_list)
+        if bagor_lengh_list:                                         
+            if bagor_lengh_list[0] > 3:        
+                bagoria_max_lengh_header = 3                            # Количество колонок (обрезает до первых 3)
+            else:
+                bagoria_max_lengh_header = max(bagor_lengh_list)
         else:
             bagoria_max_lengh_header = 0
 
@@ -2081,13 +2088,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj.bagoria_heders_lengt() 
         ## END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA:          
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
-
         if avtoset_lengh_list:
-            avtoset_max_lengh_header = max(avtoset_lengh_list)
-            #if avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
-            #    avtoset_max_lengh_header = 3
-            #else:
-            #    avtoset_max_lengh_header = max(avtoset_lengh_list)
+            if avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
+                avtoset_max_lengh_header = 3
+            else:
+                avtoset_max_lengh_header = max(avtoset_lengh_list)
         else:
             avtoset_max_lengh_header = 0
         #print('avtoset_max_lengh_header', avtoset_max_lengh_header)
@@ -2099,11 +2104,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
 
         if onliner_lengh_list:
-            onliner_max_lengh_header = max(onliner_lengh_list)
-            #if onliner_lengh_list[0] > 3:
-            #    onliner_max_lengh_header = 3                        # Количество колонок (обрезает до первых 3)
-            #else:
-            #    onliner_max_lengh_header = max(onliner_lengh_list)
+            if onliner_lengh_list[0] > 3:
+                onliner_max_lengh_header = 3                        # Количество колонок (обрезает до первых 3)
+            else:
+                onliner_max_lengh_header = max(onliner_lengh_list)
         else:
             onliner_max_lengh_header = 0
         models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
@@ -2323,25 +2327,23 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids1 is None:
                 competitors_ids1 = []
-        #    print('++++competitors_ids1', competitors_ids1)
             competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids2 is None:
-                competitors_ids2 = []  
-            #print('++++competitors_ids2', competitors_ids2)              
+                competitors_ids2 = []              
             competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids3 is None:
                 competitors_ids3 = []
-        #    print('++++competitors_ids3', competitors_ids3)      
+            #for nnit in competitors_ids3:
+            #   GICK = models.CompetitorSiteModel.objects.get(id=nnit)
+            #   print('GICK', GICK.developer, GICK.date_period) 
             spisok_competitors_filtered = competitors_ids1 + competitors_ids2 + competitors_ids3
             edyniy_slovar_dict_dlja_pandas_chart_graphic[tyre_for_chart_need_all_checked_competitors] = spisok_competitors_filtered   #### !!!!!!!!!!!!!!!!!!!!!! СЛОВАРЬ ДЛЯ ГРАФИКА
         #print('edyniy_slovar_dict_dlja_pandas_chart_graphic == HH', edyniy_slovar_dict_dlja_pandas_chart_graphic)
 
-
-
-        #for look_at_this_dude in edyniy_slovar_dict_dlja_pandas_chart_graphic.values():
-        #    for ii in look_at_this_dude:
-        #        asss = models.CompetitorSiteModel.objects.get(id=ii)
-        #        print(asss.developer, '||', asss.site)
+        #for n, nv in edyniy_slovar_dict_dlja_pandas_chart_graphic.items():      
+        #    for t in nv:
+        #        ss = models.CompetitorSiteModel.objects.get(id=t)
+        #        print('==++==', ss.date_period, ss.developer, ss.price,  'Takim')
 
 
         ### ЭТАП ПРОВЕРКИ СЛОВАРЯ НА НАЛИЧИЕ ПРОДУКЦИИ РАЗНЫХ ТИПОРАЗМЕРОВ - ЕСЛИ РАЗНЫЕ ТИПОРАЗМЕРЫ - БЕРЕМ ПЕРВЫЙ (И ВСЕ ОДИНАКОВЫЕ С НИМ МОДЕЛИ), ОТСЕИВАЕМ ПРОДУКЦИЮ С ИНЫМ ТИПОРАЗМЕРОМ   
@@ -2580,6 +2582,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ####################for k, v in new_result_for_comp_dict.items():     ### !!!!!!!!!!!!!!! 
         ####################    print('==',k, v)
 
+        #for n, nv in edyniy_slovar_dict_dlja_pandas_chart_graphic.items():      
+        #    for t in nv:
+        #        ss = models.CompetitorSiteModel.objects.get(id=t)
+        #        print('==++==', ss.date_period, ss.developer, ss.price,  'Takim ')
+
         ### ###### ####### ###########
 
         if models.GOOGLECHART_MARKETPLACE_ON is False:      # ЕСЛИ НЕ СТОИТ ГАЛОЧКА ПО ПЛОЩАДКАМ - ФОРМИРУЕМ ГРАФИК ПО ПРОИЗВОДИТЕЛЯМ: 
@@ -2647,7 +2654,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #for n, nv in prices_of_competitors_one_name_producer_dict.items():      # == приводим в неулюжий вид такого типа: ('WestLake', '2023-08-05', 'bagoria.by') ['bagoria.by', 188.48, 0]
         #    print(n, '==++==', nv, 'Takim neschasnym')
-        #    ### ###### ####### ############  
+            ### ###### ####### ############  
                    
         # 3. БЛОК + ДОПОЛНИТЕЛЬНАЯ ДОРИСОВКА ДАННЫХ УЖЕ НА ВЕСЬ ПЕРИОД _ ЧТОБЫ ПЕРЕДАТЬ В ТЕМПЛАЙТ ОДИНАКОВОЕ ЧИСЛО ДАННЫХ ПО КАЖДОМУ ПРОИЗВОДИТЕЛЮ НА САЙТАХ 
         ############ !!!! ПРОВЕРКА ДОСТАВЛЕНИЕ ДАННЫХ                   Д.О.Р.И.С.О.В.К.А.  Д.А.Н.Н.Ы.Х   WARNING!!!!
@@ -2971,33 +2978,35 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         else:
             chart_data_counter = 0                                              # подмешиваем дату строкой как  # [1,  37.8, 80.8, 41.8], -
-            number_of_periods = len(assembles_to_dict_data_dict['dates'])                         # old =number_of_periods== 5 ['20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023']       
-            #print('number_of_periods==', number_of_periods, assembles_to_dict_data_dict['dates'])      
-            for lists_values in competit_on_current_date_assembled:
-                #print('chart_data_counter', chart_data_counter, assembles_to_dict_data_dict['dates'][chart_data_counter], '==', lists_values)
-                list_of_period_competitor_values = [] 
-                list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
-                list_of_period_competitor_values_new = [] 
-                date_in_str = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date()
-                year, month, day = int(date_in_str.strftime('%Y')), int(date_in_str.strftime('%m')), int(date_in_str.strftime('%d'))
-                date_prepared_or_js = year, month-1, day        # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ     #                   
-                list_of_period_competitor_values_new.append(date_prepared_or_js)
-                if chart_data_counter < number_of_periods-1:
-                    chart_data_counter += 1
-                for vall in lists_values:
-                    list_of_period_competitor_values.append(vall[2])
-                    list_of_period_competitor_values_new.append(vall[2])
-                #per_val = list_of_period_competitor_values[ 1 :]   
-                list_of_competitor_values.append(list_of_period_competitor_values)
-                #print('list_of_period_competitor_values_new', list_of_period_competitor_values_new)
+            if assembles_to_dict_data_dict['dates']:
+                number_of_periods = len(assembles_to_dict_data_dict['dates'])                         # old =number_of_periods== 5 ['20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023']       
+                #print('number_of_periods==', number_of_periods, assembles_to_dict_data_dict['dates'])      
+                for lists_values in competit_on_current_date_assembled:
+                    #print('chart_data_counter', chart_data_counter, assembles_to_dict_data_dict['dates'][chart_data_counter], '==', lists_values)
+                    list_of_period_competitor_values = [] 
+                #    print('::::::::', 'chart_data_counter:', chart_data_counter, '  ', assembles_to_dict_data_dict['dates'])
+                    list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
+                    list_of_period_competitor_values_new = [] 
+                    date_in_str = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date()
+                    year, month, day = int(date_in_str.strftime('%Y')), int(date_in_str.strftime('%m')), int(date_in_str.strftime('%d'))
+                    date_prepared_or_js = year, month-1, day        # СДВИГ -1 ДЛЯ ОТОБРАЖЕНИЯ В ГРАФИКЕ     #                   
+                    list_of_period_competitor_values_new.append(date_prepared_or_js)
+                    if chart_data_counter < number_of_periods-1:
+                        chart_data_counter += 1
+                    for vall in lists_values:
+                        list_of_period_competitor_values.append(vall[2])
+                        list_of_period_competitor_values_new.append(vall[2])
+                    #per_val = list_of_period_competitor_values[ 1 :]   
+                    list_of_competitor_values.append(list_of_period_competitor_values)
+                    #print('list_of_period_competitor_values_new', list_of_period_competitor_values_new)
 
-                list_to_tuple = list_of_period_competitor_values_new[1:]
-                list_of_competitor_values_new_dict[list_of_period_competitor_values_new[0]] = list_to_tuple
+                    list_to_tuple = list_of_period_competitor_values_new[1:]
+                    list_of_competitor_values_new_dict[list_of_period_competitor_values_new[0]] = list_to_tuple
 
             assembles_to_dict_data_dict['competitor_values'] = list(list_of_competitor_values) 
 
             context['competitor_names'] = assembles_to_dict_data_dict['competitor_producer_names']
-            print('context[competitor_names]!!!!', assembles_to_dict_data_dict['competitor_producer_names'], len(assembles_to_dict_data_dict['competitor_producer_names']))
+        #    print('context[competitor_names]!!!!', assembles_to_dict_data_dict['competitor_producer_names'], len(assembles_to_dict_data_dict['competitor_producer_names']))
             context['competitor_values'] = assembles_to_dict_data_dict['competitor_values']
             #for bbb in assembles_to_dict_data_dict['competitor_values']:
             #    print('LEN GRAPHIC VAL', bbb)

@@ -550,7 +550,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
-            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.season)
+            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.date_period)
                 competior_is_found = False
                 tyre_in_base_season = ''
                 if objject.season and self.tyre.added_features.all():            
@@ -587,13 +587,16 @@ class ComparativeAnalysisTyresModel(models.Model):
                     comp_price = comp.price  
                 #if comp_price and self.belarus902price and type(comp_price) is float: 
                 if comp_price and self.currentpricesprice and type(comp_price) is float: 
+                    combined = None
                     #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
                     combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
-                    list_od_combined_comp_and_prices.append(combined)
-
+                    
+                    if combined:
+                        list_comp_ids.append(comp.id)
+                        list_od_combined_comp_and_prices.append(combined)
                 ONLINER_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)
-                list_comp_ids.append(comp.id)
+            #    list_comp_ids.append(comp.id)
             ONLINER_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
             list_od_combined_comp_and_prices = sorted(list(set(list_od_combined_comp_and_prices)))          # + sorted
             #print('list_od_combined_comp_and_prices', list_od_combined_comp_and_prices, len(list_od_combined_comp_and_prices))
@@ -630,15 +633,15 @@ class ComparativeAnalysisTyresModel(models.Model):
                         tyre_in_base_index = self.tyre.added_features.all()[0].indexes_list
                     if tyre_in_base_season is None or objject.season is None:                       #0 
                         filtered_competitors_values_list.append(objject)
-                        print('OOO22222O')
+            #            print('OOO22222O')
                     else:
                         if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
-                            print('OOOO', 'tyre_in_base_season', tyre_in_base_season, 'objject.season.season_usage_name', objject.season.season_usage_name)
+            #                print('OOOO', 'tyre_in_base_season', tyre_in_base_season, 'objject.season.season_usage_name', objject.season.season_usage_name)
                             objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
                             filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
                             continue
                         if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
-                            print('OOIIIIIOO')
+            #                print('OOIIIIIOO')
                             #print(tyre_in_base_season, objject.season.season_usage_name)
                             objject.tyre_to_compare.add(self)
                             filtered_competitors_values_list.append(objject)  
@@ -657,6 +660,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
+                    combined = None
                     if comp.season:
                         combined = comp.developer.competitor_name + ' ' + comp_name + comp.season.season_usage_name, comp_price, deflection
                     else:
@@ -664,7 +668,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     combined = ((combined), comp.developer, comp.date_period) 
                     if combined:
                         list_comp_ids.append(comp.id)
-                list_od_combined_comp_and_prices.append(combined)                           # 1
+                        list_od_combined_comp_and_prices.append(combined)                           # 1
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name) 
                 #list_comp_ids.append(comp.id)                                               # 2
             AVTOSET_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
@@ -686,7 +690,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
-            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.season)
+            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.date_period)
                 if objject is None:
                     pass
                 else:
@@ -721,7 +725,7 @@ class ComparativeAnalysisTyresModel(models.Model):
             for comp in filtered_competitors_values_list:
                 comp_name = comp.developer.competitor_name + ' ' + comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor # + ' '+ comp.season.season_usage_name     #tyresize_competitor, developer
                 comp_price = comp.price 
-                #print('LLL', comp_name, comp_price)
+            #    print('LLL', comp_name, comp_price,  comp.developer, comp.site, comp.date_period)
 
                 if DEFLECTION_VAL and comp_price:                                                      # если есть введенные данные об скидке торговой надбавки
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
@@ -730,6 +734,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if comp_price and self.currentpricesprice and type(comp_price) is float:      
                     deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100                    
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
+                    combined = None
                     if comp.season is None:
                         combined = comp_name, comp_price, deflection  
                     else:
@@ -738,7 +743,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                     combined = ((combined), comp.developer, comp.date_period) 
                     if combined:
                         list_comp_ids.append(comp.id)
-                list_od_combined_comp_and_prices.append(combined)
+                        list_od_combined_comp_and_prices.append(combined)
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
                 #list_comp_ids.append(comp.id)
             BAGORIA_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids          
@@ -759,11 +764,11 @@ class ComparativeAnalysisTyresModel(models.Model):
 
     def onliner_table_header(self):
         the_very_final_list_of_competitors_for_current_model_for_header_list = [] 
-        the_very_final_list_of_competitors_for_current_model_for_header = []        
+        the_very_final_list_of_competitors_for_current_model_for_header = [] 
+        final_list_of_competitors_for_current_model_for_header = []       
         if self.id in ONLINER_HEADER_DICT.keys():
             model_tyr_table_competitores_for_this_tyre = ONLINER_HEADER_DICT.get(self.id)
-
-            final_list_of_competitors_for_current_model_for_header = []
+  
             # отбор данный для заголовка таблицы
             # 1) получаем перечень производителей - кто есть для вывода
             producer_list_cleaned_data = []
@@ -788,14 +793,17 @@ class ComparativeAnalysisTyresModel(models.Model):
                     if compet_cleaned_data[2] == current_data_header and compet_cleaned_data[1] == prod_vrand:
                         #print('compet_cleaned_data SS', compet_cleaned_data)
                         final_list_of_competitors_for_current_model_for_header.append(compet_cleaned_data[0])
-            #4 количество выводимых конкурентов для конкурента (можно вклиниться в п.3 - сделать отбор конкретиных производителей)
-            max_number_of_shown_competitores_in_table = 3
-            if final_list_of_competitors_for_current_model_for_header:
-                if len(final_list_of_competitors_for_current_model_for_header) > 3:
-                    the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header[:max_number_of_shown_competitores_in_table] 
-                else:
-                    the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header 
 
+        ##    #4 количество выводимых конкурентов для конкурента (можно вклиниться в п.3 - сделать отбор конкретиных производителей)
+        ##    max_number_of_shown_competitores_in_table = 3
+        ##    if final_list_of_competitors_for_current_model_for_header:
+        ##        if len(final_list_of_competitors_for_current_model_for_header) > 3:
+        ##            the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header[:max_number_of_shown_competitores_in_table] 
+        ##        else:
+        ##            the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header 
+
+        if final_list_of_competitors_for_current_model_for_header:
+            the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header 
         if the_very_final_list_of_competitors_for_current_model_for_header:              
             for final_data in the_very_final_list_of_competitors_for_current_model_for_header:   # разбор нга составляющие для представления в таблице
                 tuple_len = len(final_data)
@@ -804,16 +812,16 @@ class ComparativeAnalysisTyresModel(models.Model):
                     brand_name, comp_price, deflection = final_data
                     brand_name_comp_price_deflection = brand_name, comp_price, deflection
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(brand_name_comp_price_deflection)
-        print('!! FINAL OCHKA ONLINER', the_very_final_list_of_competitors_for_current_model_for_header_list)    
+            #5 количество выводимых в таблице столбцов/конкурентов по типоразмеру:
+    #    print('!! FINAL OCHKA ONLINER', the_very_final_list_of_competitors_for_current_model_for_header_list)  
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
     def avtoset_table_header(self):
         the_very_final_list_of_competitors_for_current_model_for_header_list = [] 
-        the_very_final_list_of_competitors_for_current_model_for_header = []        
+        the_very_final_list_of_competitors_for_current_model_for_header = [] 
+        final_list_of_competitors_for_current_model_for_header = []       
         if self.id in AVTOSET_HEADER_DICT.keys():
-            model_tyr_table_competitores_for_this_tyre = AVTOSET_HEADER_DICT.get(self.id)
-
-            final_list_of_competitors_for_current_model_for_header = []
+            model_tyr_table_competitores_for_this_tyre = AVTOSET_HEADER_DICT.get(self.id) 
             # отбор данный для заголовка таблицы
             # 1) получаем перечень производителей - кто есть для вывода
             producer_list_cleaned_data = []
@@ -823,6 +831,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 dates_list_cleaned_data.append(compet_cleaned_data[2])
             producer_list_cleaned_data = list(set(producer_list_cleaned_data))
             dates_list_cleaned_data = list(set(dates_list_cleaned_data))
+            #print('!!!!!', dates_list_cleaned_data )
             #print('producer_list_cleaned_data', producer_list_cleaned_data)
             # 2) получаем последнюю дату для вывода:
                 #2.1) если вводилась дата:
@@ -838,14 +847,9 @@ class ComparativeAnalysisTyresModel(models.Model):
                     if compet_cleaned_data[2] == current_data_header and compet_cleaned_data[1] == prod_vrand:
                         #print('compet_cleaned_data SS', compet_cleaned_data)
                         final_list_of_competitors_for_current_model_for_header.append(compet_cleaned_data[0])
-            #4 количество выводимых конкурентов для конкурента (можно вклиниться в п.3 - сделать отбор конкретиных производителей)
-            max_number_of_shown_competitores_in_table = 3
-            if final_list_of_competitors_for_current_model_for_header:
-                if len(final_list_of_competitors_for_current_model_for_header) > 3:
-                    the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header[:max_number_of_shown_competitores_in_table] 
-                else:
-                    the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header 
 
+        if final_list_of_competitors_for_current_model_for_header:
+            the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header  
         if the_very_final_list_of_competitors_for_current_model_for_header:              
             for final_data in the_very_final_list_of_competitors_for_current_model_for_header:   # разбор нга составляющие для представления в таблице
                 tuple_len = len(final_data)
@@ -854,60 +858,61 @@ class ComparativeAnalysisTyresModel(models.Model):
                     brand_name, comp_price, deflection = final_data
                     brand_name_comp_price_deflection = brand_name, comp_price, deflection
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(brand_name_comp_price_deflection)
-        print('!! FINAL OCHKA AVTOSET', the_very_final_list_of_competitors_for_current_model_for_header_list)    
+            #5 количество выводимых в таблице столбцов/конкурентов по типоразмеру:
+        #print('!! FINAL OCHKA AVTOSET', the_very_final_list_of_competitors_for_current_model_for_header_list)
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
       
     def bagoria_table_header(self):
         the_very_final_list_of_competitors_for_current_model_for_header_list = [] 
-        the_very_final_list_of_competitors_for_current_model_for_header = []        
+        the_very_final_list_of_competitors_for_current_model_for_header = []   
+        final_list_of_competitors_for_current_model_for_header = []     
         if self.id in BAGORIA_HEADER_DICT.keys():
             model_tyr_table_competitores_for_this_tyre = BAGORIA_HEADER_DICT.get(self.id)
             #print('&&&&&&&&model_tyr_table_competitores_for_this_tyre', model_tyr_table_competitores_for_this_tyre)
  
-            final_list_of_competitors_for_current_model_for_header = []
             # отбор данный для заголовка таблицы
             # 1) получаем перечень производителей - кто есть для вывода
             producer_list_cleaned_data = []
             dates_list_cleaned_data = []
+    #        print('!!!!!!!!!!!!!!!',  model_tyr_table_competitores_for_this_tyre)
             for compet_cleaned_data in model_tyr_table_competitores_for_this_tyre:
                 producer_list_cleaned_data.append(compet_cleaned_data[1])
                 dates_list_cleaned_data.append(compet_cleaned_data[2])
             producer_list_cleaned_data = list(set(producer_list_cleaned_data))
             dates_list_cleaned_data = list(set(dates_list_cleaned_data))
-            #print("+++", producer_list_cleaned_data, dates_list_cleaned_data)
+    ##        print("+++", producer_list_cleaned_data, dates_list_cleaned_data)
+    ##        for kk in dates_list_cleaned_data:
+    ##            print("LLL:", kk)
             # 2) получаем последнюю дату для вывода:
                 #2.1) если вводилась дата:
             if COMPETITORS_DATE_FROM_USER_ON_FILTER and COMPETITORS_DATE_FROM_USER_ON_FILTER != ['']:
                 current_data_header = datetime.datetime.strptime(COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()
             #2.2) если не вводилась дата: 
             else:
+    #            print('OCELOT!!!', dates_list_cleaned_data)
                 current_data_header = max(dates_list_cleaned_data)   
-            #print('current_data_header', current_data_header)
+    #        print('current_data_header IIIII', current_data_header)
             #3 отбор по последней дате для вывода в таблицу:
             for compet_cleaned_data in model_tyr_table_competitores_for_this_tyre:
                 for prod_vrand in producer_list_cleaned_data:
-                    print(compet_cleaned_data[2], '||', current_data_header, '||', compet_cleaned_data[1], '||', prod_vrand)
+                #    print(compet_cleaned_data[2], '||', current_data_header, '||', compet_cleaned_data[1], '||', prod_vrand)
                     if compet_cleaned_data[2] == current_data_header and compet_cleaned_data[1] == prod_vrand:
-                        print('compet_cleaned_data SS', compet_cleaned_data)
+            ##            print('compet_cleaned_data SS', compet_cleaned_data)
                         final_list_of_competitors_for_current_model_for_header.append(compet_cleaned_data[0])
-            #4 количество выводимых конкурентов для конкурента (можно вклиниться в п.3 - сделать отбор конкретиных производителей)
-            max_number_of_shown_competitores_in_table = 3
-            if final_list_of_competitors_for_current_model_for_header:
-                if len(final_list_of_competitors_for_current_model_for_header) > 3:
-                    the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header[:max_number_of_shown_competitores_in_table] 
-                else:
-                    the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header 
 
+        if final_list_of_competitors_for_current_model_for_header:
+            the_very_final_list_of_competitors_for_current_model_for_header = final_list_of_competitors_for_current_model_for_header 
         if the_very_final_list_of_competitors_for_current_model_for_header:              
             for final_data in the_very_final_list_of_competitors_for_current_model_for_header:   # разбор нга составляющие для представления в таблице
                 tuple_len = len(final_data)
                 if tuple_len == 3:
-                    print(final_data, type(final_data), len(final_data))
+                #    print(final_data, type(final_data), len(final_data))
                     brand_name, comp_price, deflection = final_data
                     brand_name_comp_price_deflection = brand_name, comp_price, deflection
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(brand_name_comp_price_deflection)
-        print('!! FINAL OCHKA BAGORIA', the_very_final_list_of_competitors_for_current_model_for_header_list)    
+    #    print('!! FINAL OCHKA BAGORIA', the_very_final_list_of_competitors_for_current_model_for_header_list)    
+
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
 
