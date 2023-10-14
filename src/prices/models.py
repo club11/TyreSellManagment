@@ -813,8 +813,19 @@ class ComparativeAnalysisTyresModel(models.Model):
                     brand_name, comp_price, deflection = final_data
                     brand_name_comp_price_deflection = brand_name, comp_price, deflection
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(brand_name_comp_price_deflection)
-            #5 количество выводимых в таблице столбцов/конкурентов по типоразмеру:
-    #    print('!! FINAL OCHKA ONLINER', the_very_final_list_of_competitors_for_current_model_for_header_list)  
+        #5 дорисовка выводимых в таблице столбцов/конкурентов по типоразмеру:
+        if COMPET_PER_SITE:
+            void_data_num = len(the_very_final_list_of_competitors_for_current_model_for_header_list)               # доставить дополнительные пробелы там где инфы нет
+            #print('!!!!!!!!!!!!!!!', the_very_final_list_of_competitors_for_current_model_for_header_list)
+            #print('COMPET_PER_SITE', COMPET_PER_SITE, 'LLLENN',  void_data_num)
+            print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
+            if void_data_num > COMPET_PER_SITE or void_data_num == COMPET_PER_SITE:
+                the_very_final_list_of_competitors_for_current_model_for_header_list = the_very_final_list_of_competitors_for_current_model_for_header_list[:COMPET_PER_SITE]
+            else:
+                for n in range(0, COMPET_PER_SITE-void_data_num):
+                    the_very_final_list_of_competitors_for_current_model_for_header_list.append(('', '', ''))
+
+        print('!! FINAL OCHKA ONLINER', the_very_final_list_of_competitors_for_current_model_for_header_list)  
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
     def avtoset_table_header(self):
@@ -859,8 +870,19 @@ class ComparativeAnalysisTyresModel(models.Model):
                     brand_name, comp_price, deflection = final_data
                     brand_name_comp_price_deflection = brand_name, comp_price, deflection
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(brand_name_comp_price_deflection)
-            #5 количество выводимых в таблице столбцов/конкурентов по типоразмеру:
-        #print('!! FINAL OCHKA AVTOSET', the_very_final_list_of_competitors_for_current_model_for_header_list)
+        #5 дорисовка выводимых в таблице столбцов/конкурентов по типоразмеру:
+        if COMPET_PER_SITE:
+            void_data_num = len(the_very_final_list_of_competitors_for_current_model_for_header_list)               # доставить дополнительные пробелы там где инфы нет
+            #print('!!!!!!!!!!!!!!!', the_very_final_list_of_competitors_for_current_model_for_header_list)
+            #print('COMPET_PER_SITE', COMPET_PER_SITE, 'LLLENN',  void_data_num)
+            print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
+            if void_data_num > COMPET_PER_SITE or void_data_num == COMPET_PER_SITE:
+                the_very_final_list_of_competitors_for_current_model_for_header_list = the_very_final_list_of_competitors_for_current_model_for_header_list[:COMPET_PER_SITE]
+            else:
+                for n in range(0, COMPET_PER_SITE-void_data_num):
+                    the_very_final_list_of_competitors_for_current_model_for_header_list.append(('', '', ''))
+
+        print('!! FINAL OCHKA AVTOSET', the_very_final_list_of_competitors_for_current_model_for_header_list)
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
       
@@ -912,8 +934,19 @@ class ComparativeAnalysisTyresModel(models.Model):
                     brand_name, comp_price, deflection = final_data
                     brand_name_comp_price_deflection = brand_name, comp_price, deflection
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(brand_name_comp_price_deflection)
-    #    print('!! FINAL OCHKA BAGORIA', the_very_final_list_of_competitors_for_current_model_for_header_list)    
-
+        #5 дорисовка выводимых в таблице столбцов/конкурентов по типоразмеру:
+        if COMPET_PER_SITE:
+            void_data_num = len(the_very_final_list_of_competitors_for_current_model_for_header_list)               # доставить дополнительные пробелы там где инфы нет
+            #print('!!!!!!!!!!!!!!!', the_very_final_list_of_competitors_for_current_model_for_header_list)
+            #print('COMPET_PER_SITE', COMPET_PER_SITE, 'LLLENN',  void_data_num)
+            print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
+            if void_data_num > COMPET_PER_SITE or void_data_num == COMPET_PER_SITE:
+                the_very_final_list_of_competitors_for_current_model_for_header_list = the_very_final_list_of_competitors_for_current_model_for_header_list[:COMPET_PER_SITE]
+            else:
+                for n in range(0, COMPET_PER_SITE-void_data_num):
+                    the_very_final_list_of_competitors_for_current_model_for_header_list.append(('', '', ''))
+                       
+        print('!! FINAL OCHKA BAGORIA', the_very_final_list_of_competitors_for_current_model_for_header_list)    
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
 

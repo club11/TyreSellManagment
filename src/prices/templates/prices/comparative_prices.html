@@ -174,7 +174,7 @@
                     {% endfor %}
                     
                   {# {% for comp, price, deflection in object.avtoset_competitor_on_date1 %} #} 
-                    {% for comp, price, deflection in object.avtoset_table_heade %}
+                    {% for comp, price, deflection in object.avtoset_table_header %}
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ comp }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ price|floatformat:"2g" }}</p></span></td> 
                     <td class="collapse collapse-horizontal show" id="collapseWidthExample1" valign="middle"><span class="align-middle"><p class="text-center">{{ deflection|floatformat:2 }}  {% if deflection %} % {% endif %}</p></span></td>

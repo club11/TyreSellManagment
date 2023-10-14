@@ -2056,10 +2056,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             ##### ДОПОЛЛНИТЕЛЬНО К ПЕРЕСБОРКЕ - Т.К. УБРАНА ГАЛОЧКА "ВСЯ ПРОДУКЦИЯ" - ВЫБИРАЕТСЯ АВТОМАТОМ 1-й ИЗ ОБРАБОТАННЫХ ЭЛЕМЕНТОВ ДЛЯ ВЫВОДА
 
-
-   
-
-
         list_of_tyre_comparative_objects = final_list_of_objects_for_template                       # !!  список СomparativeAnalysisTyresModel  у которых отфильтрованы конкуренты
         #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)         # !!  список СomparativeAnalysisTyresModel id у которых отфильтрованы конкуренты
         context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects.order_by('tyre__tyre_size__tyre_size')
@@ -2067,17 +2063,14 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #for ttt in list_of_tyre_comparative_objects: ### ( list_of_tyre_comparative_objects из ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ)
         #    print('111===111', YYY)         
 
-
-
         ########END !!!!! ПЕРЕСБОРКА ИТОГОВОГО ПЕРЕЧНЯ
 
     #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
         if bagor_lengh_list: 
-            #if models.COMPET_PER_SITE:
-            #    bagoria_max_lengh_header = models.COMPET_PER_SITE                                      
-            #elif bagor_lengh_list[0] > 3:  
-            if bagor_lengh_list[0] > 3:       
+            if models.COMPET_PER_SITE:
+                bagoria_max_lengh_header = models.COMPET_PER_SITE                                      
+            elif bagor_lengh_list[0] > 3:        
                 bagoria_max_lengh_header = 2                            # Количество колонок (обрезает до первых 3)
             else:
                 bagoria_max_lengh_header = max(bagor_lengh_list)
@@ -2092,28 +2085,28 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ## END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA:          
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
         if avtoset_lengh_list:
-            #if models.COMPET_PER_SITE:
-            #    avtoset_max_lengh_header = models.COMPET_PER_SITE
-            #elif avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
-            if avtoset_lengh_list[0] > 3: 
+        #    print('avtoset_lengh_list--------------', avtoset_lengh_list)
+            if models.COMPET_PER_SITE:
+                avtoset_max_lengh_header = models.COMPET_PER_SITE
+            elif avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3) 
                 avtoset_max_lengh_header = 2
             else:
                 avtoset_max_lengh_header = max(avtoset_lengh_list)
         else:
             avtoset_max_lengh_header = 0
-        #print('avtoset_max_lengh_header', avtoset_max_lengh_header)
+        #print('avtoset_max_lengh_header+++++++++++', avtoset_max_lengh_header)
         models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
-        # print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
+        #print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
+        print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_HEADER_NUMBER)
         obj.avtoset_heders_value()
         obj.avtoset_heders_lengt()         
         ##END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
 
         if onliner_lengh_list:
-            #if models.COMPET_PER_SITE:
-            #    onliner_max_lengh_header = models.COMPET_PER_SITE
-            #elif onliner_lengh_list[0] > 3:
-            if onliner_lengh_list[0] > 3:
+            if models.COMPET_PER_SITE:
+                onliner_max_lengh_header = models.COMPET_PER_SITE
+            elif onliner_lengh_list[0] > 3:
                 onliner_max_lengh_header = 2                        # Количество колонок (обрезает до первых 3)
             else:
                 onliner_max_lengh_header = max(onliner_lengh_list)
