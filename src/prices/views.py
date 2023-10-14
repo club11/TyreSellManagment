@@ -2073,9 +2073,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
     #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA: 
-        if bagor_lengh_list:                                         
-            if bagor_lengh_list[0] > 3:        
-                bagoria_max_lengh_header = 3                            # Количество колонок (обрезает до первых 3)
+        if bagor_lengh_list: 
+            #if models.COMPET_PER_SITE:
+            #    bagoria_max_lengh_header = models.COMPET_PER_SITE                                      
+            #elif bagor_lengh_list[0] > 3:  
+            if bagor_lengh_list[0] > 3:       
+                bagoria_max_lengh_header = 2                            # Количество колонок (обрезает до первых 3)
             else:
                 bagoria_max_lengh_header = max(bagor_lengh_list)
         else:
@@ -2089,8 +2092,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ## END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ BAGORIA:          
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
         if avtoset_lengh_list:
-            if avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
-                avtoset_max_lengh_header = 3
+            #if models.COMPET_PER_SITE:
+            #    avtoset_max_lengh_header = models.COMPET_PER_SITE
+            #elif avtoset_lengh_list[0] > 3:                                # Количество колонок (обрезает до первых 3)
+            if avtoset_lengh_list[0] > 3: 
+                avtoset_max_lengh_header = 2
             else:
                 avtoset_max_lengh_header = max(avtoset_lengh_list)
         else:
@@ -2104,12 +2110,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         # ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ ONLINER: 
 
         if onliner_lengh_list:
+            #if models.COMPET_PER_SITE:
+            #    onliner_max_lengh_header = models.COMPET_PER_SITE
+            #elif onliner_lengh_list[0] > 3:
             if onliner_lengh_list[0] > 3:
-                onliner_max_lengh_header = 3                        # Количество колонок (обрезает до первых 3)
+                onliner_max_lengh_header = 2                        # Количество колонок (обрезает до первых 3)
             else:
                 onliner_max_lengh_header = max(onliner_lengh_list)
         else:
             onliner_max_lengh_header = 0
+            
         models.ONLINER_HEADER_NUMBER = onliner_max_lengh_header
 
         obj.onliner_heders_value()
@@ -2278,6 +2288,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['list_of_tyre_comparative_objects'] = posts  
         #print('!!!!!!!!!!!!!!!0', self.request.GET, self.request.GET.urlencode())
         # END # пагинация самодельная
+
+
+        # количество выводимых конкурентов на для сайтов:
+        current_compet_per_site_value = models.COMPET_PER_SITE
+        if current_compet_per_site_value is None:
+            current_compet_per_site_value = 2
+        compet_per_site_form = forms.CompetitoPerSiteInputForm(initial={'competitor_pagination_data': current_compet_per_site_value})
+        context['compet_per_site_form'] = compet_per_site_form
+        # END количество выводимых конкурентов на для сайтов:
+
 
         currency_input_form = forms.CurrencyDateInputForm()
         context['currency_input_form'] = currency_input_form
@@ -3126,8 +3146,8 @@ class ComparativeAnalysisTableModelUpdateView(View):
         ### END СБРОС СЛОВАРЕЙ
 
 
-    #    print(request.POST, 'TTTH')
-        #print (request.POST.getlist('competitors'), 'TTTT')
+        print(request.POST, 'TTTH')
+    #    print (request.POST.getlist('competitors'), 'TTTT')
 
         ## 1 работа с периодами:
         comparative_model_parcing_date = request.POST.getlist('parcing_date') 
@@ -3235,7 +3255,17 @@ class ComparativeAnalysisTableModelUpdateView(View):
         pagination_data_got = request.POST.get('pagination_data')  
         #print('pagination_data_got', pagination_data_got)
         if pagination_data_got:
+            print('pagination_data_got', pagination_data_got)
             models.PAGINATION_VAL = int(request.POST.get('pagination_data'))
+        else:
+            pass
+
+        # 6. 1 работа с вводимыми данными по количеству выводимых конкурентов на сайте для объекта таблице
+        competitor_pagination_data_got = request.POST.get('competitor_pagination_data')  
+        #print('competitor_pagination_data_got', competitor_pagination_data_got)
+        if competitor_pagination_data_got:
+            print('competitor_pagination_data_got', competitor_pagination_data_got)
+            models.COMPET_PER_SITE = int(request.POST.get('competitor_pagination_data'))
         else:
             pass
 
