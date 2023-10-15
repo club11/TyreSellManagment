@@ -110,6 +110,11 @@ class ChemCurierTyresModelAdmin(admin.ModelAdmin):
             'producer_chem',
             'group_chem',
             'currency_chem',
+            'data_month_chem',
+            'val_on_moth_chem',
+            'money_on_moth_chem',
+            'average_price_in_usd',
+            'reciever_chem',
     ]
 
 class DataPriceValMoneyChemCurierModelAdmin(admin.ModelAdmin):

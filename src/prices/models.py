@@ -608,7 +608,6 @@ class ComparativeAnalysisTyresModel(models.Model):
             ONLINER_HEADER_DICT[self.pk] = list_od_combined_comp_and_prices
             
             return list_od_combined_comp_and_prices
-        
 
     def avtoset_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены AVTOSET (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   AVTOSET
         if self.tyre in AVTOSET_COMPETITORS_DICTIONARY1.keys() and AVTOSET_COMPETITORS_DICTIONARY1.values():
@@ -682,7 +681,6 @@ class ComparativeAnalysisTyresModel(models.Model):
             AVTOSET_HEADER_DICT[self.pk] = list_od_combined_comp_and_prices
 
             return list_od_combined_comp_and_prices
-
 
     def bagoria_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   BAGORIA
         if self.tyre in BAGORIA_COMPETITORS_DICTIONARY1.keys() and BAGORIA_COMPETITORS_DICTIONARY1.values():
@@ -762,7 +760,6 @@ class ComparativeAnalysisTyresModel(models.Model):
 
             return list_od_combined_comp_and_prices
 
-
     def onliner_table_header(self):
         the_very_final_list_of_competitors_for_current_model_for_header_list = [] 
         the_very_final_list_of_competitors_for_current_model_for_header = [] 
@@ -818,14 +815,14 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(the_very_final_list_of_competitors_for_current_model_for_header_list)               # доставить дополнительные пробелы там где инфы нет
             #print('!!!!!!!!!!!!!!!', the_very_final_list_of_competitors_for_current_model_for_header_list)
             #print('COMPET_PER_SITE', COMPET_PER_SITE, 'LLLENN',  void_data_num)
-            print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
+    #        print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
             if void_data_num > COMPET_PER_SITE or void_data_num == COMPET_PER_SITE:
                 the_very_final_list_of_competitors_for_current_model_for_header_list = the_very_final_list_of_competitors_for_current_model_for_header_list[:COMPET_PER_SITE]
             else:
                 for n in range(0, COMPET_PER_SITE-void_data_num):
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(('', '', ''))
 
-        print('!! FINAL OCHKA ONLINER', the_very_final_list_of_competitors_for_current_model_for_header_list)  
+    #    print('!! FINAL OCHKA ONLINER', the_very_final_list_of_competitors_for_current_model_for_header_list)  
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
     def avtoset_table_header(self):
@@ -875,16 +872,15 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(the_very_final_list_of_competitors_for_current_model_for_header_list)               # доставить дополнительные пробелы там где инфы нет
             #print('!!!!!!!!!!!!!!!', the_very_final_list_of_competitors_for_current_model_for_header_list)
             #print('COMPET_PER_SITE', COMPET_PER_SITE, 'LLLENN',  void_data_num)
-            print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
+    #        print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
             if void_data_num > COMPET_PER_SITE or void_data_num == COMPET_PER_SITE:
                 the_very_final_list_of_competitors_for_current_model_for_header_list = the_very_final_list_of_competitors_for_current_model_for_header_list[:COMPET_PER_SITE]
             else:
                 for n in range(0, COMPET_PER_SITE-void_data_num):
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(('', '', ''))
 
-        print('!! FINAL OCHKA AVTOSET', the_very_final_list_of_competitors_for_current_model_for_header_list)
+    #    print('!! FINAL OCHKA AVTOSET', the_very_final_list_of_competitors_for_current_model_for_header_list)
         return the_very_final_list_of_competitors_for_current_model_for_header_list
-
       
     def bagoria_table_header(self):
         the_very_final_list_of_competitors_for_current_model_for_header_list = [] 
@@ -939,16 +935,15 @@ class ComparativeAnalysisTyresModel(models.Model):
             void_data_num = len(the_very_final_list_of_competitors_for_current_model_for_header_list)               # доставить дополнительные пробелы там где инфы нет
             #print('!!!!!!!!!!!!!!!', the_very_final_list_of_competitors_for_current_model_for_header_list)
             #print('COMPET_PER_SITE', COMPET_PER_SITE, 'LLLENN',  void_data_num)
-            print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
+    #        print('!!!!!!!!!!!!!!!','void_data_num', void_data_num, 'COMPET_PER_SITE', COMPET_PER_SITE)
             if void_data_num > COMPET_PER_SITE or void_data_num == COMPET_PER_SITE:
                 the_very_final_list_of_competitors_for_current_model_for_header_list = the_very_final_list_of_competitors_for_current_model_for_header_list[:COMPET_PER_SITE]
             else:
                 for n in range(0, COMPET_PER_SITE-void_data_num):
                     the_very_final_list_of_competitors_for_current_model_for_header_list.append(('', '', ''))
                        
-        print('!! FINAL OCHKA BAGORIA', the_very_final_list_of_competitors_for_current_model_for_header_list)    
+    #    print('!! FINAL OCHKA BAGORIA', the_very_final_list_of_competitors_for_current_model_for_header_list)    
         return the_very_final_list_of_competitors_for_current_model_for_header_list
-
 
     def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
         chemcurier_unique_result = ''
@@ -1387,6 +1382,12 @@ class ChemCurierTyresModel(models.Model):
         verbose_name='производитель химкурьер',
         max_length=15,
     )
+    reciever_chem = models.CharField(
+        verbose_name='получатель химкурьер',
+        max_length=25,
+        null=False,
+        blank=True,
+    )
     group_chem = models.CharField(
         verbose_name='подгруппа химкурьер',
         max_length=20,
@@ -1395,6 +1396,34 @@ class ChemCurierTyresModel(models.Model):
         dictionaries_models.Currency,
         on_delete=models.PROTECT,
     )
+    data_month_chem = models.DateField(
+        verbose_name='месяц (дата) поставки',
+        null=False,
+        blank=True,
+        
+        auto_now=False,
+        auto_now_add=False   
+    )
+    val_on_moth_chem = models.IntegerField(
+        verbose_name='объем поставки на дату(месяц) шт.',
+        blank=True,
+        null=True
+    )
+    money_on_moth_chem = models.FloatField(
+        verbose_name='объем поставки на дату(месяц) деньги',
+        max_length=20,
+        blank=True,
+        null=True
+    )
+    average_price_in_usd = models.FloatField(
+        verbose_name='средневзвешеная цена, в USD',
+        max_length=20,
+        blank=True,
+        null=True
+    )
+
+
+
 class DataPriceValMoneyChemCurierModel(models.Model):
     data_month_chem = models.DateTimeField(
         verbose_name='месяц (дата) поставки',

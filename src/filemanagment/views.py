@@ -69,6 +69,7 @@ class ExcelTemplateView(TemplateView):
         tire_group_chemcurier_dict = {} # словарь, в который закидываются данные о группе шин ХИМКУРЬЕР
         pieces_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
         money_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
+        recipipient_chemcurier_dict = {} # словарь, в который закидываются данные о получателе. на дату ХИМКУРЬЕР
         MAIN_chemcirier_import_dict = {}    # главгый словарь вкуладки импорт ХИМКУРЬЕР
         chemcirier_rows_counter = []        # счетчик строк химкурьер
 
@@ -497,7 +498,13 @@ class ExcelTemplateView(TemplateView):
                                     for col in sheet.iter_cols(min_row=brand_row+1, min_col=brand_column, max_col=brand_column, max_row=sheet.max_row):
                                         for cell in col:                            
                                             brend_chemcurier_dict[cell.row] = cell.value
-                                if cell.value == 'типоразмер':          # получаем колонку 'бренд' ХИМКУРЬЕР
+                                if cell.value == 'получатель':          # получаем колонку 'получатель'  ХИМКУРЬЕР
+                                    recipient_column = cell.column
+                                    brand_row = cell.row
+                                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
+                                        for cell in col:                            
+                                            recipipient_chemcurier_dict[cell.row] = cell.value                                                                
+                                if cell.value == 'типоразмер':          # получаем колонку 'типоразмер' ХИМКУРЬЕР
                                     tyr_group_column = cell.column
                                     tyr_group_row = cell.row
                                     for col in sheet.iter_cols(min_row=tyr_group_row+1, min_col=tyr_group_column, max_col=tyr_group_column, max_row=sheet.max_row):
@@ -595,6 +602,7 @@ class ExcelTemplateView(TemplateView):
             #print('month_chemcurier_dict', pieces_month_chemcurier_dict)
             #print('money_month_chemcurier_dic', money_month_chemcurier_dict)
             #print('date_pieces_row_chemcurier_dict', date_pieces_row_chemcurier_dict)
+            #print('recipipient_chemcurier_dict', recipipient_chemcurier_dict)
 
 
  
@@ -1104,18 +1112,18 @@ class ExcelTemplateView(TemplateView):
                 for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
                     list_sates_values_on_row = []
                     for k, v in pieces_month_chemcurier_dict.items():
+                #        print('!!!', k, v)
                         for list_iter in range(0, list_col_values_len+1):
                             #print(k, v[list_iter][1])
                             if v[list_iter][1] == str_n:
                                 cell_val = k, v[list_iter][0]
                                 #print(cell_val, 'OOOO')
                                 list_sates_values_on_row.append(cell_val)
-                #            print(list_sates_values_on_row)
+                #            print('===',list_sates_values_on_row)
                     new_pieces_month_chemcurier_dict[str_n] = list_sates_values_on_row
 
-            ##print(new_money_month_chemcurier_dict)
-            #for k, v in new_pieces_month_chemcurier_dict.items():
-            #    print(k, v)            
+                #for k, v in new_pieces_month_chemcurier_dict.items():
+                #    print('+++++', k, v)            
 
                 new_money_month_chemcurier_dict ={}
                 list_col_values_len = max_row_value - min_row_value
@@ -1133,16 +1141,35 @@ class ExcelTemplateView(TemplateView):
 
                 ##print(new_money_month_chemcurier_dict)
                 #for k, v in new_money_month_chemcurier_dict.items():
-                #    print(k, v)
+                #    print('-----', k, v)
 
                 ################ ФОРМИРОВАНИЕ ЕДИНОГО СЛОВАРЯ ПО СПАРСЕННЫМ ДАННЫМ ХИМКУРЬЕР ВКЛАДКИ ИМПОРТ:
+                
                 for row_num, tyr_size in tiresize_chemcurier_dict.items():
                     brand_namee = brend_chemcurier_dict.get(row_num, 0)
                     group_namee = tire_group_chemcurier_dict.get(row_num, 0)
-                    pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)
-                    money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)
-
-                    MAIN_chemcirier_import_dict[tyr_size, row_num] = brand_namee, group_namee, pices_per_month, money_per_month
+                    recipipient_namee = recipipient_chemcurier_dict.get(row_num, 0)
+                    #print('LEN', len(new_money_month_chemcurier_dict.get(row_num, 1)),' ===== ')
+                    periods_counter_max_val = len(new_money_month_chemcurier_dict.get(row_num, 1)) 
+                    periods_counter = 0
+                    values_prices_per_month_list = []
+                    if periods_counter_max_val: # если есть периоды
+                        while periods_counter < periods_counter_max_val:                                           
+                            pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
+                            print('===== 1', pices_per_month)
+                            money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
+                            print('===== 2',money_per_month)
+                            period_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][0]                            
+                            if money_per_month is not None and pices_per_month is not None:
+                                average_price_in_usd_calc = money_per_month / pices_per_month 
+                            else:
+                                average_price_in_usd_calc = None
+                            pices_per_month_money_per_month = period_month, pices_per_month, money_per_month, average_price_in_usd_calc
+                            periods_counter += 1 
+                            values_prices_per_month_list.append(pices_per_month_money_per_month)
+                    
+                    #MAIN_chemcirier_import_dict[tyr_size, row_num] = brand_namee, group_namee, pices_per_month, money_per_month 
+                    MAIN_chemcirier_import_dict[tyr_size, row_num, brand_namee, group_namee, recipipient_namee] = list(values_prices_per_month_list), periods_counter 
             
             # перечень всех доступных дат (месяцев):
             month_in_chemcurier_table = list(money_month_chemcurier_dict.keys())
@@ -1152,51 +1179,59 @@ class ExcelTemplateView(TemplateView):
             # 1.1 создать объекты продажа на дату:
             currency_chem = dictionaries_models.Currency.objects.get_or_create(currency = 'USD')[0]
             for key, val in MAIN_chemcirier_import_dict.items():
-            #    print(key[0], key,  val, 'CHEM', len(key))
-            # 1.2 создать объекты типоразмер производитель группа:
-                #if len(key) > 1:            
-                #    tyr_size_key = key[0]
-                ##    print('HOING DOWN')
-                #else:
-                #    tyr_size_key = key
-                ##    print('HOING UP')
-                che_curier_obj_tyre = prices_models.ChemCurierTyresModel.objects.update_or_create(
-                    #tyre_size_chem = tyr_size_key,
-                    tyre_size_chem = key,
-                    producer_chem = val[0],
-                    # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
-                    group_chem = val[1],
-                    currency_chem = currency_chem,
-                    #price_val_money_data = prices_models.DataPriceValMoneyChemCurierModel.objects.filter(data_month_chem__date=date_month)          #abc_obj_set[0].sales.add(sales_obj)
-                )[0]
-                che_curier_obj_tyre = che_curier_obj_tyre
+            #    print(key[0], key, 'CHEM',  val[0][0])
+        #    # 1.2 создать объекты типоразмер производитель группа:
+            #    print('tyre_size_chem', key[0])
+            #    print('producer_chem', key[2])
+            #    print('group_chem', key[3])
+            #    print('recipipient_namee', key[4])
+                list_val_price_all_periods_for_row = val[0]
+                for data_month_chem_val in list_val_price_all_periods_for_row:
+            #        print('data_month_chem', data_month_chem_val[0])
+            #        print('val_on_moth_che', data_month_chem_val[1])
+            #        print('money_on_moth_chem ', data_month_chem_val[2])
+                    che_curier_obj_tyre = prices_models.ChemCurierTyresModel.objects.update_or_create(
+                        tyre_size_chem = key[0],
+                        producer_chem = key[2],
+                        # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
+                        group_chem = key[3],
+                        reciever_chem = key[4],
+                        currency_chem = currency_chem,
+                        data_month_chem = data_month_chem_val[0],
+                        val_on_moth_chem = data_month_chem_val[1],
+                        money_on_moth_chem = data_month_chem_val[2], 
+                        average_price_in_usd = data_month_chem_val[3],
+                    #    month_counter = val[1] 
+                        #price_val_money_data = prices_models.DataPriceValMoneyChemCurierModel.objects.filter(data_month_chem__date=date_month)          #abc_obj_set[0].sales.add(sales_obj)
+                    )[0]
+        #        che_curier_obj_tyre = che_curier_obj_tyre
             # 1.3 создать объекты продажа на дату:   
-                dates_range = len(val[2])
-                list_of_pr_objs = []
-                for n in range(0, dates_range):
-                    #print(val[2][n], val[3][n])
-                    date_month = val[2][n][0]
-                    val_month = val[2][n][1]
-                    money_month = val[3][n][1]
-                    if money_month and val_month:
-                        price_on_date_chem = money_month / val_month
-                    else:
-                        price_on_date_chem = None
-                    #print(date_month, val_month, money_month, money_month)  
-                    pr_obj = prices_models.DataPriceValMoneyChemCurierModel.objects.update_or_create(
-                        data_month_chem = date_month,
-                        val_on_moth_chem = val_month,
-                        money_on_moth_chem = money_month,  
-                        price_on_date_chem = price_on_date_chem,
-                        price_val_money_data = che_curier_obj_tyre,
-                    )
-                    list_of_pr_objs.append(pr_obj)
-                #print('list_of_pr_objs', list_of_pr_objs)
-                    
-            all_checur_objs = prices_models.ChemCurierTyresModel.objects.all()
-            #for obj in all_checur_objs:
-            #    print('!!!!', obj, obj.price_val_money_data_obj.all())'
-            ########################### END ХИКУРЬЕР Ч.2
+        #        dates_range = len(val[2])
+        #        list_of_pr_objs = []
+        #        for n in range(0, dates_range):
+        #            #print(val[2][n], val[3][n])
+        #            date_month = val[2][n][0]
+        #            val_month = val[2][n][1]
+        #            money_month = val[3][n][1]
+        #            if money_month and val_month:
+        #                price_on_date_chem = money_month / val_month
+        #            else:
+        #                price_on_date_chem = None
+        #            print(date_month, val_month, money_month, money_month)  
+        #            pr_obj = prices_models.DataPriceValMoneyChemCurierModel.objects.update_or_create(
+        #                data_month_chem = date_month,
+        #                val_on_moth_chem = val_month,
+        #                money_on_moth_chem = money_month,  
+        #                price_on_date_chem = price_on_date_chem,
+        #                price_val_money_data = che_curier_obj_tyre,
+        #            )
+        #            list_of_pr_objs.append(pr_obj)
+        #        print('list_of_pr_objs', list_of_pr_objs)
+        #            
+        #    all_checur_objs = prices_models.ChemCurierTyresModel.objects.all()
+        #    #for obj in all_checur_objs:
+        #    #    print('!!!!', obj, obj.price_val_money_data_obj.all())'
+        #    ########################### END ХИКУРЬЕР Ч.2
 
 
 

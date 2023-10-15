@@ -3113,7 +3113,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
 
-
+    #    ASKA = models.ChemCurierTyresModel.objects.get(producer_chem='Foman')
+    #    print('!!!!!!!!', 'ASKA', ASKA.price_val_money_data_obj.filter())
+    
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
 
