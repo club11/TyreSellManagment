@@ -2,6 +2,7 @@ from django.db import models
 from dictionaries import models as dictionaries_models
 from tyres import models as tyres_model
 from django.urls import reverse
+import pandas as pd
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -341,11 +342,13 @@ class ComparativeAnalysisTableModel(models.Model):
     def chemcurier_heders_value(self):                 # для расчета количества столбцов с заголовками под данные Chemcurier
         #print('CHEMCURIER_HEADER_NUMBER', CHEMCURIER_HEADER_NUMBER)
         chemcurier_header_1 = 'конкурент Chemcurier'
-        chemcurier_header_2 = 'цена конкурента Chemcurier'
-        chemcurier_header_3 = 'отклонение цены конкурента Chemcurier'
+        chemcurier_header_2 = 'цена конкурента Chemcurier, USD'
+        chemcurier_header_3 = 'цена конкурента Chemcurier, BYN'
+        chemcurier_header_4 = 'отклонение цены конкурента Chemcurier'
+        chemcurier_header_5 = 'посл.период отчета в Chemcurier'
         list_chemcurier_main_headers = []
         for header_number in range(0, CHEMCURIER_HEADER_NUMBER):
-            chemcurier_main_header = chemcurier_header_1, chemcurier_header_2, chemcurier_header_3
+            chemcurier_main_header = chemcurier_header_1, chemcurier_header_2, chemcurier_header_3, chemcurier_header_4, chemcurier_header_5
             list_chemcurier_main_headers.append(chemcurier_main_header)
         #print('list_chemcurier_main_headers =====================kjhdkfjdsjkhj', list_chemcurier_main_headers)
         return list_chemcurier_main_headers
@@ -355,7 +358,7 @@ class ComparativeAnalysisTableModel(models.Model):
         head_lengh = 0
         for header_number in range(0, CHEMCURIER_HEADER_NUMBER):
             if chemcurier_header_2:
-                head_lengh += 3   
+                head_lengh += 5   
         return head_lengh   
 
 #____RUS____
@@ -946,172 +949,154 @@ class ComparativeAnalysisTyresModel(models.Model):
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
     def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
-        chemcurier_unique_result = ''
-        if self.tyre in CHEMCURIER_COMPETITORS_DICTIONARY1.keys():                  # Tyre object (1926) [<ChemCurierTyresModel: ChemCurierTyresModel object (98)>, <ChemCurierTyresModel: ChemCurierTyresModel object (99)>, <ChemCurierTyresModel: ChemCurierTyresModel object (100)>, <ChemCurierTyresModel: ChemCurierTyresModel object (101)>]
-            min_value = '' # минимальное значение из всех прозодителей последнего периода поставки
-            result_min_value_producer = ''  # наименование производителя с наименьшим значением (ценой) в последний период поствки
-            index_of_min_value = ''        # просто индекс, нужен для вылавливания из списков значений index_of_min_value и result_min_value_producer    
-            month_num = '' # номер месяца - на всякий случай
+        try:
+            chemcurier_unique_result = ''
+            if self.tyre in CHEMCURIER_COMPETITORS_DICTIONARY1.keys():                  # Tyre object (1926) [<ChemCurierTyresModel: ChemCurierTyresModel object (98)>, <ChemCurierTyresModel: ChemCurierTyresModel object (99)>, <ChemCurierTyresModel: ChemCurierTyresModel object (100)>, <ChemCurierTyresModel: ChemCurierTyresModel object (101)>]
+                min_value = '' # минимальное значение из всех прозодителей последнего периода поставки
+                result_min_value_producer = ''  # наименование производителя с наименьшим значением (ценой) в последний период поствки
+                index_of_min_value = ''        # просто индекс, нужен для вылавливания из списков значений index_of_min_value и result_min_value_producer    
+                month_num = '' # номер месяца - на всякий случай
 
-            competitors_values_list = CHEMCURIER_COMPETITORS_DICTIONARY1[self.tyre] 
-            ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
-            gathered_tyresizes_by_producer_name_dict = {}
-            #print('HHHFF', competitors_values_list)
-            list_of_producer_names_list = []
-            for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
-                #print('objjectobjjectobjjectobjject======================================================', objject,)
-                if objject is None:
-                    pass
-                else:
-                    list_of_producer_names_list.append(objject.producer_chem)
-            #print('list_of_producer_names_list', list_of_producer_names_list)  
-            for prod_name in list_of_producer_names_list:
-                gathered_tyresizes_by_producer_name_list = []  
+                competitors_values_list = CHEMCURIER_COMPETITORS_DICTIONARY1[self.tyre] 
+                ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
+                gathered_tyresizes_by_producer_name_dict = {}
+                list_of_producer_names_list = []
                 for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
-                # 1. выбрать все строки (типоразмеры) одного производителя:             
-                    if objject.producer_chem == prod_name:
-                        gathered_tyresizes_by_producer_name_list.append(objject)
-                #print('GAZERET', gathered_tyresizes_by_producer_name_list, 'PPP', prod_name)
-                gathered_tyresizes_by_producer_name_dict[prod_name] = gathered_tyresizes_by_producer_name_list
-            #print('|||||', gathered_tyresizes_by_producer_name_dict)    # {'Michelin': [<ChemCurierTyresModel: ChemCurierTyresModel object (109)>], 'Continental': [<ChemCurierTyresModel: ChemCurierTyresModel object (110)>], 'Bridgestone': [<ChemCurierTyresModel:
-            # 2 есть словарь gathered_tyresizes_by_producer_name_dict - все размеры отфильтрованы по производителю, теперь выведение средних их цен по каждому периоду из всех размеров одного производителя:
-            motnth_periods_vol = 0
-            for key, val in gathered_tyresizes_by_producer_name_dict.items():
-                for chemcur_obj in val:                 # ChemCurierTyresModel object (109)):
-                    motnth_periods_vol  = len(chemcur_obj.price_val_money_data_obj.all())
-            # Собираем словарь производитель - все его одинакового типоразмера сложенные по месяцам СО СРЕДНВЗВЕШЕННЫМ ЗНАЧЕНИЕМ
-            gazered_all_sizws_by_periods_in_one_producer = {}                                                                                                                                                             
-            for key, val in gathered_tyresizes_by_producer_name_dict.items(): 
-                #print(key, val)
-                all_prices_by_producer_gathered = {} 
-                for per_num in range(0, motnth_periods_vol):
-                    list_of_values = [] 
-                    for chemcur_obj in val:
-
-    #                    mon_val = chemcur_obj.price_val_money_data_obj.all()[per_num].price_on_date_chem               # ЗДЕСЬ неверно расчитано средневзвешенное значение
-    #                    list_of_values.append(mon_val)
-    #                all_prices_by_producer_gathered[per_num] = list_of_values   
-    #            gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered     
-    #        #print('UU', gazered_all_sizws_by_periods_in_one_producer)                                          # здесь все годно  - все норм посчитано
-    #        # 1 ОПЦИЯ ДЛЯ ВЫВОДА: расчет средневзвешенной стоимости типоразмера одного производителя:
-    #        result_main_per_producer_size_calculated_dict = {}
-    #        for producer, perid_mumb_periods in gazered_all_sizws_by_periods_in_one_producer.items():
-    #            #print(producer, perid_mumb_periods)
-    #            periods_dict = {}
-    #            for perid_mumb, values in perid_mumb_periods.items():
-    #                #print(values, len(values))
-    #                result_summ_in_period = 0
-    #                sum_val_num = 0
-    #                sum_val = 0
-    #                for numb in values:
-    #                    if numb is None:
-    #                        pass
-    #                    else:
-    #                        sum_val_num += 1
-    #                        sum_val += numb
-    #                if sum_val and sum_val_num:
-    #                    result_summ_in_period = sum_val / sum_val_num
-    #                if result_summ_in_period:
-    #                    periods_dict[perid_mumb] = result_summ_in_period
-    #                else:
-    #                    periods_dict[perid_mumb] = None
-    #            #print('!!', periods_dict)
-    #            result_main_per_producer_size_calculated_dict[producer] = periods_dict
-
-                        mon_val = chemcur_obj.price_val_money_data_obj.all()[per_num].val_on_moth_chem, chemcur_obj.price_val_money_data_obj.all()[per_num].money_on_moth_chem
-                        list_of_values.append(mon_val)
-                    all_prices_by_producer_gathered[per_num] = list_of_values   
-                gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered     
-            #print('UU', gazered_all_sizws_by_periods_in_one_producer)                                          # здесь все годно  - все норм посчитано
-            # 1 ОПЦИЯ ДЛЯ ВЫВОДА: расчет средневзвешенной стоимости типоразмера одного производителя:
-            result_main_per_producer_size_calculated_dict = {}
-            for producer, perid_mumb_periods in gazered_all_sizws_by_periods_in_one_producer.items():
-                #print(producer, perid_mumb_periods)
-                periods_dict = {}
-                for perid_mumb, values in perid_mumb_periods.items():
-                    #print(values, len(values))
-                    result_summ_in_period = 0
-                    sum_money_full = 0
-                    sum_val_full = 0
-                    for numb in values:
-                        sum_val, sum_money = numb
-                        if sum_val is None:
-                            pass
-                        else:
-                            #print(sum_val, 'HJHHJGHG')
-                            sum_val_full += sum_val
-                            sum_money_full += sum_money
-                    #print(sum_val_full, ' sum_valsum_valsum_valvsum_val')
-                    if sum_money_full and sum_val_full:
-                        result_summ_in_period = sum_money_full / sum_val_full
-                    if result_summ_in_period:
-                        periods_dict[perid_mumb] = result_summ_in_period
+                    #print('objjectobjjectobjjectobjject======================================================', objject,)
+                    if objject is None:
+                        pass
                     else:
-                        periods_dict[perid_mumb] = None
-                #print('!!', periods_dict)
-                result_main_per_producer_size_calculated_dict[producer] = periods_dict
-            #print('GGGG', result_main_per_producer_size_calculated_dict)
-            #print('---------')
+                        list_of_producer_names_list.append(objject.producer_chem)
+            #    print('list_of_producer_names_list', list_of_producer_names_list) 
+                list_of_producer_names_list = list(set(list_of_producer_names_list)) 
+                for prod_name in list_of_producer_names_list:
+                    gathered_tyresizes_by_producer_name_list = []  
+                    for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
+                    # 1. выбрать все строки (типоразмеры) одного производителя:             
+                        if objject.producer_chem == prod_name:
+                            gathered_tyresizes_by_producer_name_list.append(objject)
+            #        print('GAZERET', gathered_tyresizes_by_producer_name_list, 'PPP', prod_name)
+                    gathered_tyresizes_by_producer_name_dict[prod_name] = gathered_tyresizes_by_producer_name_list
+            #    print('|||||', gathered_tyresizes_by_producer_name_dict)   # ||||| {'Nexen': [<ChemCurierTyresModel: ChemCurierTyresModel object (112)>, <ChemCurierTyresModel: ChemCurierTyresModel object (128)>, <ChemCurierTyresModel: ChemCurierTyresModel object (136)>], 'Continental': [<ChemCurierTyresModel: ChemCurierTyresModel object (120)>]}
+                # 2 есть словарь gathered_tyresizes_by_producer_name_dict - все размеры отфильтрованы по производителю, теперь выведение средних их цен по каждому периоду из всех размеров одного производителя:
+                motnth_periods_vol = []
+                motnth_periods_vol_dates = []
+                for val in gathered_tyresizes_by_producer_name_dict.values():
+                    for chemcur_obj in val:                 # ChemCurierTyresModel object (109)):
+                        motnth_periods_vol_dates.append(chemcur_obj.data_month_chem)
+                    eldest_date = min(motnth_periods_vol_dates)
+                    latest_date = max(motnth_periods_vol_dates)
+                    motnth_periods_vol = pd.date_range(start=eldest_date, end=latest_date).date
+                #print('=========', motnth_periods_vol)         #========= 1
+                # Собираем словарь производитель - все его одинакового типоразмера сложенные по месяцам СО СРЕДНВЗВЕШЕННЫМ ЗНАЧЕНИЕМ        -  сюда можно вмешаться - подмешать проверки по объемам, например
+                gazered_all_sizws_by_periods_in_one_producer = {}                                                                                                                                                             
+                for key, val in gathered_tyresizes_by_producer_name_dict.items(): 
+                    all_prices_by_producer_gathered = {} 
+                    for per_num in motnth_periods_vol:
+                        list_of_values = [] 
+                        for chemcur_obj in val:
+                            if chemcur_obj.data_month_chem == per_num:
+                                mon_val = chemcur_obj.average_price_in_usd
+                                list_of_values.append(mon_val)
+                        all_prices_by_producer_gathered[per_num] = list_of_values   
+                    gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered     
+                print('UU', gazered_all_sizws_by_periods_in_one_producer)                                          # здесь все годно  - все норм посчитано
+                # 1 ОПЦИЯ ДЛЯ ВЫВОДА: расчет средневзвешенной стоимости типоразмера одного производителя:
+                result_main_per_producer_size_calculated_dict = {}
+                for producer, perid_mumb_periods in gazered_all_sizws_by_periods_in_one_producer.items():
+                #    print('=-=-=-=', producer, '=-=-=-=', perid_mumb_periods)
+                    periods_dict = {}
+                    for perid_mumb, values in perid_mumb_periods.items():
+                #        print(values, len(values))
+                        result_summ_in_period = 0           
+                        val_quqnt_calc = 0
+                        for numb in values:
+                #            print('NUMB', numb)
+                            result_summ_in_period += numb
+                            val_quqnt_calc +=1
 
-            ##### РАСЧЕТ ДЛЯ ВЫВОДА 3 произдводителя с наменьшей ценой последнего периода:
-            periods_value = ''            # количество периодов
-            for val in result_main_per_producer_size_calculated_dict.values():
-                periods_value  = len(val)
-                if periods_value and type(periods_value) is int:
-                    continue
-            #print(periods_value, 'HHHH')
-            values_on_period_for_comparison_dict = {}                                                               ## ИТОГОВЫЙ СЛОВАРЬ ключ -период, значение - высчитанная средняя цена ВСЕХ типоразмеров данного производителя (списком) и эти производители (списком)
-            if type(periods_value) is int:                                                                          # Для работы словарь может не пригодиться но наглядно демонстрирует результат
-                for per in range(periods_value, -1, -1 ):     #reversed()      # ЕСЛИ ФОРМИРОВАТЬ СЛОВАРЬ 0 - ноябрь, 1 - октябрь (т.е. от конца года)
-                #for per in range(0, periods_value):     #reversed()             # ЕСЛИ ФОРМИРОВАТЬ СЛОВАРЬ 0 - январь, 1 - февраль (т.е. от начала года)
-                    list_of_values_in_one_period_for_comarison = [] 
-                    list_of_producers = []
-                    for producer_name, per_vvalues in result_main_per_producer_size_calculated_dict.items():                                         
-                        for per_num_key, per_num_val in per_vvalues.items():
-                            #print(per_num_key, 'PP', per_num_val)
-                            if per_num_key == per:
-                                #print(per_num_val, '!!!!!!', per_num_key, producer_name)                    
-                                # работа с данными:
-                                # 1) выборка минимально
-                                if per_num_val is None:
-                                    pass
-                                else:
-                                    list_of_values_in_one_period_for_comarison.append(per_num_val)
-                                    list_of_producers.append(producer_name)
-                                continue
-                    #print('llsdfsdf', list_of_values_in_one_period_for_comarison, 'per_num_key ===', per_num_key)
-                    values_on_period_for_comparison_dict[per] = list_of_values_in_one_period_for_comarison, list_of_producers
-            ####################print('LL', values_on_period_for_comparison_dict)
+                        if result_summ_in_period !=0 and val_quqnt_calc > 0:
+                            periods_dict[perid_mumb] = result_summ_in_period / val_quqnt_calc
+                        else:
+                            periods_dict[perid_mumb] = None
+            #        print('!!', periods_dict)
+                    result_main_per_producer_size_calculated_dict[producer] = periods_dict
+        #        print('GGGG', result_main_per_producer_size_calculated_dict)
+        #        print('---------')
+#
+                ##### РАСЧЕТ ДЛЯ ВЫВОДА 3 произдводителя с наменьшей ценой последнего периода:
+                periods_value = None            # количество периодов
+                for val in result_main_per_producer_size_calculated_dict.values():
+                    periods_value  = len(val)
+                    if periods_value and type(periods_value) is int:
+                        continue
+                #print(periods_value, 'HHHH')
+                
+                values_on_period_for_comparison_dict = {}                                                               ## ИТОГОВЫЙ СЛОВАРЬ ключ -период, значение - высчитанная средняя цена ВСЕХ типоразмеров данного производителя (списком) и эти производители (списком)
+                if periods_value:                                                                                          # Для работы словарь может не пригодиться но наглядно демонстрирует результат
+                    #for per in range(periods_value, -1, -1):
+                    for per in range(periods_value, 0, -1):     #reversed()      # ЕСЛИ ФОРМИРОВАТЬ СЛОВАРЬ 0 - ноябрь, 1 - октябрь (т.е. от конца года) 
+                    #for per in range(0, periods_value):     #reversed()             # ЕСЛИ ФОРМИРОВАТЬ СЛОВАРЬ 0 - январь, 1 - февраль (т.е. от начала года) 
+                        list_of_values_in_one_period_for_comarison = [] 
+                        list_of_producers = []
+                        from_num_to_month_onverter = {}     #для понимания -  номер - какой это месяц
+                        for producer_name, per_vvalues in result_main_per_producer_size_calculated_dict.items(): 
+                            pperiod_count = 1                                        
+                            for per_num_key, per_num_val in per_vvalues.items():
+        #                        print(per_num_key, 'PP', per_num_val, '++', per, '==', pperiod_count)
+                                if pperiod_count == per:
+                                    from_num_to_month_onverter[per] = per_num_key
+                            #        print(per_num_val, '!!!!!!', per_num_key, producer_name)                    
+                                    # работа с данными:
+                                    # 1) выборка минимально
+                                    if per_num_val is None:
+                                        pass
+                                    else:
+                                        list_of_values_in_one_period_for_comarison.append(per_num_val)
+                                        list_of_producers.append(producer_name)
+                                    continue
+                                pperiod_count += 1
+                        #print('llsdfsdf', list_of_values_in_one_period_for_comarison, 'per_num_key ===', per_num_key)
+                        values_on_period_for_comparison_dict[per] = list_of_values_in_one_period_for_comarison, list_of_producers
+        #        print('LL', values_on_period_for_comparison_dict)
+        #        print('from_num_to_month_onverter', from_num_to_month_onverter)
 
-            ######  1.1 подготовка производителя с минимальным значением. Впринципе, есть готовый словарь values_on_period_for_comparison_dict, где собраны средние значения производителей данного типорамера по периодам. Получим  прямо находу хдесь
-            for period_nnum_prod, vval in values_on_period_for_comparison_dict.items():
-                for values in vval:
-                    if values:                  # переборка до первого периода ценами:
-                        #print(vval[0], vval[1])
-                        #print('period_nnum, vval', period_nnum_prod, vval, 'VALUES =', values)
-                        min_value = min(vval[0])
-                        index_of_min_value = vval[0].index(min_value)
-                        result_min_value_producer = vval[1][index_of_min_value]
-                        month_num = period_nnum_prod
-                        #print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', period_nnum_prod)
-                if min_value:           # если есть значение в периоде - то закончить переборку
-                    break
+                ######  1.1 подготовка производителя с минимальным значением. Впринципе, есть готовый словарь values_on_period_for_comparison_dict, где собраны средние значения производителей данного типорамера по периодам. Получим  прямо находу хдесь
+                month_name_from_number_dict = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
+                for period_nnum_prod, vval in values_on_period_for_comparison_dict.items():
+                    for values in vval:
+                        if values:                  # переборка до первого периода ценами:
+                            min_value = min(vval[0])
+                            index_of_min_value = vval[0].index(min_value)
+                            result_min_value_producer = vval[1][index_of_min_value]
+                            month_num = from_num_to_month_onverter[period_nnum_prod].month
+                            month_num_name = month_name_from_number_dict[month_num]
+                            period = month_num_name + ' ' + str(from_num_to_month_onverter[period_nnum_prod].year)
+                    #        print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', period)
+                    if min_value:           # если есть значение в периоде - то закончить переборку
+                        break
+            # ПЕРЕВОД ПО КУРСУ НАЦБАНКА
+                min_value_usd = None
+            if CURRENCY_VALUE_USD:
+                min_value_usd = min_value * CURRENCY_VALUE_USD
 
-        #deflection = ''                                                                                                                      # для расчета отклонения 
-        #if type(min_value) is float and self.belarus902price != None:  
-        #    deflection = self.belarus902price.price / min_value       # для расчета отклонения
-        ##print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
-        ##print('++++')
-        #chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
-        #return chemcurier_unique_result
+            # РАСЧЕТ ОТКЛОНЕНИЯ:        
+                deflection = '' 
+                try:                                                                                                                     # для расчета отклонения 
+                    if type(min_value) is float and self.belarus902price != None:  
+                        deflection = self.belarus902price.price / min_value       # для расчета отклонения
+                        chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
+                except:
+                        chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
+            print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
+            print('11!!', chemcurier_unique_result)
+            return chemcurier_unique_result
+        except:
+            #chemcurier_unique_result = ('', '', '', '', '')
+            #return chemcurier_unique_result
+            pass
 
-            deflection = ''                                                                                                                      # для расчета отклонения 
-            if type(min_value) is float and self.belarus902price != None:  
-                deflection = self.belarus902price.price / min_value       # для расчета отклонения
-        #print('producer = ', result_min_value_producer, 'min value = ', min_value, 'month =', month_num)
-        #print('++++')
-            chemcurier_unique_result = result_min_value_producer, min_value, deflection, #month_num,  #  1) конкурент 2) мин цена псоследнего периода поставки 3) ОТКЛОНЕНИЕ 4) ПЕРИОД № (НАПРИМЕР, 0 - Январь и т.д.) ! ДОПИЛИТЬ  =  перевод в рубли из долларов по курсу НБ
-        return chemcurier_unique_result
+    
 # ______ RUS_____
 
     def express_shina_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены BAGORIA (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   express_shina
@@ -1388,10 +1373,6 @@ class ChemCurierTyresModel(models.Model):
         null=False,
         blank=True,
     )
-    #group_chem = models.CharField(
-    #    verbose_name='подгруппа химкурьер',
-    #    max_length=20,
-    #)
     group_chem = models.ForeignKey(
         dictionaries_models.TyreGroupModel,
         verbose_name='группа шин',
@@ -1400,7 +1381,6 @@ class ChemCurierTyresModel(models.Model):
         null=True,
         blank=True, 
     ) 
-
     currency_chem = models.ForeignKey(
         dictionaries_models.Currency,
         on_delete=models.PROTECT,
@@ -1408,8 +1388,7 @@ class ChemCurierTyresModel(models.Model):
     data_month_chem = models.DateField(
         verbose_name='месяц (дата) поставки',
         null=False,
-        blank=True,
-        
+        blank=True,     
         auto_now=False,
         auto_now_add=False   
     )
@@ -1430,8 +1409,6 @@ class ChemCurierTyresModel(models.Model):
         blank=True,
         null=True
     )
-
-
 
 class DataPriceValMoneyChemCurierModel(models.Model):
     data_month_chem = models.DateTimeField(

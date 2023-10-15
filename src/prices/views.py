@@ -1180,7 +1180,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_matched_competitors = []
             try:
                 if models.ONLINER_COMPETITORS:    
-                    print('models.ONLINER_COMPETITORS', models.ONLINER_COMPETITORS)   
+                    #print('models.ONLINER_COMPETITORS', models.ONLINER_COMPETITORS)   
                     #print('1.')
                     # работа с датами для конкурентов
                     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
@@ -1446,7 +1446,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_matched_competitors = []
             try:
                 if models.AVTOSET_COMPETITORS:
-                    print('models.AVTOSET_COMPETITORS', models.AVTOSET_COMPETITORS)   
+                    #print('models.AVTOSET_COMPETITORS', models.AVTOSET_COMPETITORS)   
                     #print('1.')
                     # работа с датами для конкурентов
                     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
@@ -1459,7 +1459,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         else:
                             date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').latest('date_period').date_period
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by').filter(date_period__range=[date_filter_start, date_filter_end])
-                        print('BAGORIA', date_filter_start, '-', date_filter_end)
+                    #    print('BAGORIA', date_filter_start, '-', date_filter_end)
                     else:
                         #print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.AVTOSET_COMPETITORS, site='autoset.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
@@ -1681,7 +1681,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             try:
                 if models.BAGORIA_COMPETITORS: 
                     #print('models.BAGORIA_COMPETITORS', models.BAGORIA_COMPETITORS)   
-                    print('1.ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА - BAGORIA')
+                    #print('1.ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА - BAGORIA')
                     # работа с датами для конкурентов
                     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
@@ -1789,7 +1789,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 else:
                     # 2.1 работа с датами без конкурентов (вся продукция)
-                    print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА  - BAGORIA')
+                    #print('2.1 НЕ ВЫБРАН БРЕНД И ВВЕДЕНА ДАТА  - BAGORIA')
                     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER or models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START:
                         if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START != ['']:
                             date_filter_start = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START[0], "%Y-%m-%d").date()
@@ -1802,7 +1802,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter_end])
                                                   
                     else:
-                        print('2.2 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
+                        #print('2.2 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
                         got_the_list = all_competitors 
                         # end работа с датами       
                                                                                                        ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
@@ -1903,50 +1903,43 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         ###### END OF BAGORIA
 
 #       ## 2 фильтр конкурентов CHEMCURIER:
-        # if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:       - ЗАГОТОВКА ДЛЯ ФИЛЬТРА ПО ДАТЕ И В ХИМКУРЬЕР
-
         try:
+            # 1.1 ФИЛЬТР по дате (БЕРЕТСЯ ПОСЛЕДНИЙ ПЕРИОД В ОТЧЕТЕ ХИМКУРЬЕР)
+            last_fate_availible_chem = models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
+        #    print('!!!!!!!!!', last_fate_availible_chem, type(last_fate_availible_chem))
+            all_competitors_chem = models.ChemCurierTyresModel.objects.filter(data_month_chem=last_fate_availible_chem)     # по дате 
+        #    print('last_fate_availible_chem', last_fate_availible_chem, 'all_competitors', all_competitors_chem)
+#           # 1.2 ФИЛЬТР список производителей:
+            # 1.2.1 - как вариант - выбор из тех производителей - кого ввел пользователь
 
-            all_competitors = models.ChemCurierTyresModel.objects.all()
-            print(all_competitors, 'all_competitors CHEMM')
-#                # 1.1 ФИЛЬТР по дате
-#            #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
-#                # 1.2 ФИЛЬТР список производителей :
-#            # выбор по производителю:                               
-#            # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
+            list_brands_to_check = []       # набиваем перечень рендов- кого выбрал пользователь
+            if models.BAGORIA_COMPETITORS:
+                list_brands_to_check.extend(models.BAGORIA_COMPETITORS)   
+            if models.AVTOSET_COMPETITORS:
+                list_brands_to_check.extend(models.AVTOSET_COMPETITORS) 
+            if models.ONLINER_COMPETITORS:
+                  list_brands_to_check.extend(models.ONLINER_COMPETITORS)
+
             chemcurier_competitors_dict1 = {}
+            if list_brands_to_check:       # если бренды выбранные есть - искать по ним:                    !!!!!!!! вариант - отбора как обычно делаем
+                all_competitors_chem = all_competitors_chem.filter(producer_chem__in=list_brands_to_check)        # поиск на посл дату в химкурьере по указанным брендам
+            else:
+                pass                                                                                    # поиск на посл дату в химкурьере 
             for object_unit in list_of_tyre_comparative_objects:
-#               object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
-#               object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
                 list_of_matched_competitors = []
-                if models.CHEMCURIER_COMPETITORS:
-                    for competitor in models.ChemCurierTyresModel.objects.filter(producer_chem__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-                            #print("CHEMCURIER На пол шишечки TTT")
+                for competitor in all_competitors_chem:  
+                    for t_gr in object_unit.tyre.tyre_group.all():
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem and t_gr == competitor.group_chem and competitor.average_price_in_usd is not None:         # сверка по типоразмеру и группе шин не пустые
                             list_of_matched_competitors.append(competitor)
-                    chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-                else:
-                    #for competitor in all_competitors[0 : 3]:  
-                    for competitor in all_competitors:  
-                        #print(object_unit.tyre.tyre_size.tyre_size, '&&&', competitor.tyre_size_chem, 'FINSY ZALIV', competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''))                                                                                                   ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                        #if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''):
-                            list_of_matched_competitors.append(competitor)
-                #            print('UMNYE LUDY', competitor)
                 chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-                #for mm, vv in chemcurier_competitors_dict1.items():
-                #    print(mm, vv, 'HHH')
-                #print('chemcurier_competitors_dict1', chemcurier_competitors_dict1)     # hemcurier_competitors_dict1 {<Tyre: Tyre object (1899)>: [], <Tyre: Tyre object (1900)>: [],
-
        #    #####  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
             models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-            object_unit.chemcurier_competitor_on_date1()
-                # CCC [('', '', ''), ('', '', ''), ('', '', '')]
-                #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
-
+            #print('models.CHEMCURIER_COMPETITORS_DICTIONARY1 ==', models.CHEMCURIER_COMPETITORS_DICTIONARY1)
+            for tt in models.CHEMCURIER_COMPETITORS_DICTIONARY1.values():
+                for n in tt:
+                    print(n.producer_chem, n.data_month_chem)
         except:
             pass
-            #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END OF CHEMCURIER
 
         ##################
@@ -2056,7 +2049,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #print('avtoset_max_lengh_header+++++++++++', avtoset_max_lengh_header)
         models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
         #print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
-        print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_HEADER_NUMBER)
+        #print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_HEADER_NUMBER)
         obj.avtoset_heders_value()
         obj.avtoset_heders_lengt()         
         ##END ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ AVTOSET: 
@@ -2734,7 +2727,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 if key[0] == one_vrand_name and key[2] == one_site_name:
                     #print('OPOPOPO', key)
                     some_counter += 1
-        print('some_counter is', some_counter)
+    #    print('some_counter is', some_counter)
         #end  посчитать количество (длину) в словаре:           
         # ищем призраки:
         ghost_comp_site_with_only_null_to_delete_from_dict = []     #! список кортежей (Бренд, Сайт) с одними null для удаления как призрак
@@ -3100,7 +3093,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         ### END СБРОС СЛОВАРЕЙ
 
 
-        print(request.POST, 'TTTH')
+    #    print(request.POST, 'TTTH')
     #    print (request.POST.getlist('competitors'), 'TTTT')
 
         ## 1 работа с периодами:
