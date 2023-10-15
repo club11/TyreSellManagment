@@ -1894,100 +1894,59 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     else:       # если у каждого бренда-производителя по одной модели:
                         bagoria_competitors_dict1 [object_unit.tyre] = list_of_matched_competitors
             except:
-                print('3. EXCEPTION  - BAGORIA')
+        #        print('3. EXCEPTION  - BAGORIA')
                 pass
-
-
 
         models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1
 
-        #print('models.BAGORIA_COMPETITORS_DICTIONARY1', models.BAGORIA_COMPETITORS_DICTIONARY1)
-        #for k, v in models.BAGORIA_COMPETITORS_DICTIONARY1.items():
-        #    for n in v:
-        #        print('+-=-+= ASS', n.developer, n.date_period)        
-
-        #object_unit.bagoria_competitor_on_date1() 
-        #print('bagoria_competitors_dict1', bagoria_competitors_dict1)
-
-        #######!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМЕНЬШЕЙ ЦЕНОЙ:
-        #### !!!!!!
-        #### !!!!!!
-        #### !!!!!!
-        #### !!!!!!
-        ##    some_temporary_dictonary = {}
-        ##    for aaa, vvv in models.BAGORIA_COMPETITORS_DICTIONARY1.items():         # object (2848) [<CompetitorSiteModel: CompetitorSiteModel object (12401)>, <CompetitorSiteModel: CompetitorSiteModel object (12402)>, <CompetitorSiteModel: CompetitorSiteModel object (12403)>]
-        ##        #print('aaa, vvv', aaa, vvv)
-        ##        names_temporary_unique_dev_dict = {}
-        ##        for tt in vvv:
-        ##            #print('kkk', aaa, 'vvv', tt.developer, tt.price)
-        ##            key_exist = names_temporary_unique_dev_dict.get(tt.developer)
-        ##            if key_exist:
-        ##                dict_values = names_temporary_unique_dev_dict[tt.developer]
-        ##                if tt.price < dict_values[1]:               # если есть значение меньше - берем его
-        ##                    names_temporary_unique_dev_dict[tt.developer] = dict_values[0], tt.price 
-        ##            else: 
-        ##                names_temporary_unique_dev_dict[tt.developer] = tt, tt.price 
-        ##        #print('names_temporary_unique_dev_dict', names_temporary_unique_dev_dict)
-        ##        names_temporary_unique_dev_dict_get_competitor_site_model_object = []
-        ##        for k, v in names_temporary_unique_dev_dict.items():
-        ##            names_temporary_unique_dev_dict_get_competitor_site_model_object.append(v[0])
-        ##        #print('11111', names_temporary_unique_dev_dict_get_competitor_site_model_object)
-        ##        some_temporary_dictonary[aaa] = names_temporary_unique_dev_dict_get_competitor_site_model_object
-        ##        #print('=====', some_temporary_dictonary)
-        ##        #a = set([x for x in names_list if names_list.count(x) > 1])
-        ##        #print('!!!!!')
-        ##        #print('kkk', aaa, 'vvv', tt.developer, tt.price)
-        ##        some_temporary_dictonary[aaa] = vvv
-        ##    #    print('==============')
-        ##    models.BAGORIA_COMPETITORS_DICTIONARY1 = some_temporary_dictonary
-        ##### !!!!!!    
-        ##### !!!!!!
         ####### END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМ ЦЕНОЙ:
-
         ###### END OF BAGORIA
 
 #       ## 2 фильтр конкурентов CHEMCURIER:
         # if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:       - ЗАГОТОВКА ДЛЯ ФИЛЬТРА ПО ДАТЕ И В ХИМКУРЬЕР
 
-        all_competitors = models.ChemCurierTyresModel.objects.all()
-        #print(all_competitors , 'all_competitors ')
-#            # 1.1 ФИЛЬТР по дате
-#        #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
-#            # 1.2 ФИЛЬТР список производителей :
-#        # выбор по производителю:                               
-#        # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
-        chemcurier_competitors_dict1 = {}
-        for object_unit in list_of_tyre_comparative_objects:
-#           object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
-#           object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
-            list_of_matched_competitors = []
-            if models.CHEMCURIER_COMPETITORS:
-                for competitor in models.ChemCurierTyresModel.objects.filter(producer_chem__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-                        #print("CHEMCURIER На пол шишечки TTT")
-                        list_of_matched_competitors.append(competitor)
+        try:
+
+            all_competitors = models.ChemCurierTyresModel.objects.all()
+            print(all_competitors, 'all_competitors CHEMM')
+#                # 1.1 ФИЛЬТР по дате
+#            #  all_competitors = models.CompetitorSiteModel.objects.filter(date_period=datetime.date(2022, 11, 22))       # по дате 
+#                # 1.2 ФИЛЬТР список производителей :
+#            # выбор по производителю:                               
+#            # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
+            chemcurier_competitors_dict1 = {}
+            for object_unit in list_of_tyre_comparative_objects:
+#               object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
+#               object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
+                list_of_matched_competitors = []
+                if models.CHEMCURIER_COMPETITORS:
+                    for competitor in models.ChemCurierTyresModel.objects.filter(producer_chem__in=models.CHEMCURIER_COMPETITORS):                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
+                            #print("CHEMCURIER На пол шишечки TTT")
+                            list_of_matched_competitors.append(competitor)
+                    chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                else:
+                    #for competitor in all_competitors[0 : 3]:  
+                    for competitor in all_competitors:  
+                        #print(object_unit.tyre.tyre_size.tyre_size, '&&&', competitor.tyre_size_chem, 'FINSY ZALIV', competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''))                                                                                                   ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
+                        #if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
+                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''):
+                            list_of_matched_competitors.append(competitor)
+                #            print('UMNYE LUDY', competitor)
                 chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-            else:
-                #for competitor in all_competitors[0 : 3]:  
-                for competitor in all_competitors:  
-                    #print(object_unit.tyre.tyre_size.tyre_size, '&&&', competitor.tyre_size_chem, 'FINSY ZALIV', competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''))                                                                                                   ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
-                    #if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem:
-                    if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem.split(',')[0].replace('(', '').replace('\'', ''):
-                        list_of_matched_competitors.append(competitor)
-            #            print('UMNYE LUDY', competitor)
-            chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-            #for mm, vv in chemcurier_competitors_dict1.items():
-            #    print(mm, vv, 'HHH')
-            #print('chemcurier_competitors_dict1', chemcurier_competitors_dict1)     # hemcurier_competitors_dict1 {<Tyre: Tyre object (1899)>: [], <Tyre: Tyre object (1900)>: [],
+                #for mm, vv in chemcurier_competitors_dict1.items():
+                #    print(mm, vv, 'HHH')
+                #print('chemcurier_competitors_dict1', chemcurier_competitors_dict1)     # hemcurier_competitors_dict1 {<Tyre: Tyre object (1899)>: [], <Tyre: Tyre object (1900)>: [],
 
-       ######  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
-        models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-        object_unit.chemcurier_competitor_on_date1()
-            # CCC [('', '', ''), ('', '', ''), ('', '', '')]
-            #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
+       #    #####  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
+            models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
+            object_unit.chemcurier_competitor_on_date1()
+                # CCC [('', '', ''), ('', '', ''), ('', '', '')]
+                #print(object_unit.chemcurier_competitor_on_date1(), 'TTT')  
 
-
-        #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
+        except:
+            pass
+            #context['list_of_tyre_comparative_objects'] = list_of_tyre_comparative_objects
         ###### END OF CHEMCURIER
 
         ##################

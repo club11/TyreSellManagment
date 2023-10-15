@@ -1388,10 +1388,19 @@ class ChemCurierTyresModel(models.Model):
         null=False,
         blank=True,
     )
-    group_chem = models.CharField(
-        verbose_name='подгруппа химкурьер',
-        max_length=20,
-    )
+    #group_chem = models.CharField(
+    #    verbose_name='подгруппа химкурьер',
+    #    max_length=20,
+    #)
+    group_chem = models.ForeignKey(
+        dictionaries_models.TyreGroupModel,
+        verbose_name='группа шин',
+        related_name='chemcurier_group_uusage',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True, 
+    ) 
+
     currency_chem = models.ForeignKey(
         dictionaries_models.Currency,
         on_delete=models.PROTECT,

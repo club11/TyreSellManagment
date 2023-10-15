@@ -1183,18 +1183,27 @@ class ExcelTemplateView(TemplateView):
         #    # 1.2 создать объекты типоразмер производитель группа:
             #    print('tyre_size_chem', key[0])
             #    print('producer_chem', key[2])
-            #    print('group_chem', key[3])
+                print('group_chem', key[3])
             #    print('recipipient_namee', key[4])
                 list_val_price_all_periods_for_row = val[0]
                 for data_month_chem_val in list_val_price_all_periods_for_row:
             #        print('data_month_chem', data_month_chem_val[0])
             #        print('val_on_moth_che', data_month_chem_val[1])
             #        print('money_on_moth_chem ', data_month_chem_val[2])
+                    group_chem_obect = None
+                    if key[3] == 'Шиныдлястроительнойипромышленнойтехники' or key[3] == 'ШиныдлягрузовыхавтоЦМК':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='грузовые')
+                    elif key[3] == 'Шиныдлялегковыхавто':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легковые')
+                    elif key[3] == 'Шиныдляс/хтехники':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='с/х')
+                    elif key[3] == 'Шиныдлялегкогрузовыхавто':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легкогруз')
                     che_curier_obj_tyre = prices_models.ChemCurierTyresModel.objects.update_or_create(
                         tyre_size_chem = key[0],
                         producer_chem = key[2],
                         # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
-                        group_chem = key[3],
+                        group_chem = group_chem_obect,
                         reciever_chem = key[4],
                         currency_chem = currency_chem,
                         data_month_chem = data_month_chem_val[0],
