@@ -39,9 +39,8 @@ class ChemcourierTableModelDetailView(DetailView):
             chosen_period = last_period[0]
             chosen_year_num = chosen_period.year
             chosen_month_num = chosen_period.month  
-
         context['period_form'] = period_form
-        
+
         # 2 получение типоразмера для отбора (создание формы):
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
@@ -50,8 +49,9 @@ class ChemcourierTableModelDetailView(DetailView):
         else:
             if forms.TYRESIZES:
                 tyresizes_form = forms.TyreSizeForm()
-                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка
+                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка    
         context['tyresizes_form'] = tyresizes_form
+        context['current_tyresize'] = tyresize_to_check
         # 3 (необязательные)
         # 3.1 получение бренда для отбора (создание формы):
         tyrebrands_to_check = None
@@ -61,7 +61,6 @@ class ChemcourierTableModelDetailView(DetailView):
         else:    
             tyrebrands_form = forms.BrandForm()
         context['tyrebrands_form'] = tyrebrands_form
-
         # 3.2 получение получателя для отбора (создание формы):
         recievers_to_check = None
         if forms.INITIAL_RECIEVER and forms.INITIAL_RECIEVER != '-':
@@ -70,8 +69,6 @@ class ChemcourierTableModelDetailView(DetailView):
         else:    
             recievers_form = forms.RecieverForm()
         context['recievers_form'] = recievers_form      
-
-
         # 3.3 получение страну производства для отбора (создание формы):
         prod_countrys_to_check = None
         if forms.INITIAL_PRODCOUTRYS and forms.INITIAL_PRODCOUTRYS != '-':
@@ -90,7 +87,6 @@ class ChemcourierTableModelDetailView(DetailView):
             groups_form = forms.GroupForm()
         context['groups_form'] = groups_form   
 
-
         # 4 получить все объекты химкурьер за исключением нулевых значений (шт. деньги) на дату:
         get_chem_courier_objects_from_base = prices_models.ChemCurierTyresModel.objects.filter(data_month_chem__month=chosen_month_num, data_month_chem__year=chosen_year_num, tyre_size_chem=tyresize_to_check).exclude(average_price_in_usd__isnull=True)      
         # 4.1 доп. проверки:
@@ -103,11 +99,9 @@ class ChemcourierTableModelDetailView(DetailView):
         if prod_groups_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
-        
-
-
         get_chem_courier_objects_from_base = get_chem_courier_objects_from_base
         context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
+
         return context  
     
 class ChemcourierTableModelUpdateView(View):

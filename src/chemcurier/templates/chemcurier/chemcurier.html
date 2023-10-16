@@ -7,7 +7,14 @@
 
 <div class="main">
     <div>
-        HHHHHHHHHHHH
+        g<br>
+        g<br>
+        g<br>
+        g<br>
+        g<br>
+    </div>
+    <div>
+        Типоразмер: {{current_tyresize}}
     </div>
 
 
@@ -16,16 +23,22 @@
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">First</th>
-                <th scope="col">Last</th>
-                <th scope="col">Handle</th>
+            {#    <th scope="col">Типоразмер</th> #}
+                <th scope="col">Бренд</th>
+                <th scope="col">Получатель</th>
+                <th scope="col">Стана производства</th>
+                <th scope="col">Группа шин</th>
+                <th scope="col">Объем поставки, шт.</th>
+                <th scope="col">Объем поставки, USD</th>
+                <th scope="col">Средневзвешенная цена реализации единицы товара, бел.руб.</th>
               </tr>
             </thead>
             {% for obj in get_chem_courier_objects_from_base %}
             <tbody>
 
                     <tr>
-                            <td>{{ obj.tyre_size_chem }}</td>
+                            <td>{{ forloop.counter }}</td>
+                            {#    <td>{{ obj.tyre_size_chem }}</td> #}
                             <td>{{ obj.producer_chem }}</td>
                             <td>{{ obj.reciever_chem }}</td>
                             <td>{{ obj.prod_country }}</td>
@@ -43,7 +56,6 @@
     <div>
         <form action="{% url 'chemcurier:chemcurier_update' %}" method="post">
             {% csrf_token %}
-
             <td>{{ period_form }}<br></td> 
             <td>{{ tyresizes_form }}<br></td> 
             <td>{{ tyrebrands_form }}<br></td> 
