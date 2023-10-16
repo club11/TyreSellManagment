@@ -70,6 +70,7 @@ class ExcelTemplateView(TemplateView):
         pieces_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
         money_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
         recipipient_chemcurier_dict = {} # словарь, в который закидываются данные о получателе. на дату ХИМКУРЬЕР
+        prod_country_column_dict = {} # словарь, в который закидываются данные о стране-производителе. на дату ХИМКУРЬЕР
         MAIN_chemcirier_import_dict = {}    # главгый словарь вкуладки импорт ХИМКУРЬЕР
         chemcirier_rows_counter = []        # счетчик строк химкурьер
 
@@ -503,7 +504,13 @@ class ExcelTemplateView(TemplateView):
                                     brand_row = cell.row
                                     for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
                                         for cell in col:                            
-                                            recipipient_chemcurier_dict[cell.row] = cell.value                                                                
+                                            recipipient_chemcurier_dict[cell.row] = cell.value        
+                                if cell.value == 'страна производства':          # получаем колонку 'страна производства'  ХИМКУРЬЕР
+                                    prod_country_column = cell.column
+                                    brand_row = cell.row
+                                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=prod_country_column, max_col=prod_country_column, max_row=sheet.max_row):
+                                        for cell in col:                            
+                                            prod_country_column_dict[cell.row] = cell.value                                                          
                                 if cell.value == 'типоразмер':          # получаем колонку 'типоразмер' ХИМКУРЬЕР
                                     tyr_group_column = cell.column
                                     tyr_group_row = cell.row
@@ -603,9 +610,8 @@ class ExcelTemplateView(TemplateView):
             #print('money_month_chemcurier_dic', money_month_chemcurier_dict)
             #print('date_pieces_row_chemcurier_dict', date_pieces_row_chemcurier_dict)
             #print('recipipient_chemcurier_dict', recipipient_chemcurier_dict)
-
-
- 
+            #print('prod_country_column_dict', prod_country_column_dict)
+            
 
             ##################### END ХИМКУРЬЕР Ч.1
 
@@ -1149,6 +1155,7 @@ class ExcelTemplateView(TemplateView):
                     brand_namee = brend_chemcurier_dict.get(row_num, 0)
                     group_namee = tire_group_chemcurier_dict.get(row_num, 0)
                     recipipient_namee = recipipient_chemcurier_dict.get(row_num, 0)
+                    prod_country_namee = prod_country_column_dict.get(row_num, 0)
                     #print('LEN', len(new_money_month_chemcurier_dict.get(row_num, 1)),' ===== ')
                     periods_counter_max_val = len(new_money_month_chemcurier_dict.get(row_num, 1)) 
                     periods_counter = 0
@@ -1169,7 +1176,7 @@ class ExcelTemplateView(TemplateView):
                             values_prices_per_month_list.append(pices_per_month_money_per_month)
                     
                     #MAIN_chemcirier_import_dict[tyr_size, row_num] = brand_namee, group_namee, pices_per_month, money_per_month 
-                    MAIN_chemcirier_import_dict[tyr_size, row_num, brand_namee, group_namee, recipipient_namee] = list(values_prices_per_month_list), periods_counter 
+                    MAIN_chemcirier_import_dict[tyr_size, row_num, brand_namee, group_namee, recipipient_namee, prod_country_namee] = list(values_prices_per_month_list), periods_counter 
             
             # перечень всех доступных дат (месяцев):
             month_in_chemcurier_table = list(money_month_chemcurier_dict.keys())
@@ -1185,6 +1192,7 @@ class ExcelTemplateView(TemplateView):
             #    print('producer_chem', key[2])
                 print('group_chem', key[3])
             #    print('recipipient_namee', key[4])
+                print('recipipient_namee', key[5])
                 list_val_price_all_periods_for_row = val[0]
                 for data_month_chem_val in list_val_price_all_periods_for_row:
             #        print('data_month_chem', data_month_chem_val[0])
@@ -1205,6 +1213,7 @@ class ExcelTemplateView(TemplateView):
                         # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
                         group_chem = group_chem_obect,
                         reciever_chem = key[4],
+                        prod_country = key[5],
                         currency_chem = currency_chem,
                         data_month_chem = data_month_chem_val[0],
                         val_on_moth_chem = data_month_chem_val[1],

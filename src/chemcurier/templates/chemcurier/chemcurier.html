@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load my_tags %}
+{% load googlecharts %}
+{% block title %} Comparative table Belarus {% endblock title %}
+{% block body %} 
+
+<div class="main">
+    <div></div>
+
+
+    <div class="table-responsive" id="table_container">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">First</th>
+                <th scope="col">Last</th>
+                <th scope="col">Handle</th>
+              </tr>
+            </thead>
+            {% for obj in get_chem_courier_objects_from_base %}
+            <tbody>
+
+                    <tr>
+                            <td>{{ obj.tyre_size_chem }}</td>
+                            <td>{{ obj.producer_chem }}</td>
+                            <td>{{ obj.reciever_chem }}</td>
+                            <td>{{ obj.prod_country }}</td>
+                            <td>{{ obj.group_chem.tyre_group }}</td>
+                            <td>{{ obj.val_on_moth_chem }}</td>
+                            <td>{{ obj.money_on_moth_chem }}</td>
+                            <td>{{ obj.average_price_in_usd }}</td>
+                    </tr>
+
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div>
+        <form action="{% url 'chemcurier:chemcurier_update' %}" method="post">
+            {% csrf_token %}
+
+            <td>{{ period_form }}<br></td> 
+            <td>{{ tyresizes_form }}<br></td> 
+            <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
+        </form>
+    </div>
+
+
+</div>
+
+
+
+  {% endblock body %}

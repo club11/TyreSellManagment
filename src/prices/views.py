@@ -2191,7 +2191,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #######      
         # 
         # 4) ввод % отклонения торговой надбавки:
-        deflection_form = forms.DeflectionInputForm(   initial={'deflection_data': models.DEFLECTION_VAL})
+        deflection_form = forms.DeflectionInputForm(initial={'deflection_data': models.DEFLECTION_VAL})
         context['deflection_form'] = deflection_form
         current_deflection_value = models.DEFLECTION_VAL
         if current_deflection_value is None:

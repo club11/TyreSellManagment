@@ -1375,6 +1375,12 @@ class ChemCurierTyresModel(models.Model):
         null=False,
         blank=True,
     )
+    prod_country = models.CharField(
+        verbose_name='страна производства',
+        max_length=25,
+        null=False,
+        blank=True,
+    )    
     group_chem = models.ForeignKey(
         dictionaries_models.TyreGroupModel,
         verbose_name='группа шин',

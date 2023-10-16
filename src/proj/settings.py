@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'prices',
     'crispy_forms',
     'googlecharts',
+    'chemcurier',
 
+    
 ]
 
 MIDDLEWARE = [
