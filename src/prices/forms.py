@@ -49,7 +49,7 @@ class PaginationInputForm(forms.Form):
     widget=forms.NumberInput(attrs={'id': 'pagination_data', 'step': "1"}))
 
 class CompetitoPerSiteInputForm(forms.Form):
-    competitor_pagination_data = forms.IntegerField(label='количество выводимых конкурентов в таблице (0-5)', required=True, max_value=5, min_value=0, 
+    competitor_pagination_data = forms.IntegerField(label='количество выводимых конкурентов в таблице (0-5)', required=True, max_value=5, min_value=1, 
     widget=forms.NumberInput(attrs={'id': 'competitor_pagination_data', 'step': "1"}))
 
 class CurrencyDateInputForm(forms.Form):
