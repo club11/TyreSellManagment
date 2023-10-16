@@ -39,6 +39,14 @@
             </a>
           <div class=".collapse.show" id="collapseExample">
               <span>
+                {% if end_date_is_not_chosen_bage %} 
+                  {{ end_date_is_not_chosen_bage }}
+                {% endif %}<br>
+                {% if end_date_is_not_chosen_bage %} 
+                  {{ start_date_is_not_chosen_bage }}
+                {% endif %}<br>
+
+
                 {% if producer_filter_brand_list_checked__only_3_cheapest_chosen_bage %} 
                   {{ producer_filter_brand_list_checked__only_3_cheapest_chosen_bage }}
                 {% endif %}<br>

@@ -1904,7 +1904,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
 #       ## 2 фильтр конкурентов CHEMCURIER:
         try:
-            # 1.1 ФИЛЬТР по дате (БЕРЕТСЯ ПОСЛЕДНИЙ ПЕРИОД В ОТЧЕТЕ ХИМКУРЬЕР)
+            # 1.1 ФИЛЬТР по дате (БЕРЕТСЯ ПОСЛЕДНИЙ ПЕРИОД В ОТЧЕТЕ ХИМКУРЬЕР) # НО - МОЖНО И СДЕЛАТЬ ЗА ПЕРИОД - В MODELS ЕСТЬ РАСЧЕТ НА ПЕРИОДЫ - НУЖНО ТОЛЬКО ЗДЕЬ УБРАТЬ НА ПОСЛ ДАТУ И ЗАДАТЬ ПЕРИОД ОТБОРА
             last_fate_availible_chem = models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
         #    print('!!!!!!!!!', last_fate_availible_chem, type(last_fate_availible_chem))
             all_competitors_chem = models.ChemCurierTyresModel.objects.filter(data_month_chem=last_fate_availible_chem)     # по дате 
@@ -2046,7 +2046,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 avtoset_max_lengh_header = max(avtoset_lengh_list)
         else:
             avtoset_max_lengh_header = 0
-        #print('avtoset_max_lengh_header+++++++++++', avtoset_max_lengh_header)
+        #print('avtoset_max_lengh_header+++++++++++', avtoset_max_lengh_header, 'avtoset_lengh_list', avtoset_lengh_list, 'models.COMPET_PER_SITE', models.COMPET_PER_SITE)
         models.AVTOSET_HEADER_NUMBER = avtoset_max_lengh_header
         #print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_COMPETITORS_NAMES_FILTER )
         #print('models.AVTOSET_HEADER_NUMBER ====+++==', models.AVTOSET_HEADER_NUMBER)
@@ -2106,8 +2106,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             for namee in brand_names:
                 name_and_status = namee, ''
                 brand_names_check_status_list.append(name_and_status)
-                context['producer_filter_brand_list_checked__only_3_cheapest_chosen_bage'] = 'поиск по бренду с наименьшей ценой (т.к.конкретный бренд не выбран)'
+                context['producer_filter_brand_list_checked__only_3_cheapest_chosen_bage'] = 'бренд не выбран (автоматически предоставлены данные о всех брендах)'
 ######        print('brand_names_check_status_list1111', brand_names_check_status_list)
+
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_IS_NOT_CHOSEN is True:
+            context['end_date_is_not_chosen_bage'] = 'конечная дата не выбрана (дата выставлена автоматически)'
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START_IS_NOT_CHOSEN is True:
+            context['start_date_is_not_chosen_bage'] = 'начальная дата не выбрана (дата выставлена автоматически)'
+
+
+
         context['producer_filter_brand_list'] = brand_names_check_status_list
         context['producer_filter_brand_list_checked_bage'] = models.PRODUCER_FILTER_BRAND_LIST_CHECKED_ON        # для вплывающей подсказки - значек с выбранными позициями брендов       # для вплывающей подсказки - значек с выбранными позициями брендов
         #context['producer_filter_brand_list'] = list(dictionaries_models.CompetitorModel.objects.filter(developer_competitor__site__in=['onliner.by', 'bagoria.by', 'autoset.by']).distinct().values_list("competitor_name", flat=True).order_by('competitor_name'))
@@ -3064,9 +3072,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
-
-    #    ASKA = models.ChemCurierTyresModel.objects.get(producer_chem='Foman')
-    #    print('!!!!!!!!', 'ASKA', ASKA.price_val_money_data_obj.filter())
     
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
@@ -3100,20 +3105,28 @@ class ComparativeAnalysisTableModelUpdateView(View):
         comparative_model_parcing_date = request.POST.getlist('parcing_date') 
         #print('comparative_model_parcing_date', comparative_model_parcing_date , type(comparative_model_parcing_date))
         if comparative_model_parcing_date == ['']:
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER = [datetime.date.today().strftime('%Y-%m-%d')]      # автоматически ставит дату на сегодня
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER_IS_NOT_CHOSEN = True
             pass
-        elif comparative_model_parcing_date:
+        elif comparative_model_parcing_date and comparative_model_parcing_date != ['']:
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER = comparative_model_parcing_date
-        #    print('++++++++++++++++', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER_IS_NOT_CHOSEN = False
         else:
             pass
 
         comparative_model_parcing_date_start = request.POST.getlist('parcing_date_start') 
         if comparative_model_parcing_date_start == ['']:
+            today_is = datetime.date.today()                                                                # автоматически ставит дату на неделю назад
+            week_ago_date = today_is - datetime.timedelta(days=7)
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = [week_ago_date.strftime('%Y-%m-%d')]
+            #print('models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START_IS_NOT_CHOSEN = True
             pass
-        if comparative_model_parcing_date_start:
+        if comparative_model_parcing_date_start and comparative_model_parcing_date_start != ['']:
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = comparative_model_parcing_date_start
-        #    print('----------------', models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START)
+            models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START_IS_NOT_CHOSEN = False
         else:
+        #    print(' +++++ 3')
             pass
 
         #### 1.1 ПЕРИОД ДЛЯ КУРСА ВАЛЮТ:
@@ -3124,7 +3137,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
         if chosen_date_for_currency:
             #print('chosen_date_for_currency1', chosen_date_for_currency)  
             chosen_date_for_currency = '-'.join(str(x) for x in chosen_date_for_currency)
-            print('chosen_date_for_currency', chosen_date_for_currency)             # 'parcing_date': ['2023-03-14'],  chosen_date_for_currency 2022-1-30
+        #    print('chosen_date_for_currency', chosen_date_for_currency)             # 'parcing_date': ['2023-03-14'],  chosen_date_for_currency 2022-1-30
             check_date = datetime.datetime.strptime(chosen_date_for_currency, "%Y-%m-%d").date()        #  если пользователем введена дана превышающая текущую для получения курса валют то нао скинуть на сегодня:
             if check_date > datetime.datetime.now().date():
                 pass

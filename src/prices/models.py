@@ -39,15 +39,17 @@ ONL_AVT_BAG_ALL_BRANDS_CHOSEN = None
 
 SELF_PRODUCTION = []
 SELF_PRODUCTION_ALL = []
-SELF_PRODUCTION_FIRST = False
+SELF_PRODUCTION_FIRST = True
 COMPETITORS_DATE_FROM_USER_ON_FILTER = []
 COMPETITORS_DATE_FROM_USER_ON_FILTER_START = False
 TYRE_GROUPS = []
 TYRE_GROUPS_ALL=[]
+COMPETITORS_DATE_FROM_USER_ON_FILTER_IS_NOT_CHOSEN = False
+COMPETITORS_DATE_FROM_USER_ON_FILTER_START_IS_NOT_CHOSEN = False
 
 DEFLECTION_VAL = None
 PAGINATION_VAL = None
-COMPET_PER_SITE = None
+COMPET_PER_SITE = 2
 # ______ RUS_____
 
 EXPRESS_SHINA_COMPETITORS = []
@@ -1000,7 +1002,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                                 list_of_values.append(mon_val)
                         all_prices_by_producer_gathered[per_num] = list_of_values   
                     gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered     
-                print('UU', gazered_all_sizws_by_periods_in_one_producer)                                          # здесь все годно  - все норм посчитано
+    #            print('UU', gazered_all_sizws_by_periods_in_one_producer)                                          # здесь все годно  - все норм посчитано
                 # 1 ОПЦИЯ ДЛЯ ВЫВОДА: расчет средневзвешенной стоимости типоразмера одного производителя:
                 result_main_per_producer_size_calculated_dict = {}
                 for producer, perid_mumb_periods in gazered_all_sizws_by_periods_in_one_producer.items():
@@ -1089,7 +1091,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 except:
                         chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
             print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
-            print('11!!', chemcurier_unique_result)
+    #        print('11!!', chemcurier_unique_result)
             return chemcurier_unique_result
         except:
             #chemcurier_unique_result = ('', '', '', '', '')
