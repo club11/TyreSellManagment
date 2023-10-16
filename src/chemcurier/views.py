@@ -72,7 +72,7 @@ class ChemcourierTableModelDetailView(DetailView):
         context['recievers_form'] = recievers_form      
 
 
-        # 3.3 получение получателя для отбора (создание формы):
+        # 3.3 получение страну производства для отбора (создание формы):
         prod_countrys_to_check = None
         if forms.INITIAL_PRODCOUTRYS and forms.INITIAL_PRODCOUTRYS != '-':
             prod_countrys_form = forms.ProdCountryForm(initial={'prod_countrys': forms.INITIAL_PRODCOUTRYS})
@@ -80,6 +80,15 @@ class ChemcourierTableModelDetailView(DetailView):
         else:    
             prod_countrys_form = forms.ProdCountryForm()
         context['prod_countrys_form'] = prod_countrys_form   
+
+        # 3.4 получение группу для отбора (создание формы):
+        prod_groups_to_check = None
+        if forms.INITIAL_GROUPS and forms.INITIAL_GROUPS != '-':
+            groups_form = forms.GroupForm(initial={'prod_groups': forms.INITIAL_GROUPS})
+            prod_groups_to_check = forms.INITIAL_GROUPS
+        else:    
+            groups_form = forms.GroupForm()
+        context['groups_form'] = groups_form   
 
 
         # 4 получить все объекты химкурьер за исключением нулевых значений (шт. деньги) на дату:
@@ -91,6 +100,8 @@ class ChemcourierTableModelDetailView(DetailView):
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(reciever_chem=recievers_to_check)
         if prod_countrys_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(prod_country=prod_countrys_to_check)
+        if prod_groups_to_check:   
+            get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
         
 
@@ -132,5 +143,12 @@ class ChemcourierTableModelUpdateView(View):
             forms.INITIAL_PRODCOUTRYS = get_prod_countrys
         else:
             forms.INITIAL_PRODCOUTRYS = None
+
+        # 6. получаем группу производства от пользователя для поиска и установки initial значения в группах формы выбора    
+        get_prod_groups = request.POST.get('prod_groups') 
+        if get_prod_groups and get_prod_groups != '-':
+            forms.INITIAL_GROUPS = get_prod_groups
+        else:
+            forms.INITIAL_GROUPS = None
 
         return HttpResponseRedirect(reverse_lazy('chemcurier:chemcurier_table'))

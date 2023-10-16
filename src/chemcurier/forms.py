@@ -19,6 +19,9 @@ RECIEVERS = None
 INITIAL_PRODCOUTRYS = None
 PRODCOUTRYS = None
 
+INITIAL_GROUPS = None
+GROUPS = None
+
 def get_chem_periods():
     earlest_date = prices_models.ChemCurierTyresModel.objects.earliest('data_month_chem').data_month_chem
     latestst_date = prices_models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
@@ -75,12 +78,24 @@ def get_prod_countrys_list():
         list_of_prod_country.append(prod_country_val)
     return list_of_prod_country  
 
+def get_groups_list():
+    list_of_groups = [('-','-')]
+    list_of_groups_only = [] 
+    for obj in prices_models.ChemCurierTyresModel.objects.all():
+      list_of_groups_only.append(obj.group_chem)  
+    list_of_groups_only = list(set(list_of_groups_only))
+    for group_chem in list_of_groups_only:      # добавляем ключи:
+        group_chem_val = group_chem.tyre_group, group_chem.tyre_group
+        list_of_groups.append(group_chem_val)
+    return list_of_groups  
+
 
 PERIODS = get_chem_periods() 
 TYRESIZES = get_tyresizes_list()
 BRANDS = get_tyrebrands_list()
 RECIEVERS = get_recievers_list()
 PRODCOUTRYS = get_prod_countrys_list()
+GROUPS = get_groups_list()
 
 class PeriodForm(forms.Form): 
     Parameter_CHOICES = PERIODS   
@@ -123,5 +138,14 @@ class ProdCountryForm(forms.Form):
         widget = forms.Select,
         choices = Parameter_CHOICES_PRODCOUTRYS,
         label='Стана производства',   
+        required=False,  
+    )
+
+class GroupForm(forms.Form): 
+    Parameter_CHOICES_GROUPS = GROUPS  
+    prod_groups = forms.ChoiceField(
+        widget = forms.Select,
+        choices = Parameter_CHOICES_GROUPS,
+        label='Группа шин',   
         required=False,  
     )
