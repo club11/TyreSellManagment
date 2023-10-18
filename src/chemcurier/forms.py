@@ -23,15 +23,19 @@ INITIAL_GROUPS = None
 GROUPS = None
 
 def get_chem_periods():
-    earlest_date = prices_models.ChemCurierTyresModel.objects.earliest('data_month_chem').data_month_chem
-    latestst_date = prices_models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
-    period_of_dates_chem_in_base = pd.date_range(earlest_date, latestst_date, freq='MS').date
     list_of_choices = []
-    for dattte in period_of_dates_chem_in_base:
-        str_date = dattte.strftime('%m.%Y')
-        str_date_and_date = dattte, str_date
-        list_of_choices.append(str_date_and_date)
-    list_of_choices = list(reversed(list_of_choices))
+    try:
+        earlest_date = prices_models.ChemCurierTyresModel.objects.earliest('data_month_chem').data_month_chem
+        latestst_date = prices_models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
+        period_of_dates_chem_in_base = pd.date_range(earlest_date, latestst_date, freq='MS').date
+
+        for dattte in period_of_dates_chem_in_base:
+            str_date = dattte.strftime('%m.%Y')
+            str_date_and_date = dattte, str_date
+            list_of_choices.append(str_date_and_date)
+        list_of_choices = list(reversed(list_of_choices))
+    except:
+        pass
     return list_of_choices
 
 def get_tyresizes_list():
