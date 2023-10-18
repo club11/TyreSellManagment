@@ -31,21 +31,27 @@ class ChemcourierTableModelDetailView(DetailView):
             period_form = forms.PeriodForm(initial={'periods': forms.INITIAL_PERIOD})
             chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD, '%Y-%m-%d').date()         
             chosen_year_num = chosen_period.year
-            chosen_month_num = chosen_period.month
-        else:                                                                               # если пользователь не выбрал период
-            period_form = forms.PeriodForm()
-            last_period = forms.PERIODS[-1] 
-            chosen_period = last_period[0]
-            chosen_year_num = chosen_period.year
-            chosen_month_num = chosen_period.month  
+            chosen_month_num = chosen_period.month   
+        else: 
+            try:                                                                               # если пользователь не выбрал период
+                period_form = forms.PeriodForm()
+                last_period = forms.PERIODS[-1] 
+                chosen_period = last_period[0]
+                chosen_year_num = chosen_period.year
+                chosen_month_num = chosen_period.month  
+            except:
+                period_form = forms.PeriodForm()
         context['period_form'] = period_form
 
         # 2 получение типоразмера для отбора (создание формы):
+        tyresizes_form = forms.TyreSizeForm()
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
+            print('1===', forms.INITIAL_TYREISIZE )
             tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
             tyresize_to_check = forms.INITIAL_TYREISIZE
         else:
+            print('2===')
             if forms.TYRESIZES:
                 tyresizes_form = forms.TyreSizeForm()
                 tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка    
@@ -87,8 +93,7 @@ class ChemcourierTableModelDetailView(DetailView):
         context['groups_form'] = groups_form   
 
         # 4 получить все объекты химкурьер за исключением нулевых значений (шт. деньги) на дату:
-        get_chem_courier_objects_from_base = prices_models.ChemCurierTyresModel.objects.all()
-    #    get_chem_courier_objects_from_base = prices_models.ChemCurierTyresModel.objects.filter(data_month_chem__month=chosen_month_num, data_month_chem__year=chosen_year_num, tyre_size_chem=tyresize_to_check).exclude(average_price_in_usd__isnull=True)      
+        get_chem_courier_objects_from_base = prices_models.ChemCurierTyresModel.objects.filter(data_month_chem__month=chosen_month_num, data_month_chem__year=chosen_year_num, tyre_size_chem=tyresize_to_check).exclude(average_price_in_usd__isnull=True)      
         # 4.1 доп. проверки:
         if tyrebrands_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(producer_chem=tyrebrands_to_check)
