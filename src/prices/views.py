@@ -1010,6 +1010,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         obj = context.get('object')
 
         # ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ       
+        curr_value = None
+        currency = None
+        shown_date = None
         if models.CURRENCY_ON_DATE is False:                         # запускаем получение курса валют с НБ РБ только раз за день
             try:
                 cu, cu_val, sh_date = my_tags.currency_on_date()
@@ -1018,16 +1021,21 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     models.CURRENCY_IS_CLEANED = currency, curr_value, shown_date   # записываем полученные значения
                     models.CURRENCY_ON_DATE = True
             except:
-                currency, curr_value, shown_date = my_tags.currency_on_date()     # если что -то пошло не так - берем данные с сайта        
-        else:
-            currency, curr_value, shown_date = models.CURRENCY_IS_CLEANED      # берем записанные значения 
-
-        if models.CURRENCY_DATE_GOT_FROM_USER:                              # если пользователь вводит данные (получить курс на определенную дату):
+                currency, curr_value, shown_date = my_tags.currency_on_date()     # если что -то пошло не так - берем данные с сайта  
+                models.CURRENCY_IS_CLEANED = currency, curr_value, shown_date
+                models.CURRENCY_ON_DATE = True  
+        if models.CURRENCY_DATE_GOT_FROM_USER:                              # если пользователь вводит данные (получить курс на определенную дату): #
             if models.CURRENCY_DATE_GOT_FROM_USER_CLEANED:                  # если только что получал данные на эту дату - то не надо запускать фунцкию - взять что уже собрано
                 try:
                     currency_already, curr_value_already, shown_date_already = models.CURRENCY_DATE_GOT_FROM_USER_CLEANED
+                    if shown_date_already == models.CURRENCY_DATE_GOT_FROM_USER:
+                       currency_already, curr_value_already, shown_date_already = models.CURRENCY_DATE_GOT_FROM_USER_CLEANED 
+                    else:
+                        currency, curr_value, shown_date = my_tags.currency_on_date()
+                        models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
                 except:
-                    currency_already, curr_value_already, shown_date_already = None, None, None
+                    currency, curr_value, shown_date = my_tags.currency_on_date()
+                    models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
                 if shown_date_already == models.CURRENCY_DATE_GOT_FROM_USER:
                    currency, curr_value, shown_date = currency_already, curr_value_already, shown_date_already
             else:                                                           # если ничего - тогда обращаемся к функции:
@@ -2451,7 +2459,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_last_dates.append(last_date)
 
         if no_data_on_date is True:     # если отсутствуют данные типоразмеры с конкурентами
-            print('models.COMPETITORS_DATE_FROM_USER_ON_FILTERRR', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
+        #    print('models.COMPETITORS_DATE_FROM_USER_ON_FILTERRR', models.COMPETITORS_DATE_FROM_USER_ON_FILTER)
             if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
                 chossen_day = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], '%Y-%m-%d').date()
             else:
@@ -3143,6 +3151,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
                 pass
             else:
                 models.CURRENCY_DATE_GOT_FROM_USER = chosen_date_for_currency
+                models.CURRENCY_ON_DATE is True
 #
         # 2-й работа с группами шин:
         tyre_groups_list_all = request.POST.getlist('self_production_group_id_all')

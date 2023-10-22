@@ -1418,6 +1418,10 @@ class ChemCurierTyresModel(models.Model):
         null=True
     )
 
+    def average_from_usd_to_bel(self):
+        average_from_usd_to_be = CURRENCY_VALUE_USD * self.average_price_in_usd
+        return average_from_usd_to_be
+
 class DataPriceValMoneyChemCurierModel(models.Model):
     data_month_chem = models.DateTimeField(
         verbose_name='месяц (дата) поставки',

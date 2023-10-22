@@ -4,9 +4,15 @@ from django.http import HttpResponseRedirect
 from . import models
 from . import forms
 from prices import models as prices_models
+from prices import forms as prices_forms
+from homepage.templatetags import my_tags as homepage_my_tags
 from django.views.generic import DetailView, View
 import datetime
 import pandas as pd
+
+
+
+
 class ChemcourierTableModelDetailView(DetailView):
     model = models.ChemCourierTableModel
     template_name = 'chemcurier/chemcurier.html'
@@ -25,7 +31,7 @@ class ChemcourierTableModelDetailView(DetailView):
         # сфомированно в форме
 
         #1.2 форма для ввода периорда + получение месяца и года для поиска в базе Chemcurier объектов:
-        chosen_year_num = 1
+        chosen_month_num = 1
         chosen_year_num = 1
         if forms.INITIAL_PERIOD:                                                            # если пользователь выбрал период
             period_form = forms.PeriodForm(initial={'periods': forms.INITIAL_PERIOD})
@@ -47,11 +53,11 @@ class ChemcourierTableModelDetailView(DetailView):
         tyresizes_form = forms.TyreSizeForm()
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
-            print('1===', forms.INITIAL_TYREISIZE )
+    #        print('1===', forms.INITIAL_TYREISIZE )
             tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
             tyresize_to_check = forms.INITIAL_TYREISIZE
         else:
-            print('2===')
+    #        print('2===')
             if forms.TYRESIZES:
                 tyresizes_form = forms.TyreSizeForm()
                 tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка    
@@ -92,9 +98,63 @@ class ChemcourierTableModelDetailView(DetailView):
             groups_form = forms.GroupForm()
         context['groups_form'] = groups_form   
 
-        # 4 получить все объекты химкурьер за исключением нулевых значений (шт. деньги) на дату:
+        # 4 ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ    
+        print('prices_models.CURRENCY_DATE_GOT_FROM_USER ===========', prices_models.CURRENCY_DATE_GOT_FROM_USER, 'prices_models.CURRENCY_IS_CLEANED ====', prices_models.CURRENCY_IS_CLEANED)   
+        curr_value = None
+        currency = None
+        shown_date = None
+        if prices_models.CURRENCY_ON_DATE is False:                         # запускаем получение курса валют с НБ РБ только раз за день
+            try:
+                cu, cu_val, sh_date = homepage_my_tags.currency_on_date()
+                if datetime.datetime.today().strftime("%Y-%m-%d") == sh_date:       # если на сегодняшнюю дату результат получен - то более не запрашивать
+                    currency, curr_value, shown_date = cu, cu_val, sh_date
+                    prices_models.CURRENCY_IS_CLEANED = currency, curr_value, shown_date   # записываем полученные значения
+                    prices_models.CURRENCY_ON_DATE = True
+            except:
+                currency, curr_value, shown_date = homepage_my_tags.currency_on_date()     # если что -то пошло не так - берем данные с сайта  
+                prices_models.CURRENCY_IS_CLEANED = currency, curr_value, shown_date
+                prices_models.CURRENCY_ON_DATE = True  
+        if prices_models.CURRENCY_DATE_GOT_FROM_USER:                              # если пользователь вводит данные (получить курс на определенную дату): #
+            if prices_models.CURRENCY_DATE_GOT_FROM_USER_CLEANED:                  # если только что получал данные на эту дату - то не надо запускать фунцкию - взять что уже собрано
+                try:
+                    currency_already, curr_value_already, shown_date_already = prices_models.CURRENCY_DATE_GOT_FROM_USER_CLEANED
+                    if shown_date_already == prices_models.CURRENCY_DATE_GOT_FROM_USER:
+                       currency_already, curr_value_already, shown_date_already = prices_models.CURRENCY_DATE_GOT_FROM_USER_CLEANED 
+                    else:
+                        currency, curr_value, shown_date = homepage_my_tags.currency_on_date()
+                        prices_models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
+                except:
+                    currency, curr_value, shown_date = homepage_my_tags.currency_on_date()
+                    prices_models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
+                if shown_date_already == prices_models.CURRENCY_DATE_GOT_FROM_USER:
+                   currency, curr_value, shown_date = currency_already, curr_value_already, shown_date_already
+            else:                                                           # если ничего - тогда обращаемся к функции:
+                currency, curr_value, shown_date = homepage_my_tags.currency_on_date()
+                prices_models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
+
+        #prices_models.CURRENCY_VALUE_RUB = curr_value / 100
+        prices_models.CURRENCY_VALUE_USD = curr_value 
+
+        currency_input_form = prices_forms.CurrencyDateInputForm()
+        context['currency_input_form'] = currency_input_form
+        context['currency'] = currency
+        context['curr_value'] = curr_value
+        date_exist_true = None
+        if shown_date:
+            date_exist_true = datetime.datetime.strptime(shown_date, "%Y-%m-%d").date()
+        else:
+            date_exist_true = datetime.date.today()
+        currency_input_form = prices_forms.CurrencyDateInputForm()       
+        currency_input_form.fields['chosen_date_for_currency'].initial = date_exist_true                        # !!! ЭТО БАЗА
+        context['currency_input_form'] = currency_input_form
+
+
+        ## END ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ
+
+
+        # 5 получить все объекты химкурьер за исключением нулевых значений (шт. деньги) на дату:
         get_chem_courier_objects_from_base = prices_models.ChemCurierTyresModel.objects.filter(data_month_chem__month=chosen_month_num, data_month_chem__year=chosen_year_num, tyre_size_chem=tyresize_to_check).exclude(average_price_in_usd__isnull=True)      
-        # 4.1 доп. проверки:
+        # 5.1 доп. проверки:
         if tyrebrands_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(producer_chem=tyrebrands_to_check)
         if recievers_to_check:   
@@ -104,13 +164,13 @@ class ChemcourierTableModelDetailView(DetailView):
         if prod_groups_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
-        get_chem_courier_objects_from_base = get_chem_courier_objects_from_base
         context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
         return context  
     
 class ChemcourierTableModelUpdateView(View):
 
     def post(self, request):
+
         print(request.POST, 'TTTH')
         # 1. получаем период от пользователя для поиска и установки initial значения в дате формы выбора
         get_period = request.POST.get('periods') 
@@ -148,6 +208,24 @@ class ChemcourierTableModelUpdateView(View):
             forms.INITIAL_GROUPS = get_prod_groups
         else:
             forms.INITIAL_GROUPS = None
+
+        # 7. курс валют на дату
+        chosen_date_for_currency_year = request.POST.getlist('chosen_date_for_currency_year') 
+        chosen_date_for_currency_month = request.POST.getlist('chosen_date_for_currency_month') 
+        chosen_date_for_currency_day = request.POST.getlist('chosen_date_for_currency_day') 
+        chosen_date_for_currency = chosen_date_for_currency_year + chosen_date_for_currency_month + chosen_date_for_currency_day
+        if chosen_date_for_currency:
+            print('chosen_date_for_currency1!!!!!', chosen_date_for_currency)  
+            chosen_date_for_currency = '-'.join(str(x) for x in chosen_date_for_currency)
+
+            check_date = datetime.datetime.strptime(chosen_date_for_currency, "%Y-%m-%d").date()        #  если пользователем введена дана превышающая текущую для получения курса валют то нао скинуть на сегодня:
+            if check_date > datetime.datetime.now().date():
+                print('A')
+                prices_models.CURRENCY_ON_DATE is False
+                print('B')
+            else:
+                prices_models.CURRENCY_DATE_GOT_FROM_USER = chosen_date_for_currency
+                prices_models.CURRENCY_ON_DATE is True
 
         return HttpResponseRedirect(reverse_lazy('chemcurier:chemcurier_table'))
 

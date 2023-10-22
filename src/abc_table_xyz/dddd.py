@@ -3,6 +3,7 @@ from django.db import models
 from tyres import models as tyres_model
 from sales import models as sales_models
 
+
 ### работа с датами:
 import calendar
 from datetime import datetime, timedelta

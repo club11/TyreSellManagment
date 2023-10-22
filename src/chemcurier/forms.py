@@ -4,6 +4,10 @@ from prices import models as prices_models
 from . import models as chemcurier_models
 import pandas as pd
 
+PERIODS_IN_STR_MONTH_TEMPORARY = []
+PERIODS_IN_STR_MONTH = []
+PERIODS_IN_STR_YEARS = []
+
 INITIAL_PERIOD = None
 PERIODS = None
 
@@ -36,6 +40,7 @@ def get_chem_periods():
         list_of_choices = list(reversed(list_of_choices))
     except:
         pass
+    #print('list_of_choices', list_of_choices)
     return list_of_choices
 
 def get_tyresizes_list():
@@ -93,6 +98,8 @@ def get_groups_list():
         list_of_groups.append(group_chem_val)
     return list_of_groups  
 
+NUMBER_TO_MONTH_DICT = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
+MONTH_TO_NUMBER_DICT = { 'январь' : 1, 'февраль': 2, 'март' : 3, 'апрель' : 4, 'май' : 5, 'июнь' : 6, 'июль' : 7, 'август' : 8, 'сентябрь' : 9, 'октябрь' : 10, 'ноябрь' : 11, 'декабрь' : 12}
 
 PERIODS = get_chem_periods() 
 TYRESIZES = get_tyresizes_list()
@@ -101,14 +108,52 @@ RECIEVERS = get_recievers_list()
 PRODCOUTRYS = get_prod_countrys_list()
 GROUPS = get_groups_list()
 
+#print('PERIODS', PERIODS)
+
+
+for name_period in NUMBER_TO_MONTH_DICT.keys():
+    if PERIODS:
+        for date_period in PERIODS:
+            date_period_month, date_period_year = date_period[1].split('.')
+            date_period_month_int = int(date_period_month)
+            #print('date_period_month', date_period_month, type(date_period_month), 'name_period', name_period, type(name_period))
+            if date_period_month_int == name_period:
+                #print('AVD', NUMBER_TO_MONTH_DICT.get(name_period))
+                month_in_str = NUMBER_TO_MONTH_DICT.get(name_period) 
+                year_in_str = date_period_year
+                #month_in_str_data = date_period[0], month_in_str
+                #year_in_str_data = date_period[0], year_in_str
+                #PERIODS_IN_STR_MONTH.append(month_in_str_data)
+                #PERIODS_IN_STR_YEARS.append(year_in_str_data)
+
+                month_year_in_str = date_period[0], month_in_str + ' '+ year_in_str                                
+                PERIODS_IN_STR_MONTH_TEMPORARY.append(month_year_in_str)
+
+#PERIODS_IN_STR_MONTH = list(set(PERIODS_IN_STR_MONTH))
+#PERIODS_IN_STR_YEARS = list(set(PERIODS_IN_STR_YEARS))
+#print('PERIODS_IN_STR_MONTH ', PERIODS_IN_STR_MONTH)
+#print('PERIODS_IN_STR_YEARS ', PERIODS_IN_STR_YEARS)
+PERIODS = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
+#print('PERIODS', PERIODS)
+
 class PeriodForm(forms.Form): 
-    Parameter_CHOICES = PERIODS   
+    Parameter_CHOICES = PERIODS 
     periods = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES,
         label='Период',      
-    )
-
+    )    
+    #periods_month = forms.ChoiceField(
+    #    widget = forms.Select,
+    #    choices = Parameter_CHOICES,
+    #    label='Период',      
+    #)
+    #Parameter_CHOICES = PERIODS_IN_STR_YEARS  
+    #periods_years = forms.ChoiceField(
+    #    widget = forms.Select,
+    #    choices = Parameter_CHOICES,
+    #    label='Период',      
+    #)
 
 class TyreSizeForm(forms.Form): 
     Parameter_CHOICES_TYRESIZES = TYRESIZES   
@@ -126,6 +171,7 @@ class BrandForm(forms.Form):
         label='Бренд',   
         required=False,  
     )
+    
 
 class RecieverForm(forms.Form): 
     Parameter_CHOICES_RECIEVERS = RECIEVERS  

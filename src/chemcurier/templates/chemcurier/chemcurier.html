@@ -31,6 +31,7 @@
                 <th scope="col">Объем поставки, шт.</th>
                 <th scope="col">Объем поставки, USD</th>
                 <th scope="col">Средневзвешенная цена реализации единицы товара, бел.руб.</th>
+                <th scope="col">Средневзвешенная цена реализации единицы товара, USD.</th>
               </tr>
             </thead>
             {% for obj in get_chem_courier_objects_from_base %}
@@ -46,6 +47,7 @@
                             <td>{{ obj.val_on_moth_chem }}</td>
                             <td>{{ obj.money_on_moth_chem }}</td>
                             <td>{{ obj.average_price_in_usd }}</td>
+                            <td>{{ obj.average_from_usd_to_bel }}</td>
                     </tr>
 
             </tbody>
@@ -61,7 +63,11 @@
             <td>{{ tyrebrands_form }}<br></td> 
             <td>{{ recievers_form }}<br></td> 
             <td>{{ prod_countrys_form }}<br></td> 
-            <td>{{ groups_form }}<br></td>            
+            <td>{{ groups_form }}<br></td>
+
+            <td>{{ currency_input_form }}<br></td>   
+            <td>{{ currency }}<br></td> 
+            <td>{{ curr_value }}<br></td>           
             <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
         </form>
     </div>
