@@ -18,14 +18,14 @@ class ChemcourierTableModelDetailView(DetailView):
     template_name = 'chemcurier/chemcurier.html'
     
     def get_object(self, queryset=None):
-        chemcourier_table = models.ChemCourierTableModel.objects.get_or_create(chemcourier_table='chemcourier_table')[0] 
-        
+        chemcourier_table = models.ChemCourierTableModel.objects.get_or_create(chemcourier_table='chemcourier_table')[0]
         return chemcourier_table
     
     def get_context_data(self, **kwargs):       
         context = super().get_context_data(**kwargs)
         obj = context.get('object')  
 
+        context['chemcourier_table'] = obj
         # 1. 
         # 1.1 получить период дат (месяц-год), доступных в спарсенной базе Хим Курьер
         # сфомированно в форме
@@ -99,7 +99,7 @@ class ChemcourierTableModelDetailView(DetailView):
         context['groups_form'] = groups_form   
 
         # 4 ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ    
-        print('prices_models.CURRENCY_DATE_GOT_FROM_USER ===========', prices_models.CURRENCY_DATE_GOT_FROM_USER, 'prices_models.CURRENCY_IS_CLEANED ====', prices_models.CURRENCY_IS_CLEANED)   
+        #print('prices_models.CURRENCY_DATE_GOT_FROM_USER ===========', prices_models.CURRENCY_DATE_GOT_FROM_USER, 'prices_models.CURRENCY_IS_CLEANED ====', prices_models.CURRENCY_IS_CLEANED)   
         curr_value = None
         currency = None
         shown_date = None
@@ -147,8 +147,6 @@ class ChemcourierTableModelDetailView(DetailView):
         currency_input_form = prices_forms.CurrencyDateInputForm()       
         currency_input_form.fields['chosen_date_for_currency'].initial = date_exist_true                        # !!! ЭТО БАЗА
         context['currency_input_form'] = currency_input_form
-
-
         ## END ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ
 
 
@@ -164,6 +162,7 @@ class ChemcourierTableModelDetailView(DetailView):
         if prod_groups_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
+        models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
         context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
         return context  
     
@@ -171,7 +170,7 @@ class ChemcourierTableModelUpdateView(View):
 
     def post(self, request):
 
-        print(request.POST, 'TTTH')
+    #    print(request.POST, 'TTTH')
         # 1. получаем период от пользователя для поиска и установки initial значения в дате формы выбора
         get_period = request.POST.get('periods') 
         if get_period:
@@ -215,14 +214,10 @@ class ChemcourierTableModelUpdateView(View):
         chosen_date_for_currency_day = request.POST.getlist('chosen_date_for_currency_day') 
         chosen_date_for_currency = chosen_date_for_currency_year + chosen_date_for_currency_month + chosen_date_for_currency_day
         if chosen_date_for_currency:
-            print('chosen_date_for_currency1!!!!!', chosen_date_for_currency)  
             chosen_date_for_currency = '-'.join(str(x) for x in chosen_date_for_currency)
-
             check_date = datetime.datetime.strptime(chosen_date_for_currency, "%Y-%m-%d").date()        #  если пользователем введена дана превышающая текущую для получения курса валют то нао скинуть на сегодня:
             if check_date > datetime.datetime.now().date():
-                print('A')
                 prices_models.CURRENCY_ON_DATE is False
-                print('B')
             else:
                 prices_models.CURRENCY_DATE_GOT_FROM_USER = chosen_date_for_currency
                 prices_models.CURRENCY_ON_DATE is True

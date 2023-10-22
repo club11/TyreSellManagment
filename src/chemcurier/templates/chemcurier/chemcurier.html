@@ -34,9 +34,9 @@
                 <th scope="col">Средневзвешенная цена реализации единицы товара, USD.</th>
               </tr>
             </thead>
-            {% for obj in get_chem_courier_objects_from_base %}
+            
             <tbody>
-
+                {% for obj in get_chem_courier_objects_from_base %}
                     <tr>
                             <td>{{ forloop.counter }}</td>
                             {#    <td>{{ obj.tyre_size_chem }}</td> #}
@@ -49,9 +49,19 @@
                             <td>{{ obj.average_price_in_usd }}</td>
                             <td>{{ obj.average_from_usd_to_bel }}</td>
                     </tr>
-
+                {% endfor %}    
+                    <tr>
+                        <td>ИТОГО</td>
+                        <td> </td>
+                        <td> </td>
+                        <td> </td>
+                        <td> </td>
+                        {% for data in chemcourier_table.num_summ %}
+                        <td>{{ data }}</td>
+                        {% endfor %}
+                    </tr>
             </tbody>
-            {% endfor %}
+            
         </table>
     </div>
 
