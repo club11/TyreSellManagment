@@ -385,12 +385,10 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
         models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
-        print('models.CHEM_PNJ_IN_TABLE_LIST!!!!!!!!!!', models.CHEM_PNJ_IN_TABLE_LIST)
         context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
         
         # 6 в отрисовку таблицы 
         context['get_chem_courier_objects_from_base'] = obj.table_content_creation()[0]
-    ############    print('======================$$$$$$', obj.table_content_creation()[0])
 
         # 7 количество столбцов именно сданными на дату:
         headers_len = []
@@ -399,7 +397,16 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
                 headers_len.append(keyy)
             break
         headers_len = sorted(headers_len)       # даты заголовков по порядку
-        context['headers_len'] = headers_len
+        #print('headers_len', headers_len)
+        NUMBER_TO_MONTH_DIC_FOR_HEADER = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
+        headers_len_dict = {}
+        for dattta in headers_len:
+            month_is = dattta.month
+            year_is = dattta.year
+            headers_len_dict[dattta] = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(month_is) + ' ' + str(year_is) 
+
+    #    context['headers_len'] = headers_len
+        context['headers_len'] = headers_len_dict
 
         # 8 ИТОГО     
         context['itogo'] = obj.table_content_creation()[1]

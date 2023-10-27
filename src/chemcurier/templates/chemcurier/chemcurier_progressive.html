@@ -49,7 +49,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Бренд</th>
                         <th scope="col">Получатель</th>
-                            {% for col in headers_len %}
+                            {% for col in headers_len.values %}
                                     <th scope="col">Объем поставки {{ col }}, шт.</th>
                                     <th scope="col">Объем поставки, USD</th>
                                     <th scope="col">Средневзвешенная цена реализации единицы товара, USD.</th>                                    
@@ -64,7 +64,7 @@
                                     {% for brand_reciever in key %}
                                         <td>{{ brand_reciever }}</td>
                                     {% endfor %} 
-                                    {% for col in headers_len %}
+                                    {% for col in headers_len.keys %}
                                         {% for k, date_value in val.items %}
                                             {% if k == col %}
                                                 {% for data in date_value %}                                                   
@@ -77,7 +77,7 @@
                             </tr>    
                             <tr>
                                 <td colspan="3" align="center"><b>ИТОГО</b></td>
-                                {% for col in headers_len %}
+                                {% for col in headers_len.keys %}
                                     {% for date, data_listt in itogo.items %}
                                         {% if date == col %}  
                                             {% for dt in data_listt %}   

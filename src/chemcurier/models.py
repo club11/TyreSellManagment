@@ -118,6 +118,10 @@ class ChemCourierTableModel(models.Model):
             CHEM_TABLE_FINAL_DATA_FINAL[k] = avengers_in_dict_assebled                  # ДЛЯ РАСЧЕТОВ
             CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE[k] = avengers_in_dict_assebled_for_table        # ДЛЯ ОТРИСОВКИ
 
+        # 5.2 пересборка в словарный вид - ключи а алфавитном порядке для отрисовки в таблице
+        sorted_dict = {key: value for key, value in sorted(CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE.items())}   
+        CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE = sorted_dict 
+
         #for k, v in CHEM_TABLE_FINAL_DATA_FINAL.items():
         #    print('f-------f!', k, v)    
         ## 6 расчет ИТОГО
