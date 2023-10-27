@@ -92,13 +92,31 @@ class ChemCourierTableModel(models.Model):
         #    print('f++++++f!', k, v)
 
         # 5.1 пересборка в словарный вид 
+        CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE = {}          
         for k, v in CHEM_TABLE_FINAL_DATA.items():    
-            avengers_in_dict_assebled = {}    
+            avengers_in_dict_assebled = {}  
+            avengers_in_dict_assebled_for_table = {}    
             for val in v:
-        #        print(val, '====', k)
+            #    print(val, '====', k)
                 avengers_in_dict_assebled[val[0]] = list(val[1])
+
+                ###### ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ:   
+                val1, val2, val3 = val[1]
+                if val1 != ' ':
+            #        print('val1, val2, val3', val1, val2, val3)
+                    val1 = '{0:,}'.format(val1).replace(',', ' ')          
+                    val2 =float('{:.2f}'.format(val2))
+                    val2 = '{:,}'.format(val2).replace(',', ' ') 
+                    val3 =float('{:.2f}'.format(val3))
+                    val3 = '{:,}'.format(val3).replace(',', ' ') 
+                    val_1 = val1, val2, val3 
+                else:
+                    val_1 = ' ', ' ', ' '
+                ###### END ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ: 
+                avengers_in_dict_assebled_for_table[val[0]] = list(val_1)
         #    print('=======')
-            CHEM_TABLE_FINAL_DATA_FINAL[k] = avengers_in_dict_assebled
+            CHEM_TABLE_FINAL_DATA_FINAL[k] = avengers_in_dict_assebled                  # ДЛЯ РАСЧЕТОВ
+            CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE[k] = avengers_in_dict_assebled_for_table        # ДЛЯ ОТРИСОВКИ
 
         #for k, v in CHEM_TABLE_FINAL_DATA_FINAL.items():
         #    print('f-------f!', k, v)    
@@ -118,13 +136,22 @@ class ChemCourierTableModel(models.Model):
                                 sum +=sum1
                                 aver = sum / val
                     #print('=========')
-            ITOGO_RESULT_DICT[per] = val, sum, aver
+            #ITOGO_RESULT_DICT[per] = val, sum, aver
+
+            ###### ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ:
+            sum =float('{:.2f}'.format(sum))
+            sum = '{:,}'.format(sum).replace(',', ' ') 
+            aver =float('{:.2f}'.format(aver))
+            aver = '{:,}'.format(aver).replace(',', ' ') 
+            ###### END ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ:
+            ITOGO_RESULT_DICT[per] = '{0:,}'.format(val).replace(',', ' '), sum, aver    
+            
         #CHEM_TABLE_FINAL_DATA_FINAL['ИТОГО'] = ITOGO_RESULT_DICT
                  
         #for k, v in ITOGO_RESULT_DICT.items():
         #    print('f+=+=+=+=+=+f!', k, v)                      
                     
-        return CHEM_TABLE_FINAL_DATA_FINAL, ITOGO_RESULT_DICT
+        return CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE, ITOGO_RESULT_DICT
     
 
 

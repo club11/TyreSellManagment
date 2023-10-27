@@ -68,7 +68,7 @@
                                         {% for k, date_value in val.items %}
                                             {% if k == col %}
                                                 {% for data in date_value %}                                                   
-                                                        <td>{{ data|floatformat:0  }}</td>                                                   
+                                                        <td>{{ data }}</td>                                                   
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
@@ -81,13 +81,12 @@
                                     {% for date, data_listt in itogo.items %}
                                         {% if date == col %}  
                                             {% for dt in data_listt %}   
-                                                <td><b>{{ dt|floatformat:0 }}</b></td>
+                                                <td><b>{{ dt }}</b></td>
                                             {% endfor %} 
                                         {% endif %}
                                     {% endfor %}  
                                 {% endfor %} 
-                            </tr>
-                          
+                            </tr>                  
                     </tbody>
 
                 </table>
