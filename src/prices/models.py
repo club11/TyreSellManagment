@@ -1405,7 +1405,7 @@ class ChemCurierTyresModel(models.Model):
         blank=True,
         null=True
     )
-    money_on_moth_chem = models.FloatField(
+    money_on_moth_chem = models.FloatField(                     #  Decimal
         verbose_name='объем поставки на дату(месяц) деньги',
         max_length=20,
         blank=True,

@@ -7,6 +7,8 @@ app_name = 'chemcurier'
 urlpatterns = [    
     path('', chemcurier_views.ChemcourierTableModelDetailView.as_view(), name='chemcurier_table'),
     path('chemcurier_update', chemcurier_views.ChemcourierTableModelUpdateView.as_view(), name='chemcurier_update'),
+    path('chemcurier_progressive', chemcurier_views.ChemcourierProgressiveTableModelDetailView.as_view(), name='chemcurier_table_progressive'),
+    path('chemcurier_update_progressive', chemcurier_views.ChemcourierTableProgressiveModelUpdateView.as_view(), name='chemcurier_update_progressive'),
 
 ]
 

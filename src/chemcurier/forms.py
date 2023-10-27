@@ -10,6 +10,8 @@ PERIODS_IN_STR_YEARS = []
 
 INITIAL_PERIOD = None
 PERIODS = None
+INITIAL_PERIOD_START = None
+INITIAL_PERIOD_END = None
 
 INITIAL_TYREISIZE = None
 TYRESIZES = None
@@ -155,6 +157,24 @@ class PeriodForm(forms.Form):
     #    label='Период',      
     #)
 
+class StartPeriodForm(forms.Form): 
+    Parameter_CHOICES = PERIODS 
+    periods_start = forms.ChoiceField(
+        widget = forms.Select,
+        choices = Parameter_CHOICES,
+        label='Период начальный',      
+    )  
+
+class EndPeriodForm(forms.Form): 
+    Parameter_CHOICES = PERIODS 
+    periods_end = forms.ChoiceField(
+        widget = forms.Select,
+        choices = Parameter_CHOICES,
+        label='Период конечный',      
+    )  
+
+
+
 class TyreSizeForm(forms.Form): 
     Parameter_CHOICES_TYRESIZES = TYRESIZES   
     tyresizes = forms.ChoiceField(
@@ -187,7 +207,7 @@ class ProdCountryForm(forms.Form):
     prod_countrys = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES_PRODCOUTRYS,
-        label='Стана производства',   
+        label='Страна производства',   
         required=False,  
     )
 

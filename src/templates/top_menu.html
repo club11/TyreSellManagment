@@ -8,7 +8,6 @@
         <a class="nav-link" href="{% url 'abc_table_xyz:abctable' %}">ABCXYZ</a>
 
     <li class="nav-item">
-
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Цены
@@ -17,12 +16,21 @@
             <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_bel' %}">Рынок РБ</a></li>
             <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_russia' %}">Рынок РФ</a></li>
           </ul>
-        </li>
-
+        </li> 
+    </li>
 
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'chemcurier:chemcurier_table' %}">Хим Курьер</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Хим Курьер
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+            <li><a class="nav-link" href="{% url 'chemcurier:chemcurier_table' %}">Конкуренты</a></li>
+            <li><a class="nav-link" href="{% url 'chemcurier:chemcurier_table_progressive' %}">Динамика</a></li>
+          </ul>
+        </li> 
     </li>
+
     <li class="nav-item">
         <a class="nav-link" href="{% url 'sales:sales' %}">Продажи</a>
     </li>
