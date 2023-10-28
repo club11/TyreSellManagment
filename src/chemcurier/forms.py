@@ -173,8 +173,6 @@ class EndPeriodForm(forms.Form):
         label='Период конечный',      
     )  
 
-
-
 class TyreSizeForm(forms.Form): 
     Parameter_CHOICES_TYRESIZES = TYRESIZES   
     tyresizes = forms.ChoiceField(

@@ -49,6 +49,11 @@ class ChemcourierTableModelDetailView(DetailView):
                 period_form = forms.PeriodForm()
         context['period_form'] = period_form
 
+        #1.3 для заголовка отображение выбранного периода в форме месяц - год
+        NUMBER_TO_MONTH_DIC_FOR_HEADER = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
+        period_is = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(chosen_month_num) + ' ' + str(chosen_year_num) 
+        context['period_is'] = period_is
+
         # 2 получение типоразмера для отбора (создание формы):
         tyresizes_form = forms.TyreSizeForm()
         tyresize_to_check = None
