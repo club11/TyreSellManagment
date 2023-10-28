@@ -57,11 +57,14 @@
                                     <th scope="col">Объем поставки, USD</th>
                                     <th scope="col">Средневзвешенная цена реализации единицы товара, USD.</th>                                    
                             {% endfor %} 
+                            <th scope="col"> {{ period_start }} - {{ period_end }} количество, шт.</th>
+                            <th scope="col">сумма импорта долл.США без НДС</th> 
+                            <th scope="col">средневзвешенная цена, долл. США без НДС</th>     
                       </tr>
                     </thead>
 
                     <tbody>
-                        {% for key, val in get_chem_courier_objects_from_base.items %}
+                            {% for key, val in get_chem_courier_objects_from_base.items %}
                             <tr>             
                                 <td>{{ forloop.counter }}</td>
                                     {% for brand_reciever in key %}
@@ -71,12 +74,21 @@
                                         {% for k, date_value in val.items %}
                                             {% if k == col %}
                                                 {% for data in date_value %}                                                   
-                                                        <td>{{ data }}</td>                                                   
+                                                    <td>{{ data }}</td>                                                   
                                                 {% endfor %}
                                             {% endif %}
                                         {% endfor %}
                                     {% endfor %}
-                                {% endfor %} 
+
+                                {% for res_key, res_val in num_summ_right_columns_result.items %}
+                                    {% if res_key == key %}
+                                        {% for data1 in res_val %}
+                                            <td>{{ data1 }}</td>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                            {% endfor %} 
                             </tr>    
                             <tr>
                                 <td colspan="3" align="center"><b>ИТОГО</b></td>
@@ -88,7 +100,11 @@
                                             {% endfor %} 
                                         {% endif %}
                                     {% endfor %}  
-                                {% endfor %} 
+                                {% endfor %}
+                                
+                                {% for itog_sum in num_summ_right_columns_result_itog_sum %}     
+                                    <td><b>{{ itog_sum }}</b></td>
+                                {% endfor %}
                             </tr>                  
                     </tbody>
 

@@ -149,11 +149,7 @@ class ChemCourierTableModel(models.Model):
             aver = '{:,}'.format(aver).replace(',', ' ') 
             ###### END ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ:
             ITOGO_RESULT_DICT[per] = '{0:,}'.format(val).replace(',', ' '), sum, aver    
-            
-        #CHEM_TABLE_FINAL_DATA_FINAL['ИТОГО'] = ITOGO_RESULT_DICT
-                 
-        #for k, v in ITOGO_RESULT_DICT.items():
-        #    print('f+=+=+=+=+=+f!', k, v)                      
+    #    print('CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE', CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE)                 
                     
         return CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE, ITOGO_RESULT_DICT
     
@@ -187,15 +183,12 @@ class ChemCourierTableModel(models.Model):
 
         total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd, average_itogo_in_usd, average_itogo_in_bel]
         #total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd]
-        #print('total_sum_data_list', total_sum_data_list)
+        print('total_sum_data_list', total_sum_data_list)
         return total_sum_data_list
 
 
-    def obj_val_on_moth_chem_for_table(self):
-        resurrected_value = self.val_on_moth_chem
-        resurrected_value =float('{:.2f}'.format(resurrected_value))
-        resurrected_value = '{:,}'.format(resurrected_value).replace(',', ' ')
-        print('resurrected_value', resurrected_value)          
-        return resurrected_value
+
+
+
 
 

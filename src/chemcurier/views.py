@@ -394,6 +394,7 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         
         # 6 в отрисовку таблицы 
         context['get_chem_courier_objects_from_base'] = obj.table_content_creation()[0]
+        #print('!!!!!!!!', context['get_chem_courier_objects_from_base'])
 
         # 7 количество столбцов именно сданными на дату:
         headers_len = []
@@ -413,19 +414,68 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         context['headers_len'] = headers_len_dict
 
         # 7 для заголовка таблицы отображение рассматриваемого периода
-        start_ddate_period_is = list(headers_len_dict.keys())[0]
-        start_ddate_period_is_month_is = start_ddate_period_is.month
-        start_ddate_period_is_year_is = start_ddate_period_is.year
-        end_ddate_period_is= list(headers_len_dict.keys())[-1]
-        end_ddate_period_is_month_is = end_ddate_period_is.month
-        end_ddate_period_is_year_is = end_ddate_period_is.year        
+        try:
+            start_ddate_period_is = list(headers_len_dict.keys())[0]
+            start_ddate_period_is_month_is = start_ddate_period_is.month
+            start_ddate_period_is_year_is = start_ddate_period_is.year
+            end_ddate_period_is= list(headers_len_dict.keys())[-1]
+            end_ddate_period_is_month_is = end_ddate_period_is.month
+            end_ddate_period_is_year_is = end_ddate_period_is.year  
+            context['period_start'] = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(start_ddate_period_is_month_is) + ' ' + str(start_ddate_period_is_year_is) 
+            context['period_end'] = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(end_ddate_period_is_month_is) + ' ' + str(end_ddate_period_is_year_is) 
+        except:
+            context['period_start'] = 'начало периода'
+            context['period_end'] = 'конец периода'
+          
 
-        context['period_start'] = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(start_ddate_period_is_month_is) + ' ' + str(start_ddate_period_is_year_is) 
-        context['period_end']  = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(end_ddate_period_is_month_is) + ' ' + str(end_ddate_period_is_year_is) 
+
 
         # 8 ИТОГО     
         context['itogo'] = obj.table_content_creation()[1]
 
+        # 9 ИТОГО по правым колонкам (за весь период)
+        def num_summ_right_columns_result():
+            num_summ_right_columns_result = {}
+            for key, val in context['get_chem_courier_objects_from_base'].items():
+                item_val = 0
+                sum_val = 0
+                aver_val = 0
+                for v in val.values():
+                    if v[0] != ' ':
+                        item_val += int(v[0].replace(' ', ''))
+                        sum_val += float(v[1].replace(' ', ''))
+                        aver_val = sum_val / item_val
+                item_val = '{0:,}'.format(item_val).replace(',', ' ')
+                sum_val = '{0:,}'.format(sum_val).replace(',', ' ')
+                aver_val = float('{:.2f}'.format(aver_val))
+                aver_val = '{0:,}'.format(aver_val).replace(',', ' ')
+                num_summ_right_columns_result[key] = item_val, sum_val, aver_val
+            return num_summ_right_columns_result 
+        context['num_summ_right_columns_result'] = num_summ_right_columns_result()
+        #print('context[num_summ_right_columns_result]', context['num_summ_right_columns_result'])
+
+        # 9.1 ИТОГО по правым колонкам (за весь период) СУММА СУММ (правая ниюняя самая итоговая в таблице)
+        values_in_togo_list = []
+        for val in context['itogo'].values():
+            values_in_togo_list.append(val)
+        num_summ_right_columns_result_itogo = []
+        item_val = 0
+        sum_val = 0
+        aver_val = 0
+        for val in values_in_togo_list:
+            item_val1, item_val2, item_val3 = val
+            item_val += int(item_val1.replace(' ', ''))
+            sum_val += float(item_val2.replace(' ', ''))
+            aver_val = sum_val / item_val
+        item_val = '{0:,}'.format(item_val).replace(',', ' ')
+        sum_val = float('{:.2f}'.format(sum_val))
+        sum_val = '{0:,}'.format(sum_val).replace(',', ' ')
+        aver_val = float('{:.2f}'.format(aver_val))
+        aver_val = '{0:,}'.format(aver_val).replace(',', ' ')    
+        num_summ_right_columns_result_itogo = item_val, sum_val, aver_val
+        context['num_summ_right_columns_result_itog_sum'] = num_summ_right_columns_result_itogo
+        #print('lost_inside_combojia', context['num_summ_right_columns_result_itog_sum'])
+    
         return context  
     
 class ChemcourierTableProgressiveModelUpdateView(View):
