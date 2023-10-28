@@ -13,7 +13,7 @@
         </div>
 
         <div class="el_chem-1">
-            <p align="left"><b>Типоразмер: {{current_tyresize}}.<br></b>
+            <p align="left">
             Импорт в Российскую Федерацию шин за период {{ period_start }} - {{ period_end }}.<br>
             </p>
         </div>
@@ -45,21 +45,26 @@
 
         <div class="el_chem-3">
             <div class="table-responsive" id="table_container_chem">
-                <table class="table" id="table_chem" ;>
+                <table class="table table-bordered" id="table_chem" ;>
+                    <div class = "Caption"><b>Типоразмер: {{current_tyresize}}<br></b></div>
                     <caption>Согласно данным информационно-аналитическго агентства «Хим-Курьер»</caption>
                     <thead>
                       <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Бренд</th>
-                        <th scope="col">Получатель</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">#</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Бренд</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Получатель</th>
                             {% for col in headers_len.values %}
-                                    <th scope="col">Объем поставки {{ col }}, шт.</th>
-                                    <th scope="col">Объем поставки, USD</th>
-                                    <th scope="col">Средневзвешенная цена реализации единицы товара, USD.</th>                                    
+                                    <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">Объем поставки, шт.</th>
+                                    <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">Объем поставки, USD</th>
+                                    <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">Средневзвешенная цена реализации единицы товара, USD</th>                                     
                             {% endfor %} 
-                            <th scope="col"> {{ period_start }} - {{ period_end }} количество, шт.</th>
-                            <th scope="col">сумма импорта долл.США без НДС</th> 
-                            <th scope="col">средневзвешенная цена, долл. США без НДС</th>     
+                            <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center"> {{ period_start }} - {{ period_end }} количество, шт.</th>
+                            <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">сумма импорта долл.США без НДС</th> 
+                            <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">средневзвешенная цена, долл. США без НДС</th>     
+                      </tr>
+                      <tr>{% for col in headers_len.values %}
+                                <th colspan="3" class="text-center">{{ col }}</th> 
+                            {% endfor %} 
                       </tr>
                     </thead>
 
@@ -89,9 +94,10 @@
                                 {% endfor %}
                                 
                             {% endfor %} 
-                            </tr>    
+                            </tr>  
+
                             <tr>
-                                <td colspan="3" align="center"><b>ИТОГО</b></td>
+                                <td colspan="3" class="text-center"><b>ИТОГО</b></td>
                                 {% for col in headers_len.keys %}
                                     {% for date, data_listt in itogo.items %}
                                         {% if date == col %}  
@@ -105,7 +111,8 @@
                                 {% for itog_sum in num_summ_right_columns_result_itog_sum %}     
                                     <td><b>{{ itog_sum }}</b></td>
                                 {% endfor %}
-                            </tr>                  
+                            </tr>   
+              
                     </tbody>
 
                 </table>

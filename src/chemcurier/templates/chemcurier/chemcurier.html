@@ -13,7 +13,7 @@
         </div>
 
         <div class="el_chem-1">
-            <p align="left"><b>Типоразмер: {{current_tyresize}}<br></b>
+            <p align="left">
             Импорт в Российскую Федерацию в период {{ period_is }} года</p>
         </div>
 
@@ -40,19 +40,20 @@
         <div class="el_chem-3">
             <div class="table-responsive" id="table_container_chem">
                 <table class="table" id="table_chem">
+                    <div class = "Caption"><b>Типоразмер: {{current_tyresize}}<br></b></div>
                     <caption>Согласно данным информационно-аналитическго агентства «Хим-Курьер»</caption>
                     <thead>
                       <tr>
-                        <th scope="col">#</th>
-                    {#   <th scope="col">Типоразмер</th> #}
-                        <th scope="col">Бренд</th>
-                        <th scope="col">Получатель</th>
-                        <th scope="col">Страна производства</th>
-                        <th scope="col">Группа шин</th>
-                        <th scope="col">Объем поставки, шт.</th>
-                        <th scope="col">Объем поставки, USD</th>
-                        <th scope="col">Средневзвешенная цена реализации единицы товара, USD.</th>
-                        <th scope="col">Средневзвешенная цена реализации единицы товара, бел.руб.</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">#</th>
+                    {#   <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Типоразмер</th> #}
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Бренд</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Получатель</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Страна производства</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Группа шин</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Объем поставки, шт.</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Объем поставки, USD</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Средневзвешенная цена реализации единицы товара, USD</th>
+                        <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">Средневзвешенная цена реализации единицы товара, бел.руб.</th>
                       </tr>
                     </thead>
 
