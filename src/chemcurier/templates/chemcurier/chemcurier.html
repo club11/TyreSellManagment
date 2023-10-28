@@ -13,9 +13,9 @@
         </div>
 
         <div class="el_chem-1">
-            <p align="left"><b>Типоразмер: {{current_tyresize}}</b></p>
+            <p align="left"><b>Типоразмер: {{current_tyresize}}<br></b>
+            Импорт в Российскую Федерацию</p>
         </div>
-
 
         <div class="el_chem-2"> 
             <div>
@@ -37,12 +37,10 @@
             </div>
         </div>  
 
-
-
-
         <div class="el_chem-3">
             <div class="table-responsive" id="table_container_chem">
                 <table class="table" id="table_chem">
+                    <caption>Согласно данным информационно-аналитическго агентства «Хим-Курьер»</caption>
                     <thead>
                       <tr>
                         <th scope="col">#</th>
@@ -67,10 +65,10 @@
                                     <td>{{ obj.reciever_chem }}</td>
                                     <td>{{ obj.prod_country }}</td>
                                     <td>{{ obj.group_chem.tyre_group }}</td>
-                                    <td>{{ obj.val_on_moth_chem }}</td>
-                                    <td>{{ obj.money_on_moth_chem|floatformat:2 }}</td>
-                                    <td>{{ obj.average_price_in_usd|floatformat:2 }}</td>
-                                    <td>{{ obj.average_from_usd_to_bel|floatformat:2 }}</td>
+                                    <td>{{ obj.obj_val_on_moth_chem_for_table }}</td>
+                                    <td>{{ obj.obj_money_on_moth_chem_for_table }}</td>
+                                    <td>{{ obj.obj_average_price_in_usd_chem_for_table }}</td>
+                                    <td>{{ obj.average_from_usd_to_bel }}</td>
                             </tr>
                         {% endfor %}    
                             <tr>

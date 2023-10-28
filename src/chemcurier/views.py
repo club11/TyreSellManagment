@@ -162,7 +162,7 @@ class ChemcourierTableModelDetailView(DetailView):
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
         models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
-        #context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
+        context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
 
         return context  
     
@@ -405,8 +405,18 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
             year_is = dattta.year
             headers_len_dict[dattta] = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(month_is) + ' ' + str(year_is) 
 
-    #    context['headers_len'] = headers_len
         context['headers_len'] = headers_len_dict
+
+        # 7 для заголовка таблицы отображение рассматриваемого периода
+        start_ddate_period_is = list(headers_len_dict.keys())[0]
+        start_ddate_period_is_month_is = start_ddate_period_is.month
+        start_ddate_period_is_year_is = start_ddate_period_is.year
+        end_ddate_period_is= list(headers_len_dict.keys())[-1]
+        end_ddate_period_is_month_is = end_ddate_period_is.month
+        end_ddate_period_is_year_is = end_ddate_period_is.year        
+
+        context['period_start'] = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(start_ddate_period_is_month_is) + ' ' + str(start_ddate_period_is_year_is) 
+        context['period_end']  = NUMBER_TO_MONTH_DIC_FOR_HEADER.get(end_ddate_period_is_month_is) + ' ' + str(end_ddate_period_is_year_is) 
 
         # 8 ИТОГО     
         context['itogo'] = obj.table_content_creation()[1]

@@ -13,7 +13,9 @@
         </div>
 
         <div class="el_chem-1">
-            <p align="left"><b>Типоразмер: {{current_tyresize}}</b></p>
+            <p align="left"><b>Типоразмер: {{current_tyresize}}.<br></b>
+            Импорт в Российскую Федерацию шин за период {{ period_start }} - {{ period_end }}.<br>
+            </p>
         </div>
 
 
@@ -28,11 +30,11 @@
                         <li style="display: inline;">{{ tyresizes_form }}</li> 
                         <li style="display: inline;">{{ tyrebrands_form }}</li> 
                         <li style="display: inline;">{{ recievers_form }}</li> 
-                        <li style="display: inline;">{{ prod_countrys_form }}</li> 
-                        <li style="display: inline;">{{ groups_form }}</li>
-                        <li style="display: inline;">{{ currency_input_form }}</li>   
-                        <li style="display: inline;"><b>{{ currency }}</b></li> 
-                        <li style="display: inline;"><b>{{ curr_value }}</b></li>      
+                    {#    <li style="display: inline;">{{ prod_countrys_form }}</li>  #}
+                    {#    <li style="display: inline;">{{ groups_form }}</li>         #}
+                    {#    <li style="display: inline;">{{ currency_input_form }}</li>  #} 
+                    {#    <li style="display: inline;"><b>{{ currency }}</b></li>      #}
+                    {#    <li style="display: inline;"><b>{{ curr_value }}</b></li>    #}    
                     </ul>     
                 </form>
             </div>
@@ -43,7 +45,8 @@
 
         <div class="el_chem-3">
             <div class="table-responsive" id="table_container_chem">
-                <table class="table" id="table_chem">
+                <table class="table" id="table_chem" ;>
+                    <caption>Согласно данным информационно-аналитическго агентства «Хим-Курьер»</caption>
                     <thead>
                       <tr>
                         <th scope="col">#</th>

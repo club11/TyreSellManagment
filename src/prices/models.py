@@ -1418,9 +1418,29 @@ class ChemCurierTyresModel(models.Model):
         null=True
     )
 
-    def average_from_usd_to_bel(self):
+    def average_from_usd_to_bel(self):              # для вывода щначения в удобовримом виде ( знаки после запятой, разделение на разряды)
         average_from_usd_to_be = CURRENCY_VALUE_USD * self.average_price_in_usd
+        average_from_usd_to_be =float('{:.2f}'.format(average_from_usd_to_be))
+        average_from_usd_to_be = '{:,}'.format(average_from_usd_to_be).replace(',', ' ')        
         return average_from_usd_to_be
+    
+    def obj_val_on_moth_chem_for_table(self):       # для вывода щначения в удобовримом виде ( знаки после запятой, разделение на разряды)
+        resurrected_value = self.val_on_moth_chem
+        resurrected_value =float('{:.2f}'.format(resurrected_value))
+        resurrected_value = '{:,}'.format(resurrected_value).replace(',', ' ')      
+        return resurrected_value
+
+    def obj_money_on_moth_chem_for_table(self):       # для вывода щначения в удобовримом виде ( знаки после запятой, разделение на разряды)
+        resurrected_value = self.money_on_moth_chem
+        resurrected_value =float('{:.2f}'.format(resurrected_value))
+        resurrected_value = '{:,}'.format(resurrected_value).replace(',', ' ')        
+        return resurrected_value
+
+    def obj_average_price_in_usd_chem_for_table(self):       # для вывода щначения в удобовримом виде ( знаки после запятой, разделение на разряды)
+        resurrected_value = self.average_price_in_usd
+        resurrected_value =float('{:.2f}'.format(resurrected_value))
+        resurrected_value = '{:,}'.format(resurrected_value).replace(',', ' ')        
+        return resurrected_value  
 
 class DataPriceValMoneyChemCurierModel(models.Model):
     data_month_chem = models.DateTimeField(

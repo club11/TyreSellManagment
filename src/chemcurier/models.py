@@ -158,33 +158,44 @@ class ChemCourierTableModel(models.Model):
         return CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE, ITOGO_RESULT_DICT
     
 
+    def num_summ(self):
+        # 1 сумма в штуках
+        num_summ_itogo_in_pieces = 0
+        # 2 сумма в доларах
+        num_summ_itogo_in_usd = 0
+        all_obs_in_table = CHEM_PNJ_IN_TABLE_LIST
+        for obj in all_obs_in_table:
+            num_summ_itogo_in_pieces += obj.val_on_moth_chem
+            num_summ_itogo_in_usd += obj.money_on_moth_chem
+            num_summ_itogo_in_usd = float('{:.2f}'.format(num_summ_itogo_in_usd))
+        # 3 средняя в долларах
+        average_itogo_in_usd = 0
+        if num_summ_itogo_in_pieces != 0:
+            average_itogo_in_usd = num_summ_itogo_in_usd / num_summ_itogo_in_pieces
+            average_itogo_in_usd = float('{:.2f}'.format(average_itogo_in_usd))
+        # 4 средняя в бел.руб.
+        average_itogo_in_bel = 0
+        if average_itogo_in_usd and prices_models.CURRENCY_VALUE_USD:
+            average_itogo_in_bel = average_itogo_in_usd * prices_models.CURRENCY_VALUE_USD
+            average_itogo_in_bel = float('{:.2f}'.format(average_itogo_in_bel))
+
+        # 5 конвертация в формат для вывода (знаки после запятой, разделение разрядов)
+        num_summ_itogo_in_pieces = '{0:,}'.format(num_summ_itogo_in_pieces).replace(',', ' ')
+        num_summ_itogo_in_usd = '{0:,}'.format(num_summ_itogo_in_usd).replace(',', ' ')
+        average_itogo_in_usd = '{0:,}'.format(average_itogo_in_usd).replace(',', ' ')
+        average_itogo_in_bel = '{0:,}'.format(average_itogo_in_bel).replace(',', ' ')
+
+        total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd, average_itogo_in_usd, average_itogo_in_bel]
+        #total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd]
+        #print('total_sum_data_list', total_sum_data_list)
+        return total_sum_data_list
 
 
-    #def num_summ(self):
-        ## 1 сумма в штуках
-        #num_summ_itogo_in_pieces = 0
-        ## 2 сумма в доларах
-        #num_summ_itogo_in_usd = 0
-        #all_obs_in_table = CHEM_PNJ_IN_TABLE_LIST
-        #for obj in all_obs_in_table:
-        #    num_summ_itogo_in_pieces += obj.val_on_moth_chem
-        #    num_summ_itogo_in_usd += obj.money_on_moth_chem
-        #    num_summ_itogo_in_usd = float('{:.2f}'.format(num_summ_itogo_in_usd))
-        ## 3 средняя в долларах
-        #average_itogo_in_usd = 0
-        #if num_summ_itogo_in_pieces != 0:
-        #    average_itogo_in_usd = num_summ_itogo_in_usd / num_summ_itogo_in_pieces
-        #    average_itogo_in_usd = float('{:.2f}'.format(average_itogo_in_usd))
-        ## 4 средняя в бел.руб.
-        #average_itogo_in_bel = 0
-        #if average_itogo_in_usd and prices_models.CURRENCY_VALUE_USD:
-        #    average_itogo_in_bel = average_itogo_in_usd * prices_models.CURRENCY_VALUE_USD
-        #    average_itogo_in_bel = float('{:.2f}'.format(average_itogo_in_bel))
-        #total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd, average_itogo_in_usd, average_itogo_in_bel]
-        ##total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd]
-        ##print('total_sum_data_list', total_sum_data_list)
-        #return total_sum_data_list
-
-
+    def obj_val_on_moth_chem_for_table(self):
+        resurrected_value = self.val_on_moth_chem
+        resurrected_value =float('{:.2f}'.format(resurrected_value))
+        resurrected_value = '{:,}'.format(resurrected_value).replace(',', ' ')
+        print('resurrected_value', resurrected_value)          
+        return resurrected_value
 
 
