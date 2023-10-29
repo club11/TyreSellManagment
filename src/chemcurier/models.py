@@ -183,7 +183,7 @@ class ChemCourierTableModel(models.Model):
 
         total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd, average_itogo_in_usd, average_itogo_in_bel]
         #total_sum_data_list = [num_summ_itogo_in_pieces, num_summ_itogo_in_usd]
-        print('total_sum_data_list', total_sum_data_list)
+    #    print('total_sum_data_list', total_sum_data_list)
         return total_sum_data_list
 
 

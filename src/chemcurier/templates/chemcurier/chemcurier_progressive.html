@@ -58,13 +58,15 @@
                                     <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">Объем поставки, USD</th>
                                     <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">Средневзвешенная цена реализации единицы товара, USD</th>                                     
                             {% endfor %} 
-                            <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center"> {{ period_start }} - {{ period_end }} количество, шт.</th>
-                            <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">сумма импорта долл.США без НДС</th> 
-                            <th scope="col" rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">средневзвешенная цена, долл. США без НДС</th>     
+                            <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">количество, шт.</th>
+                            <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">сумма импорта долл.США без НДС</th> 
+                            <th scope="col"; valign="middle"><span class="align-middle"><p class="text-center">средневзвешенная цена, долл. США без НДС</th>     
                       </tr>
-                      <tr>{% for col in headers_len.values %}
-                                <th colspan="3" class="text-center">{{ col }}</th> 
-                            {% endfor %} 
+                      <tr>
+                        {% for col in headers_len.values %}
+                            <th colspan="3" class="text-center">{{ col }}</th> 
+                        {% endfor %} 
+                            <th colspan="3" class="text-center">{{ period_start }} - {{ period_end }} </th>    
                       </tr>
                     </thead>
 

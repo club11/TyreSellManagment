@@ -9,6 +9,7 @@ from homepage.templatetags import my_tags as homepage_my_tags
 from django.views.generic import DetailView, View
 import datetime
 import pandas as pd
+import openpyxl 
 
 
 
@@ -168,6 +169,141 @@ class ChemcourierTableModelDetailView(DetailView):
 
         models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
         context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
+
+
+        ####### СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
+                ############################################ Запись данных в существующий файл в столбец:
+        # 1 ВАРИАНТ - рабочий - но не рисует таблицу 
+        if type(tyresize_to_check) is tuple:
+            try:
+                tyresize_to_check_name = str(tyresize_to_check).replace('/', ' ')
+            except:
+                tyresize_to_check_name = ' '
+        else:
+            tyresize_to_check_name = tyresize_to_check.replace('/', ' ') # убрать / из названия для excel вкладки    
+
+        from openpyxl import Workbook
+        wb = Workbook()
+        if wb['Sheet']:                                         # если есть вкладка с именем 'Sheet' - поменнять на название типоразмера
+            sheet_named_sheet = wb['Sheet']
+            sheet_named_sheet.title = tyresize_to_check_name
+            excel_sheet = sheet_named_sheet
+        else:                                                   # если нет  вкладки с именеми 'Sheet' - созать с названием типоразмера
+            wb.create_sheet(tyresize_to_check_name)
+            excel_sheet = wb[tyresize_to_check_name]
+
+        ###### получить количество объектов:
+        row_value = 0
+        for ob_val in get_chem_courier_objects_from_base:
+            row_value += 1
+        
+        #генератор для хождения по строкам:    
+        def raw_generator(n, stop):
+            while True:
+                if n > stop:
+                    raise StopIteration
+                yield n
+                n += 1
+        max_raw = row_value + 2  # (+1 строка для ИТОГО и записи что согласно хим курьеру)
+        i = 3       # с 3  строки        
+        row_curr = raw_generator(i, max_raw+i)
+
+        last_row_in_table_num = 0
+
+        excel_sheet['A1'] = tyresize_to_check_name
+        for chem_obj in get_chem_courier_objects_from_base:
+
+                val = next(row_curr)
+                excel_sheet['A2'] = 'Бренд'
+                excel_sheet.cell(row=val, column=1).value = chem_obj.producer_chem
+                excel_sheet.cell(row=val+1, column=1).value = 'ИТОГО'
+
+                excel_sheet['B2'] = 'Получатель'
+                excel_sheet.cell(row=val, column=2).value = chem_obj.reciever_chem
+
+                excel_sheet['C2'] = 'Страна производства'
+                excel_sheet.cell(row=val, column=3).value = chem_obj.prod_country
+
+                #excel_sheet['G1'] = 'Param'
+                #str_obj_param_list = []
+                #str_obj_param_str = ''
+                #for type_obj in sales_obj.tyre.tyre_type.all():
+                #    str_obj_param_list.append(type_obj.tyre_type)
+                #str_obj_param_str = ', '.join(str_obj_param_list)
+                ##print(str_obj_param_str)
+                #excel_sheet.cell(row=val, column=7).value = str_obj_param_str
+
+                excel_sheet['D2'] = 'Группа шин'
+                excel_sheet.cell(row=val, column=4).value = chem_obj.group_chem.tyre_group
+
+                excel_sheet['E2'] = 'Объем поставки, шт.'
+                excel_sheet.cell(row=val, column=5).value = chem_obj.obj_val_on_moth_chem_for_table()
+                excel_sheet.cell(row=val+1, column=5).value = obj.num_summ()[0]
+
+                excel_sheet['F2'] = 'Объем поставки, USD'
+                excel_sheet.cell(row=val, column=6).value = chem_obj.obj_money_on_moth_chem_for_table()
+                excel_sheet.cell(row=val+1, column=6).value = obj.num_summ()[1]
+
+                excel_sheet['G2'] = 'Средневзвешенная цена реализации единицы товара, USD'
+                excel_sheet.cell(row=val, column=7).value = chem_obj.obj_average_price_in_usd_chem_for_table()
+                excel_sheet.cell(row=val+1, column=7).value = obj.num_summ()[2]
+
+                excel_sheet['H2'] = 'Средневзвешенная цена реализации единицы товара, бел.руб.'
+                excel_sheet.cell(row=val, column=8).value = chem_obj.average_from_usd_to_bel()
+                excel_sheet.cell(row=val+1, column=8).value = obj.num_summ()[3]
+
+                last_row_in_table_num = val+1
+        excel_sheet.cell(row=last_row_in_table_num+2, column=1).value = 'Согласно данным информационно-аналитическго агентства «Хим-Курьер»'   
+
+        #  Для отрисовки лийний у таблицы:
+        from openpyxl.styles.borders import Border, Side
+        thin_border = Border(left=Side(style='thin'), 
+                             right=Side(style='thin'), 
+                             top=Side(style='thin'), 
+                             bottom=Side(style='thin'))
+    #    excel_sheet.cell(row=3, column=2).border = thin_border
+        #for i in excel_sheet['A1':'D8']:
+        cell_range = excel_sheet['A2':f'H{last_row_in_table_num}']
+        for row in cell_range:
+            for cell in row:
+                cell.border = thin_border
+
+        # save
+        wb.save("Chemcourier.xlsx")
+        ############################################################### 
+
+    #    # 2 ВАРИАНТ - с отрисовкой таблицы
+    #    from openpyxl import Workbook
+    #    from openpyxl.worksheet.table import Table, TableStyleInfo
+    #    wb = Workbook()
+    #    ws = wb.active
+#
+    #    list_of_dates = []
+    #    row_counter = 0     # чтоб 
+    #    for chem_obj in get_chem_courier_objects_from_base:
+    #        row_counter += 1
+    #        row_list = [row_counter, chem_obj.producer_chem, chem_obj.reciever_chem, chem_obj.prod_country, chem_obj.group_chem.tyre_group, chem_obj.obj_val_on_moth_chem_for_table(), chem_obj.obj_money_on_moth_chem_for_table(),
+    #        chem_obj.obj_average_price_in_usd_chem_for_table(), chem_obj.average_from_usd_to_bel()]
+    #        list_of_dates.append(row_list)
+    #    data = list_of_dates
+    #    # добавим заголовки столбцов. Это должны быть строки
+    #    ws.append(["#", "Бренд", "Получатель", "Страна производства", "Группа шин", "Объем поставки, шт.", "Объем поставки, USD", "Средневзвешенная цена реализации единицы товара, USD", "Средневзвешенная цена реализации единицы товара, бел.руб"])
+    #    for row in data:
+    #        ws.append(row)
+    #    # создаем объект таблицы
+    #    if not ws.tables.get('Table1'):
+    #        table = Table(displayName="Table1", ref=f"A1:J{row_counter}")
+    #        # добавим стиль по умолчанию.
+    #        style = TableStyleInfo(name="StyleMed", showFirstColumn=False, showLastColumn=False, showRowStripes=False, showColumnStripes=False)
+    #        table.tableStyleInfo = style
+    #        # добавляем таблицу
+    #        ws.add_table(table)
+#
+    #    ws.cell(row=row_counter+2, column=1).value = 'Согласно данным информационно-аналитическго агентства «Хим-Курьер»'  
+    #    wb.save("table111.xlsx")                  
+ 
+        #################################################
+        ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
 
         return context  
     

@@ -1087,8 +1087,23 @@ class ComparativeAnalysisTyresModel(models.Model):
                 try:                                                                                                                     # для расчета отклонения 
                     if type(min_value) is float and self.belarus902price != None:  
                         deflection = self.belarus902price.price / min_value       # для расчета отклонения
+
+                        # перевод в удобоваримый вид
+                        min_value =float('{:.2f}'.format(min_value))
+                        min_value = '{:,}'.format(min_value).replace(',', ' ')
+                        min_value_usd =float('{:.2f}'.format(min_value_usd))
+                        min_value_usd = '{:,}'.format(min_value_usd).replace(',', ' ')
+                        deflection =float('{:.2f}'.format(deflection))
+                        deflection = '{:,}'.format(deflection).replace(',', ' ')
+                        #  END перевод в удобоваримый вид
                         chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
-                except:
+                except:                      
+                        # перевод в удобоваримый вид
+                        min_value =float('{:.2f}'.format(min_value))
+                        min_value = '{:,}'.format(min_value).replace(',', ' ')
+                        min_value_usd =float('{:.2f}'.format(min_value_usd))
+                        min_value_usd = '{:,}'.format(min_value_usd).replace(',', ' ')
+                        #  END перевод в удобоваримый вид
                         chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
             print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
     #        print('11!!', chemcurier_unique_result)
