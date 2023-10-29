@@ -10,6 +10,7 @@ CHEM_PNJ_IN_TABLE_LIST = []
 CHEM_TABLE_FINAL_DATA = {}
 CHEM_TABLE_FINAL_DATA_FINAL = {}
 
+
 class ChemCourierTableModel(models.Model):
     customer = models.ForeignKey(
         User,

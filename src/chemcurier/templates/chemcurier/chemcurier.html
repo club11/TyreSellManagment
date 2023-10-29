@@ -79,12 +79,16 @@
                                 {% endfor %}
                             </tr>
                     </tbody>
-
                 </table>
             </div>
         </div>    
 
-  
+        <div class="el_chem-4">
+            <form action="{% url 'chemcurier:chemcurier_update' %}" method="post">
+                    {% csrf_token %}
+                <button type="submit" class="btn btn-light" name="chemcuorier_download">скачать</button>
+            </form>
+        </div>  
 
     </div>
 </div>

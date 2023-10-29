@@ -28,6 +28,8 @@ PRODCOUTRYS = None
 INITIAL_GROUPS = None
 GROUPS = None
 
+CHEMCOURIER_EXCEL_CREATE = False
+
 def get_chem_periods():
     list_of_choices = []
     try:
@@ -217,3 +219,6 @@ class GroupForm(forms.Form):
         label='Группа шин',   
         required=False,  
     )
+
+
+
