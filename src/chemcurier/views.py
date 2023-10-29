@@ -173,7 +173,6 @@ class ChemcourierTableModelDetailView(DetailView):
 
 
         ####### СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
-        print('models.CHEMCOURIER_EXCEL_CREATE', forms.CHEMCOURIER_EXCEL_CREATE)
         if forms.CHEMCOURIER_EXCEL_CREATE is True:
                     ############################################ Запись данных в существующий файл в столбец:
             # 1 ВАРИАНТ - рабочий - но не рисует таблицу 
@@ -280,12 +279,21 @@ class ChemcourierTableModelDetailView(DetailView):
             download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
             if os.path.exists(download_folder_exist):
                 users_download_path = user_path_is + "/Downloads/" + 'Chemcourier.xlsx'
-                dowload_to = os.path.normpath(users_download_path)
-                wb.save(dowload_to)     
+                dowload_to = os.path.normpath(users_download_path)     
             else:                                                                           # если папки Downloads нет - создать файл в корневой папке пользователя
                 users_download_path = user_path_is  + 'Chemcourier.xlsx'
                 dowload_to = os.path.normpath(users_download_path)
+
+
+            def not_in_use(filename):                                               # проверка - используется ли в данный момент фай (если он откурыт -то будет попытка его переписыть с ошибкой - надо избеать)
+                    try:
+                        os.rename(filename,filename)
+                        return True
+                    except:    
+                        return False
+            if not_in_use(dowload_to):
                 wb.save(dowload_to)
+    
 
         ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
 
