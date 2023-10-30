@@ -29,6 +29,7 @@ INITIAL_GROUPS = None
 GROUPS = None
 
 CHEMCOURIER_EXCEL_CREATE = False
+CHEMCOURIER_PROGRESSIVE_EXCEL_CREATE = False
 
 def get_chem_periods():
     list_of_choices = []
