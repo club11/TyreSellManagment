@@ -1043,7 +1043,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 models.CURRENCY_DATE_GOT_FROM_USER_CLEANED = currency, curr_value, shown_date
 
         
-        models.CURRENCY_VALUE_RUB = curr_value / 100
+#        models.CURRENCY_VALUE_RUB = curr_value / 100
         models.CURRENCY_VALUE_USD = curr_value 
         # END ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ
 

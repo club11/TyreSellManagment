@@ -498,22 +498,22 @@ class ComparativeAnalysisTyresModel(models.Model):
 
     def currentpricesprice_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.currentpricesprice:
-            currentpricesprice_from_currency_to_bel_rub = self.currentpricesprice.price * CURRENCY_VALUE_RUB 
+            currentpricesprice_from_currency_to_bel_rub = self.currentpricesprice.price * CURRENCY_VALUE_USD 
             return currentpricesprice_from_currency_to_bel_rub
 
     def planned_costs_from_currency_to_bel_rub(self):                                                                        # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.planned_costs:
-            planned_costs_from_currency_to_bel_rub = self.planned_costs.price * CURRENCY_VALUE_RUB 
+            planned_costs_from_currency_to_bel_rub = self.planned_costs.price * CURRENCY_VALUE_USD 
             return planned_costs_from_currency_to_bel_rub
 
     def semi_variable_prices_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.semi_variable_prices:
-            semi_variable_prices_from_currency_to_bel_rub = self.semi_variable_prices.price * CURRENCY_VALUE_RUB 
+            semi_variable_prices_from_currency_to_bel_rub = self.semi_variable_prices.price * CURRENCY_VALUE_USD 
             return semi_variable_prices_from_currency_to_bel_rub
 
     def belarus902price_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.belarus902price:
-            belarus902price_from_currency_to_bel_rub = self.belarus902price.price * CURRENCY_VALUE_RUB 
+            belarus902price_from_currency_to_bel_rub = self.belarus902price.price * CURRENCY_VALUE_USD 
             return belarus902price_from_currency_to_bel_rub
 
     def planned_profitability_from_currency_to_bel_rub(self):            # плановая рентабьельность                          # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
@@ -595,8 +595,13 @@ class ComparativeAnalysisTyresModel(models.Model):
                 if comp_price and self.currentpricesprice and type(comp_price) is float: 
                     combined = None
                     #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
-                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
-                    combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                #    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
+                    if CURRENCY_VALUE_USD:
+                        deflection = (self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 
+                        combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                    else:
+                        deflection = ' '
+                        combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
                     
                     if combined:
                         list_comp_ids.append(comp.id)
@@ -663,7 +668,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 #if type(comp_price) is float and self.belarus902price != None:    
                 if comp_price and self.currentpricesprice and type(comp_price) is float: 
                     #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       
-                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100
+                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 )
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
                     combined = None
                     if comp.season:
@@ -736,9 +741,12 @@ class ComparativeAnalysisTyresModel(models.Model):
                     
                 #if type(comp_price) is float and self.belarus902price != None:   
                 if comp_price and self.currentpricesprice and type(comp_price) is float:      
-                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_RUB  / comp_price) -1 ) * 100                    
-                    #deflection = self.belarus902price.price / comp_price       # для расчета отклонения
-                    combined = None
+                    if CURRENCY_VALUE_USD:
+                        deflection = (self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 
+                        combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                    else:
+                        deflection = ' '
+                        combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
                     if comp.season is None:
                         combined = comp_name, comp_price, deflection  
                     else:

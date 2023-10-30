@@ -172,10 +172,8 @@ class ChemcourierTableModelDetailView(DetailView):
         context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
 
 
-        ####### СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
+        ####### 6 СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
         if forms.CHEMCOURIER_EXCEL_CREATE is True:
-                    ############################################ Запись данных в существующий файл в столбец:
-            # 1 ВАРИАНТ - рабочий - но не рисует таблицу 
             if type(tyresize_to_check) is tuple:
                 try:
                     tyresize_to_check_name = str(tyresize_to_check).replace('/', ' ')
@@ -524,7 +522,7 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
         models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
-        context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
+    #    context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
         
         # 6 в отрисовку таблицы 
         context['get_chem_courier_objects_from_base'] = obj.table_content_creation()[0]
@@ -561,9 +559,6 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
             context['period_start'] = 'начало периода'
             context['period_end'] = 'конец периода'
           
-
-
-
         # 8 ИТОГО     
         context['itogo'] = obj.table_content_creation()[1]
 
@@ -610,6 +605,265 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         context['num_summ_right_columns_result_itog_sum'] = num_summ_right_columns_result_itogo
         #print('lost_inside_combojia', context['num_summ_right_columns_result_itog_sum'])
     
+
+        ####### 10 СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
+        #if forms.CHEMCOURIER_EXCEL_CREATE is True:
+        if type(tyresize_to_check) is tuple:
+            try:
+                tyresize_to_check_name = str(tyresize_to_check).replace('/', ' ')
+            except:
+                tyresize_to_check_name = ' '
+        else:
+            tyresize_to_check_name = tyresize_to_check.replace('/', ' ') # убрать / из названия для excel вкладки  
+
+        #from openpyxl.utils.cell import coordinate_from_string, column_index_from_string      # для координат из А в 1 !!!!!!
+        from openpyxl.utils import get_column_letter                                           # для координат из 1 в А !!!!!!
+        from openpyxl import Workbook
+        wb = Workbook()
+        if wb['Sheet']:                                         # если есть вкладка с именем 'Sheet' - поменнять на название типоразмера
+            sheet_named_sheet = wb['Sheet']
+            sheet_named_sheet.title = tyresize_to_check_name
+            excel_sheet = sheet_named_sheet
+        else:                                                   # если нет  вкладки с именеми 'Sheet' - созать с названием типоразмера
+            wb.create_sheet(tyresize_to_check_name)
+            excel_sheet = wb[tyresize_to_check_name]
+        ###### получить количество объектов:
+        row_value = 0
+        for ob_val in get_chem_courier_objects_from_base:
+            row_value += 1
+        #генератор для хождения по строкам:    
+        def raw_generator(n, stop):
+            while True:
+                if n > stop:
+                    raise StopIteration
+                yield n
+                n += 1
+        max_raw = row_value + 2  # (+1 строка для ИТОГО и записи что согласно хим курьеру)
+        i = 3       # с 3  строки        
+        row_curr = raw_generator(i, max_raw+i)
+        last_row_in_table_num = 0
+
+        headers_len_periods_num = len(headers_len) * 3      # количество столбцов с данными по периодам
+
+        lolumns_list = []
+        columns_dict = {} 
+        count_to_three = 0
+        periods_count = 0
+        all_columns_names = []
+        ########### ОЧЕНЬ КЛАСЧНЫЙ СПОСОБ ХОДИТЬ ПО ЯЧЕЙКАМ
+        counter = 0 
+        head_per_count_num = 4 + headers_len_periods_num                                                        
+        for column in range(4,head_per_count_num):       
+            column_letter = get_column_letter(column)
+    #        for row in range(1,11):
+    #            counter = counter +1
+    #            excel_sheet[column_letter + str(row)] = counter       
+                #print('**', column_letter + str(row))
+    #        print('**', column_letter )
+            count_to_three += 1
+            lolumns_list.append(column_letter)
+            all_columns_names.append(column_letter)
+            if count_to_three == 3:
+                columns_dict[periods_count] = lolumns_list
+                count_to_three = 0
+                periods_count += 1
+                lolumns_list = []
+#        print('=======', columns_dict)
+        ########### END ОЧЕНЬ КЛАСЧНЫЙ СПОСОБ ХОДИТЬ ПО ЯЧЕЙКАМ
+
+
+        all_columns_names_reversed = list(reversed(all_columns_names))
+        num_to_abc_convert_dict = {}
+        for column_num in range(4,head_per_count_num): 
+            num_to_abc_convert_dict[column_num] = all_columns_names_reversed.pop()   
+
+        def column_generator(n, stop):
+            while True:
+                if n > stop:
+                    raise StopIteration
+                yield n
+                n += 1
+        max_column = head_per_count_num
+
+        ik = 4       # с 3  cтолбца       
+        column_curr = raw_generator(ik, max_column+i)
+
+    ##    print('context[get_chem_courier_objects_from_base].items() ====', context['get_chem_courier_objects_from_base'].items())
+
+        the_val = 0
+        excel_sheet['A1'] = tyresize_to_check_name
+        num_counterrr = 0
+        for key, value in context['get_chem_courier_objects_from_base'].items():
+            num_counterrr += 1
+
+            val = next(row_curr)
+            excel_sheet['A2'] = '#'  
+            excel_sheet.cell(row=val, column=1).value = num_counterrr         
+
+            excel_sheet['B2'] = 'Бренд'
+            excel_sheet.cell(row=val, column=2).value = key[0]
+            excel_sheet.cell(row=val+1, column=2).value = 'ИТОГО'
+
+            excel_sheet['C2'] = 'Получатель'
+            excel_sheet.cell(row=val, column=3).value = key[1]
+
+            the_val = val
+    #    print('num_to_abc_convert_dict', num_to_abc_convert_dict)               #  !!!! DICT_T_T
+
+        for column_n in columns_dict.values():
+
+            col_num_list = []
+            for nn in column_n:
+                val_column = next(column_curr)
+            #    print('nn', nn)
+            #    print('val_column', val_column)
+                col_num_list.append(val_column)
+            excel_sheet[f'{num_to_abc_convert_dict.get(col_num_list[0])}2'] = 'Объем поставки, шт.'
+            excel_sheet[f'{num_to_abc_convert_dict.get(col_num_list[1])}2'] = 'Объем поставки, USD'
+            excel_sheet[f'{num_to_abc_convert_dict.get(col_num_list[2])}2'] = 'Средневзвешенная цена реализации единицы товара, USD'
+
+        # заполнение данных в периодах
+        list_val_in_per_per = []
+    #    list_val_in_per = []
+        for value in context['get_chem_courier_objects_from_base'].values():  
+            for col in context['headers_len'].keys():
+                for tk, type_obj in value.items():
+                    if tk == col:
+                    #    temp_list = []
+                        for tt in type_obj:
+        #                    print('tt', tt)
+                    #        temp_list.append(tt)
+                            list_val_in_per_per.append(tt)
+                    #    list_val_in_per.insert(len(list_val_in_per), temp_list)    
+                    #    temp_list = []
+
+
+        all_columns_names_period_reversed = list_val_in_per_per
+        len_num = len(all_columns_names_period_reversed)
+        some_dict = {}
+        for column_num in range(1,len_num): 
+            some_dict[column_num] = all_columns_names_period_reversed.pop(0) 
+
+        # вставка значений в колонки по периодам (без итого)
+        counter = 0     
+        head_per_count_num = 4 + headers_len_periods_num 
+        for row in range(3, the_val+1):                                                       
+            for column in range(4,head_per_count_num):       
+                column_letter = get_column_letter(column)
+                counter = counter + 1
+                col_row_current_val = some_dict.get(counter)
+
+                excel_sheet[column_letter + str(row)] = col_row_current_val      # здесь вставляются данные 
+
+        # END заполнение данных в периодах 
+        # заполнение ИТОГО в периодах
+        list_itogo_per = []
+        for col in context['headers_len'].keys():
+            for date, data_listt in context['itogo'].items(): 
+                if date == col:
+                    for dt in data_listt:
+                        #print('TTTTTcds', dt)
+                        list_itogo_per.append(dt)
+        itogo_sum_per_list = list(reversed(list_itogo_per))
+
+        some_dict_sum_per = {}
+        for column_num in range(4,head_per_count_num): 
+            some_dict_sum_per[column_num] = itogo_sum_per_list.pop(-1) 
+
+        #print('some_dict_sum_per', some_dict_sum_per)
+        row_itogo_per = the_val+1
+        for column_itogo_per in range(4,head_per_count_num):  
+            excel_sheet.cell(row=row_itogo_per, column=column_itogo_per).value = some_dict_sum_per.get(column_itogo_per)   
+        # END заполнение ИТОГО в периодах 
+
+        lolumns_list_itogo = []
+        count_to_three = 0
+        counter = 0                                                     
+        for column in range(head_per_count_num, head_per_count_num + 3):       
+            column_letter = get_column_letter(column)
+            count_to_three += 1
+            lolumns_list_itogo.append(column_letter)
+            if count_to_three == 3:
+                break
+        all_columns_names_itogo_reversed = list(reversed(lolumns_list_itogo))
+        num_to_abc_convert_itogo_dict = {}
+        list_col_num = []
+        for column_num in range(head_per_count_num, head_per_count_num + 3): 
+            list_col_num.append(column_num)
+            num_to_abc_convert_itogo_dict[column_num] = all_columns_names_itogo_reversed.pop() 
+
+
+        itogo_colums_range_num = range(head_per_count_num, head_per_count_num + 3)
+        excel_sheet[f'{num_to_abc_convert_itogo_dict.get(itogo_colums_range_num[0])}2'] = 'количество, шт.'   
+        excel_sheet[f'{num_to_abc_convert_itogo_dict.get(itogo_colums_range_num[1])}2'] = 'сумма импорта долл.США без НДС'  
+        excel_sheet[f'{num_to_abc_convert_itogo_dict.get(itogo_colums_range_num[2])}2'] = 'средневзвешенная цена, долл. США без НДС'  
+
+
+        def raw_generator_sum(n, stop):
+            while True:
+                if n > stop:
+                    raise StopIteration
+                yield n
+                n += 1
+        max_raw = row_value + 2  # (+1 строка для ИТОГО и записи что согласно хим курьеру)
+        i = 3       # с 3  строки        
+        row_curr_sum = raw_generator_sum(i, max_raw+i)
+
+        list_itogo_sum_sum_val = context['num_summ_right_columns_result_itog_sum']
+
+        for key, vall in context['get_chem_courier_objects_from_base'].items():
+            val = next(row_curr_sum)
+            for res_key, res_val in context['num_summ_right_columns_result'].items(): 
+                if res_key == key:
+                    excel_sheet.cell(row=val, column=list_col_num[0]).value = res_val[0]
+                    excel_sheet.cell(row=val, column=list_col_num[1]).value = res_val[1]
+                    excel_sheet.cell(row=val, column=list_col_num[2]).value = res_val[2]
+
+                    excel_sheet.cell(row=val+1 , column=list_col_num[0]).value = list_itogo_sum_sum_val[0] # ДЛЯ ИТОГО СУММА ВСЕХ СУММ
+                    excel_sheet.cell(row=val+1 , column=list_col_num[1]).value = list_itogo_sum_sum_val[1]
+                    excel_sheet.cell(row=val+1 , column=list_col_num[2]).value = list_itogo_sum_sum_val[2]
+
+        #    excel_sheet.cell(row=last_row_in_table_num+2, column=1).value = 'Согласно данным информационно-аналитическго агентства «Хим-Курьер»'   #
+        #    #  Для отрисовки лийний у таблицы:
+        #    from openpyxl.styles.borders import Border, Side
+        #    thin_border = Border(left=Side(style='thin'), 
+        #                         right=Side(style='thin'), 
+        #                         top=Side(style='thin'), 
+        #                         bottom=Side(style='thin'))
+    #   #     excel_sheet.cell(row=3, column=2).border = thin_border
+        #    #for i in excel_sheet['A1':'D8']:
+        #    cell_range = excel_sheet['A2':f'H{last_row_in_table_num}']
+        #    for row in cell_range:
+        #        for cell in row:
+        #            cell.border = thin_border
+#
+        wb.save("ChemcourierProgr.xlsx")
+        #    #wb.save('/home/user/Desktop/FileName.xlsx')
+#
+        #    # сохранение в папку DOWNLOADS пользователя:
+        #    user_path_is = os.path.expanduser("~")
+        #    #print('path_is', user_path_is)
+        #    download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
+        #    if os.path.exists(download_folder_exist):
+        #        users_download_path = user_path_is + "/Downloads/" + 'Chemcourier.xlsx'
+        #        dowload_to = os.path.normpath(users_download_path)     
+        #    else:                                                                           # если папки Downloads нет - создать файл в корневой папке пользователя
+        #        users_download_path = user_path_is  + 'Chemcourier.xlsx'
+        #        dowload_to = os.path.normpath(users_download_path)
+#
+#
+        #    def not_in_use(filename):                                               # проверка - используется ли в данный момент фай (если он откурыт -то будет попытка его переписыть с ошибкой - надо избеать)
+        #            try:
+        #                os.rename(filename,filename)
+        #                return True
+        #            except:    
+        #                return False
+        #    if not_in_use(dowload_to):
+        #        wb.save(dowload_to)
+    
+
+        ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
+
         return context  
     
 class ChemcourierTableProgressiveModelUpdateView(View):
