@@ -278,11 +278,12 @@ class ChemcourierTableModelDetailView(DetailView):
             user_path_is = os.path.expanduser("~")
             #print('path_is', user_path_is)
             download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
+            print('tyresize_to_check_name', tyresize_to_check_name)
             if os.path.exists(download_folder_exist):
-                users_download_path = user_path_is + "/Downloads/" + 'Chemcourier.xlsx'
+                users_download_path = user_path_is + "/Downloads/" + f'Chemcourier_{tyresize_to_check_name}.xlsx'
                 dowload_to = os.path.normpath(users_download_path)     
             else:                                                                           # если папки Downloads нет - создать файл в корневой папке пользователя
-                users_download_path = user_path_is  + 'Chemcourier.xlsx'
+                users_download_path = user_path_is  + f'Chemcourier_{tyresize_to_check_name}.xlsx'
                 dowload_to = os.path.normpath(users_download_path)
 
 
@@ -858,11 +859,10 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
             #print('path_is', user_path_is)
             download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
             if os.path.exists(download_folder_exist):
-                users_download_path = user_path_is + "/Downloads/" + 'ChemcourierProgr.xlsx'
+                users_download_path = user_path_is + "/Downloads/" + f'ChemcourierProgr_{tyresize_to_check_name}.xlsx'
                 dowload_to = os.path.normpath(users_download_path)     
-                print('AAAA')
             else:                                                                           # если папки Downloads нет - создать файл в корневой папке пользователя
-                users_download_path = user_path_is  + 'ChemcourierProgr.xlsx'
+                users_download_path = user_path_is  + f'ChemcourierProgr_{tyresize_to_check_name}.xlsx'
                 dowload_to = os.path.normpath(users_download_path)
             
             
