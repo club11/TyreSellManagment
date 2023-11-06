@@ -498,22 +498,35 @@ class ComparativeAnalysisTyresModel(models.Model):
 
     def currentpricesprice_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.currentpricesprice:
-            currentpricesprice_from_currency_to_bel_rub = self.currentpricesprice.price * CURRENCY_VALUE_USD 
+            if CURRENCY_VALUE_USD:
+                currentpricesprice_from_currency_to_bel_rub = self.currentpricesprice.price * CURRENCY_VALUE_USD
+            else:
+                currentpricesprice_from_currency_to_bel_rub = self.currentpricesprice.price * 0
             return currentpricesprice_from_currency_to_bel_rub
 
     def planned_costs_from_currency_to_bel_rub(self):                                                                        # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.planned_costs:
-            planned_costs_from_currency_to_bel_rub = self.planned_costs.price * CURRENCY_VALUE_USD 
+            if CURRENCY_VALUE_USD:
+                planned_costs_from_currency_to_bel_rub = self.planned_costs.price * CURRENCY_VALUE_USD 
+            else:
+                planned_costs_from_currency_to_bel_rub = self.planned_costs.price * 0
+
             return planned_costs_from_currency_to_bel_rub
 
     def semi_variable_prices_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.semi_variable_prices:
-            semi_variable_prices_from_currency_to_bel_rub = self.semi_variable_prices.price * CURRENCY_VALUE_USD 
+            if CURRENCY_VALUE_USD:
+                semi_variable_prices_from_currency_to_bel_rub = self.semi_variable_prices.price * CURRENCY_VALUE_USD 
+            else:
+                semi_variable_prices_from_currency_to_bel_rub = self.semi_variable_prices.price * 0
             return semi_variable_prices_from_currency_to_bel_rub
 
     def belarus902price_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.belarus902price:
-            belarus902price_from_currency_to_bel_rub = self.belarus902price.price * CURRENCY_VALUE_USD 
+            if CURRENCY_VALUE_USD:
+                belarus902price_from_currency_to_bel_rub = self.belarus902price.price * CURRENCY_VALUE_USD 
+            else:
+                belarus902price_from_currency_to_bel_rub = self.belarus902price.price * 0
             return belarus902price_from_currency_to_bel_rub
 
     def planned_profitability_from_currency_to_bel_rub(self):            # плановая рентабьельность                          # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE

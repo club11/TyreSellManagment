@@ -1145,9 +1145,9 @@ class ExcelTemplateView(TemplateView):
                             #print(list_sates_values_on_row)
                     new_money_month_chemcurier_dict[str_n] = list_sates_values_on_row
 
-                ##print(new_money_month_chemcurier_dict)
-                #for k, v in new_money_month_chemcurier_dict.items():
-                #    print('-----', k, v)
+                #print(new_money_month_chemcurier_dict)
+                for k, v in new_money_month_chemcurier_dict.items():
+                    print('-----', k, v)
 
                 ################ ФОРМИРОВАНИЕ ЕДИНОГО СЛОВАРЯ ПО СПАРСЕННЫМ ДАННЫМ ХИМКУРЬЕР ВКЛАДКИ ИМПОРТ:
                 
@@ -1160,8 +1160,10 @@ class ExcelTemplateView(TemplateView):
                     periods_counter_max_val = len(new_money_month_chemcurier_dict.get(row_num, 1)) 
                     periods_counter = 0
                     values_prices_per_month_list = []
+                    print('periods_counter]!!!!!', periods_counter)
                     if periods_counter_max_val: # если есть периоды
-                        while periods_counter < periods_counter_max_val:                                           
+                        while periods_counter < periods_counter_max_val:   
+                            print('t7t7t7', new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter])                                        
                             pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
                             print('===== 1', pices_per_month)
                             money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
@@ -1788,6 +1790,7 @@ class ExcelTemplateView(TemplateView):
         if abc_table_get:
             abc_table = abc_table_get[0]
         else:
+            print('iiii', abc_table_xyz_models.AbcxyzTable.objects.update_or_create())
             abc_table_queryset = abc_table_xyz_models.AbcxyzTable.objects.update_or_create()
             abc_table = abc_table_queryset[0]
         # 1) возмем все объекты шин:

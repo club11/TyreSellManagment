@@ -57,6 +57,8 @@ def get_tyresizes_list():
     for trsz in list_of_tyresizes_only:      # добавляем ключи:
         resizes_k_and_val = trsz, trsz
         list_of_tyresizes.append(resizes_k_and_val)
+    print('list_of_tyresizes === ')
+    list_of_tyresizes.sort()
     return list_of_tyresizes
 
 def get_tyrebrands_list():
@@ -68,6 +70,7 @@ def get_tyrebrands_list():
     for brnd in list_of_tyrebrands_only:      # добавляем ключи:
         tyrebrands_val = brnd, brnd
         list_of_tyrebrandss.append(tyrebrands_val)
+    list_of_tyrebrandss.sort()      
     return list_of_tyrebrandss  
 
 def get_recievers_list():
@@ -79,6 +82,7 @@ def get_recievers_list():
     for reciever_chem in list_of_recievers_only:      # добавляем ключи:
         recievers_val = reciever_chem, reciever_chem
         list_of_recievers.append(recievers_val)
+    list_of_recievers.sort()
     return list_of_recievers  
 
 def get_prod_countrys_list():
@@ -90,6 +94,7 @@ def get_prod_countrys_list():
     for prod_country in list_of_prod_country_only:      # добавляем ключи:
         prod_country_val = prod_country, prod_country
         list_of_prod_country.append(prod_country_val)
+    list_of_prod_country.sort()    
     return list_of_prod_country  
 
 def get_groups_list():
@@ -101,6 +106,7 @@ def get_groups_list():
     for group_chem in list_of_groups_only:      # добавляем ключи:
         group_chem_val = group_chem.tyre_group, group_chem.tyre_group
         list_of_groups.append(group_chem_val)
+    list_of_groups.sort()
     return list_of_groups  
 
 NUMBER_TO_MONTH_DICT = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
