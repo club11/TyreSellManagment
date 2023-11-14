@@ -1082,7 +1082,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             latesr_date = max(get_all_dates_year_month)
             year_to_look = latesr_date.year
             month_to_look = latesr_date.month
-
+        else:
+            year_to_look = datetime.datetime.today().year
+            month_to_look = datetime.datetime.today().month
             #print('oldest_date', oldest_date)
         ################
         ################

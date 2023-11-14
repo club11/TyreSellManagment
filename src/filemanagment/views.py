@@ -1842,7 +1842,7 @@ class ExcelTemplateView(TemplateView):
 
         for key in row_parsing_sales_costs_prices_dict.keys():
             tyre_obj = key
-            #print('tyre_obj', tyre_obj.tyre_size.tyre_size )
+        #    print('tyre_obj', tyre_obj.tyre_size.tyre_size)
         # 2.1) возмем все объекты плановой себестоимости:
             planned_costs_obj_set = prices_models.PlannedCosstModel.objects.filter(tyre=tyre_obj)            # !!!! ФИЛЬТР ВСЕХ ОБЪЕКТОВ + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period
             #planned_costs_obj_set = prices_models.PlannedCosstModel.objects.get(tyre=tyre_obj)                  # ОДИН объект на дату + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period

@@ -147,6 +147,18 @@ for name_period in NUMBER_TO_MONTH_DICT.keys():
 PERIODS = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
 #print('PERIODS', PERIODS)
 
+
+
+#####  ВРЕМЕННО
+#PERIODS = []
+#TYRESIZES = []
+#BRANDS = []
+#RECIEVERS = []
+#PRODCOUTRYS = []
+#GROUPS = []
+##### END  ВРЕМЕННО
+
+
 class PeriodForm(forms.Form): 
     Parameter_CHOICES = PERIODS 
     periods = forms.ChoiceField(
