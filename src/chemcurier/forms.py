@@ -104,8 +104,9 @@ def get_groups_list():
       list_of_groups_only.append(obj.group_chem)  
     list_of_groups_only = list(set(list_of_groups_only))
     for group_chem in list_of_groups_only:      # добавляем ключи:
-        group_chem_val = group_chem.tyre_group, group_chem.tyre_group
-        list_of_groups.append(group_chem_val)
+        if group_chem:
+            group_chem_val = group_chem.tyre_group, group_chem.tyre_group
+            list_of_groups.append(group_chem_val)
     list_of_groups.sort()
     return list_of_groups  
 

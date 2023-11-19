@@ -497,36 +497,41 @@ class ExcelTemplateView(TemplateView):
                         except:
                             pass
                 if sheet:
-                    print(';******8888_____+')
+                #    print(';******8888_____+')
                     for row in sheet.rows:           
                         for cell in row:  
-                            # 1 Парсинг                            
-                            if cell.value == 'бренд':          # получаем колонку 'бренд'  ХИМКУРЬЕР
+                            # 1 Парсинг 
+                            brand_names_list = ['бренд', 'Бренд']                            
+                            if cell.value in brand_names_list:          # получаем колонку 'бренд'  ХИМКУРЬЕР
                                 brand_column = cell.column
                                 brand_row = cell.row
                                 for col in sheet.iter_cols(min_row=brand_row+1, min_col=brand_column, max_col=brand_column, max_row=sheet.max_row):
                                     for cell in col:                            
                                         brend_chemcurier_dict[cell.row] = cell.value
-                            if cell.value == 'получатель':          # получаем колонку 'получатель'  ХИМКУРЬЕР
+                            reciever_names_list = ['получатель', 'Получатель']           
+                            if cell.value in reciever_names_list:          # получаем колонку 'получатель'  ХИМКУРЬЕР
                                 recipient_column = cell.column
                                 brand_row = cell.row
                                 for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
                                     for cell in col:                            
                                         recipipient_chemcurier_dict[cell.row] = cell.value        
-                            if cell.value == 'страна производства':          # получаем колонку 'страна производства'  ХИМКУРЬЕР
+                            countr_names_list = ['страна производства', 'Страна производства']
+                            if cell.value in countr_names_list:          # получаем колонку 'страна производства'  ХИМКУРЬЕР
                                 prod_country_column = cell.column
                                 brand_row = cell.row
                                 for col in sheet.iter_cols(min_row=brand_row+1, min_col=prod_country_column, max_col=prod_country_column, max_row=sheet.max_row):
                                     for cell in col:                            
-                                        prod_country_column_dict[cell.row] = cell.value                                                          
-                            if cell.value == 'типоразмер':          # получаем колонку 'типоразмер' ХИМКУРЬЕР
+                                        prod_country_column_dict[cell.row] = cell.value   
+                            trsz_names_list = ['типоразмер', 'Типоразмер']                                                                   
+                            if cell.value in trsz_names_list:          # получаем колонку 'типоразмер' ХИМКУРЬЕР
                                 tyr_group_column = cell.column
                                 tyr_group_row = cell.row
                                 for col in sheet.iter_cols(min_row=tyr_group_row+1, min_col=tyr_group_column, max_col=tyr_group_column, max_row=sheet.max_row):
                                     for cell in col: 
                                         if cell.value:                          
                                             tiresize_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
-                            if cell.value == 'подгруппа':          # получаем колонку 'подгруппа' ХИМКУРЬЕР
+                            group_names_list = ['подгруппа', 'Подгруппа']              
+                            if cell.value in group_names_list:          # получаем колонку 'подгруппа' ХИМКУРЬЕР
                                 season_column = cell.column
                                 season_row = cell.row
                                 for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
@@ -537,7 +542,8 @@ class ExcelTemplateView(TemplateView):
                             for merged_cell in sheet.merged_cells.ranges:           # для объединенных ячеек их поиск
                                 if cell.coordinate in merged_cell:
                                     #print('cell.coordinate', cell.coordinate)
-                                    if cell.value == 'штук':
+                                    stuck_names_list = ['штук', 'тыс. штук', 'Штук', 'Тыс. Штук', 'тысяч штук', 'шт.', 'шт', 'тыс. шт.' ]
+                                    if cell.value in stuck_names_list:
                                         stucki_coordiantes_merged = str(merged_cell).split(':')
                                         if stucki_coordiantes_merged:
                                             # получим начальные и конечные координаты ячеек - дат под заголовком штуки:
@@ -576,7 +582,8 @@ class ExcelTemplateView(TemplateView):
                                                             #        #print(list_col_values)
                                                             #    pieces_month_chemcurier_dict[cell.row] = list_col_values 
                                     
-                                    if cell.value == 'долларов*':
+                                    doll_names_list_list = ['долларов*', 'долларов', 'тыс. долларов*', 'тыс. долларов', 'Долларов*', 'Долларов', 'Тыс. долларов', 'Тыс. Долларов', 'тыс. долл.', 'Тыс. долл', 'тысяч долларов', 'тыс. долл',]
+                                    if cell.value in doll_names_list_list:
                                         stucki_coordiantes_merged = str(merged_cell).split(':')
                                         if stucki_coordiantes_merged:
                                             # получим начальные и конечные координаты ячеек - дат под заголовком штуки:
@@ -1167,14 +1174,14 @@ class ExcelTemplateView(TemplateView):
                     periods_counter_max_val = len(new_money_month_chemcurier_dict.get(row_num, 1)) 
                     periods_counter = 0
                     values_prices_per_month_list = []
-                    print('periods_counter]!!!!!', periods_counter)
+                #    print('periods_counter]!!!!!', periods_counter)
                     if periods_counter_max_val: # если есть периоды
                         while periods_counter < periods_counter_max_val:   
-                            print('t7t7t7', new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter])                                        
+                #            print('t7t7t7', new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter])                                        
                             pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
-                            print('===== 1', pices_per_month)
+                #            print('===== 1', pices_per_month)
                             money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
-                            print('===== 2',money_per_month)
+                #            print('===== 2',money_per_month)
                             period_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][0]                            
                             if money_per_month is not None and pices_per_month is not None:
                                 average_price_in_usd_calc = money_per_month / pices_per_month 
@@ -1236,8 +1243,12 @@ class ExcelTemplateView(TemplateView):
                     ######        #price_val_money_data = prices_models.DataPriceValMoneyChemCurierModel.objects.filter(data_month_chem__date=date_month)          #abc_obj_set[0].sales.add(sales_obj)
                     ######    )[0]
                     # END РАБОЧИЙ ВАРИАНТ _ НО МЕДЛЕННЫЙ _ ЗАПИСЬ В БАЗУ ДАННЫХ    
+            
             # BULK_CREATE
-                        che_curier_obj_tyre_bulk_list.append(prices_models.ChemCurierTyresModel(
+                        # ПРЕдварительно проверка - есть ли уже в базе данный объекту
+                        chem_obj_not_exist_alredy = True
+                        try:
+                            prices_models.ChemCurierTyresModel.objects.get(
                             tyre_size_chem = key[0],
                             producer_chem = key[2],
                             # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
@@ -1248,7 +1259,24 @@ class ExcelTemplateView(TemplateView):
                             data_month_chem = data_month_chem_val[0],
                             val_on_moth_chem = data_month_chem_val[1],
                             money_on_moth_chem = data_month_chem_val[2], 
-                            average_price_in_usd = data_month_chem_val[3],))
+                            average_price_in_usd = data_month_chem_val[3],                                
+                            )
+                        except:
+                            chem_obj_not_exist_alredy = False
+                        if chem_obj_not_exist_alredy is False:      # если объект в базе отстутствует - добавляем в список для bulk_create:
+                        # END ПРЕдварительно проверка - есть ли уже в базе данный объекту
+                            che_curier_obj_tyre_bulk_list.append(prices_models.ChemCurierTyresModel(
+                                tyre_size_chem = key[0],
+                                producer_chem = key[2],
+                                # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
+                                group_chem = group_chem_obect,
+                                reciever_chem = key[4],
+                                prod_country = key[5],
+                                currency_chem = currency_chem,
+                                data_month_chem = data_month_chem_val[0],
+                                val_on_moth_chem = data_month_chem_val[1],
+                                money_on_moth_chem = data_month_chem_val[2], 
+                                average_price_in_usd = data_month_chem_val[3],))
                         
             bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
             # END BULK_CREATE
@@ -1821,7 +1849,7 @@ class ExcelTemplateView(TemplateView):
         if abc_table_get:
             abc_table = abc_table_get[0]
         else:
-            print('iiii', abc_table_xyz_models.AbcxyzTable.objects.update_or_create())
+        #    print('iiii', abc_table_xyz_models.AbcxyzTable.objects.update_or_create())
             abc_table_queryset = abc_table_xyz_models.AbcxyzTable.objects.update_or_create()
             abc_table = abc_table_queryset[0]
         # 1) возмем все объекты шин:

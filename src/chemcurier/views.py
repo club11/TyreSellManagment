@@ -171,8 +171,11 @@ class ChemcourierTableModelDetailView(DetailView):
         if prod_groups_to_check:   
             get_chem_courier_objects_from_base = get_chem_courier_objects_from_base.filter(group_chem__tyre_group=prod_groups_to_check)
 
+        # 5.2 пересборка в словарный вид -для отрисовки в таблице:
+
+
         models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
-        context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
+        context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base.order_by('producer_chem')
 
 
         ####### 6 СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
@@ -299,8 +302,10 @@ class ChemcourierTableModelDetailView(DetailView):
             else:
                 wb.save(dowload_to)
 
-            wb.close()      
-    
+            wb.close()    
+
+
+    ####    prices_models.ChemCurierTyresModel.objects.all().delete()  
 
         ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
 
