@@ -680,8 +680,15 @@ class ComparativeAnalysisTyresModel(models.Model):
                     comp_price = comp.price  
                 #if type(comp_price) is float and self.belarus902price != None:    
                 if comp_price and self.currentpricesprice and type(comp_price) is float: 
-                    #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price       
-                    deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 )
+                    combined = None
+                    #deflection = self.belarus902price.price * CURRENCY_VALUE_RUB  / comp_price 
+                    if CURRENCY_VALUE_USD:
+                        deflection = (self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 
+                        combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                    else:
+                        deflection = ' '
+                        combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)      
+                    #deflection = ((self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 )
                     #deflection = self.belarus902price.price / comp_price       # для расчета отклонения     # для расчета отклонения  # ((self.currentpricesprice.price / self.semi_variable_prices.price) - 1) * 100
                     combined = None
                     if comp.season:

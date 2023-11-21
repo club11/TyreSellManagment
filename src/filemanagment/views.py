@@ -242,11 +242,13 @@ class ExcelTemplateView(TemplateView):
                                     #print(str(row[cell.column-1].value))    
                                         ### 
                                 str_of_param = ' '.join(list_of_parametrs)
+                            #    print('---===-----')
                                 tyreparametrs_list.append(str_of_param)
 
                                 
             ####### очистка списка параметров шины для формирования уникальных значений для справочника модели TyreParametersModel:                    
-            tyreparametrs_list_cleaned = list(set(' '.join(tyreparametrs_list).split()))  
+            tyreparametrs_list_cleaned = list(set(' '.join(tyreparametrs_list).split())) 
+            #print('!!!!==-=-=-', tyreparametrs_list_cleaned)
 
             #######################################################################################################################
             ################################# 2. модуль преобразователь - разные варианты написания к одному стандарту:
