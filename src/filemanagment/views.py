@@ -644,16 +644,19 @@ class ExcelTemplateView(TemplateView):
         #        file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)  
                 try:   
                     sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel 
-                    for row in sheet.rows:                      
-                        for cell in row:          
-                           # 1 Парсинг        
+                    for row in sheet.rows:                    
+                        for cell in row:      
+                           # 1 Парсинг    
+                               
                         
                             # ПАРСИНГ ДАТЫ ДЛЯ ТАБЛИЦЫ ДАННЫХ МИНИМАЛКИ И ПРОЧЕЕ
                             if isinstance(cell.value, datetime):
                                 date_period_of_doc = cell.value.date()
-                                #print('cell.is_date === !!!!!!!!!!!!!!!!!!!!!!!!!!!', date_period_of_doc)        
-                            ###############                        
-
+                            #    print('cell.is_date === !!!!!!!!!!!!!!!!!!!!!!!!!!!', date_period_of_doc)        
+                            ###############   
+                            #                      
+                            
+                                  
                             if cell.value == 'контрагент':          # получаем колонку 'контрагент'
                                 contragent_column = cell.column
                                 contragent_row = cell.row
@@ -933,7 +936,7 @@ class ExcelTemplateView(TemplateView):
 
                             if cell.value == 'Наименование продукции':
                                 for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
-                                    #print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
+                                    print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
 
                                     ### проверка если строка пустая
                                     if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
