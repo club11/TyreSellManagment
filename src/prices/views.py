@@ -33,6 +33,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from django.db.models import Min
 
 import random
+import itertools
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -94,203 +95,309 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             # 1 ###### ПАРСИНГ Onliner:
             
             webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-            try:
-                url = 'https://catalog.onliner.by/tires?region=bobrujsk'
-                #response = requests.get(url)
-                #soup = BeautifulSoup(response.text,"lxml")
-                ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
-                #webdriverr = webdriver.Chrome()
-                #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-                webdriverr = webdriverr_global
-                webdriverr.get(url)
+            #try:
+            url = 'https://catalog.onliner.by/tires?region=bobrujsk'
+            #response = requests.get(url)
+            #soup = BeautifulSoup(response.text,"lxml")
+            ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
+            #webdriverr = webdriver.Chrome()
+            #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            webdriverr = webdriverr_global
+            webdriverr.get(url)
+            time.sleep(2)
+            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+            soup = BeautifulSoup(webdriverr.page_source,'lxml')
+            #products = soup.find_all('div', class_='schema-product__group')
+            #goods_dict = {}
+            #for data_got in products:
+            #    tyre_name = data_got.find('div', class_='schema-product__title')
+            #    price = data_got.find('div', 'schema-product__price')
+            #    if tyre_name and price:
+            #        text_to_delete = tyre_name.text.find('шины') + 5
+            #        tyre_name_cleaned = tyre_name.text[text_to_delete :]
+            #        start_str_serch = price.text.find('от') + 3
+            #        end_str_search = price.text.find('р') - 1
+            #        price_cleaned = price.text[start_str_serch : end_str_search]
+            #        goods_dict[tyre_name_cleaned] = price_cleaned
+            # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+            #1. получаем количество страниц:
+            pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
+            urls = []
+            links = pages.find_all('a', class_='schema-pagination__pages-link')
+            for link in links:
+                pageNum = int(link.text) if link.text.isdigit() else None
+                if pageNum != None:
+                    urls.append(pageNum)
+            #2. получаем данные со всех страниц:
+            list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
+            shins_phrase = ['шины', 'Шины']
+            #for slug in urls[1:2]:                               # c 1 по 2 станицы    
+            for slug in urls:      # рабочий вариант
+                newUrl = url.replace('?', f'?page={slug}') 
+                webdriverr.get(newUrl)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(5)
+                time.sleep(4)
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')
                 products = soup.find_all('div', class_='schema-product__group')
-
+        
                 for data_got in products:
                     tyre_name = data_got.find('div', class_='schema-product__title')
                     price = data_got.find('div', 'schema-product__price')
                     if tyre_name and price:
-                        text_to_delete = tyre_name.text.find('шины') + 5
-                        tyre_name_cleaned = tyre_name.text[text_to_delete :]
-                        start_str_serch = price.text.find('от') + 3
-                        end_str_search = price.text.find('р') - 1
-                        price_cleaned = price.text[start_str_serch : end_str_search]
-                        #print('tyre_name', tyre_name_cleaned, 'price', price_cleaned)
-                        goods_dict[tyre_name_cleaned] = price_cleaned
-                # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-                #1. получаем количество страниц:
-                pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
-                urls = []
-                links = pages.find_all('a', class_='schema-pagination__pages-link')
-                for link in links:
-                    pageNum = int(link.text) if link.text.isdigit() else None
-                    if pageNum != None:
-                        urls.append(pageNum)
-                #2. получаем данные со всех страниц:
-                #for slug in urls[1:1]:                               # c 1 по 2 станицы
-                for slug in urls:      # рабочий вариант
-                    newUrl = url.replace('?', f'?page={slug}') 
-                    webdriverr.get(newUrl)
-                    time.sleep(2)
-                    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(4)
-                    soup = BeautifulSoup(webdriverr.page_source,'lxml')
-                    products = soup.find_all('div', class_='schema-product__group')
+                        # проверка на лишний тект в нелегковых шинах
+                        check_name_is_foud = False
+                        for check_name in list_to_check:
+                            if check_name in tyre_name.text:
+                                phrase_len = len(check_name)
+                                wha_to_delete_start = tyre_name.text.find(check_name)
+                                wha_to_delete_end = tyre_name.text.find(check_name) + phrase_len
+                                text_with_no_phrase = tyre_name.text[: wha_to_delete_start] + tyre_name.text[wha_to_delete_end :]
+                                text_with_no_phrase = text_with_no_phrase.replace('для', '')
+                                text_to_delete1text_with_no_phrase = ''
+                                for sh_pr in shins_phrase:
+                                        text_to_delete1text_with_no_phrase = text_with_no_phrase.replace(sh_pr, '')
+                                tyre_name_cleaned = text_to_delete1text_with_no_phrase
+                                tyre_name_cleaned = tyre_name_cleaned.replace('\n', '') 
 
-                    for data_got in products:
-                        tyre_name = data_got.find('div', class_='schema-product__title')
-                        price = data_got.find('div', 'schema-product__price')
-                        if tyre_name and price:
+                                tyre_name_cleaned_split = tyre_name_cleaned.split(' ')
+                                for n in tyre_name_cleaned_split:
+                                    if n.isalnum() is True:
+                                        company_name = n
+                                        break
+                                if 'BEL-318' in tyre_name_cleaned:
+                                    print('tyre_name_cleaned===', tyre_name_cleaned)                       # tyre_name_cleaned===    Mirage MG111 11.00R22.5 146/143L 16PR     
+
+                                check_name_is_foud = True
+                        # end проверка на лишний тект в нелегковых шинах
+                        if check_name_is_foud is False:
                             text_to_delete1 = tyre_name.text.find('шины') + 5
                             tyre_name_cleaned = tyre_name.text[text_to_delete1 : ]
                             tyre_name_cleaned = tyre_name_cleaned.replace('\n', '')
-                            start_str_serch = price.text.find('от') + 3
-                            end_str_search = price.text.find('р') - 1
-                            price_cleaned = price.text[start_str_serch : end_str_search]
-                            #print('tyre_name', tyre_name_cleaned, 'price', price_cleaned)
+                        start_str_serch = price.text.find('от') + 3
+                        end_str_search = price.text.find('р') - 1
+                        price_cleaned = price.text[start_str_serch : end_str_search]
+                    ###### дополнительные праметры ищем: 
+                    #for data_got in products:
+                        tyre_season = data_got.find('div', class_='schema-product__description')
+                        seas_list = ['летние', 'зимние', 'всесезонные']
+                        studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
+                        group_list_cars = ['легковых', 'внедорожников', 'минивенов', 'кроссоверов'] 
+                        group_list_lt = ['микро', 'легкогрузовых'] # ['микроавтобусов', 'легкогрузовых']                
+                        group_list_trucks = ['автобусов', 'строительной', 'большегрузных'] #['автобусов', 'грузовых автомобилей', 'строительной и дорожной', 'большегрузных автомобилей']
+                        group_list_agro = ['тракторов и сельскохозяйственной']
+                        tyr_group_check = False
+                        if tyre_season:
+                            split_str_prepared = tyre_season.text
+                            split_str = split_str_prepared.replace('\n', '').split(', ')
+                            if 'BEL-318' in tyre_name_cleaned:
+                                print('split_str ', split_str )
+                            season_is = []
+                            try:
+                                if split_str[0] and split_str[0] in ['летние', 'зимние', 'всесезонные']:
+                                    season_is = split_str[0]
+                            except:
+                                pass
+                            group_is = []
+                            try:
+                                if split_str[1]:
+                                    group_is = split_str[1]
+                                    tyr_group_check is True
+                            except:
+                                try:
+                                    if split_str[0]:
+                                        for n in group_list_cars:
+                                            if n in split_str[0]:
+                                                group_is = 'легковые'
+                                                break
+                                        for n in group_list_lt:
+                                            if n in split_str[0]:
+                                                group_is = 'легкогруз'
+                                                break
+                                        for n in group_list_trucks:
+                                            if n in split_str[0]:
+                                                group_is = 'грузовые'
+                                                break
+                                        for n in group_list_agro:
+                                            if n in split_str[0]:
+                                                group_is = 'с/х'
+                                                break
+                                    tyr_group_check is True
+                                except:
+                                    pass
 
-                        ###### дополнительные праметры ищем: 
-                        #for data_got in products:
-                            tyre_season = data_got.find('div', class_='schema-product__description')
-                            seas_list = ['летние', 'зимние', 'всесезонные']
-                            studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
-
-                            group_list_cars = ['легковых автомобилей', 'внедорожников', 'минивенов', 'кроссоверов'] 
-                            group_list_lt = ['микроавтобусов', 'легкогрузовых']               
-                            group_list_trucks = ['автобусов', 'грузовых автомобилей', 'строительной и дорожной', 'большегрузных автомобилей']
-                            group_list_agro = ['тракторов и сельскохозяйственной']
-                            if tyre_season:
-                                for s_el in seas_list:
-                                    if s_el in tyre_season.text:
-                                        season = s_el
-                                for studded_el in studded_list:
-                                    if studded_el in tyre_season.text:
-                                        studded = studded_el
-                                #print( season, '          ', studded) 
-
+                            studded_is = []                       # ШИПЫ - можно тут доработать
+                            for s_el in seas_list:
+                                if s_el in tyre_season.text:
+                                    season = s_el
+                            for studded_el in studded_list:
+                                if studded_el in tyre_season.text:
+                                    studded = studded_el
+                            #print( season, '          ', studded)
+                            t_gr = None
+                        #    print('HHHHHHHHHHGGFFF', tyre_season.text) 
+                            if tyr_group_check is False:
                                 for tyr_group in group_list_cars:
-                                    if tyr_group in tyre_season.text:
-                                        tyr_group = 'легковые'
-                                        #print('tyr_group 111', tyr_group)
+                                    if tyr_group in group_is:
+                                        t_gr = 'легковые'
+                        #                print('tyr_group 111', tyr_group)
                                         break
                                     #for tyr_group in group_list_lt:
-                                    if tyr_group in tyre_season.text:
-                                        tyr_group = 'легкогруз'
-                                        #print('tyr_group 111', tyr_group)
+                                for tyr_group in group_list_lt:
+                                    if tyr_group in group_is:
+                                        t_gr = 'легкогруз'
+                                #        print('tyr_group 111', tyr_group)
                                         break
+                                for tyr_group in group_list_trucks:
                                     #for tyr_group in group_list_trucks:
-                                    if tyr_group in tyre_season.text:
-                                        tyr_group = 'грузовые'
-                                        #print('tyr_group 111', tyr_group)
+                                    if tyr_group in group_is:
+                                        t_gr = 'грузовые'
+                                #        print('tyr_group 111', tyr_group)
                                         break
+                                for tyr_group in group_list_agro:
                                     #for tyr_group in group_list_agro:
-                                    if tyr_group in tyre_season.text:
-                                        tyr_group = 'с/х'
-                                        #print('tyr_group 111', tyr_group)
+                                    if tyr_group in group_is:
+                                        t_gr = 'с/х'
+                                #        print('tyr_group 111', tyr_group)
                                         break
-      
-
-                    # выдираем типоразмер для добавления в словарь
-                            tyresize = str
-                            for n in reg_list:
-                                result = re.search(rf'(?i){n}', tyre_name_cleaned)
-                                if result:
-                                    tyresize = result.group(0)
-                                    #print(tyresize)
-                                    ### удаление среза с типоразмером и всем что написано перед типоразмером
-                                    left_before_size_data_index = tyre_name_cleaned.index(result.group(0))
-                                    if left_before_size_data_index > 0:
-                                        str_left_data = tyre_name_cleaned[0:left_before_size_data_index-1]
-                                        tyresize_length = len(result.group(0)) + 1 
-                                        right_after_size_data_index = tyre_name_cleaned.index(result.group(0)) + tyresize_length
-                                        str_right_data = tyre_name_cleaned[right_after_size_data_index : ]
-                                    product_name = str_left_data
+                                tyr_group = t_gr
+    
+                # выдираем типоразмер для добавления в словарь
+                        tyresize = str
+                        for n in reg_list:
+                            result = re.search(rf'(?i){n}', tyre_name_cleaned)
+                            if result:
+                                tyresize = result.group(0)
+                                #print(tyresize)
+                                ### удаление среза с типоразмером и всем что написано перед типоразмером
+                                left_before_size_data_index = tyre_name_cleaned.index(result.group(0))
+                                if left_before_size_data_index > 0:
+                                    str_left_data = tyre_name_cleaned[0:left_before_size_data_index-1]
+                                    tyresize_length = len(result.group(0)) + 1 
+                                    right_after_size_data_index = tyre_name_cleaned.index(result.group(0)) + tyresize_length
+                                    str_right_data = tyre_name_cleaned[right_after_size_data_index : ]
+                                product_name = str_left_data
+                                if check_name_is_foud is False:
                                     company_name = product_name.split(' ')[0]
-                                    tyre_param = str_right_data
+                                tyre_param = str_right_data
+                        values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
+                    #    print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)
+                        goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
+            #for k, v in goods_dict.items():
+            #   print('K==', k, 'V==', v, 'KV')
+            #print(goods_dict.items())
+            # формируем отдельный список ПРОИЗВОДИТЕЛИ:
+            onliner_companies_list = []  # список компаний-производителей Oliner
+            for v in goods_dict.values():
+                if v[4] and v[4].isdigit() is False:
+                    onliner_companies_list.append(v[4])
+            onliner_companies_list = list(set(onliner_companies_list))  
+            #print(onliner_companies_list, 'onliner_companies_list')
+            # выбор по производителю:                               
+            # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
+            #if models.ONLINER_COMPETITORS:
+            #    onliner_companies_list = models.ONLINER_COMPETITORS
+            #    print('onliner_companies_list', onliner_companies_list )
 
-                            values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
-                            goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
-                #for k, v in goods_dict.items():
-                #   print(k, v, 'KV')
-                #print(goods_dict.items())
+            temp_goods_dict_list_k_names_to_delete = []
+            for v in goods_dict.values():
+                if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
+                    pass
+                else:
+                    temp_goods_dict_list_k_names_to_delete.extend(v[4])
+            for k_name in temp_goods_dict_list_k_names_to_delete:
+                goods_dict.pop(k_name)
 
-                # формируем отдельный список ПРОИЗВОДИТЕЛИ:
-                onliner_companies_list = []  # список компаний-производителей Oliner
-                for v in goods_dict.values():
-                    if v[4] and v[4].isdigit() is False:
-                        onliner_companies_list.append(v[4])
-                onliner_companies_list = list(set(onliner_companies_list))  
-                #print(onliner_companies_list, 'onliner_companies_list')
+            # сопоставление с БД  и запись в БД конкурентов (Onliner):
+            onliner_compet_obj_tyre_bulk_list = []
+            list_tyre_sizes = []
 
-                # выбор по производителю:                               
-                # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
-                #if models.ONLINER_COMPETITORS:
-                #    onliner_companies_list = models.ONLINER_COMPETITORS
-                #    print('onliner_companies_list', onliner_companies_list )
-
-                chosen_by_company_dict = {}
+            tyres_in_bd = tyres_models.Tyre.objects.all()
+            for tyre in tyres_in_bd:
                 for k, v in goods_dict.items():
-                    if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
-                        chosen_by_company_dict[k] = v
-                #print('chosen_by_company_dict', chosen_by_company_dict)
+    ##                print(k, len(k), 'v', v)
+                    if tyre.tyre_size.tyre_size == v[1]:                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
+                        # Goodyear EfficientGrip Performance 2 205/60R16 92H 50 v ('\n341,08', '205/60R16', 'Goodyear EfficientGrip Performance 2', '92H', 'Goodyear', 'летние', 'легковые')                                                                                   #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
+                        coma = v[0].find(',')
+                        pr = float
+                        name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
+                            competitor_name = v[4] 
+                        )
+    ##                    print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH', v[6])
+                        season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
+                        if season_usage:
+                            season_usage = season_usage[0]
+                        else:
+                            season_usage = None 
+                        if coma:
+                            no_with_coma = v[0].replace(',', '.').replace('\n', '')
+                            try:
+                                pr = float(no_with_coma) 
+                            except:
+                                pr = None
+                        tyre_group_ussage = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[6])
+                        if tyre_group_ussage:
+                            tyre_group_ussage = tyre_group_ussage[0]
+                        else:
+                            tyre_group_ussage = None 
+                        if coma:
+                            no_with_coma = v[0].replace(',', '.').replace('\n', '')
+                            try:
+                                pr = float(no_with_coma) 
+                            except:
+                                pr = None
+                
+                        list_tyre_sizes.append(v[1])
+                        list_comparative_analysis_tyre_objects = []
+                        for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                            list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
+                        onliner_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
+                            site = 'onliner.by',
+                            #tyre = tyre,
+                            currency = dictionaries_models.Currency.objects.get(currency='BYN'),
+                            price = pr,
+                            date_period = datetime.datetime.today(),
+                            #developer = v[4],
+                            developer = name_competitor,
+                            tyresize_competitor = v[1],
+                            name_competitor = v[2], 
+                            parametres_competitor = v[3],
+                            season = season_usage,
+                            group = tyre_group_ussage,
+                        )        
+                        )
+            bulk_onl_compet = models.CompetitorSiteModel.objects.bulk_create(onliner_compet_obj_tyre_bulk_list)
 
-                # сопоставление с БД  и запись в БД конкурентов (Onliner):
-                tyres_in_bd = tyres_models.Tyre.objects.all()
-                for tyre in tyres_in_bd:
-                    for k, v in chosen_by_company_dict.items():
-                        #print('v', v)
-                        if tyre.tyre_size.tyre_size == v[1]:
-                            #print('TTTTKKK', k, 'v[1]', v[1])                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
-                            #Cordiant Polar SL 205/ 55R16 94T ('165,00', '205/ 55R16', 'Cordiant Polar SL', '94T', 'Cordiant')
-                            coma = v[0].find(',')
-                            pr = float
-                            name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
-                                competitor_name =  v[4]
-                            )
-                            #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',  name_competitor, 'name_competitor =', v[4])
-                            season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
-                            if season_usage:
-                                season_usage = season_usage[0]
-                            else:
-                                season_usage = None 
-                            if coma:
-                                pr = float(v[0].replace(',', '.'))
+            list_tyre_sizes = set(list_tyre_sizes)
+            for t_szz in list_tyre_sizes:
+                for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
+                        obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
 
-                            tyre_group_ussage = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[6])
-                            if tyre_group_ussage:
-                                tyre_group_ussage = tyre_group_ussage[0]
-                            else:
-                                tyre_group_ussage = None 
-                            if coma:
-                                pr = float(v[0].replace(',', '.'))  
-
-                            competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
-                                site = 'onliner.by',
-                                #tyre = tyre,
-                                currency = dictionaries_models.Currency.objects.get(currency='BYN'),
-                                price = pr,
-                                date_period = datetime.datetime.today(),
-                                #developer = v[4],
-                                developer = name_competitor,
-                                tyresize_competitor = v[1],
-                                name_competitor = v[2], 
-                                parametres_competitor = v[3],
-                                season = season_usage,
-                                group = tyre_group_ussage,
-
-                                #tyre_to_compare = list_comparative_analys_tyres_model_objects_to_bound_with,
-                            )
-                            ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
-                            #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
-                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
-                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
-                            ###
-
-            except:
-                pass                                                                                                                                                                                                       
+                        # OLD VERSION       
+                        ####competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
+                        ####    site = 'onliner.by',
+                        ####    #tyre = tyre,
+                        ####    currency = dictionaries_models.Currency.objects.get(currency='BYN'),
+                        ####    price = pr,
+                        ####    date_period = datetime.datetime.today(),
+                        ####    #developer = v[4],
+                        ####    developer = name_competitor,
+                        ####    tyresize_competitor = v[1],
+                        ####    name_competitor = v[2], 
+                        ####    parametres_competitor = v[3],
+                        ####    season = season_usage,
+                        ####    group = tyre_group_ussage,
+                        ####    #tyre_to_compare = list_comparative_analys_tyres_model_objects_to_bound_with,
+                        ####)
+                        ####### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
+                    #   #### print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+                        ####for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                        ####    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                        #######
+                    # END OLD VERSION   
+            #except:
+            #    pass                                                                                                                                                                                                       
             ##### END OF ONLINER PARSING
 
 
@@ -368,7 +475,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in urls[0:0]:                                 # c 1 по 2 станицы
+                for slug in urls[1:2]:                                 # c 1 по 2 станицы
                 #for slug in range(0,urls_get):    
                     #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
@@ -440,7 +547,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in range(0, 0):
+                for slug in range(0, 2):
                 #for slug in range(0,urls_get):    
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
                     webdriverr.get(newUrl)
@@ -508,7 +615,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in range(0, 0):
+                for slug in range(0, 2):
                 #for slug in range(0,urls_get):     
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
                     webdriverr.get(newUrl)
@@ -575,7 +682,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
-                for slug in range(0, 0):
+                for slug in range(0, 2):
                 #for slug in range(0,urls_get): 
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
                     webdriverr.get(newUrl)
@@ -622,6 +729,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #print('chosen_by_company_dict', chosen_by_company_dict)
 
                 # сопоставление с БД  и запись в БД конкурентов (Автосеть):
+                autoset_compet_obj_tyre_bulk_list = []
+                list_tyre_sizes = []                
+                
                 tyres_in_bd = tyres_models.Tyre.objects.all()
                 for tyre in tyres_in_bd:
                     for k, v in chosen_by_company_dict.items():
@@ -666,7 +776,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             if coma:
                                 pr = float(str(v[4]).replace(',', '.'))
 
-                            competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
+                            list_tyre_sizes.append(k[0])
+                            list_comparative_analysis_tyre_objects = []
+                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
+                                list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
+                            autoset_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel.objects.update_or_create(
                                 site = 'autoset.by',
                                 currency = dictionaries_models.Currency.objects.get(currency='BYN'),
                                 price = pr,
@@ -677,13 +791,35 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 parametres_competitor = v[2],
                                 season = season_usage,
                                 group = tyre_groupp,
-                                #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
                             )    
-                            ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
-                            #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
-                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
-                                competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
-                            ###  
+                            )
+                bulk_avtoset_compet = models.CompetitorSiteModel.objects.bulk_create(autoset_compet_obj_tyre_bulk_list)
+    
+                list_tyre_sizes = set(list_tyre_sizes)
+                for t_szz in list_tyre_sizes:
+                    for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'autoset.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  
+            
+                            ### OLD VERSION
+                            ##competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
+                            ##    site = 'autoset.by',
+                            ##    currency = dictionaries_models.Currency.objects.get(currency='BYN'),
+                            ##    price = pr,
+                            ##    date_period = datetime.datetime.today(),
+                            ##    developer = name_competitor,
+                            ##    tyresize_competitor = k[0],                                        
+                            ##    name_competitor = v[1], 
+                            ##    parametres_competitor = v[2],
+                            ##    season = season_usage,
+                            ##    group = tyre_groupp,
+                            ##    #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
+                            ##)    
+                            ##### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
+                            ###print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+                            ##for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
+                            ##    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                            #####
+                            ### END OLD VERSION   
             except:
                 pass                                                                                                                                                                                                                   
             ###### END OF АВТОСЕТЬ PARSING
@@ -752,8 +888,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #print(urls_get, 'pages --pages ')
                 #2. получаем данные со всех страниц:                         
 
-                #for slug in range(0, 0):
-                for slug in range(0,urls_get):
+                for slug in range(0, 0):
+                #for slug in range(0,urls_get):
                     #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                     newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                     webdriverr.get(newUrl)
@@ -822,8 +958,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
-                #for slug in range(0, 0):
-                for slug in range(0,urls_get):    
+                for slug in range(0, 0):
+                #for slug in range(0,urls_get):    
                     newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/gruzovye-shiny/?nav=page-9
                     webdriverr.get(newUrl)
                     time.sleep(2)
@@ -878,8 +1014,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
-                #for slug in range(0, 0):
-                for slug in range(0,urls_get):    
+                for slug in range(0, 0):
+                #for slug in range(0,urls_get):    
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(2)
@@ -932,8 +1068,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
-                #for slug in range(0, 0):
-                for slug in range(0,urls_get):    
+                for slug in range(0, 0):
+                #for slug in range(0,urls_get):    
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(2)
