@@ -132,8 +132,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #2. получаем данные со всех страниц:
             list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
             shins_phrase = ['шины', 'Шины']
-            #for slug in urls[1:2]:                               # c 1 по 2 станицы    
-            for slug in urls:      # рабочий вариант
+            for slug in urls[1:1]:                               # c 1 по 2 станицы    
+            #for slug in urls:      # рабочий вариант
                 newUrl = url.replace('?', f'?page={slug}') 
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -166,10 +166,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                     if n.isalnum() is True:
                                         company_name = n
                                         break
-                                if 'BEL-318' in tyre_name_cleaned:
-                                    print('tyre_name_cleaned===', tyre_name_cleaned)                       # tyre_name_cleaned===    Mirage MG111 11.00R22.5 146/143L 16PR     
-
                                 check_name_is_foud = True
+
                         # end проверка на лишний тект в нелегковых шинах
                         if check_name_is_foud is False:
                             text_to_delete1 = tyre_name.text.find('шины') + 5
@@ -184,15 +182,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         seas_list = ['летние', 'зимние', 'всесезонные']
                         studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
                         group_list_cars = ['легковых', 'внедорожников', 'минивенов', 'кроссоверов'] 
-                        group_list_lt = ['микро', 'легкогрузовых'] # ['микроавтобусов', 'легкогрузовых']                
-                        group_list_trucks = ['автобусов', 'строительной', 'большегрузных'] #['автобусов', 'грузовых автомобилей', 'строительной и дорожной', 'большегрузных автомобилей']
+                        group_list_lt = ['микро'] # ['микроавтобусов', 'легкогрузовых']                
+                        group_list_trucks = ['грузовых', 'строительной', 'большегрузных'] #['автобусов', 'грузовых автомобилей', 'строительной и дорожной', 'большегрузных автомобилей']
                         group_list_agro = ['тракторов и сельскохозяйственной']
                         tyr_group_check = False
+                        tyr_seas_check = False
+                        tyr_group = None
+                        season = None
                         if tyre_season:
                             split_str_prepared = tyre_season.text
                             split_str = split_str_prepared.replace('\n', '').split(', ')
-                            if 'BEL-318' in tyre_name_cleaned:
-                                print('split_str ', split_str )
                             season_is = []
                             try:
                                 if split_str[0] and split_str[0] in ['летние', 'зимние', 'всесезонные']:
@@ -200,12 +199,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             except:
                                 pass
                             group_is = []
+                            # для грузовых
                             try:
                                 if split_str[1]:
                                     group_is = split_str[1]
                                     tyr_group_check is True
                             except:
                                 try:
+                                    #if 'BEL-318' in tyre_name_cleaned:
+                                    #    print('split42334324', split_str[0])
                                     if split_str[0]:
                                         for n in group_list_cars:
                                             if n in split_str[0]:
@@ -214,6 +216,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                         for n in group_list_lt:
                                             if n in split_str[0]:
                                                 group_is = 'легкогруз'
+                                        #        print('---====', group_is)
                                                 break
                                         for n in group_list_trucks:
                                             if n in split_str[0]:
@@ -223,38 +226,34 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                             if n in split_str[0]:
                                                 group_is = 'с/х'
                                                 break
-                                    tyr_group_check is True
+                                    tyr_group = group_is        
+                                    tyr_group_check = True
                                 except:
                                     pass
+                            # END для грузовых
 
-                            studded_is = []                       # ШИПЫ - можно тут доработать
-                            for s_el in seas_list:
-                                if s_el in tyre_season.text:
-                                    season = s_el
-                            for studded_el in studded_list:
-                                if studded_el in tyre_season.text:
-                                    studded = studded_el
-                            #print( season, '          ', studded)
-                            t_gr = None
-                        #    print('HHHHHHHHHHGGFFF', tyre_season.text) 
+                            # группа для легковых
                             if tyr_group_check is False:
                                 for tyr_group in group_list_cars:
                                     if tyr_group in group_is:
                                         t_gr = 'легковые'
-                        #                print('tyr_group 111', tyr_group)
+                                    #    print('tyr_group 111111', tyr_group)
                                         break
                                     #for tyr_group in group_list_lt:
+                                tg_is_lt = False    
                                 for tyr_group in group_list_lt:
                                     if tyr_group in group_is:
                                         t_gr = 'легкогруз'
-                                #        print('tyr_group 111', tyr_group)
+                                    #    print('tyr_group 111222', tyr_group, '||||', group_is)
+                                        tg_is_lt = True
                                         break
-                                for tyr_group in group_list_trucks:
-                                    #for tyr_group in group_list_trucks:
-                                    if tyr_group in group_is:
-                                        t_gr = 'грузовые'
-                                #        print('tyr_group 111', tyr_group)
-                                        break
+                                if tg_is_lt is False:
+                                    for tyr_group in group_list_trucks:
+                                        #for tyr_group in group_list_trucks:
+                                        if tyr_group in group_is:
+                                            t_gr = 'грузовые'
+                                    #        print('tyr_group 11133', tyr_group, '||||', group_is)
+                                            break
                                 for tyr_group in group_list_agro:
                                     #for tyr_group in group_list_agro:
                                     if tyr_group in group_is:
@@ -262,6 +261,25 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 #        print('tyr_group 111', tyr_group)
                                         break
                                 tyr_group = t_gr
+                            # END группа для легковых    
+
+                            # сезонность
+                            studded_is = []                       # ШИПЫ - тут доработать
+                            for s_el in seas_list:
+                                if s_el in tyre_season.text:
+                                    season = s_el
+                                #    if 'BEL-318' in tyre_name_cleaned:
+                                #        print('group_is ========88888=', tyre_season.text)  
+                                #        print('group_is =====================', season)  
+                            # END сезонность
+                            
+                            # шипы
+                            for studded_el in studded_list:
+                                if studded_el in tyre_season.text:
+                                    studded = studded_el
+                            #print( season, '          ', studded)
+                            t_gr = None
+                            # END 
     
                 # выдираем типоразмер для добавления в словарь
                         tyresize = str
@@ -282,7 +300,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                     company_name = product_name.split(' ')[0]
                                 tyre_param = str_right_data
                         values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
-                    #    print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)
+                        #print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
                         goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
             #for k, v in goods_dict.items():
             #   print('K==', k, 'V==', v, 'KV')
@@ -416,8 +434,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-            #    products_lt = soup.find_all('section', class_='container-block product__wrap specprice')
-                products_lt = soup.find_all('section', class_='container-block product__wrap')
+
+                ##products_lt = soup.find_all('section', class_='container-block product__wrap')
+
 
                 ### ВЕРСИЯ РАБОЧАЯ ДО ИЗМЕННЕНИЙ НА САЙТЕ
                 #for data_got in products_lt:
@@ -443,24 +462,24 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #    goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                 #    avtoset_good_num += 1
                 ### END ВЕРСИЯ РАБОЧАЯ ДО ИЗМЕННЕНИЙ НА САЙТЕ
-                for data_got in products_lt:
-                    tyre_title_lt = str(data_got.find('div', class_='brand').text).replace('\\n', '').replace('БЕСПЛАТНЫЙ ШИНОМОНТАЖ', '').replace('БЕСПЛАТНАЯ СПЕЦГАРАНТИЯ', '')  
-                    tyre_title_lt = re.sub('\r?\n', '', tyre_title_lt)
-                    tyre_model_lt = str(data_got.find('a', class_='model').text.replace('\\n', ''))  
-                    tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
-                    tyre_size_lt_text = str(data_got.find('a', class_='size-val'))
-                    tyre_size_lt_span_start_index = tyre_size_lt_text.find('<span>') + 6
-                    tyre_size_lt_span_end_index = tyre_size_lt_text.find('</span>')
-                    tyre_index_lt = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
-                    tyre_size_lt = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, '').replace('\n', ''))                
-                    tyre_season_lt = str(data_got.find('span', class_='val').text) 
-                    tyre_rub_price_lt = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-                    tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-                    tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
-                    tyr_group = 'легковые'
-                #    print('=0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
-                    goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
-                    avtoset_good_num += 1
+                ##for data_got in products_lt:
+                ##    tyre_title_lt = str(data_got.find('div', class_='brand').text).replace('\\n', '').replace('БЕСПЛАТНЫЙ ШИНОМОНТАЖ', '').replace('БЕСПЛАТНАЯ СПЕЦГАРАНТИЯ', '')  
+                ##    tyre_title_lt = re.sub('\r?\n', '', tyre_title_lt)
+                ##    tyre_model_lt = str(data_got.find('a', class_='model').text.replace('\\n', ''))  
+                ##    tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
+                ##    tyre_size_lt_text = str(data_got.find('a', class_='size-val'))
+                ##    tyre_size_lt_span_start_index = tyre_size_lt_text.find('<span>') + 6
+                ##    tyre_size_lt_span_end_index = tyre_size_lt_text.find('</span>')
+                ##    tyre_index_lt = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
+                ##    tyre_size_lt = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, '').replace('\n', ''))                
+                ##    tyre_season_lt = str(data_got.find('span', class_='val').text) 
+                ##    tyre_rub_price_lt = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                ##    tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                ##    tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
+                ##    tyr_group = 'легковые'
+                ###    print('=0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+                ##    goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
+                ##    avtoset_good_num += 1
 
                 # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
@@ -475,7 +494,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in urls[1:2]:                                 # c 1 по 2 станицы
+                for slug in urls[1:1]:                                 # c 1 по 2 станицы
                 #for slug in range(0,urls_get):    
                     #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
@@ -485,25 +504,27 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     time.sleep(4)
                     soup = BeautifulSoup(webdriverr.page_source,'lxml')
                     products_lt = soup.find_all('section', class_='container-block product__wrap')
+                ##    print('products_lt', products_lt)
 
-                for data_got in products_lt:
-                    tyre_title_lt = str(data_got.find('div', class_='brand').text).replace('\\n', '').replace('БЕСПЛАТНЫЙ ШИНОМОНТАЖ', '').replace('БЕСПЛАТНАЯ СПЕЦГАРАНТИЯ', '')  
-                    tyre_title_lt = re.sub('\r?\n', '', tyre_title_lt)
-                    tyre_model_lt = str(data_got.find('a', class_='model').text.replace('\\n', ''))  
-                    tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
-                    tyre_size_lt_text = str(data_got.find('a', class_='size-val'))
-                    tyre_size_lt_span_start_index = tyre_size_lt_text.find('<span>') + 6
-                    tyre_size_lt_span_end_index = tyre_size_lt_text.find('</span>')
-                    tyre_index_lt = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
-                    tyre_size_lt = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, '').replace('\n', ''))                
-                    tyre_season_lt = str(data_got.find('span', class_='val').text) 
-                    tyre_rub_price_lt = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-                    tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-                    tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
-                    tyr_group = 'легковые'
-                #    print('=0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
-                    goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
-                    avtoset_good_num += 1
+                    for data_got in products_lt:
+                        tyre_title_lt = str(data_got.find('div', class_='brand').text).replace('\\n', '').replace('БЕСПЛАТНЫЙ ШИНОМОНТАЖ', '').replace('БЕСПЛАТНАЯ СПЕЦГАРАНТИЯ', '') 
+                        tyre_title_lt = re.sub('\r?\n', '', tyre_title_lt)
+                    #    print('&&&&!&!&!', tyre_title_lt)
+                        tyre_model_lt = str(data_got.find('a', class_='model').text.replace('\\n', ''))  
+                        tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
+                        tyre_size_lt_text = str(data_got.find('a', class_='size-val'))
+                        tyre_size_lt_span_start_index = tyre_size_lt_text.find('<span>') + 6
+                        tyre_size_lt_span_end_index = tyre_size_lt_text.find('</span>')
+                        tyre_index_lt = tyre_size_lt_text[tyre_size_lt_span_start_index : tyre_size_lt_span_end_index]
+                        tyre_size_lt = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_lt, '').replace('\n', ''))                
+                        tyre_season_lt = str(data_got.find('span', class_='val').text) 
+                        tyre_rub_price_lt = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                        tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                        tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
+                        tyr_group = 'легковые'
+                #        print('=0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+                        goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
+                        avtoset_good_num += 1
 
                 # 2) Грузовые шины
                 url = 'https://autoset.by/trucks-tires/'
@@ -517,22 +538,22 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')
                 products_t = soup.find_all('section', class_='container-block product__wrap')
 
-                for data_got in products_t:
-                    tyre_title_t = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-                    tyre_title_t = re.sub('\r?\n', '', tyre_title_t)
-                    tyre_model_t = str(data_got.find('a', class_='model').text.replace('\\n', '')) 
-                    tyre_size_t_text = str(data_got.find('a', class_='size-val'))
-                    tyre_size_t_span_start_index = tyre_size_t_text.find('<span>') + 6
-                    tyre_size_t_span_end_index = tyre_size_t_text.find('</span>')
-                    tyre_index_t = tyre_size_t_text[tyre_size_t_span_start_index : tyre_size_t_span_end_index]
-                    tyre_size_t = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_t, '').replace('\n', '')) 
-                    tyre_rub_price_t = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-                    tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-                    tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
-                    tyr_group = 'грузовые'
-                    #print('=1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
-                    goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyr_group, tyre_price_t 
-                    avtoset_good_num += 1    
+                #for data_got in products_t:
+                #    tyre_title_t = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+                #    tyre_title_t = re.sub('\r?\n', '', tyre_title_t)
+                #    tyre_model_t = str(data_got.find('a', class_='model').text.replace('\\n', '')) 
+                #    tyre_size_t_text = str(data_got.find('a', class_='size-val'))
+                #    tyre_size_t_span_start_index = tyre_size_t_text.find('<span>') + 6
+                #    tyre_size_t_span_end_index = tyre_size_t_text.find('</span>')
+                #    tyre_index_t = tyre_size_t_text[tyre_size_t_span_start_index : tyre_size_t_span_end_index]
+                #    tyre_size_t = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_t, '').replace('\n', '')) 
+                #    tyre_rub_price_t = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                #    tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                #    tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
+                #    tyr_group = 'грузовые'
+                #    #print('=1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
+                #    goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyr_group, tyre_price_t 
+                #    avtoset_good_num += 1    
 
                 # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
@@ -547,7 +568,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in range(0, 2):
+                for slug in range(1, 1):
                 #for slug in range(0,urls_get):    
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
                     webdriverr.get(newUrl)
@@ -586,21 +607,21 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
                 products_ts = soup.find_all('section', class_='container-block product__wrap')
 
-                for data_got in products_ts:
-                    tyre_title_ts = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-                    tyre_title_ts = re.sub('\r?\n', '', tyre_title_ts)
-                    tyre_model_ts = str(data_got.find('a', class_='model').text).replace('\n', '')  
-                    tyre_size_ts_text = str(data_got.find('a', class_='size-val'))
-                    tyre_size_ts_span_start_index = tyre_size_ts_text.find('<span>') + 6
-                    tyre_size_ts_span_end_index = tyre_size_ts_text.find('</span>')
-                    tyre_index_ts = tyre_size_ts_text[tyre_size_ts_span_start_index : tyre_size_ts_span_end_index]
-                    tyre_size_ts = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_ts, '').replace('\n', ''))  
-                    tyre_rub_price_ts = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-                    tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-                    tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
-                    tyr_group = 'грузовые'
-                #    print('=0=', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
-                    goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts
+                #for data_got in products_ts:
+                #    tyre_title_ts = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+                #    tyre_title_ts = re.sub('\r?\n', '', tyre_title_ts)
+                #    tyre_model_ts = str(data_got.find('a', class_='model').text).replace('\n', '')  
+                #    tyre_size_ts_text = str(data_got.find('a', class_='size-val'))
+                #    tyre_size_ts_span_start_index = tyre_size_ts_text.find('<span>') + 6
+                #    tyre_size_ts_span_end_index = tyre_size_ts_text.find('</span>')
+                #    tyre_index_ts = tyre_size_ts_text[tyre_size_ts_span_start_index : tyre_size_ts_span_end_index]
+                #    tyre_size_ts = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_ts, '').replace('\n', ''))  
+                #    tyre_rub_price_ts = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                #    tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                #    tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
+                #    tyr_group = 'грузовые'
+                ##    print('=0=', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
+                #    goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts
 
            #     ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
@@ -615,7 +636,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in range(0, 2):
+                for slug in range(1, 1):
                 #for slug in range(0,urls_get):     
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
                     webdriverr.get(newUrl)
@@ -653,24 +674,24 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
                 products_agro = soup.find_all('section', class_='container-block product__wrap')
 
-                for data_got in products_agro:
-                    tyre_title_agro = str(data_got.find('div', class_='brand').text).replace('\\n', '')
-                    tyre_title_agro = re.sub('\r?\n', '', tyre_title_agro)
-                    tyre_model_agro = str(data_got.find('a', class_='model').text)
-                    tyre_model_agro = tyre_model_agro.replace("\n","")
-                    tyre_size_agro_text = str(data_got.find('a', class_='size-val'))
-                    tyre_size_agro_span_start_index = tyre_size_agro_text.find('<span>') + 6
-                    tyre_size_agro_span_end_index = tyre_size_agro_text.find('</span>')
-                    tyre_index_agro = tyre_size_agro_text[tyre_size_agro_span_start_index : tyre_size_agro_span_end_index]
-                    tyre_size_agro = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_agro, '').replace('\n', '')) 
-                    tyre_rub_price_agro = str(data_got.find('span', class_='full').text.replace(' ', '')) 
-                    tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
-                    tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
-                    tyr_group = 'с/х'
-                #    print('=7=', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
-                    goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro 
+                #for data_got in products_agro:
+                #    tyre_title_agro = str(data_got.find('div', class_='brand').text).replace('\\n', '')
+                #    tyre_title_agro = re.sub('\r?\n', '', tyre_title_agro)
+                #    tyre_model_agro = str(data_got.find('a', class_='model').text)
+                #    tyre_model_agro = tyre_model_agro.replace("\n","")
+                #    tyre_size_agro_text = str(data_got.find('a', class_='size-val'))
+                #    tyre_size_agro_span_start_index = tyre_size_agro_text.find('<span>') + 6
+                #    tyre_size_agro_span_end_index = tyre_size_agro_text.find('</span>')
+                #    tyre_index_agro = tyre_size_agro_text[tyre_size_agro_span_start_index : tyre_size_agro_span_end_index]
+                #    tyre_size_agro = str(data_got.find('a', class_='size-val').text.replace(' ', '').replace(',', '.').replace(tyre_index_agro, '').replace('\n', '')) 
+                #    tyre_rub_price_agro = str(data_got.find('span', class_='full').text.replace(' ', '')) 
+                #    tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
+                #    tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
+                #    tyr_group = 'с/х'
+                ##    print('=7=', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
+                #    goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro 
 
-           #     ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+           #    ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
                 pages = soup.find('div', class_='pagination-block__pages')        
                 urls_get = []
@@ -682,7 +703,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
-                for slug in range(0, 2):
+                for slug in range(1, 1):
                 #for slug in range(0,urls_get): 
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
                     webdriverr.get(newUrl)
@@ -840,7 +861,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 page_curr = raw_generator_page(i, time_to_relax)                      
 
 
-
                 all_seasons = 'allseason'
                 snow = 'winterColor'
                 summer = 'summer'
@@ -855,25 +875,25 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-                products_lt = soup.find_all('div', class_='accordion-manufacturers__main_item')
-                bagoria_good_num = 0
-                for data_got in products_lt:
-                    tyre_title_lt = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '')
-                    tyre_model_lt = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '') 
-                    tyre_size_lt = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', ''))
-                    tyre_index_lt = str(data_got.find('p', class_='index').text) 
-                    tyre_season_lt = str(data_got.find('div', class_='accordion-manufacturers__main_icons')) 
-                    if all_seasons in tyre_season_lt:
-                      tyre_season_lt  = 'всесезонные'
-                    elif snow in tyre_season_lt:
-                      tyre_season_lt  = 'зимние'
-                    elif summer in tyre_season_lt:
-                      tyre_season_lt  = 'летние'
-                    tyre_price_lt = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())  
-                    tyr_group = 'легковые'
-                    goods_dict_bagoria[tyre_size_lt, bagoria_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
-                #    print('||', tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt)
-                    bagoria_good_num += 1
+                ##products_lt = soup.find_all('div', class_='accordion-manufacturers__main_item')
+                ##bagoria_good_num = 0
+                ##for data_got in products_lt:
+                ##    tyre_title_lt = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '')
+                ##    tyre_model_lt = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '') 
+                ##    tyre_size_lt = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', ''))
+                ##    tyre_index_lt = str(data_got.find('p', class_='index').text) 
+                ##    tyre_season_lt = str(data_got.find('div', class_='accordion-manufacturers__main_icons')) 
+                ##    if all_seasons in tyre_season_lt:
+                ##      tyre_season_lt  = 'всесезонные'
+                ##    elif snow in tyre_season_lt:
+                ##      tyre_season_lt  = 'зимние'
+                ##    elif summer in tyre_season_lt:
+                ##      tyre_season_lt  = 'летние'
+                ##    tyre_price_lt = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())  
+                ##    tyr_group = 'легковые'
+                ##    goods_dict_bagoria[tyre_size_lt, bagoria_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
+                ###    print('||', tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt)
+                ##    bagoria_good_num += 1
                 # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
                 pages = soup.find('ul', class_='pagination')        
@@ -885,17 +905,20 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         if pageNum.isdigit():
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
+                random_order_pages_list = random.sample(range(0,urls_get))
+                print('random_order_pages_list', random_order_pages_list)
                 #print(urls_get, 'pages --pages ')
                 #2. получаем данные со всех страниц:                         
 
-                for slug in range(0, 0):
+                #for slug in range(0, 0):
                 #for slug in range(0,urls_get):
+                for slug in random_order_pages_list:    
                     #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                     newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                     webdriverr.get(newUrl)
 
                     val_sleep = next(page_curr)
-                    print('val_sleep =', val_sleep)
+                #    print('val_sleep =', val_sleep)
                     if val_sleep == 10:
                         time.sleep(45)
                         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -934,18 +957,18 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-                products_t = soup.find_all('div', class_='accordion-manufacturers__main_item')
-                for data_got in products_t:
-                    tyre_title_t = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '').lstrip().rstrip()
-                    tyre_model_t = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '')  
-                    tyre_size_t = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', '').replace(',', '.'))
-                    tyre_index_t = str(data_got.find('p', class_='index').text).replace('\n', '').replace(' ', '')       
-                    tyre_param_t = str(data_got.find('div', class_='accordion-manufacturers__main_layering').text).replace('\n', '').replace(' ', '')   
-                    tyre_ax_t = str(data_got.find('div', class_='accordion-manufacturers__main_applicability').text).replace('\n', '').replace(' ', '')   
-                    tyre_price_t = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
-                    tyr_group = 'грузовые'
-                    goods_dict_bagoria[tyre_size_t, bagoria_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyr_group, tyre_price_t, tyre_param_t#,, tyre_ax_t 
-                    bagoria_good_num += 1    
+                ##products_t = soup.find_all('div', class_='accordion-manufacturers__main_item')
+                ##for data_got in products_t:
+                ##    tyre_title_t = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '').lstrip().rstrip()
+                ##    tyre_model_t = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '')  
+                ##    tyre_size_t = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', '').replace(',', '.'))
+                ##    tyre_index_t = str(data_got.find('p', class_='index').text).replace('\n', '').replace(' ', '')       
+                ##    tyre_param_t = str(data_got.find('div', class_='accordion-manufacturers__main_layering').text).replace('\n', '').replace(' ', '')   
+                ##    tyre_ax_t = str(data_got.find('div', class_='accordion-manufacturers__main_applicability').text).replace('\n', '').replace(' ', '')   
+                ##    tyre_price_t = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
+                ##    tyr_group = 'грузовые'
+                ##    goods_dict_bagoria[tyre_size_t, bagoria_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyr_group, tyre_price_t, tyre_param_t#,, tyre_ax_t 
+                ##    bagoria_good_num += 1    
                 # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
                 pages = soup.find('ul', class_='pagination')        
@@ -957,9 +980,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         if pageNum.isdigit():
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
+                random_order_pages_list = random.sample(range(0,urls_get))
                 #2. получаем данные со всех страниц:                         
-                for slug in range(0, 0):
-                #for slug in range(0,urls_get):    
+                #for slug in range(0, 0):
+                #for slug in range(0,urls_get):
+                for slug in  random_order_pages_list:    
                     newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/gruzovye-shiny/?nav=page-9
                     webdriverr.get(newUrl)
                     time.sleep(2)
@@ -989,18 +1014,18 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-                products_ts = soup.find_all('div', class_='accordion-manufacturers__main_item')
-                for data_got in products_ts:
-                    tyre_title_ts = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '').lstrip().rstrip()
-                    tyre_model_ts = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '')   
-                    tyre_size_ts = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', '').replace(',', '.'))
-                    tyre_index_ts = str(data_got.find('p', class_='index').text).replace('\n', '').replace(' ', '')         
-                    tyre_param_ts = str(data_got.find('div', class_='accordion-manufacturers__main_layering').text).replace('\n', '').replace(' ', '')  
-                    tyre_price_ts = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
-                    tyr_group = 'грузовые'
-                    goods_dict_bagoria[tyre_size_ts, bagoria_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts 
-                    #print('III', tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts)
-                    bagoria_good_num += 1   
+                ##products_ts = soup.find_all('div', class_='accordion-manufacturers__main_item')
+                ##for data_got in products_ts:
+                ##    tyre_title_ts = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '').lstrip().rstrip()
+                ##    tyre_model_ts = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '')   
+                ##    tyre_size_ts = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', '').replace(',', '.'))
+                ##    tyre_index_ts = str(data_got.find('p', class_='index').text).replace('\n', '').replace(' ', '')         
+                ##    tyre_param_ts = str(data_got.find('div', class_='accordion-manufacturers__main_layering').text).replace('\n', '').replace(' ', '')  
+                ##    tyre_price_ts = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
+                ##    tyr_group = 'грузовые'
+                ##    goods_dict_bagoria[tyre_size_ts, bagoria_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts 
+                ##    #print('III', tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts)
+                ##    bagoria_good_num += 1   
                 #print('goods_dict_bagoria11', goods_dict_bagoria)
        #            ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
@@ -1013,9 +1038,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         if pageNum.isdigit():
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
+                random_order_pages_list = random.sample(range(0,urls_get))
                 #2. получаем данные со всех страниц:                         
-                for slug in range(0, 0):
+                #for slug in range(0, 0):
                 #for slug in range(0,urls_get):    
+                for slug in random_order_pages_list:  
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(2)
@@ -1044,17 +1071,17 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(5)
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-                products_agro = soup.find_all('div', class_='accordion-manufacturers__main_item')
-                for data_got in products_agro:
-                    tyre_title_agro = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '').lstrip().rstrip()
-                    tyre_model_agro = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '')  
-                    tyre_size_agro = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', '').replace(',', '.'))
-                    tyre_index_agro = str(data_got.find('p', class_='index').text).replace('\n', '').replace(' ', '')        
-                    tyre_param_agro = str(data_got.find('div', class_='accordion-manufacturers__main_layering').text).replace('\n', '').replace(' ', '')  
-                    tyre_price_agro = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
-                    tyr_group = 'с/х'
-                    goods_dict_bagoria[tyre_size_agro, bagoria_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro, tyre_param_agro 
-                    bagoria_good_num += 1 
+                ##products_agro = soup.find_all('div', class_='accordion-manufacturers__main_item')
+                ##for data_got in products_agro:
+                ##    tyre_title_agro = str(data_got.find('h6', class_='manufacturer').text).replace('\n', '').replace(' ', '').lstrip().rstrip()
+                ##    tyre_model_agro = str(data_got.find('div', class_='model').text).replace('\n', '').replace(' ', '')  
+                ##    tyre_size_agro = str(data_got.find('div', class_='size').text.replace(' ', '').replace('\n', '').replace(',', '.'))
+                ##    tyre_index_agro = str(data_got.find('p', class_='index').text).replace('\n', '').replace(' ', '')        
+                ##    tyre_param_agro = str(data_got.find('div', class_='accordion-manufacturers__main_layering').text).replace('\n', '').replace(' ', '')  
+                ##    tyre_price_agro = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
+                ##    tyr_group = 'с/х'
+                ##    goods_dict_bagoria[tyre_size_agro, bagoria_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro, tyre_param_agro 
+                ##    bagoria_good_num += 1 
                 #print('goods_dict_bagoria', goods_dict_bagoria)
        #            ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
@@ -1067,9 +1094,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         if pageNum.isdigit():
                             urls_get.append(int(pageNum))
                 urls_get = max(urls_get)
+                random_order_pages_list = random.sample(range(0,urls_get))
                 #2. получаем данные со всех страниц:                         
-                for slug in range(0, 0):
-                #for slug in range(0,urls_get):    
+                #for slug in range(0, 0):
+                #for slug in range(0,urls_get):
+                for slug in random_order_pages_list:    
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(2)
