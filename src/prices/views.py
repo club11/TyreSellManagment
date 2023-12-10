@@ -132,8 +132,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             #2. получаем данные со всех страниц:
             list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
             shins_phrase = ['шины', 'Шины']
-            for slug in urls[1:1]:                               # c 1 по 2 станицы    
-            #for slug in urls:      # рабочий вариант
+            #for slug in urls[1:1]:                               # c 1 по 2 станицы    
+            for slug in urls:      # рабочий вариант
                 newUrl = url.replace('?', f'?page={slug}') 
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -367,9 +367,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 pr = None
                 
                         list_tyre_sizes.append(v[1])
-                        list_comparative_analysis_tyre_objects = []
-                        for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
-                            list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
+                        #list_comparative_analysis_tyre_objects = []
+                        #for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                        #    list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
                         onliner_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
                             site = 'onliner.by',
                             #tyre = tyre,
@@ -494,8 +494,8 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 urls_get = max(urls_get)
                 #2. получаем данные со всех страниц:                         
                 #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-                for slug in urls[1:1]:                                 # c 1 по 2 станицы
-                #for slug in range(0,urls_get):    
+                #for slug in urls[1:1]:                                 # c 1 по 2 станицы
+                for slug in range(0,urls_get):    
                     #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
                     newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
                     webdriverr.get(newUrl)
@@ -798,9 +798,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 pr = float(str(v[4]).replace(',', '.'))
 
                             list_tyre_sizes.append(k[0])
-                            list_comparative_analysis_tyre_objects = []
-                            for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
-                                list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
+                            #list_comparative_analysis_tyre_objects = []
+                            #for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
+                            #    list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
                             autoset_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
                                 site = 'autoset.by',
                                 currency = dictionaries_models.Currency.objects.get(currency='BYN'),
@@ -1176,7 +1176,9 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     if v[0] and v[0] in bagoria_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
                         chosen_by_company_dict[k] = v
 
-                bagoria_compet_obj_tyre_bulk_list = []        
+                bagoria_compet_obj_tyre_bulk_list = [] 
+                list_tyre_sizes = []
+                current_stack_of_competitors_before_write_in_base = []       
                 #print('chosen_by_company_dict', chosen_by_company_dict)
                 # сопоставление с БД  и запись в БД конкурентов (Bagoria):
                 tyres_in_bd = tyres_models.Tyre.objects.all()
@@ -1210,23 +1212,41 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 if coma and len(v) > 3 and v[4]:  #len(v[4]) == 5 :
                                 #    print('OOOOOOOOOOOOOOOO', v[5])
                                     pr = float(str(v[4]).replace(',', '.'))
-                                list_comparative_analysis_tyre_objects = []    
-                                for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
-                                    list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)    
-                                bagoria_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
-                                    site = 'bagoria.by',
-                                    currency = dictionaries_models.Currency.objects.get(currency='BYN'),
-                                    price = pr,
-                                    date_period = datetime.datetime.today(),
-                                    developer = name_competitor,
-                                    tyresize_competitor = k[0],                                               
-                                    name_competitor = v[1], 
-                                    parametres_competitor = v[2],
-                                    group = tyre_gggroup,                       
-                                    season = season_usage
-                                    #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
-                                ) 
-                                )
+                                #list_comparative_analysis_tyre_objects = []    
+                                #for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
+                                #    list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)    
+                                
+                                list_tyre_sizes.append(k[0])
+                                ## вынужденная провкерка на наличие дублеров в базе и в текущем стеке (стек перед записью в базу):
+                                # 1) проверка на наличие в стеке таких же конкурентов:
+                                this_tyre_is_not_in_current_stack_of_competitors_before_write_in_base = False
+                                this_tyre_parameters = 'bagoria.by', pr, datetime.datetime.today().date(), k[0], v[1]
+                                if this_tyre_parameters not in current_stack_of_competitors_before_write_in_base:
+                                    current_stack_of_competitors_before_write_in_base.append(this_tyre_parameters)
+                                    this_tyre_is_not_in_current_stack_of_competitors_before_write_in_base = True
+                                else:
+                                    pass
+                                #    print('this_t5654757567657657===', this_tyre_parameters)
+                                #print('this_tyre_parameters', this_tyre_parameters)
+                                #print('=========================')
+                                # 2)  проверка на наличие подобного конкурента в базе:
+                                compet_obj_with_same_param = models.CompetitorSiteModel.objects.filter(tyresize_competitor=k[0], price = pr, site = 'bagoria.by', date_period = datetime.datetime.today(), name_competitor = v[1], parametres_competitor = v[2])
+                                ## END вынужденная провкерка на наличие дублеров в базе
+                                if not compet_obj_with_same_param and this_tyre_is_not_in_current_stack_of_competitors_before_write_in_base is True: # если ни в базе, ни в стеке такого конкурента нет - запишем   
+                                    bagoria_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
+                                        site = 'bagoria.by',
+                                        currency = dictionaries_models.Currency.objects.get(currency='BYN'),
+                                        price = pr,
+                                        date_period = datetime.datetime.today(),
+                                        developer = name_competitor,
+                                        tyresize_competitor = k[0],                                               
+                                        name_competitor = v[1], 
+                                        parametres_competitor = v[2],
+                                        group = tyre_gggroup,                       
+                                        season = season_usage
+                                        #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
+                                    ) 
+                                    )
                                 ### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
                                 #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
                          
@@ -1235,10 +1255,16 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     except:
                         pass
                 bulk_bagoria_compet = models.CompetitorSiteModel.objects.bulk_create(bagoria_compet_obj_tyre_bulk_list)
+
+                list_tyre_sizes = set(list_tyre_sizes)
+                for t_szz in list_tyre_sizes:
+                    for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)                
+                
                 return 'Zapis Got'
                 
             sstart = 0
-            ddevider = 7######################  ВАЖНО = ключевое значение вводить здесь - на сколько разбивать запрос
+            ddevider = 2######################  ВАЖНО = ключевое значение вводить здесь - на сколько разбивать запрос
             got_pages_in_loop = []
             page_switch = switch_between_pages_generator(sstart, ddevider, pages_in_legkovik, pages_in_gruzovik, pages_in_indus, pages_in_selhoz) 
             #page_switch = switch_between_pages_generator(sstart, ddevider, pages_in_legkovik, legkovik, pages_in_gruzovik, gruzovik, pages_in_indus, induztrial, pages_in_selhoz, selhozka, bagoria_good_num) 
