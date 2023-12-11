@@ -1297,15 +1297,15 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             loop_is_not_successfull = False
             loop = None
             loop_step = 0
-            print('oop_step', loop_step)
+        #    print('oop_step', loop_step)
             while loop_step < ddevider:    
                 if loop_is_not_successfull is False:
                    loop = next(curr_loop)
                    loop_step += 1
-                   print(loop_step, '-----||||-----', loop)
+        #           print(loop_step, '-----||||-----', loop)
                 else:
                    pass
-                print('loop loop loop loop loop loo loop loop loo loop loop loo', loop)
+        #        print('loop loop loop loop loop loo loop loop loo loop loop loo', loop)
                 one_func_is_passed = False
                 legk_got = None
                 legk_got = legkovik(loop[0][0], loop[0][1],bagoria_good_num)
@@ -1315,19 +1315,19 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 # print('legkovik', loop[0][0], loop[0][1])
                 gruzovik_got = None
                 gruzovik_got = gruzovik(loop[1][0], loop[1][1],bagoria_good_num) 
-                print('gruzovik_got', gruzovik_got)
+        #        print('gruzovik_got', gruzovik_got)
                 if not gruzovik_got:
                     one_func_is_passed = True
                 # print('gruzovik', loop[1][0], loop[1][1])
                 induztrial_got = None
                 induztrial_got = induztrial(loop[2][0], loop[2][1],bagoria_good_num)
-                print('induztrial_got', induztrial_got)
+        #        print('induztrial_got', induztrial_got)
                 if not induztrial_got:
                     one_func_is_passed = True
                 # print('induztrial', loop[2][0], loop[2][1])
                 selhozka_got = None
                 selhozka_got = selhozka(loop[3][0], loop[3][1], bagoria_good_num)
-                print('selhozka_got', selhozka_got)
+        #        print('selhozka_got', selhozka_got)
                 if not selhozka_got:
                     one_func_is_passed = True
                 # print('selhozka', loop[3][0], loop[3][1])
@@ -1748,12 +1748,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             competitors_exist_all_dates = models.CompetitorSiteModel.objects.all().dates('date_period', 'day') # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВСЕ ДАТЫ ДОСТУПНЫЕ ВООБЩЕ ВСЕХ КОНКУРЕТОВ все даты доступные вообще всех конкурентов
             competitors_exist_all_dates_last_date_latest_date = max(competitors_exist_all_dates)  # КОНКУРЕНТЫ ПО СТОСТОЯНИЮ НА ДАТУ
             context['table_current_date_for_header'] = competitors_exist_all_dates_last_date_latest_date.strftime("%d.%m.%Y")
-            print('***** no date from user')
+    #        print('***** no date from user')
         else:
             # для поиска по собственной продукции с ходом в шаг = месяц       
             date_filter = datetime.datetime.strptime(models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0], "%Y-%m-%d").date()                 # ['2023-01-23']
             competitors_exist_all_dates_last_date_latest_date = date_filter    # КОНКУРЕНТЫ ПО СТОСТОЯНИЮ НА ДАТУ
-            print('***** date from user')
+            context['table_current_date_for_header'] = competitors_exist_all_dates_last_date_latest_date.strftime("%d.%m.%Y")
+    #        print('***** date from user')
 
         ################
         ################
@@ -3785,9 +3786,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
             quantity_counter += 1
         list_of_parrsed_brands_sites = sorted(list_of_parrsed_brands_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
-        #numeration_index = 1    # добавим нумерационный индекс для графика:
-        #for n in list_of_parrsed_brands_sites:      # удаляем общее количество спарсенных - список уже по ним отсортирован
-        #    n.pop() # удаляет последний элемнт - общее количество - как раз то, чтомне нужно
+
         top_brands_counter_for_chart = 0
         if quantity_counter == 10 or quantity_counter > 10:               # ели брендов более 10 - то берем то 10
             top_brands_counter_for_chart = 10
@@ -3808,7 +3807,45 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
-    
+
+
+        #### ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ С САЙТОВ: PANDAS
+    #    all_parsed_tyresizes_developers_queryset = dictionaries_models.TyreSizeModel.objects.order_by('tyre_size').values_list('tyre_size', flat=True).distinct()        ### Фильтр уникальных!
+        all_parsed_tyresizes_developers_queryset = models.CompetitorSiteModel.objects.order_by('tyresize_competitor').values_list('tyresize_competitor', flat=True).distinct()        ### Фильтр уникальных!
+        date_to_look_parsed_data = datetime.datetime.now().date()
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+            date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+            date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
+        list_of_parrsed_tyresize_sites = []
+        quantity_counter = 0
+        for ttyyrr_sizze in all_parsed_tyresizes_developers_queryset: 
+            num_of_parsed_tyresize_onliner = models.CompetitorSiteModel.objects.filter(tyresize_competitor=ttyyrr_sizze, date_period=date_to_look_parsed_data, site='onliner.by').count()
+            num_of_parsed_tyresize_bagoria = models.CompetitorSiteModel.objects.filter(tyresize_competitor=ttyyrr_sizze, date_period=date_to_look_parsed_data, site='bagoria.by').count()
+            num_of_parsed_tyresize_autoset = models.CompetitorSiteModel.objects.filter(tyresize_competitor=ttyyrr_sizze, date_period=date_to_look_parsed_data, site='autoset.by').count()
+
+            total_quantity = num_of_parsed_tyresize_onliner + num_of_parsed_tyresize_bagoria + num_of_parsed_tyresize_autoset        # для сортировки по наибольшему кол-ву спарсенных с сайтов
+
+            tyresize_quantity_per_site = ttyyrr_sizze, num_of_parsed_tyresize_onliner, num_of_parsed_tyresize_bagoria, num_of_parsed_tyresize_autoset, total_quantity 
+            list_of_parrsed_tyresize_sites.append(list(tyresize_quantity_per_site))
+            quantity_counter += 1
+        list_of_parrsed_tyresize_sites = sorted(list_of_parrsed_tyresize_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
+
+        top_tyresizes_counter_for_chart = 0
+        if quantity_counter == 10 or quantity_counter > 10:               # ели типоразмеров более 10 - то берем то 10
+            top_tyresizes_counter_for_chartt = 10
+        elif quantity_counter < 10 and quantity_counter > 0:
+            top_tyresizes_counter_for_chart = quantity_counter
+        else:
+            top_tyresizes_counter_for_chart = 'лист без данных'
+        context['top_tyresizes_num'] = top_tyresizes_counter_for_chart
+
+        date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
+        context['tyresizes_from_sites_date'] = date_to_look_parsed_data
+        list_of_parrsed_tyresize_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_tyresize_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
+        context['tyresizes_from_sites'] = list_of_parrsed_tyresize_sites
+
+        #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ  С САЙТОВ: PANDAS
+
         return context
 class ComparativeAnalysisTableModelUpdateView(View):
 

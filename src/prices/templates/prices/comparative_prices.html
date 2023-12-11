@@ -470,9 +470,117 @@
           </script>
                 <div id="chart_div1" style="height: 390px;"></div>
                 <div id="colFilter_div1"></div>
-      </div>    
+        </div>    
 
 
+
+        <div class="el-55">
+          <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+          <script type="text/javascript">
+          google.charts.load('current', {callback: drawChart,packages: ['controls', 'corechart', 'bar']});
+
+          function drawChart() {
+              var data = google.visualization.arrayToDataTable([
+                ['', 'onliner.by', 'bagoria.by', 'autoset.by',
+                // { role: 'annotation' } ],   // общее количество - норм для материальной, но здесь убрано (чтоб вернуть  - снять коммент и во view раскоментить 'list_of_parrsed_brands_sites = ','.join(str(x) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ')
+                ],
+                  {{ tyresizes_from_sites|safe }}
+              ]);
+
+          var columnsTable = new google.visualization.DataTable();
+           columnsTable.addColumn('number', 'colIndex');
+           columnsTable.addColumn('string', 'colLabel');
+           var initState= {selectedValues: []};
+           // put the columns into this data table (skip column 0)
+           for (var i = 1; i < data.getNumberOfColumns(); i++) {
+               columnsTable.addRow([i, data.getColumnLabel(i)]);
+           }
+
+           var chart = new google.visualization.ChartWrapper({
+               chartType: 'BarChart',
+              // chartType: 'Bar',
+               containerId: 'chart_div2',
+               dataTable: data,
+               options: {
+                  isStacked: true,
+                  bars: 'horizontal',
+                  howRowNumber: true, //номера строк - но не работает
+                  legend: {
+                  position: 'bottom'  // top не работает, рабочие лишь left, right
+                  },
+                  title:'Общее оличество позиций на сайтах в разрезе типоразмеров на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                  colors:['#d11616','#05a107','#2307d9'],
+                  theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
+                  // bar: {groupWidth:'40%'},
+                  // chartArea:{left:32,width:'70%'},
+                  vAxis: { 
+                      //  title:'бел. руб.',                            // вертикальная ось, но здесь не все можно прописать в материальной таблице
+                        viewWindow: {                                   // количество отображаемых на странице линий  (здесь просто только первые 10 позиций)                      
+                          max:10,                                       // ИНДЕКС максимальной отображаемой позиции
+                          min:0                                         // ИНДЕКС минимальной отображаемой  позиции
+                      },
+                    }, 
+                  titleTextStyle: {
+                      color: 'black',    
+                    //  fontName: 'Times New Roman', 
+                      fontSize: 13, 
+                      bold: true,    
+                      italic: false,  
+                  },      
+               }
+           });
+         
+           var columnFilter = new google.visualization.ControlWrapper({
+               controlType: 'CategoryFilter',
+               containerId: 'colFilter_div2',
+               dataTable: columnsTable,
+               options: {
+                   filterColumnLabel: 'colLabel',
+                   filterColumnIndex: 1,
+                  // useFormattedValue: true,
+                   ui: {
+                       label: 'Маркетплейс',
+                       allowTyping: false,
+                       allowMultiple: false,
+                       caption : 'Все маркетплейсы',
+                       allowNone: true,
+                    //   selectedValuesLayout: 'belowStacked'
+                   }
+               },
+               state: initState
+           });
+         
+           function setChartView () {
+               var state = columnFilter.getState();
+               var row;
+               var view = {
+                   columns: [0]
+               };
+               for (var i = 0; i < state.selectedValues.length; i++) {
+                   row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+                   view.columns.push(columnsTable.getValue(row, 0));
+               }
+               // sort the indices into their original order
+               view.columns.sort(function (a, b) {
+                   return (a - b);
+               });
+               if (state.selectedValues.length > 0) {
+                 chart.setView(view);
+               } else {
+                 chart.setView(null);
+               }
+               chart.draw();
+           }
+           google.visualization.events.addListener(columnFilter, 'statechange', setChartView);
+
+           setChartView();
+           columnFilter.draw();
+               
+        }
+          </script>
+                <div id="chart_div2" style="height: 390px;"></div>
+                <div id="colFilter_div2"></div>
+        </div> 
 
         <div class="el-6">
         {#<div id="second_chart">#}
