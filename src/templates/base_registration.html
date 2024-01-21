@@ -1,0 +1,83 @@
+{% load static %}
+{% load my_tags %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="/media/favicon.png">              ## для favicon лого сайта   / одна строка кода-заменить путь для сервака в будущем
+
+
+    <title>{% block title %} default title {% endblock title %}</title>
+    <style>
+
+      main{
+        width: 100%;
+        height: 100vh;
+        background-color: rgb(204, 4, 4);  /* <--цвет текста   background-color: rgb(204, 4, 4); */
+        margin: 0px;
+        padding: 0px; 
+
+        outline: dashed 1px black;
+        /* Center vertically and horizontally */
+        display: flex;
+        justify-content: center;      /* здесь положение формы регистрации */
+        align-items: center;          /* здесь положение формы регистрации */
+
+      }
+
+      /*.container_form { предположительно здесь размеры формы регистрации
+        width: 50px;
+        height: 50px;
+        }*/
+
+      footer {
+          position: relative;
+          height: 3%;
+          bottom: 0;
+          width: 100%;
+      }
+
+      </style>
+
+    <link href='{% static "css/bootstrap.min.css" %}'rel="stylesheet">
+  </head>  
+  <body>
+    <header>
+          <!-- Fixed navbar -->
+          <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            {#{% if user.is_authenticated %}#}
+            {#{% include './top_menu user.html' %}#}
+            {#{% else %}#}
+            {% if user.is_superuser %}
+              {% include './top_menu.html' %} 
+            {% endif %}
+              </div>
+            </div>
+          </nav>
+    </header>
+    <!-- Begin page content -->
+    {#<main class="flex-shrink-0">#}
+      <main>
+
+  
+      {#{% if messages %}#}
+      {#{% for message in messages %}#}
+      {#<div class="alert alert-success" role="alert">{{ message }}</div>#}
+      {#{% endfor %}#}
+      {#{% endif %}#}
+  
+    {% block body %} Default body {% endblock body %}
+
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-black .fixed-bottom " >
+      <div class="container-fluid">
+        <span class="text-muted">Wlad Filippow, 2023</span>
+      </div>
+    </footer>
+    
+      <script src='{% static "js/bootstrap.bundle.min.js" %}'></script>  
+      {% block custom_scripts %}     {% endblock custom_scripts %} 
+  </html>

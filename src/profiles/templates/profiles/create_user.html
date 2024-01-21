@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Create user {% endblock title %}
+{% block body %} 
+
+<div class="main">
+    <div class="container" id="container_form">
+        {{ is_valid }}
+        <form action="{% url 'profiles:register' %}" method="post">
+            {% csrf_token %}
+            {# {{ form|crispy }}  #}  
+                {{ form.as_p }}  
+            <button type="submit" class="btn btn-outline-success">Принять</button>
+        </form>
+    </div>
+</div>
+
+
+{% endblock body %}

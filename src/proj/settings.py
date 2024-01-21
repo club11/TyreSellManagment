@@ -49,8 +49,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'googlecharts',
     'chemcurier',
+    'profiles',
 
-    
 ]
 
 MIDDLEWARE = [
@@ -146,3 +146,4 @@ MEDIA_ROOT = BASE_DIR /'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+LOGIN_REDIRECT_URL = '/chemcurier/chemcurier_progressive'

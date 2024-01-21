@@ -1,0 +1,54 @@
+{% extends 'base_registration.html' %}
+
+{% block body %}
+
+<form class="form-signin" method="post" action="{% url 'chp' %}">   
+    {% csrf_token %}
+      <h1 class="h3 mb-3 font-weight-normal">Изменение пароля. Пользователь {{ user }}</h1>
+      <label for="inputPassword" class="sr-only">Старый пароль:</label>
+      <input type="password" id="old_password" class="form-control" placeholder="Старый пароль:" required="" name="old_password">
+      <label for="inputPassword" class="sr-only">Новый пароль:</label>
+      <input type="password" id="new_password1" class="form-control" placeholder="Новый пароль:" required="" name="new_password1">
+      <label for="inputPassword" class="sr-only">Подтверждение нового пароля: </label>
+      <input type="password" id="new_password2" class="form-control" placeholder="Подтверждение нового пароля: " required="" name="new_password2">
+  
+      <button class="btn btn-lg btn-light btn-block" type="submit" value="{{ next }}">Принять</button>
+</form>
+
+
+
+
+{% endblock body %}
+
+
+
+
+{% if form.errors %}
+<p>Ошибка пароля. Пожалуйста, попробуйте еще раз.</p>
+{% endif %}
+
+
+
+
+
+<form method="post" action="{% url 'chp' %}">
+    {% csrf_token %}
+
+    {{form }}
+    
+    <input type="submit" value="login">
+    <input type="hidden" name="next" value="{{ next }}">
+</form>
+
+<form class="form-signin" method="post" action="{% url 'chp' %}">   
+    {% csrf_token %}
+      <h1 class="h3 mb-3 font-weight-normal">Изменение пароля</h1>
+      <label for="inputPassword" class="sr-only">Старый пароль:</label>
+      <input type="password" id="old_password" class="form-control" placeholder="Старый пароль:" required="" name="old_password">
+      <label for="inputPassword" class="sr-only">Новый пароль:</label>
+      <input type="password" id="new_password1" class="form-control" placeholder="Новый пароль:" required="" name="new_password1">
+      <label for="inputPassword" class="sr-only">Подтверждение нового пароля: </label>
+      <input type="password" id="new_password2" class="form-control" placeholder="Подтверждение нового пароля: " required="" name="new_password2">
+  
+      <button class="btn btn-lg btn-light btn-block" type="submit" value="{{ next }}">Принять</button>
+</form>

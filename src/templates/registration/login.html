@@ -1,0 +1,41 @@
+{% extends 'base_registration.html' %}
+
+{% block body %}
+
+{% if form.errors %}
+<p>Ваше имя пользователя и пароль не совпали. Пожалуйста, попробуйте еще раз.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>У вашей учетной записи нет доступа к этой странице. Пожалуйста, войдите под учетной записью, у которой есть доступ.</p>
+    {% else %}
+    <p>Пожалуйста, войдите, чтобы увидеть эту страницу.</p>
+    {% endif %}
+{% endif %}
+
+<form class="form-signin" method="post" action="{% url 'login' %}">   
+  {% csrf_token %}
+    <img class="mb-4" src="/media/natjusha_t.png" alt="логотип bootstrap" width="200" height="70"> 
+    <h1 class="h3 mb-3 font-weight-normal">Вход в систему</h1>
+    <label for="inputLogin" class="sr-only">Логин</label>
+    <input type="password" id="inputLogin" class="form-control" placeholder="Логин" required="" autofocus="" name="username">
+    <label for="inputPassword" class="sr-only">Пароль</label>
+    <input type="password" id="inputPassword" class="form-control" placeholder="Пароль" required="" name="password">
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me">Запомнить меня
+      </label>
+    </div>
+    
+    <button class="btn btn-lg btn-light btn-block" type="submit" value="{{ next }}">Войти</button>
+    <p class="mt-5 mb-3 text-muted">© marketer ex machina 2024</p>
+</form>
+
+
+{# Assumes you set up the password_reset view in your URLconf #}
+{# <p><a href="{% url 'password_reset' %}">Lost password?</a></p> #}
+
+{% endblock body %}
+
+
