@@ -305,8 +305,8 @@ class ChemcourierTableModelDetailView(DetailView):
             wb.close()    
 
 
-    ####    prices_models.ChemCurierTyresModel.objects.all().delete()  
-        prices_models.CompetitorSiteModel.objects.all().delete()  
+    ###    prices_models.ChemCurierTyresModel.objects.all().delete()  
+    ###    prices_models.CompetitorSiteModel.objects.all().delete()  
         
 
         ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
