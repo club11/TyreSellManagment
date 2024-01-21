@@ -7,8 +7,10 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import views as auth_views
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.contrib.auth.forms import PasswordChangeForm
 
@@ -66,5 +68,5 @@ class SomePasswordChangeView(auth_views.PasswordChangeView):
     
 class SomeLogoutView(auth_views.LogoutView):
     #template_name = 'registration/logged_out.html'
-    next_page = reverse_lazy('chemcurier:chemcurier_table')
+    next_page = reverse_lazy('login')
 

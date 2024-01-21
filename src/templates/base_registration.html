@@ -47,11 +47,10 @@
     <header>
           <!-- Fixed navbar -->
           <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            {#{% if user.is_authenticated %}#}
-            {#{% include './top_menu user.html' %}#}
-            {#{% else %}#}
-            {% if user.is_superuser %}
-              {% include './top_menu.html' %} 
+            {% if user.is_authenticated %}
+              {% include './top_menu.html' %}
+            {% else %}
+              {% include './top_menu_no_r.html' %} 
             {% endif %}
               </div>
             </div>
