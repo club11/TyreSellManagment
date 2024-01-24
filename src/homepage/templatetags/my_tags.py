@@ -85,7 +85,7 @@ def currency_on_date():
 
 
 ############### ЗАТЫЧКА  - УБРАТЬ:
-#@register.simple_tag
-#def currency_on_date():
-#    return 'BBBBB', 10, '2012-05-05'
+@register.simple_tag
+def currency_on_date():
+    return 'BBBBB', 10, '2012-05-05'
 ######################################
