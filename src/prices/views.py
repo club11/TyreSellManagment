@@ -94,7 +94,22 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             # 1 ###### ПАРСИНГ Onliner:
             
-            webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            
+
+            chromeOptions = webdriver.ChromeOptions() 
+            chromeOptions.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2}) 
+            chromeOptions.add_argument("--no-sandbox") 
+            chromeOptions.add_argument("--disable-setuid-sandbox") 
+            chromeOptions.add_argument("--disable-dev-shm-using") 
+            chromeOptions.add_argument("--disable-extensions") 
+            chromeOptions.add_argument("--disable-gpu") 
+            chromeOptions.add_argument("start-maximized") 
+            chromeOptions.add_argument("disable-infobars") 
+            chromeOptions.add_argument("--headless") 
+
+            webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), chrome_options=chromeOptions)
+
+
             #try:
             url = 'https://catalog.onliner.by/tires?region=bobrujsk'
             #response = requests.get(url)
@@ -7128,3 +7143,5 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
             models.FULL_LINED_CHART_ON = False
             
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_russia'))
+    
+
