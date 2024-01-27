@@ -94,17 +94,19 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
             # 1 ###### ПАРСИНГ Onliner:
             
+          
+            
+            chromeOptions1 = webdriver.ChromeOptions() 
+            chromeOptions1.add_argument("--no-sandbox") 
+            chromeOptions1.add_argument("--disable-setuid-sandbox") 
+            chromeOptions1.add_argument("--disable-dev-shm-usage");
+            chromeOptions1.add_argument("--headless") 
+            webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
             
 
-            chromeOptions = webdriver.ChromeOptions() 
-            chromeOptions.add_argument("--no-sandbox") 
-            chromeOptions.add_argument("--disable-setuid-sandbox") 
-            chromeOptions.add_argument("--disable-dev-shm-usage");
-            chromeOptions.add_argument("--headless") 
-
-        #    webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), chrome_options=chromeOptions)
-            webdriverr_global = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chromeOptions)
-
+        
+            #    webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), chrome_options=chromeOptions)  
+            #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
 
 
