@@ -102,7 +102,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             chromeOptions1.add_argument("--disable-dev-shm-usage");
             chromeOptions1.add_argument("--headless") 
         #    webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
-            webdriverr_global = webdriver.Chrome()
+            webdriverr_global = webdriver.Chrome(options=chromeOptions1)
 
         
         #    webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
