@@ -100,7 +100,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             chromeOptions1.add_argument("--no-sandbox") 
             chromeOptions1.add_argument("--disable-setuid-sandbox") 
             chromeOptions1.add_argument("--disable-dev-shm-usage");
-            chromeOptions1.add_argument("--headless") 
+        #    chromeOptions1.add_argument("--headless") 
         #    webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
             webdriverr_global = webdriver.Chrome(options=chromeOptions1)
 
@@ -134,9 +134,11 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #        goods_dict[tyre_name_cleaned] = price_cleaned
                 # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
                 #1. получаем количество страниц:
-                pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
+                #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
+                pages = soup.find('ul', class_='catalog-pagination__pages-list')
                 urls = []
-                links = pages.find_all('a', class_='schema-pagination__pages-link')
+                #links = pages.find_all('a', class_='schema-pagination__pages-link') #
+                links = pages.find_all('a', class_='catalog-pagination__pages-link')
                 for link in links:
                     pageNum = int(link.text) if link.text.isdigit() else None
                     if pageNum != None:
@@ -153,7 +155,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                     time.sleep(4)
                     soup = BeautifulSoup(webdriverr.page_source,'lxml')
                     products = soup.find_all('div', class_='schema-product__group')
-
                     for data_got in products:
                         tyre_name = data_got.find('div', class_='schema-product__title')
                         price = data_got.find('div', 'schema-product__price')
@@ -172,14 +173,12 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                             text_to_delete1text_with_no_phrase = text_with_no_phrase.replace(sh_pr, '')
                                     tyre_name_cleaned = text_to_delete1text_with_no_phrase
                                     tyre_name_cleaned = tyre_name_cleaned.replace('\n', '') 
-
                                     tyre_name_cleaned_split = tyre_name_cleaned.split(' ')
                                     for n in tyre_name_cleaned_split:
                                         if n.isalnum() is True:
                                             company_name = n
                                             break
                                     check_name_is_foud = True
-
                             # end проверка на лишний тект в нелегковых шинах
                             if check_name_is_foud is False:
                                 text_to_delete1 = tyre_name.text.find('шины') + 5
@@ -243,7 +242,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                     except:
                                         pass
                                 # END для грузовых
-
                                 # группа для легковых
                                 if tyr_group_check is False:
                                     for tyr_group in group_list_cars:
@@ -274,7 +272,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                             break
                                     tyr_group = t_gr
                                 # END группа для легковых    
-
                                 # сезонность
                                 studded_is = []                       # ШИПЫ - тут доработать
                                 for s_el in seas_list:
@@ -284,7 +281,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                     #        print('group_is ========88888=', tyre_season.text)  
                                     #        print('group_is =====================', season)  
                                 # END сезонность
-
                                 # шипы
                                 for studded_el in studded_list:
                                     if studded_el in tyre_season.text:
@@ -292,7 +288,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                 #print( season, '          ', studded)
                                 t_gr = None
                                 # END 
-
                     # выдираем типоразмер для добавления в словарь
                             tyresize = str
                             for n in reg_list:
@@ -329,7 +324,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                 #if models.ONLINER_COMPETITORS:
                 #    onliner_companies_list = models.ONLINER_COMPETITORS
                 #    print('onliner_companies_list', onliner_companies_list )
-
                 temp_goods_dict_list_k_names_to_delete = []
                 for v in goods_dict.values():
                     if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
@@ -338,15 +332,13 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                         temp_goods_dict_list_k_names_to_delete.extend(v[4])
                 for k_name in temp_goods_dict_list_k_names_to_delete:
                     goods_dict.pop(k_name)
-
                 # сопоставление с БД  и запись в БД конкурентов (Onliner):
                 onliner_compet_obj_tyre_bulk_list = []
                 list_tyre_sizes = []
-
                 tyres_in_bd = tyres_models.Tyre.objects.all()
                 for tyre in tyres_in_bd:
                     for k, v in goods_dict.items():
-    ##                    print(k, len(k), 'v', v)
+    ##                       print(k, len(k), 'v', v)
                         if tyre.tyre_size.tyre_size == v[1]:                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             # Goodyear EfficientGrip Performance 2 205/60R16 92H 50 v ('\n341,08', '205/60R16', 'Goodyear EfficientGrip Performance 2', '92H', 'Goodyear', 'летние', 'легковые')                                                                                   #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             coma = v[0].find(',')
@@ -354,7 +346,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
                                 competitor_name = v[4] 
                             )
-    ##                        print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH', v[6])
+    ##                           print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH', v[6])
                             season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
                             if season_usage:
                                 season_usage = season_usage[0]
@@ -377,7 +369,6 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                                     pr = float(no_with_coma) 
                                 except:
                                     pr = None
-
                             list_tyre_sizes.append(v[1])
                             #list_comparative_analysis_tyre_objects = []
                             #for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
@@ -398,12 +389,10 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
                             )        
                             )
                 bulk_onl_compet = models.CompetitorSiteModel.objects.bulk_create(onliner_compet_obj_tyre_bulk_list)
-
                 list_tyre_sizes = set(list_tyre_sizes)
                 for t_szz in list_tyre_sizes:
                     for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
                             obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
-
                             # OLD VERSION       
                             ####competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
                             ####    site = 'onliner.by',
