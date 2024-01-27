@@ -6036,13 +6036,13 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
     #### ЗАГОЛОЛОВКИ ТАБЛИЦЫ:
         ## ПОЛУЧАЕМ МАКСИМАЛЬНОЕ КОЛИЧЕСТВО КОНКУРЕННЫХ ШИН ДЛЯ ПЕРЕДАЧИ ЧИСЛА В МОДЕЛЬ для ОТРИСОВКИ ЗАГОЛОВКОВ СТОЛБЦОВ EXPRESS_SHINA: 
-        if express_shina_result: 
+        if express_shina_lengh_list: 
             if models.COMPET_PER_SITE:
                 express_shina_max_lengh_header = models.COMPET_PER_SITE                                      
-            elif express_shina_result[0] > 3:        
+            elif express_shina_lengh_list[0] > 3:        
                 express_shina_max_lengh_header = 2                            # Количество колонок (обрезает до первых 3)
             else:
-                express_shina_max_lengh_header = max(express_shina_result)
+                express_shina_max_lengh_header = max(express_shina_lengh_list)
         else:
             express_shina_max_lengh_header = 0
 
