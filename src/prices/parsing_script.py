@@ -72,7 +72,7 @@ def belarus_sites_parsing():
     #chromeOptions1.add_argument("--headless") 
     ###webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)   
-     
+
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     try:
         url = 'https://catalog.onliner.by/tires?region=bobrujsk'
@@ -2274,6 +2274,6 @@ def running_programm():
     #        break
     belarus_sites_parsing()
     #    russia_sites_parsing()
-    return 'programm is fullfilled'
+    return 'the programm is fullfilled'
 
 running_programm()
