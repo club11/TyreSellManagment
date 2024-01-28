@@ -76,7 +76,7 @@ def belarus_sites_parsing():
 
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     try:
-        url = 'https://catalog.onliner.by/tires?region=bobrujsk'
+        url = 'https://catalog.onliner.by/tires'
         #response = requests.get(url)
         #soup = BeautifulSoup(response.text,"lxml")
         ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
