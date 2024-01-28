@@ -75,7 +75,6 @@ def belarus_sites_parsing():
     chromeOptions.add_argument("start-maximized") 
     chromeOptions.add_argument("disable-infobars") 
     chromeOptions.add_argument("--headless") 
-    chromeOptions.add_argument(r"user-data-dir=.\cookies\\" + login) 
     b = webdriver.Chrome(chrome_options=chromeOptions) 
     b.get("https://google.com/") 
 
