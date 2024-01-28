@@ -2333,7 +2333,7 @@ def running_programm():
     #        belarus_sites_parsing()
     #    #    russia_sites_parsing()
     #        break
-#    belarus_sites_parsing()
+    belarus_sites_parsing()
     #    russia_sites_parsing()
     return 'programm is fullfilled'
 
