@@ -1333,7 +1333,7 @@ def russia_sites_parsing():
             chromeOptions1.add_argument("--no-sandbox") 
             chromeOptions1.add_argument("--disable-setuid-sandbox") 
             chromeOptions1.add_argument("--disable-dev-shm-usage");
-            chromeOptions1.add_argument("--headless") 
+        #    chromeOptions1.add_argument("--headless") 
             webdriverr_global = webdriver.Chrome(options=chromeOptions1)
 
             #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -2333,7 +2333,7 @@ def running_programm():
     #        belarus_sites_parsing()
     #    #    russia_sites_parsing()
     #        break
-    belarus_sites_parsing()
+#    belarus_sites_parsing()
     #    russia_sites_parsing()
     return 'programm is fullfilled'
 
