@@ -66,8 +66,8 @@ def belarus_sites_parsing():
 
     # 1 ###### ПАРСИНГ Onliner:    
     chromeOptions1 = webdriver.ChromeOptions() 
-#    chromeOptions1.add_argument("--no-sandbox") 
-#    chromeOptions1.add_argument("--disable-setuid-sandbox") 
+    chromeOptions1.add_argument("--no-sandbox") 
+    chromeOptions1.add_argument("--disable-setuid-sandbox") 
     chromeOptions1.add_argument("--disable-dev-shm-usage");
     chromeOptions1.add_argument("--headless") 
     ###webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
