@@ -71,7 +71,7 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--disable-dev-shm-usage");
     chromeOptions1.add_argument("--headless") 
 
-    chromeOptions1.add_argument("--disable-gpu")
+#    chromeOptions1.add_argument("--disable-gpu")
     chromeOptions1.add_argument("--disable-extensions") 
     chromeOptions1.add_argument("disable-infobars")
     ###webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
