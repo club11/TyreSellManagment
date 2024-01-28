@@ -69,7 +69,7 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--no-sandbox") 
     chromeOptions1.add_argument("--disable-setuid-sandbox") 
     chromeOptions1.add_argument("--disable-dev-shm-usage");
-    chromeOptions1.add_argument("--headless") 
+#    chromeOptions1.add_argument("--headless") 
     ###webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
 
