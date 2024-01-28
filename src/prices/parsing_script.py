@@ -69,7 +69,7 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--no-sandbox") 
     chromeOptions1.add_argument("--disable-setuid-sandbox") 
     chromeOptions1.add_argument("--disable-dev-shm-usage");
-    #chromeOptions1.add_argument("--headless") 
+    chromeOptions1.add_argument("--headless") 
     ###webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chromeOptions1)
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)   
 
@@ -905,10 +905,10 @@ def belarus_sites_parsing():
             val_sleep = next(page_curr)
         #    print('val_sleep =', val_sleep)
             if val_sleep == 10:
-                print('TIME TO WAIT 1')
+            #    print('TIME TO WAIT 1')
                 time.sleep(9)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                print('TIME TO WAIT 2')
+            #    print('TIME TO WAIT 2')
                 time.sleep(11)
             else:
                 rand_val_to_wait = random.randint(5, 15)    # подождать рандомно неск секунд
