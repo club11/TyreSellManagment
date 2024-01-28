@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from . import models
 from tyres import models as tyres_models
-from django.views.generic import DetailView, View
+from django.views.generic import DetailView, View, TemplateView
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
@@ -4543,3 +4543,16 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_russia'))
     
 
+
+#class ParsingView(TemplateView):
+#    template_name ='prices/startparsing.html'
+#
+#    def get(self, request, *args, **kwargs):
+#        context = self.get_context_data(**kwargs)
+#    #    print('context', context)
+#        return self.render_to_response(context)
+#    
+#    def strarparsing(self, request,):
+#        print('+++', self.request.GET)
+#
+#        return None

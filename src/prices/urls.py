@@ -9,4 +9,6 @@ urlpatterns = [
 
     path('prices_russia', prices_views.ComparativeAnalysisTableModelDetailRussiaView.as_view(), name='comparative_prices_russia'),
     path('prices_russia_update', prices_views.ComparativeAnalysisTableModelRussiaUpdateView.as_view(), name='apricestable_russia_update'),
+
+#    path('startparsing', prices_views.ParsingView.as_view(), name='startparsing'),
 ]
