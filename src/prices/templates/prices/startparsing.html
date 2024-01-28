@@ -6,9 +6,9 @@
 <div class="main">
 
 
-  <form action="" method="get">
+  <form action="{% url 'prices:startparsing' %}" method="post">
     {% csrf_token %}
-    <button type="submit" name="startparsing">Парсануть</button>
+    <button type="submit" name="startparsing" value="do_startparsing">Парсануть</button>
   </form>
 
 

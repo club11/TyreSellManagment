@@ -4547,12 +4547,13 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
 #class ParsingView(TemplateView):
 #    template_name ='prices/startparsing.html'
 #
-#    def get(self, request, *args, **kwargs):
+#    def post(self, request, *args, **kwargs):
 #        context = self.get_context_data(**kwargs)
-#    #    print('context', context)
-#        return self.render_to_response(context)
-#    
-#    def strarparsing(self, request,):
-#        print('+++', self.request.GET)
-#
+#    #    command_to_parse = self.request.POST.get('startparsing')
+#        command_to_parse = self.request.POST
+#        print('++++', command_to_parse)
+#        if command_to_parse == 'do_startparsing':
+#            print('!!!!!')
+#        #    parsing_script.running_programm()
+#        return self.render_to_response(context)    
 #        return None
