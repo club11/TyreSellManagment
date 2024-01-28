@@ -76,7 +76,7 @@ def belarus_sites_parsing():
     chromeOptions.add_argument("disable-infobars") 
     chromeOptions.add_argument("--headless") 
     b = webdriver.Chrome(options=chromeOptions) 
-    b.get("https://google.com/") 
+    b.get("https://catalog.onliner.by/tires") 
 
 #####    # 1 ###### ПАРСИНГ Onliner:    
 #####    chromeOptions1 = webdriver.ChromeOptions() 
