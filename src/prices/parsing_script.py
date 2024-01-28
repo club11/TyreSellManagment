@@ -75,7 +75,7 @@ def belarus_sites_parsing():
     chromeOptions.add_argument("start-maximized") 
     chromeOptions.add_argument("disable-infobars") 
     chromeOptions.add_argument("--headless") 
-    b = webdriver.Chrome(chrome_options=chromeOptions) 
+    b = webdriver.Chrome(options=chromeOptions) 
     b.get("https://google.com/") 
 
 #####    # 1 ###### ПАРСИНГ Onliner:    
