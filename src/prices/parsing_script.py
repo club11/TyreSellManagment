@@ -68,7 +68,7 @@ def belarus_sites_parsing():
     chromeOptions1 = webdriver.ChromeOptions() 
 ###   chromeOptions1.add_argument("--no-sandbox") 
 ###   chromeOptions1.add_argument("--disable-setuid-sandbox") 
-###   chromeOptions1.add_argument("--disable-dev-shm-usage");
+    chromeOptions1.add_argument("--disable-dev-shm-usage");
 ###   chromeOptions1.add_argument("--disable-extensions")
 ###
 ###   chromeOptions1.add_argument("--headless") 
