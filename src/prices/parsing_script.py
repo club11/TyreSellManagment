@@ -79,7 +79,7 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--disable-extensions") 
     chromeOptions1.add_argument("--disable-gpu") 
     chromeOptions1.add_argument("start-maximized")
-    chromeOptions1.add_argument("--headless")
+    chromeOptions1.add_argument('--headless=new')
 
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
 
