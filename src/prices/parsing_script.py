@@ -2284,4 +2284,4 @@ def running_programm():
     #    russia_sites_parsing()
     return 'the programm is fullfilled'
 
-#running_programm()
+running_programm()
