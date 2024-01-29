@@ -2273,18 +2273,20 @@ def russia_sites_parsing():
             # 3 END  ###### ПАРСИНГ KOLESA_DAROM
 
 def running_programm():
-    while True:
-        current_time = datetime.datetime.now()
-        time.sleep(30)
-        pass
-        if current_time.hour == 20 and current_time.minute == 9:
-        #    print('NNNNNNNN')
-            belarus_sites_parsing()
-        #    russia_sites_parsing()
-            break
+    #while True:
+    #    current_time = datetime.datetime.now()
+    #    time.sleep(30)
+    #    pass
+    #    if current_time.hour == 20 and current_time.minute == 9:
+    #    #    print('NNNNNNNN')
+    #        belarus_sites_parsing()
+    #    #    russia_sites_parsing()
+    #        break
     #    russia_sites_parsing()
-    #belarus_sites_parsing()
+    current_time = datetime.datetime.now()
+    if current_time.hour == 20 and current_time.minute == 16:    
+        belarus_sites_parsing()
     return 'the programm is fullfilled'
 
-#running_programm()
+running_programm()
 
