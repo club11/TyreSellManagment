@@ -34,7 +34,7 @@ from django.db.models import Min
 
 import random
 import itertools
-import schedule
+
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -2273,22 +2273,18 @@ def russia_sites_parsing():
             # 3 END  ###### ПАРСИНГ KOLESA_DAROM
 
 def running_programm():
-    #while True:
-    #    current_time = datetime.datetime.now()
-    #    time.sleep(30)
-    #    pass
-    #    if current_time.hour == 19 and current_time.minute == 32:
-    #    #    print('NNNNNNNN')
-    #        belarus_sites_parsing()
-    #    #    russia_sites_parsing()
-    #        break
-    ##    russia_sites_parsing()
-    belarus_sites_parsing()
+    while True:
+        current_time = datetime.datetime.now()
+        time.sleep(30)
+        pass
+        if current_time.hour == 20 and current_time.minute == 9:
+        #    print('NNNNNNNN')
+            belarus_sites_parsing()
+        #    russia_sites_parsing()
+            break
+    #    russia_sites_parsing()
+    #belarus_sites_parsing()
     return 'the programm is fullfilled'
 
 #running_programm()
 
-schedule.every().hour.at(":55").do(running_programm)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
