@@ -75,7 +75,9 @@ def belarus_sites_parsing():
     #chromeOptions1.add_argument("disable-infobars")
 
     chromeOptions1.add_argument("--headless") 
+    chromeOptions1.add_argument('--ignore-certificate-errors')
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
+    print(chromeOptions1.arguments#)
 
 
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
