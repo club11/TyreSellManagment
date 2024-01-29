@@ -75,8 +75,8 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--headless") 
     chromeOptions1.add_argument('--ignore-certificate-errors')
 
-    chromeOptions1.add_argument('--no-proxy-server')
-    chromeOptions1.add_argument('--proxy-auto-detect')
+    #chromeOptions1.add_argument('--no-proxy-server')
+    #chromeOptions1.add_argument('--proxy-auto-detect')
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
     #print('!!!', webdriver.Chrome.get_log(self=webdriver))
 
