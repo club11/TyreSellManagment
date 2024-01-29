@@ -65,24 +65,24 @@ goods_dict_kolesa_darom= {}
 def belarus_sites_parsing():
 
     # 1 ###### ПАРСИНГ Onliner:    
-#    chromeOptions1 = webdriver.ChromeOptions() 
-#    chromeOptions1.add_argument("--no-sandbox") 
-#    chromeOptions1.add_argument("--disable-setuid-sandbox") 
-#    chromeOptions1.add_argument("--disable-dev-shm-usage");
-#    chromeOptions1.add_argument("--disable-extensions")
-#
-#    chromeOptions1.add_argument("--headless") 
-#    chromeOptions1.add_argument('--ignore-certificate-errors')
-#
-#    chromeOptions1.add_argument('--no-proxy-server')
-#    chromeOptions1.add_argument('--proxy-auto-detect')
-#    webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
-#    #print('!!!', webdriver.Chrome.get_log(self=webdriver))
+    chromeOptions1 = webdriver.ChromeOptions() 
+    chromeOptions1.add_argument("--no-sandbox") 
+    chromeOptions1.add_argument("--disable-setuid-sandbox") 
+    chromeOptions1.add_argument("--disable-dev-shm-usage");
+    chromeOptions1.add_argument("--disable-extensions")
+
+    chromeOptions1.add_argument("--headless") 
+    chromeOptions1.add_argument('--ignore-certificate-errors')
+
+    chromeOptions1.add_argument('--no-proxy-server')
+    chromeOptions1.add_argument('--proxy-auto-detect')
+    webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
+    #print('!!!', webdriver.Chrome.get_log(self=webdriver))
 
 
-    webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     try:
-        url = "https://google.com/"
+            'hhh'
 ###        url = 'https://catalog.onliner.by/tires'
 ###        #response = requests.get(url)
 ###        #soup = BeautifulSoup(response.text,"lxml")
