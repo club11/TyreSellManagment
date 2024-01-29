@@ -72,7 +72,7 @@ def belarus_sites_parsing():
 
 
     chromeOptions1.add_argument("--disable-extensions")
-    #chromeOptions1.add_argument("disable-infobars")
+    chromeOptions1.add_argument("disable-infobars")
 
     chromeOptions1.add_argument("--headless") 
     chromeOptions1.add_argument('--ignore-certificate-errors')
