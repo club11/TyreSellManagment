@@ -2276,7 +2276,7 @@ def running_programm():
         current_time = datetime.datetime.now()
         time.sleep(30)
         pass
-        if current_time.hour == 19 and current_time.minute == 27:
+        if current_time.hour == 19 and current_time.minute == 32:
         #    print('NNNNNNNN')
             belarus_sites_parsing()
         #    russia_sites_parsing()
