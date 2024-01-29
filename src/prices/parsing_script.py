@@ -82,41 +82,42 @@ def belarus_sites_parsing():
 
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     try:
-        url = 'https://catalog.onliner.by/tires'
-        #response = requests.get(url)
-##        #soup = BeautifulSoup(response.text,"lxml")
-##        ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
-##        #webdriverr = webdriver.Chrome()
-##        #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-##        webdriverr = webdriverr_global
-##        webdriverr.get(url)
-##        time.sleep(2)
-##        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-##        time.sleep(5)
-##        soup = BeautifulSoup(webdriverr.page_source,'lxml')
-##        #products = soup.find_all('div', class_='schema-product__group')
-##        #goods_dict = {}
-##        #for data_got in products:
-##        #    tyre_name = data_got.find('div', class_='schema-product__title')
-##        #    price = data_got.find('div', 'schema-product__price')
-##        #    if tyre_name and price:
-##        #        text_to_delete = tyre_name.text.find('шины') + 5
-##        #        tyre_name_cleaned = tyre_name.text[text_to_delete :]
-##        #        start_str_serch = price.text.find('от') + 3
-##        #        end_str_search = price.text.find('р') - 1
-##        #        price_cleaned = price.text[start_str_serch : end_str_search]
-##        #        goods_dict[tyre_name_cleaned] = price_cleaned
-##        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-##        #1. получаем количество страниц:
-##        #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
-##        pages = soup.find('ul', class_='catalog-pagination__pages-list')
-##        urls = []
-##        #links = pages.find_all('a', class_='schema-pagination__pages-link') #
-##        links = pages.find_all('a', class_='catalog-pagination__pages-link')
-##        for link in links:
-##            pageNum = int(link.text) if link.text.isdigit() else None
-##            if pageNum != None:
-##                urls.append(pageNum)
+        url = "https://google.com/"
+###        url = 'https://catalog.onliner.by/tires'
+###        #response = requests.get(url)
+###        #soup = BeautifulSoup(response.text,"lxml")
+###        ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
+###        #webdriverr = webdriver.Chrome()
+###        #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+###        webdriverr = webdriverr_global
+###        webdriverr.get(url)
+###        time.sleep(2)
+###        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+###        time.sleep(5)
+###        soup = BeautifulSoup(webdriverr.page_source,'lxml')
+###        #products = soup.find_all('div', class_='schema-product__group')
+###        #goods_dict = {}
+###        #for data_got in products:
+###        #    tyre_name = data_got.find('div', class_='schema-product__title')
+###        #    price = data_got.find('div', 'schema-product__price')
+###        #    if tyre_name and price:
+###        #        text_to_delete = tyre_name.text.find('шины') + 5
+###        #        tyre_name_cleaned = tyre_name.text[text_to_delete :]
+###        #        start_str_serch = price.text.find('от') + 3
+###        #        end_str_search = price.text.find('р') - 1
+###        #        price_cleaned = price.text[start_str_serch : end_str_search]
+###        #        goods_dict[tyre_name_cleaned] = price_cleaned
+###        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+###        #1. получаем количество страниц:
+###        #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
+###        pages = soup.find('ul', class_='catalog-pagination__pages-list')
+###        urls = []
+###        #links = pages.find_all('a', class_='schema-pagination__pages-link') #
+###        links = pages.find_all('a', class_='catalog-pagination__pages-link')
+###        for link in links:
+###            pageNum = int(link.text) if link.text.isdigit() else None
+###            if pageNum != None:
+###                urls.append(pageNum)
 
     except:
         pass
