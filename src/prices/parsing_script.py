@@ -69,13 +69,12 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--no-sandbox") 
     chromeOptions1.add_argument("--disable-setuid-sandbox") 
     chromeOptions1.add_argument("--disable-dev-shm-usage");
-
-
     chromeOptions1.add_argument("--disable-extensions")
-    chromeOptions1.add_argument("disable-infobars")
-
+    #chromeOptions1.add_argument("disable-infobars")
     chromeOptions1.add_argument("--headless") 
     chromeOptions1.add_argument('--ignore-certificate-errors')
+    
+    chromeOptions1.add_argument('--no-proxy-server')
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
     #print(chromeOptions1.arguments)
 
