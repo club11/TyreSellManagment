@@ -71,8 +71,8 @@ def belarus_sites_parsing():
     chromeOptions1.add_argument("--disable-setuid-sandbox") 
     chromeOptions1.add_argument("--disable-dev-shm-usage");
     chromeOptions1.add_argument("--headless") 
-    chromeOptions1.add_argument("--disable-extensions") 
-    chromeOptions1.add_argument("disable-infobars")
+    #chromeOptions1.add_argument("--disable-extensions") 
+    #chromeOptions1.add_argument("disable-infobars")
     webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
 
 
@@ -1278,7 +1278,7 @@ def russia_sites_parsing():
             chromeOptions1.add_argument("--disable-dev-shm-usage");
             chromeOptions1.add_argument("--headless") 
             chromeOptions1.add_argument("--disable-extensions") 
-            chromeOptions1.add_argument("disable-infobars")
+            #chromeOptions1.add_argument("disable-infobars")
             webdriverr_global = webdriver.Chrome(options=chromeOptions1)
 
             #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -2294,9 +2294,17 @@ def running_programm():
     ###    #    elif current_time.hour == end_execution.hour and current_time.minute == end_execution.minute:  
     ###    #        break
     ###    belarus_sites_parsing()
-    belarus_sites_parsing()
+
+
+#    belarus_sites_parsing()
     pass
     return 'the programm is fullfilled'
 
 running_programm()
 
+
+#def running_test_programm():
+#    print('+++++++++++++++++++++++++++')
+#    return 'the programm is fullfilled1'
+#
+#running_test_programm()
