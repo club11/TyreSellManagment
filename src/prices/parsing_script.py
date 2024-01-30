@@ -2296,7 +2296,7 @@ def running_programm():
     ###    belarus_sites_parsing()
 
 
-#    belarus_sites_parsing()
+    belarus_sites_parsing()
     pass
     return 'the programm is fullfilled'
 
