@@ -2294,6 +2294,7 @@ def running_programm():
     ###    #    elif current_time.hour == end_execution.hour and current_time.minute == end_execution.minute:  
     ###    #        break
     ###    belarus_sites_parsing()
+    belarus_sites_parsing()
     pass
     return 'the programm is fullfilled'
 
