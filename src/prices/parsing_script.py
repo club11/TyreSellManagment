@@ -2296,15 +2296,16 @@ def running_programm():
     ###    belarus_sites_parsing()
 
 
-    belarus_sites_parsing()
+#    belarus_sites_parsing()
     pass
     return 'the programm is fullfilled'
 
 running_programm()
 
 
-#def running_test_programm():
-#    print('+++++++++++++++++++++++++++')
-#    return 'the programm is fullfilled1'
-#
-#running_test_programm()
+def running_test_programm():
+    a = requests.get('https://catalog.onliner.by/tires')
+    print('+++++++++++++++++++++++++++', a.text)
+    return 'the programm is fullfilled1'
+
+running_test_programm()
