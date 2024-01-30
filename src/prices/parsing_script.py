@@ -2307,7 +2307,7 @@ def running_test_programm():
 
     a = requests.get('https://catalog.onliner.by/tires')
 
-    print('+++++++++++++++++++++++++++', a.text)
+    #print('+++++++++++++++++++++++++++', a.text)
     return 'the programm is fullfilled1'
 
 running_test_programm()
