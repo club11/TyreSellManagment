@@ -2306,7 +2306,7 @@ running_programm()
 def running_test_programm():
 
     a = requests.get('https://catalog.onliner.by/tires')
-    a = requests.get('https://www.google.com')
+    a = requests.get('https://anaconda.org')
     print('+++++++++++++++++++++++++++', a.text)
     return 'the programm is fullfilled1'
 
