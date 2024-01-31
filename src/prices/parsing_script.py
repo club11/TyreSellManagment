@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . import models
+#from . import models
 from tyres import models as tyres_models
 from django.views.generic import DetailView, View
 from bs4 import BeautifulSoup
@@ -2273,7 +2273,7 @@ def running_programm():
     get_month  = datetime.datetime.now().month
     get_day  = datetime.datetime.now().day
          
-    start = datetime.datetime(get_year, get_month, get_day, 17, 40) # !!!!!!! для введения часа и мин ля запуска скрипта
+    start = datetime.datetime(get_year, get_month, get_day, 17, 47) # !!!!!!! для введения часа и мин ля запуска скрипта
     delta = datetime.timedelta(minutes=0)
     end = start + delta
     end_hour = end.hour
