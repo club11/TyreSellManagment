@@ -2293,8 +2293,10 @@ def running_programm():
         #        break
         #    elif current_time.hour == end_execution.hour and current_time.minute == end_execution.minute:  
         #        break
-        belarus_sites_parsing()
 
+    #    belarus_sites_parsing()
+
+        print(' +++++++++++ === =====++++++++the programm is fullfilled1')
 
     #belarus_sites_parsing()
     #pass
@@ -2307,29 +2309,29 @@ def running_test_programm():
 
     a = requests.get('https://catalog.onliner.by/tires')
 
-    chromeOptions1 = webdriver.ChromeOptions() 
-    chromeOptions1.add_argument("--no-sandbox") 
-    chromeOptions1.add_argument("--disable-setuid-sandbox") 
-    chromeOptions1.add_argument("--disable-dev-shm-usage");
-    chromeOptions1.add_argument("--headless") 
-    webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
-    url = 'https://catalog.onliner.by/tires'
-    webdriverr = webdriverr_global
-    webdriverr.get(url)
-    time.sleep(2)
-    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(5)
-    soup = BeautifulSoup(webdriverr.page_source,'lxml')
-    pages = soup.find('ul', class_='catalog-pagination__pages-list')
-    urls = []
-    #links = pages.find_all('a', class_='schema-pagination__pages-link') #
-    links = pages.find_all('a', class_='catalog-pagination__pages-link')
-    for link in links:
-        pageNum = int(link.text) if link.text.isdigit() else None
-        if pageNum != None:
-            urls.append(pageNum)
-
-
-    return 'the programm is fullfilled1'
+    #chromeOptions1 = webdriver.ChromeOptions() 
+    #chromeOptions1.add_argument("--no-sandbox") 
+    #chromeOptions1.add_argument("--disable-setuid-sandbox") 
+    #chromeOptions1.add_argument("--disable-dev-shm-usage");
+    #chromeOptions1.add_argument("--headless") 
+    #webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
+    #url = 'https://catalog.onliner.by/tires'
+    #webdriverr = webdriverr_global
+    #webdriverr.get(url)
+    #time.sleep(2)
+    #webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #time.sleep(5)
+    #soup = BeautifulSoup(webdriverr.page_source,'lxml')
+    #pages = soup.find('ul', class_='catalog-pagination__pages-list')
+    #urls = []
+    ##links = pages.find_all('a', class_='schema-pagination__pages-link') #
+    #links = pages.find_all('a', class_='catalog-pagination__pages-link')
+    #for link in links:
+    #    pageNum = int(link.text) if link.text.isdigit() else None
+    #    if pageNum != None:
+    #        urls.append(pageNum)
+#
+#
+    return print(' +++++++++++ === =====++++++++the programm is fullfilled1')
 
 running_test_programm()
