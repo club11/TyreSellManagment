@@ -2273,7 +2273,7 @@ def running_programm():
     get_month  = datetime.datetime.now().month
     get_day  = datetime.datetime.now().day
          
-    start = datetime.datetime(get_year, get_month, get_day, 17, 47) # !!!!!!! для введения часа и мин ля запуска скрипта
+    start = datetime.datetime(get_year, get_month, get_day, 19, 26) # !!!!!!! для введения часа и мин ля запуска скрипта
     delta = datetime.timedelta(minutes=0)
     end = start + delta
     end_hour = end.hour
@@ -2283,8 +2283,8 @@ def running_programm():
     couple_min_checking = datetime.timedelta(minutes=1)
     get_current_time = datetime.datetime.now()
     minutes_to_start_left =  start - get_current_time 
-    print('!!!', minutes_to_start_left)
-    if minutes_to_start_left < couple_min_checking: # если до времени запуска скрипта осталось менее минуты - то начать
+    #print('!!!', minutes_to_start_left)
+    #if minutes_to_start_left < couple_min_checking: # если до времени запуска скрипта осталось менее минуты - то начать
         #while True:
         ##    print(datetime.datetime.now())
         #    current_time = datetime.datetime.now()
@@ -2295,8 +2295,10 @@ def running_programm():
         #        break
 
     #    belarus_sites_parsing()
+    
+    if get_current_time > start:
 
-        print(' +++++++++++ === =====++++++++the programm is fullfilled1')
+        print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
 
     #belarus_sites_parsing()
     #pass
@@ -2309,29 +2311,29 @@ def running_test_programm():
 
     a = requests.get('https://catalog.onliner.by/tires')
 
-    chromeOptions1 = webdriver.ChromeOptions() 
-    chromeOptions1.add_argument("--no-sandbox") 
-    chromeOptions1.add_argument("--disable-setuid-sandbox") 
-    chromeOptions1.add_argument("--disable-dev-shm-usage");
-    chromeOptions1.add_argument("--headless") 
-    webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
-    url = 'https://catalog.onliner.by/tires'
-    webdriverr = webdriverr_global
-    webdriverr.get(url)
-    time.sleep(2)
-    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(5)
-    soup = BeautifulSoup(webdriverr.page_source,'lxml')
-    pages = soup.find('ul', class_='catalog-pagination__pages-list')
-    urls = []
-    #links = pages.find_all('a', class_='schema-pagination__pages-link') #
-    links = pages.find_all('a', class_='catalog-pagination__pages-link')
-    for link in links:
-        pageNum = int(link.text) if link.text.isdigit() else None
-        if pageNum != None:
-            urls.append(pageNum)
-
-
-    return print(' +++++++++++ === =====++++++++the programm is fullfilled1')
+    #chromeOptions1 = webdriver.ChromeOptions() 
+    #chromeOptions1.add_argument("--no-sandbox") 
+    #chromeOptions1.add_argument("--disable-setuid-sandbox") 
+    #chromeOptions1.add_argument("--disable-dev-shm-usage");
+    #chromeOptions1.add_argument("--headless") 
+    #webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
+    #url = 'https://catalog.onliner.by/tires'
+    #webdriverr = webdriverr_global
+    #webdriverr.get(url)
+    #time.sleep(2)
+    #webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #time.sleep(5)
+    #soup = BeautifulSoup(webdriverr.page_source,'lxml')
+    #pages = soup.find('ul', class_='catalog-pagination__pages-list')
+    #urls = []
+    ##links = pages.find_all('a', class_='schema-pagination__pages-link') #
+    #links = pages.find_all('a', class_='catalog-pagination__pages-link')
+    #for link in links:
+    #    pageNum = int(link.text) if link.text.isdigit() else None
+    #    if pageNum != None:
+    #        urls.append(pageNum)
+#
+#
+    return print(' +++++++++++ = running_test_programm is comleted')
 
 running_test_programm()
