@@ -2306,7 +2306,7 @@ def running_programm():
     #pass
     return 'the programm is fullfilled'
 
-#running_programm()
+
 
 
 def running_test_programm():
@@ -2339,3 +2339,10 @@ def running_test_programm():
     return print(' +++++++++++ = running_test_programm is comleted')
 
 #running_test_programm()
+
+def main():
+    running_programm()
+ 
+    if __name__ == "__main__":
+        main()
+main()
