@@ -1,3 +1,5 @@
+
+
 from django.shortcuts import render
 #from . import models
 from tyres import models as tyres_models
@@ -2304,7 +2306,7 @@ def running_programm():
     #pass
     return 'the programm is fullfilled'
 
-running_programm()
+#running_programm()
 
 
 def running_test_programm():
