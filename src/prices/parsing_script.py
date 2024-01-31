@@ -1,6 +1,6 @@
 from django.shortcuts import render
 #from . import models
-from src.tyres import models as tyres_models
+from tyres import models as tyres_models
 from django.views.generic import DetailView, View
 from bs4 import BeautifulSoup
 import requests
