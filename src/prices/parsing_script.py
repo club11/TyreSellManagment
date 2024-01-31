@@ -2275,7 +2275,7 @@ def running_programm():
     get_month  = datetime.datetime.now().month
     get_day  = datetime.datetime.now().day
          
-    start = datetime.datetime(get_year, get_month, get_day, 19, 26) # !!!!!!! для введения часа и мин ля запуска скрипта
+    start = datetime.datetime(get_year, get_month, get_day, 21, 8) # !!!!!!! для введения часа и мин ля запуска скрипта
     delta = datetime.timedelta(minutes=0)
     end = start + delta
     end_hour = end.hour
