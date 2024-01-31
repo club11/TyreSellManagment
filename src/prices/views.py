@@ -4559,32 +4559,3 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
 #        return self.render_to_response(context)    
 #        return None
     
-
-
-
-
-def running_programm():
-    get_year  = datetime.datetime.now().year
-    get_month  = datetime.datetime.now().month
-    get_day  = datetime.datetime.now().day
-         
-    start = datetime.datetime(get_year, get_month, get_day, 19, 37) # !!!!!!! для введения часа и мин ля запуска скрипта
-    delta = datetime.timedelta(minutes=0)
-    end = start + delta
-    end_hour = end.hour
-    end_minute = end.minute
-    end_execution = start + datetime.timedelta(minutes=2)
-    #print('end_hour', end_hour, 'end_minute', end_minute)
-    couple_min_checking = datetime.timedelta(minutes=1)
-    get_current_time = datetime.datetime.now()
-    minutes_to_start_left =  start - get_current_time 
-    
-    if get_current_time > start:
-
-        print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
-
-    #belarus_sites_parsing()
-    #pass
-    return 'the programm is fullfilled'
-
-running_programm()
