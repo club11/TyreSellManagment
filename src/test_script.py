@@ -52,6 +52,7 @@ import os
 os.environ["DJANGO_SETTINGS_MODULE"] = "proj.settings"
 import django
 django.setup()
+
 def give_me():
     from django.apps import apps
     for app in apps.get_app_configs():
