@@ -8,7 +8,7 @@ def main():
         get_month  = datetime.datetime.now().month
         get_day  = datetime.datetime.now().day
 
-        start = datetime.datetime(get_year, get_month, get_day, 2, 8) # !!!!!!! для введения часа и мин ля запуска скрипта
+        start = datetime.datetime(get_year, get_month, get_day, 20, 8) # !!!!!!! для введения часа и мин ля запуска скрипта
         delta = datetime.timedelta(minutes=0)
         end = start + delta
         end_hour = end.hour
@@ -30,7 +30,7 @@ def main():
             #        break
 
 
-        if get_current_time > start:
+        if get_current_time < start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             views.running_programm()
 

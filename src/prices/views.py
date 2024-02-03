@@ -37,8 +37,8 @@ from collections import Counter
 from operator import itemgetter, attrgetter
 
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from django.db.models import Min
+#from webdriver_manager.chrome import ChromeDriverManager
+#from django.db.models import Min
 
 import random
 import itertools
@@ -6767,6 +6767,6 @@ def running_programm():
 
 
 
-#if __name__ == "__main__":
-#    running_programm()
+if __name__ == "__main__":
+    running_programm()
 
