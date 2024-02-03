@@ -1,7 +1,9 @@
+### for if __name__ == "__main__": ========= for TEST_SCRIPT
 import os
 os.environ["DJANGO_SETTINGS_MODULE"] = "proj.settings"
 import django
 django.setup()
+### END for if __name__ == "__main__": ========= for TEST_SCRIPT
 
 
 from django.shortcuts import render
