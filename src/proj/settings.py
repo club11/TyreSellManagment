@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tyres',
+    #'googlecharts',
     'dictionaries',
     'filemanagment',
     'abc_table_xyz',   
@@ -51,7 +52,7 @@ INSTALLED_APPS = [
     'profiles',
 
     'crispy_forms',
-    #'googlecharts',
+
 
 ]
 
@@ -147,6 +148,6 @@ MEDIA_ROOT = BASE_DIR /'media/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = 'uni_form'
 LOGIN_REDIRECT_URL = '/chemcurier/chemcurier_progressive'
