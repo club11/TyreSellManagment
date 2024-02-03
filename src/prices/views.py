@@ -6767,6 +6767,6 @@ def running_programm():
 
 
 
-if __name__ == "__main__":
-    running_programm()
+#if __name__ == "__main__":
+#    running_programm()
 
