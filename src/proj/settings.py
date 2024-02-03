@@ -47,10 +47,11 @@ INSTALLED_APPS = [
     'sales', 
     'homepage',
     'prices',
-    'crispy_forms',
-    'googlecharts',
     'chemcurier',
     'profiles',
+
+    'crispy_forms',
+    #'googlecharts',
 
 ]
 

@@ -1,7 +1,7 @@
 def main():
     import datetime
 
-#    from prices import views
+    from prices import views
 
     def run_the_parscin_script():
         get_year  = datetime.datetime.now().year
@@ -32,10 +32,10 @@ def main():
 
         if get_current_time > start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
-            #views.running_programm()
+            views.running_programm()
+
+
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
-
-
 
 
         from django.apps import apps
