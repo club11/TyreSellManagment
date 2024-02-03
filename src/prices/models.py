@@ -1836,3 +1836,5 @@ class DataPriceValMoneyChemCurierModel(models.Model):
         null=True, 
         blank=True
     )
+
+
