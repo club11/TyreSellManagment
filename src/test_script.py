@@ -1,17 +1,14 @@
 def main():
     import datetime
 
-    from prices import views
-
-
-    views.running_programm()
+#    from prices import views
 
     def run_the_parscin_script():
         get_year  = datetime.datetime.now().year
         get_month  = datetime.datetime.now().month
         get_day  = datetime.datetime.now().day
 
-        start = datetime.datetime(get_year, get_month, get_day, 17, 8) # !!!!!!! для введения часа и мин ля запуска скрипта
+        start = datetime.datetime(get_year, get_month, get_day, 23, 8) # !!!!!!! для введения часа и мин ля запуска скрипта
         delta = datetime.timedelta(minutes=0)
         end = start + delta
         end_hour = end.hour
@@ -35,10 +32,18 @@ def main():
 
         if get_current_time > start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
-            views.running_programm()
+            #views.running_programm()
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
-        #belarus_sites_parsing()
-        #pass
+
+
+
+
+        from django.apps import apps
+        for app in apps.get_app_configs():
+            print(app, app.name, app.label)
+
+
+
         return 'the programm is fullfilled'
 
 
