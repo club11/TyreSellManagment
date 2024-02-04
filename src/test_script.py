@@ -49,7 +49,10 @@ def main():
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
             options.add_argument('--headless=new')
-            webdriverr_global = webdriver.Chrome(options=options)  
+
+
+            webdriverr_global = webdriver.Chrome(options=options) 
+
             url = 'https://catalog.onliner.by/tires'
             webdriverr = webdriverr_global
             webdriverr.get(url)
@@ -58,17 +61,16 @@ def main():
             time.sleep(5)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
 
-            #pages = soup.find('ul', class_='catalog-pagination__pages-list')
-            #urls = []
-            #if pages:
-            #    links = pages.find_all('a', class_='catalog-pagination__pages-link')
-            #    for link in links:
-            #        pageNum = int(link.text) #if link.text.isdigit() else None
-            #        print('pageNum', pageNum)
-            #        if pageNum != None:
-            #            urls.append(pageNum)
-            #    #print('links', links)
-            #    print('urls', urls)
+            pages = soup.find('ul', class_='catalog-pagination__pages-list')
+            urls = []
+            if pages:
+                links = pages.find_all('a', class_='catalog-pagination__pages-link')
+                for link in links:
+                    pageNum = int(link.text) #if link.text.isdigit() else None
+                    if pageNum != None:
+                        urls.append(pageNum)
+                #print('links', links)
+                print('urls', urls)
             pag = soup.find('div', class_='catalog-form__header-part catalog-form__header-part_1')
             print('=======', pag.text)
 
