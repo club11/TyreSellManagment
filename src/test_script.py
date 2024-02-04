@@ -11,7 +11,7 @@ def main():
         get_month  = datetime.datetime.now().month
         get_day  = datetime.datetime.now().day
 
-        start = datetime.datetime(get_year, get_month, get_day, 20, 8) # !!!!!!! для введения часа и мин ля запуска скрипта
+        start = datetime.datetime(get_year, get_month, get_day, 23, 58) # !!!!!!! для введения часа и мин ля запуска скрипта
         delta = datetime.timedelta(minutes=0)
         end = start + delta
         end_hour = end.hour
@@ -37,43 +37,44 @@ def main():
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             #views.running_programm()
             
+            try:
+                from selenium import webdriver
+                import time
+                from bs4 import BeautifulSoup
+                from selenium import webdriver
+                from selenium.webdriver.chrome.options import Options
 
-            from selenium import webdriver
-            import time
-            from bs4 import BeautifulSoup
-            from selenium import webdriver
-            from selenium.webdriver.chrome.options import Options
+                options = Options()
+                options.add_argument("disable-infobars")
+                options.add_argument("--disable-dev-shm-usage")
+                options.add_argument("--no-sandbox")
+                options.add_argument('--headless=new')
+                webdriverr_global = webdriver.Chrome(options=options)  
+                url = 'https://catalog.onliner.by/tires'
+                webdriverr = webdriverr_global
+                webdriverr.get(url)
+                time.sleep(2)
+                webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(5)
+                soup = BeautifulSoup(webdriverr.page_source,'lxml')
 
-            options = Options()
-            options.add_argument("disable-infobars")
-            options.add_argument("--disable-dev-shm-usage")
-            options.add_argument("--no-sandbox")
-            options.add_argument('--headless=new')
-            webdriverr_global = webdriver.Chrome(options=options)  
-            url = 'https://catalog.onliner.by/tires'
-            webdriverr = webdriverr_global
-            webdriverr.get(url)
-            time.sleep(2)
-            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)
-            soup = BeautifulSoup(webdriverr.page_source,'lxml')
+                #pages = soup.find('ul', class_='catalog-pagination__pages-list')
+                #urls = []
+                #if pages:
+                #    links = pages.find_all('a', class_='catalog-pagination__pages-link')
+                #    for link in links:
+                #        pageNum = int(link.text) #if link.text.isdigit() else None
+                #        print('pageNum', pageNum)
+                #        if pageNum != None:
+                #            urls.append(pageNum)
+                #    #print('links', links)
+                #    print('urls', urls)
+                pag = soup.find('div', class_='catalog-form__header-part catalog-form__header-part_1')
+                print('=======', pag.text)
 
-            #pages = soup.find('ul', class_='catalog-pagination__pages-list')
-            #urls = []
-            #if pages:
-            #    links = pages.find_all('a', class_='catalog-pagination__pages-link')
-            #    for link in links:
-            #        pageNum = int(link.text) #if link.text.isdigit() else None
-            #        print('pageNum', pageNum)
-            #        if pageNum != None:
-            #            urls.append(pageNum)
-            #    #print('links', links)
-            #    print('urls', urls)
-            pag = soup.find('div', class_='catalog-form__header-part catalog-form__header-part_1')
-            print('=======', pag.text)
-            webdriverr.quit()
-
-
+                webdriverr.quit()
+            except :
+                print('+++ERROR+++')
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
 
