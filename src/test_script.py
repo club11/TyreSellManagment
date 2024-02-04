@@ -4,19 +4,6 @@ from selenium import webdriver
 
 
 def main():
-
-    import time
-    from bs4 import BeautifulSoup
-    chromeOptions1 = webdriver.ChromeOptions() 
-    chromeOptions1.add_argument("--no-sandbox") 
-    chromeOptions1.add_argument("--disable-setuid-sandbox") 
-    chromeOptions1.add_argument("--disable-dev-shm-usage");
-    chromeOptions1.add_argument("--headless") 
-    webdriverr_global = webdriver.Chrome(options=chromeOptions1)
-
-
-
-
     import datetime
     from prices import views
 
@@ -51,6 +38,16 @@ def main():
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
         #    views.running_programm()
             
+
+
+            import time
+            from bs4 import BeautifulSoup
+            chromeOptions1 = webdriver.ChromeOptions() 
+            chromeOptions1.add_argument("--no-sandbox") 
+            chromeOptions1.add_argument("--disable-setuid-sandbox") 
+            chromeOptions1.add_argument("--disable-dev-shm-usage");
+            chromeOptions1.add_argument("--headless") 
+            webdriverr_global = webdriver.Chrome(options=chromeOptions1)            
             url = 'https://catalog.onliner.by/tires'
             webdriverr = webdriverr_global
             webdriverr.get(url)
