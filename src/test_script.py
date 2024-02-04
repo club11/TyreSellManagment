@@ -37,17 +37,20 @@ def main():
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             #views.running_programm()
 
-            
+
+
+            from selenium import webdriver
             from selenium.webdriver.chrome.service import Service as ChromeService
+            import webdriver_manager
             from webdriver_manager.chrome import ChromeDriverManager
 
 
             
             
-            from selenium import webdriver
+            
             import time
             from bs4 import BeautifulSoup
-            from selenium import webdriver
+            #from selenium import webdriver
             from selenium.webdriver.chrome.options import Options
             options = Options()
             options.add_argument("disable-infobars")
