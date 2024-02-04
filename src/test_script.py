@@ -57,6 +57,7 @@ def main():
             webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(5)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
+
             #pages = soup.find('ul', class_='catalog-pagination__pages-list')
             #urls = []
             #if pages:
@@ -68,6 +69,9 @@ def main():
             #            urls.append(pageNum)
             #    #print('links', links)
             #    print('urls', urls)
+            pag = soup.find('div', class_='catalog-form__header-part catalog-form__header-part_1')
+            print('=======', pag.text)
+
 
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
