@@ -57,14 +57,14 @@ def main():
             webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(5)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
-            pages = soup.find('ul', class_='catalog-pagination__pages-list')
-            urls = []
-            links = pages.find_all('a', class_='catalog-pagination__pages-link')
-            for link in links:
-                pageNum = int(link.text) if link.text.isdigit() else None
-                if pageNum != None:
-                    urls.append(pageNum)
-            print('URLS = ', urls)
+            #pages = soup.find('ul', class_='catalog-pagination__pages-list')
+            #urls = []
+            #links = pages.find_all('a', class_='catalog-pagination__pages-link')
+            #for link in links:
+            #    pageNum = int(link.text) if link.text.isdigit() else None
+            #    if pageNum != None:
+            #        urls.append(pageNum)
+            #print('URLS = ', urls)
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
 
