@@ -71,6 +71,7 @@ def main():
             #    print('urls', urls)
             pag = soup.find('div', class_='catalog-form__header-part catalog-form__header-part_1')
             print('=======', pag.text)
+            webdriverr.quit()
 
 
 
