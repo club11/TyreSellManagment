@@ -36,6 +36,12 @@ def main():
         if get_current_time < start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             #views.running_programm()
+
+            
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            from webdriver_manager.chrome import ChromeDriverManager
+
+
             
             
             from selenium import webdriver
@@ -48,7 +54,10 @@ def main():
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
             options.add_argument('--headless=new')
-            webdriverr_global = webdriver.Chrome(options=options)  
+            #webdriverr_global = webdriver.Chrome(options=options)
+                                                   
+            webdriverr_global = webdriver.Chrome(options=options,service=ChromeService(ChromeDriverManager().install()))
+
             url = 'https://catalog.onliner.by/tires'
             webdriverr = webdriverr_global
             webdriverr.get(url)
@@ -72,8 +81,9 @@ def main():
                 pag = soup.find('div', class_='catalog-form__header-part catalog-form__header-part_1')
                 print('=======', pag.text)
 
+                webdriverr.error_handle
                 webdriverr.quit()
-            except :
+            except:
                 print('+++ERROR+++')
                 webdriverr.quit()
 
