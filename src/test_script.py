@@ -30,7 +30,7 @@ def main():
             #        break
 
 
-        if get_current_time > start:
+        if get_current_time < start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             views.running_programm()
 
