@@ -37,29 +37,17 @@ def main():
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             #views.running_programm()
 
-
-
-            from selenium import webdriver
-            from selenium.webdriver.chrome.service import Service as ChromeService
-            import webdriver_manager
-            from webdriver_manager.chrome import ChromeDriverManager
-
-
-            
-            
-            
             import time
+            from selenium import webdriver
             from bs4 import BeautifulSoup
-            #from selenium import webdriver
             from selenium.webdriver.chrome.options import Options
             options = Options()
             options.add_argument("disable-infobars")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
             options.add_argument('--headless=new')
-            #webdriverr_global = webdriver.Chrome(options=options)
+            webdriverr_global = webdriver.Chrome(options=options)
                                                    
-            webdriverr_global = webdriver.Chrome(options=options,service=ChromeService(ChromeDriverManager().install()))
 
             url = 'https://catalog.onliner.by/tires'
             webdriverr = webdriverr_global
