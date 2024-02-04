@@ -44,12 +44,12 @@ def main():
             from selenium import webdriver
             from selenium.webdriver.chrome.options import Options
 
-            chromeOptions1 = webdriver.ChromeOptions() 
-            chromeOptions1.add_argument("--no-sandbox") 
-            chromeOptions1.add_argument("--disable-setuid-sandbox") 
-            chromeOptions1.add_argument("--disable-dev-shm-usage")
-            chromeOptions1.add_argument('--headless=old')
-            webdriverr_global = webdriver.Chrome(options=chromeOptions1)
+            options = Options()
+            options.add_argument("disable-infobars")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--no-sandbox")
+            options.add_argument('--headless=new')
+            webdriverr_global = webdriver.Chrome(options=options)  
             url = 'https://catalog.onliner.by/tires'
             webdriverr = webdriverr_global
             webdriverr.get(url)
@@ -57,17 +57,17 @@ def main():
             webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(5)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
-            pages = soup.find('ul', class_='catalog-pagination__pages-list')
-            urls = []
-            if pages:
-                links = pages.find_all('a', class_='catalog-pagination__pages-link')
-                for link in links:
-                    pageNum = int(link.text) #if link.text.isdigit() else None
-                    print('pageNum', pageNum)
-                    if pageNum != None:
-                        urls.append(pageNum)
-                #print('links', links)
-                print('urls', urls)
+            #pages = soup.find('ul', class_='catalog-pagination__pages-list')
+            #urls = []
+            #if pages:
+            #    links = pages.find_all('a', class_='catalog-pagination__pages-link')
+            #    for link in links:
+            #        pageNum = int(link.text) #if link.text.isdigit() else None
+            #        print('pageNum', pageNum)
+            #        if pageNum != None:
+            #            urls.append(pageNum)
+            #    #print('links', links)
+            #    print('urls', urls)
 
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')

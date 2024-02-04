@@ -115,11 +115,13 @@ def belarus_sites_parsing():
         pages = soup.find('ul', class_='catalog-pagination__pages-list')
         urls = []
         #links = pages.find_all('a', class_='schema-pagination__pages-link') #
-        links = pages.find_all('a', class_='catalog-pagination__pages-link')
-        for link in links:
-            pageNum = int(link.text) if link.text.isdigit() else None
-            if pageNum != None:
-                urls.append(pageNum)
+        if pages:
+            links = pages.find_all('a', class_='catalog-pagination__pages-link')
+            for link in links:
+                pageNum = int(link.text) #if link.text.isdigit() else None
+                print('pageNum', pageNum)
+                if pageNum != None:
+                    urls.append(pageNum)
         #2. получаем данные со всех страниц:
         list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
         shins_phrase = ['шины', 'Шины']
