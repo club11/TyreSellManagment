@@ -37,26 +37,26 @@ def main():
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
             #views.running_programm()
             
+            
+            from selenium import webdriver
+            import time
+            from bs4 import BeautifulSoup
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+            options = Options()
+            options.add_argument("disable-infobars")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--no-sandbox")
+            options.add_argument('--headless=new')
+            webdriverr_global = webdriver.Chrome(options=options)  
+            url = 'https://catalog.onliner.by/tires'
+            webdriverr = webdriverr_global
+            webdriverr.get(url)
+            time.sleep(2)
+            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+            soup = BeautifulSoup(webdriverr.page_source,'lxml')
             try:
-                from selenium import webdriver
-                import time
-                from bs4 import BeautifulSoup
-                from selenium import webdriver
-                from selenium.webdriver.chrome.options import Options
-
-                options = Options()
-                options.add_argument("disable-infobars")
-                options.add_argument("--disable-dev-shm-usage")
-                options.add_argument("--no-sandbox")
-                options.add_argument('--headless=new')
-                webdriverr_global = webdriver.Chrome(options=options)  
-                url = 'https://catalog.onliner.by/tires'
-                webdriverr = webdriverr_global
-                webdriverr.get(url)
-                time.sleep(2)
-                webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(5)
-                soup = BeautifulSoup(webdriverr.page_source,'lxml')
 
                 #pages = soup.find('ul', class_='catalog-pagination__pages-list')
                 #urls = []
@@ -75,6 +75,7 @@ def main():
                 webdriverr.quit()
             except :
                 print('+++ERROR+++')
+                webdriverr.quit()
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
 
