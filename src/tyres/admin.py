@@ -1,35 +1,3 @@
-from django.contrib import admin
-from . import models
-
-class TyreAdmin(admin.ModelAdmin):
-    list_display = [
-        'tyre_model',
-        'tyre_size',
-
-    ]
-
-
-    
-class TyreCardAdmin(admin.ModelAdmin):
-    list_display = [
-            'tyre',
-            'serie_date',
-            'picture',
-    ]
-
-class TyreAddedFeatureModelAdmin(admin.ModelAdmin):
-    list_display = [
-        'tyre',
-        'indexes_list',
-        'season_usage',
-        'tyre_thread',
-        'ax',
-        'usability',  
-        'studded_usage'    
-    ]
-
-
-admin.site.register(models.Tyre, TyreAdmin)
-admin.site.register(models.TyreCard, TyreCardAdmin)
-admin.site.register(models.TyreAddedFeatureModel, TyreAddedFeatureModelAdmin)
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:a82be0fdec602cec469eca3607e66dca3616025409a0380721b3686c30f3a049
+size 712

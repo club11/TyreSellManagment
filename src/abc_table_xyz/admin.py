@@ -1,18 +1,3 @@
-from django.contrib import admin
-from . import models
-
-
-class AbcxyzTableAdmin(admin.ModelAdmin):
-    list_display = [
-        #'sales_on_date_total_amount',
-        'pk',
-    ]
-
-
-class AbcxyzAdmin(admin.ModelAdmin):
-    list_display = [
-        'table',
-        'tyre',
-    ]
-admin.site.register(models.AbcxyzTable, AbcxyzTableAdmin)
-admin.site.register(models.Abcxyz, AbcxyzAdmin)
+version https://git-lfs.github.com/spec/v1
+oid sha256:86d313f0671eeef2acb1178287316dfb76ad43898ac8709076baa13db33ab60d
+size 382

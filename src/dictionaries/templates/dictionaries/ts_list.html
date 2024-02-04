@@ -1,29 +1,3 @@
-{% extends 'base.html' %}
-{% block title %} Tyresize list {% endblock title %}
-{% block body %} 
-
-
-<table class="table table-dark table-borderless">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Типоразмер</th>
-        <th scope="col">Обновить</th>
-        <th scope="col">Удалить</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for object in object_list %}
-      <tr>
-        <th scope="row">{{ forloop.counter }}</th>
-        <td><a href="{% url 'dictionaries:ts_detail' object.pk %}">{{ object.tyre_size }}</a></td>
-        <td><a href="{% url 'dictionaries:ts_update' object.pk %}">Обновить</a></td>
-        <td><a href="{% url 'dictionaries:ts_delete' object.pk %}">Удалить</a></td>
-      </tr>
-        {% endfor %}
-    </tbody>
-  </table>
-  <a href="{% url 'dictionaries:ts_create' %}" class="btn btn-success">Создать типоразмер</a>
-  <a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к перечню справочников</a>
-
-{% endblock body %}
+version https://git-lfs.github.com/spec/v1
+oid sha256:e565856371a19df4788e9f8cf4423bd5831d0276a337f80d59af7b0f4358ed7e
+size 1081

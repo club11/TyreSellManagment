@@ -1,22 +1,3 @@
-from django import forms
-
-class ImportDataForm(forms.Form):
-    name = forms.CharField(
-        max_length=50,
-        required=None,
-        label='Импортировать данные (модель/ типоразмер/ параметры',
-    )
-    file_fields = forms.FileField(
-        allow_empty_file=None,
-    )
-
-class ImportSalesDataForm(forms.Form):
-    name = forms.CharField(
-        max_length=50,
-        required=None,
-        label='Импортировать данные о реализации',
-    )
-    file_fields = forms.FileField(
-        allow_empty_file=None,
-    )
-    
+version https://git-lfs.github.com/spec/v1
+oid sha256:36992cf35d615b667cdc75a1e69b436bc81824c103a54f254679f98ca64474da
+size 602

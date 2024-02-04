@@ -1,31 +1,3 @@
-from dataclasses import fields
-from pyexpat import model
-from django import forms
-from . import models
-
-
-from dictionaries import models as dictionaries_models
-
-
-
-class TyreCardForm(forms.ModelForm):
-    class Meta:
-        model = models.TyreCard
-        tyre = forms.ModelChoiceField(queryset=models.TyreCard.objects.all(), required=True)
-        fields = {
-            'tyre',
-            'serie_date',
-            'picture',
-        }
-
-
-    
-
-class TyreForm(forms.ModelForm):
-    class Meta:
-        model = models.Tyre
-        fields = {
-            'tyre_model',
-            'tyre_size',
-            'tyre_type',
-        }
+version https://git-lfs.github.com/spec/v1
+oid sha256:fae46f3a34633208c559dab8c5b8f2722dfeb8920b694f033b38b1d1f09a1c2b
+size 628

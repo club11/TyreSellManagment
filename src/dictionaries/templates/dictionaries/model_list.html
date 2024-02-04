@@ -1,34 +1,3 @@
-{% extends 'base.html' %}
-{% block title %} Model list {% endblock title %}
-{% block body %} 
-
-
-<table class="table table-dark table-borderless">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Модель</th>
-        <th scope="col">Обновить</th>
-        <th scope="col">Удалить</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for object in object_list %}
-      <tr>
-        <th scope="row">{{ forloop.counter }}</th>
-        <td><a href="{% url 'dictionaries:model_detail' object.pk %}">{{ object.model }}</a></td>
-        <td><a href="{% url 'dictionaries:model_update' object.pk %}">Обновить</a></td>
-        <td><a href="{% url 'dictionaries:model_delete' object.pk %}">Удалить</a></td>
-      </tr>
-        {% endfor %}
-    </tbody>
-  </table>
-  <a href="{% url 'dictionaries:model_create' %}" class="btn btn-success">Создать модель</a>
-  <a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к перечню справочников</a>
-
-{% endblock body %}
-
-
-
-
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:bc1d6bcc8b87ec449e2cf1939d62dd73ca59e8e0228edda946e6898e8f0286dc
+size 1076

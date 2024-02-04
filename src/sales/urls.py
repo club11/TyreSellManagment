@@ -1,11 +1,3 @@
-from django.contrib import admin
-from django.urls import path, include
-from . import views as sales_views
-
-app_name = 'sales'
-
-urlpatterns = [    
-    #path('sales', sales_views.SalesTemplateListView.as_view(), name='sales'), 
-    path('sales', sales_views.SalesDetailView.as_view(), name='sales'), 
-    path('update_sales', sales_views.SalesTemplateUpdateView.as_view(), name='update_sales'), 
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:579c2ebb8f177bd51ee7e81202d42e793b7b3b730bf2014f182ddc8a52c039f1
+size 396

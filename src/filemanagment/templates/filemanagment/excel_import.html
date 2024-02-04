@@ -1,35 +1,3 @@
-{% extends 'base.html' %}
-{% block title %} File import {% endblock title %}
-
-<style>
-    form{
-       position:fixed;
-       top:40%;
-       left:40%;
-        }
-</style>
-
-{% block body %} 
-
-<h1>FILE import</h1>
-
-<form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %} 
-    Импортировать базу продукции:
-    {{ form.as_ul}}
-      <button type="submit" name="form_name" value="aform.prefix">Импортировать</button>
-</form>
-<b>-----------</b>
-<form action="" method="post" enctype="multipart/form-data">
-  Импортировать 1) данные о продажах. 2) базовые цены:
-  {% csrf_token %} 
-  {{ form.as_ul}}
-    <button type="submit" name="form_name" value="bform.prefix">Импортировать</button>
-</form>
-<a href="" class="btn btn-success">На главную</a>
-
-{% endblock body %}
-
-
-
-    
+version https://git-lfs.github.com/spec/v1
+oid sha256:cf7d3689169cd4c76c0d01dc336e5de6950d972c707152a072befbfef1eae343
+size 894

@@ -1,32 +1,3 @@
-{% extends 'base.html' %}
-{% block title %} Tyre card create {% endblock title %}
-{% block body %} 
-<h1>Добавить рекламку</h1>
- <form action="{% url 'tyres:tyre_card_create' %}" method="post" enctype="multipart/form-data"> 
-    
-    {% csrf_token %} 
-    {{ form.picture }}
-
-    <button type="submit" class="btn btn-success" name1="change_period" value1="period" name2="tyre_list" value2="{{ select }}">Добавить</button> 
-
-    задать дату серийного освоения: <input type="date" name="serie_data"> <input type="hidden" value="select"><br>
-
-      выбрать шину:
-      <form action="{% url 'tyres:tyre_card_create' %}" method="post">
-        {% csrf_token %}
-        <select name = "tyre_list"  multiple aria-label="multiple select example">
-            {% for selec in tyre_list %}
-            <option value="{{ selec.id }}">{{ selec.tyre_size.tyre_size }} {{ selec.tyre_model.model }} 
-                {% for param in selec.tyre_type.all  %}
-                    {{ param.tyre_type }}
-                {% endfor %}
-            </option>
-            {% endfor %}
-        </select>
-      </form> 
-
-</form>
-<a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к списку</a>
-{% endblock body %}
-
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:f6c49e363decba5c205b7b5502ecc784724c9f844efe9bf989dde1b41f8a74b4
+size 1283

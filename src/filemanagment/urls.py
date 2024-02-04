@@ -1,10 +1,3 @@
-from django.contrib import admin
-from django.urls import path, include
-from . import views as filemanagment_views
-
-app_name = 'filemanagment'
-
-urlpatterns = [    
-    #path('', filemanagment_views.ExcelStaffView.as_view(), name='excel_import'), 
-    path('', filemanagment_views.ExcelTemplateView.as_view(), name='excel_import'), 
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:c2c751476e04f56f9a15622a9351673a2ca06a15ad8f21e88641fee6754db4d3
+size 332

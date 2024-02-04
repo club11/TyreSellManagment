@@ -1,12 +1,3 @@
-from django.contrib import admin
-from django.urls import path, include
-from . import views as abcxyz_views
-app_name = 'abc_table_xyz'
-
-urlpatterns = [    
-    #path('', abcxyz_views.AbcxyzTemplateDetailView.as_view(), name='abc'),
-    path('', abcxyz_views.AbcxyzTemplateDetailView.as_view(), name='abctable'),
-    path('abctable_update', abcxyz_views.ABCXYZTemplateUpdateView.as_view(), name='abctable_update'),
-     
-    #path('<int:pk>/', abcxyz_views.AbcxyzTemplateDetailView.as_view(), name='abctable'),  
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:6f39cfbb640f5032b9b49ddfe035ff13883dffb015a3e86efefd288116061564
+size 512

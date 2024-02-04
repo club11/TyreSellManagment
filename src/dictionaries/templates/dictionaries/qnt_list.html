@@ -1,29 +1,3 @@
-{% extends 'base.html' %}
-{% block title %} Quantity list {% endblock title %}
-{% block body %} 
-
-
-<table class="table table-dark table-borderless">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Группа/th>
-        <th scope="col">Обновить</th>
-        <th scope="col">Удалить</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for object in object_list %}
-      <tr>
-        <th scope="row">{{ forloop.counter }}</th>
-        <td><a href="{% url 'dictionaries:qnt_detail' object.pk %}">{{ object.quantity_count }}</a></td>
-        <td><a href="{% url 'dictionaries:qnt_update' object.pk %}">Обновить</a></td>
-        <td><a href="{% url 'dictionaries:qnt_delete' object.pk %}">Удалить</a></td>
-      </tr>
-        {% endfor %}
-    </tbody>
-  </table>
-  <a href="{% url 'dictionaries:qnt_create' %}" class="btn btn-success">Создать модель</a>
-  <a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к перечню справочников</a>
-
-{% endblock body %}
+version https://git-lfs.github.com/spec/v1
+oid sha256:a92921b58c4527dcc0657833985a716a6bd5cf25873a6f87d226a4c8b83ccc45
+size 1073

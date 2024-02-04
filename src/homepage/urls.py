@@ -1,10 +1,3 @@
-from django.urls import path, include
-from . import views as homepage_views
-
-app_name = 'homepage'
-
-urlpatterns = [    
-    path('', homepage_views.HomeTemplateDetailView.as_view(), name='home'), 
-    path('update_home', homepage_views.HomeTemplateUpdateView.as_view(), name='update_home'), 
-
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:a9add2d481085028ae77f15a40bfcc9221cb4fac232a23a44a499ea224624995
+size 294

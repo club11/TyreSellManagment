@@ -1,34 +1,3 @@
-{% extends 'base.html' %}
-{% block title %} Contragent_ list {% endblock title %}
-{% block body %} 
-
-
-<table class="table table-dark table-borderless">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Контрагент</th>
-        <th scope="col">Обновить</th>
-        <th scope="col">Удалить</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for object in object_list %}
-      <tr>
-        <th scope="row">{{ forloop.counter }}</th>
-        <td><a href="{% url 'dictionaries:contragent_detail' object.pk %}">{{ object.contragent_name }}</a></td>
-        <td><a href="{% url 'dictionaries:contragent_update' object.pk %}">Обновить</a></td>
-        <td><a href="{% url 'dictionaries:contragent_delete' object.pk %}">Удалить</a></td>
-      </tr>
-        {% endfor %}
-    </tbody>
-  </table>
-  <a href="{% url 'dictionaries:contragent_create' %}" class="btn btn-success">Создать контрагента/a>
-  <a href="{% url 'dictionaries:dictionaries' %}" class="btn-primary">Назад к перечню справочников</a>
-
-{% endblock body %}
-
-
-
-
-
+version https://git-lfs.github.com/spec/v1
+oid sha256:6158477ca6f79ff677a54b8d52c527db83e3c788bb39c2dc2841456efbbf6321
+size 1129
