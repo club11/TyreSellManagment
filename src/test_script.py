@@ -5,11 +5,15 @@ from selenium import webdriver
 
 def main():
 
+    import time
+    from bs4 import BeautifulSoup
     chromeOptions1 = webdriver.ChromeOptions() 
     chromeOptions1.add_argument("--no-sandbox") 
     chromeOptions1.add_argument("--disable-setuid-sandbox") 
     chromeOptions1.add_argument("--disable-dev-shm-usage");
     chromeOptions1.add_argument("--headless") 
+    webdriverr_global = webdriver.Chrome(options=chromeOptions1)
+
 
 
 
@@ -46,6 +50,14 @@ def main():
         if get_current_time < start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
         #    views.running_programm()
+            
+            url = 'https://catalog.onliner.by/tires'
+            webdriverr = webdriverr_global
+            webdriverr.get(url)
+            time.sleep(2)
+            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
+            soup = BeautifulSoup(webdriverr.page_source,'lxml')
 
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
