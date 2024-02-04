@@ -1,5 +1,4 @@
 
-from selenium import webdriver
 
 
 
@@ -39,15 +38,15 @@ def main():
             #views.running_programm()
             
 
-
+            from selenium import webdriver
             import time
             from bs4 import BeautifulSoup
-            chromeOptions1 = webdriver.ChromeOptions() 
-            chromeOptions1.add_argument("--no-sandbox") 
-            chromeOptions1.add_argument("--disable-setuid-sandbox") 
-            chromeOptions1.add_argument("--disable-dev-shm-usage")
-            chromeOptions1.add_argument('--headless=old') 
-            webdriverr_global = webdriver.Chrome(options=chromeOptions1)            
+            from selenium import webdriver
+            from selenium.webdriver.chrome.options import Options
+
+            options = Options()
+            options.add_argument('--headless=new')
+            webdriverr_global = webdriver.Chrome(options=options)           
             url = 'https://catalog.onliner.by/tires'
             webdriverr = webdriverr_global
             webdriverr.get(url)
