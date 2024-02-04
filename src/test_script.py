@@ -1,6 +1,19 @@
-def main():
-    import datetime
 
+from selenium import webdriver
+
+
+
+def main():
+
+    chromeOptions1 = webdriver.ChromeOptions() 
+    chromeOptions1.add_argument("--no-sandbox") 
+    chromeOptions1.add_argument("--disable-setuid-sandbox") 
+    chromeOptions1.add_argument("--disable-dev-shm-usage");
+    chromeOptions1.add_argument("--headless") 
+
+
+
+    import datetime
     from prices import views
 
     def run_the_parscin_script():
@@ -32,7 +45,7 @@ def main():
 
         if get_current_time < start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
-            views.running_programm()
+        #    views.running_programm()
 
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
