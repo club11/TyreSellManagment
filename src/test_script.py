@@ -45,9 +45,9 @@ def main():
             from selenium.webdriver.chrome.options import Options
 
             options = Options()
-            options.addArguments("disable-infobars")
+            options.add_argument("disable-infobars")
             options.add_argument("--disable-dev-shm-usage")
-            options.addArguments("--no-sandbox")
+            options.add_argument("--no-sandbox")
             options.add_argument('--headless=new')
             webdriverr_global = webdriver.Chrome(options=options)           
             url = 'https://catalog.onliner.by/tires'
