@@ -35,7 +35,7 @@ def main():
 
         if get_current_time < start:
             print(' +++++++++++ === =====++++++++the programm is FULLFILLED')
-            #views.running_programm()
+            views.running_programm()
 
             import time
             from selenium import webdriver
