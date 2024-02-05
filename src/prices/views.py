@@ -4676,7 +4676,8 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
             pass
         #### END проверки
         else:
-            parsing_script.russia_sites_parsing()
+            pass
+            #russia_sites_parsing()
     
         return comparative_analysis_table
     
@@ -6766,8 +6767,10 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
 
 def running_programm():
 
-    belarus_sites_parsing()
+    #belarus_sites_parsing()
     #russia_sites_parsing()
+    print('script is running')
+
 
     return 'the programm is fullfilled'
 
