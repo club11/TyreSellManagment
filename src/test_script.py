@@ -41,8 +41,6 @@ def main():
             from selenium.webdriver.chrome.service import Service as ChromeService
             from webdriver_manager.chrome import ChromeDriverManager
 
-
-            
             
             from selenium import webdriver
             import time
@@ -86,6 +84,7 @@ def main():
             except:
                 print('+++ERROR+++')
                 webdriverr.quit()
+
 
         print('PROFECY IS FULLFILLED !!!!! OMENS IN THE SKY')
 
