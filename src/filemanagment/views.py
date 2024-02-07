@@ -1988,6 +1988,8 @@ class ExcelTemplateView(TemplateView):
             #        #defaults={'semi_variable_prices': 0, 'belarus902price': 0, 'tpsrussiafcaprice': 0, 'tpskazfcaprice': 0, 'tpsmiddleasiafcaprice': 0, 'currentpricesprice': 0, 'currentpricesprice': 0},
             #        )
 
+
+            #print('1', tyre_obj, '2', planned_costs_obj_set, '3', semi_variable_costs_obj_set, '4', belarus902price_obj_set, '5', tpsrussiafcaprice_obj_set, '6', tpsmiddleasiafcaprice_obj_set, '7', tpsmiddleasiafcaprice_obj_set, '8', currentpricesprice_obj_set  )
             comparative_analysis_tyres_obj_set = prices_models.ComparativeAnalysisTyresModel.objects.update_or_create(
                 #table=comparative_analysis_table,
                 tyre=tyre_obj,
