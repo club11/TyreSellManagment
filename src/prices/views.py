@@ -2301,7 +2301,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-            belarus_sites_parsing()
+        #    belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
