@@ -16,6 +16,19 @@ def main():
         try:
             browser.get("https://catalog.onliner.by/tires")
             print("Page title was '{}'".format(browser.title))
+
+            from bs4 import BeautifulSoup
+        #    webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            soup = BeautifulSoup(browser.page_source,'lxml')
+            pages = soup.find('ul', class_='catalog-pagination__pages-list')
+            urls = []
+            if pages:
+                links = pages.find_all('a', class_='catalog-pagination__pages-link')
+                for link in links:
+                    pageNum = int(link.text) #if link.text.isdigit() else None
+                    print('pageNum', pageNum)
+                    if pageNum != None:
+                        urls.append(pageNum)            
         finally:
             browser.quit()
 
