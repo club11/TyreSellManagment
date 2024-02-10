@@ -96,6 +96,9 @@ PRODUCER_FILTER_BRAND_LIST_CHECKED_ON = False
 
 DEF_GET = True    # первый запуск страницы (не POST запос,а GET)
 
+SCRIPT_IS_RUNNING = False
+
+
 class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,

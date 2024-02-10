@@ -1,36 +1,42 @@
 
-
-
-
 def main():
     import datetime
     from prices import views
+    from prices import models as prices_models
 
     def run_the_parscin_script():
-        from selenium import webdriver
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        browser = webdriver.Chrome(options=chrome_options)
+        #from selenium import webdriver
+        #chrome_options = webdriver.ChromeOptions()
+        #chrome_options.add_argument("--no-sandbox")
+        #chrome_options.add_argument("--headless")
+        #chrome_options.add_argument("--disable-gpu")
+        #browser = webdriver.Chrome(options=chrome_options)
         try:
-            browser.get("https://catalog.onliner.by/tires")
-            print("Page title was '{}'".format(browser.title))
+            #browser.get("https://catalog.onliner.by/tires")
+            #print("Page title was '{}'".format(browser.title))
+#
+            #from bs4 import BeautifulSoup
+        #   # webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            #soup = BeautifulSoup(browser.page_source,'lxml')
+            #pages = soup.find('ul', class_='catalog-pagination__pages-list')
+            #urls = []
+            #if pages:
+            #    links = pages.find_all('a', class_='catalog-pagination__pages-link')
+            #    for link in links:
+            #        pageNum = int(link.text) #if link.text.isdigit() else None
+            #        print('pageNum', pageNum)
+            #        if pageNum != None:
+            #            urls.append(pageNum) 
 
-            from bs4 import BeautifulSoup
-        #    webdriver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            soup = BeautifulSoup(browser.page_source,'lxml')
-            pages = soup.find('ul', class_='catalog-pagination__pages-list')
-            urls = []
-            if pages:
-                links = pages.find_all('a', class_='catalog-pagination__pages-link')
-                for link in links:
-                    pageNum = int(link.text) #if link.text.isdigit() else None
-                    print('pageNum', pageNum)
-                    if pageNum != None:
-                        urls.append(pageNum)            
-        finally:
-            browser.quit()
+            prices_models.SCRIPT_IS_RUNNING = True
+            views.running_programm() 
+            print('END OF PARSING')    
+
+        except:
+            pass
+        #finally:
+        #    browser.quit()
+        prices_models.SCRIPT_IS_RUNNING = False # вернуть в состояние по окончании действия скрипта
 
 
     ####    get_year  = datetime.datetime.now().year

@@ -72,18 +72,34 @@ goods_dict_kolesa_darom= {}
 
 def belarus_sites_parsing():
 
-    # 1 ###### ПАРСИНГ Onliner:    
-    chromeOptions1 = webdriver.ChromeOptions() 
-    chromeOptions1.add_argument("--no-sandbox") 
-    chromeOptions1.add_argument("--disable-setuid-sandbox") 
-    chromeOptions1.add_argument("--disable-dev-shm-usage")
-    chromeOptions1.add_argument('--headless=old')
-    #chromeOptions1.add_argument("--headless") 
-    #chromeOptions1.add_argument("--disable-extensions") 
-    #chromeOptions1.add_argument("disable-infobars")
-    webdriverr_global = webdriver.Chrome(options=chromeOptions1)  
+    # проверка - выполняется вызов функции для скрипта
+    test_script_is_in_process = models.SCRIPT_IS_RUNNING
+    from selenium import webdriver
+    
 
+    if test_script_is_in_process:                                               # взято со скрипта
+        print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        webdriverr_global = webdriver.Chrome(options=chrome_options)
+    else:                                                                       # как было
+        print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
+        chrome_options = webdriver.ChromeOptions()  
+        chrome_options.add_argument("--no-sandbox") 
+        chrome_options.add_argument("--disable-setuid-sandbox") 
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument('--headless=old')
+        #chromeOptions1.add_argument("--headless") 
+        #chromeOptions1.add_argument("--disable-extensions") 
+        #chromeOptions1.add_argument("disable-infobars")
+        webdriverr_global = webdriver.Chrome(options=chrome_options)  
+    # END проверка - выполняется вызов функции для скрипта  
+
+    # 1 ###### ПАРСИНГ Onliner:   
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    webdriverr = webdriverr_global    
     try:
         url = 'https://catalog.onliner.by/tires'
         #response = requests.get(url)
@@ -91,24 +107,11 @@ def belarus_sites_parsing():
         ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        webdriverr = webdriverr_global
         webdriverr.get(url)
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(5)
         soup = BeautifulSoup(webdriverr.page_source,'lxml')
-        #products = soup.find_all('div', class_='schema-product__group')
-        #goods_dict = {}
-        #for data_got in products:
-        #    tyre_name = data_got.find('div', class_='schema-product__title')
-        #    price = data_got.find('div', 'schema-product__price')
-        #    if tyre_name and price:
-        #        text_to_delete = tyre_name.text.find('шины') + 5
-        #        tyre_name_cleaned = tyre_name.text[text_to_delete :]
-        #        start_str_serch = price.text.find('от') + 3
-        #        end_str_search = price.text.find('р') - 1
-        #        price_cleaned = price.text[start_str_serch : end_str_search]
-        #        goods_dict[tyre_name_cleaned] = price_cleaned
         # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
         #1. получаем количество страниц:
         #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
@@ -119,7 +122,7 @@ def belarus_sites_parsing():
             links = pages.find_all('a', class_='catalog-pagination__pages-link')
             for link in links:
                 pageNum = int(link.text) #if link.text.isdigit() else None
-                print('pageNum', pageNum)
+                #print('pageNum =====', pageNum)
                 if pageNum != None:
                     urls.append(pageNum)
         #2. получаем данные со всех страниц:
@@ -130,15 +133,15 @@ def belarus_sites_parsing():
             newUrl = url.replace('?', f'?page={slug}') 
             webdriverr.get(newUrl)
             time.sleep(2)
-            webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(4)
+        #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        #    time.sleep(4)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
-            products = soup.find_all('div', class_='schema-product__group')
+            products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_secondary')
             for data_got in products:
                 tyre_name = data_got.find('div', class_='schema-product__title')
                 price = data_got.find('div', 'schema-product__price')
                 if tyre_name and price:
-                    # проверка на лишний тект в нелегковых шинах
+                    # проверка на лишний тект в нелегковых шинахprice
                     check_name_is_foud = False
                     for check_name in list_to_check:
                         if check_name in tyre_name.text:
@@ -286,7 +289,7 @@ def belarus_sites_parsing():
                                 company_name = product_name.split(' ')[0]
                             tyre_param = str_right_data
                     values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
-                    #print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
+                    print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
                     goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
         #for k, v in goods_dict.items():
         #   print('K==', k, 'V==', v, 'KV')
@@ -394,17 +397,20 @@ def belarus_sites_parsing():
                     ####    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
                     #######
                 # END OLD VERSION   
+
+    #finally:
+    #    webdriverr.quit()                                      
     except:
         pass                                                                                                                                                                                                       
     ##### END OF ONLINER PARSING
     # 2 ###### ПАРСИНГ АВТОСЕТЬ:
+    webdriverr = webdriverr_global    
     try:
         avtoset_good_num = 0
         # 1) Легковые шины
         url = 'https://autoset.by/tires/'       
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        webdriverr = webdriverr_global
         webdriverr.get(url)
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -783,11 +789,15 @@ def belarus_sites_parsing():
                     ##for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=k[0]):
                     ##    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
                     #####
-                    ### END OLD VERSION   
+                    ### END OLD VERSION
+
+    #finally:
+    #    webdriverr.quit()                       
     except:
         pass                                                                                                                                                                                                                   
     ###### END OF АВТОСЕТЬ PARSING
     # 2 ###### ПАРСИНГ BAGORIA:
+    webdriverr = webdriverr_global    
     try:
         def switch_between_pages_generator(start, devider, lsegk_pages_quantity,  gruz_pages_quantity,  indus_pages_quantity,  selhoz_pages_quantity): 
         #def switch_between_pages_generator(start, devider, lsegk_pages_quantity, lsegk_pages_quantity_funk, gruz_pages_quantity, gruz_pages_quantity_funk, indus_pages_quantity, indus_pages_quantity_funk, selhoz_pages_quantity, selhoz_pages_quantity_funk, bag_num): 
@@ -893,7 +903,6 @@ def belarus_sites_parsing():
         url = 'https://bagoria.by/legkovye-shiny/'       
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        webdriverr = webdriverr_global
         webdriverr.get(url)
         soup = BeautifulSoup(webdriverr.page_source,'lxml')   
         #1. получаем количество страниц:
@@ -1276,9 +1285,15 @@ def belarus_sites_parsing():
                 loop_is_not_successfull = False   
             if loop_step == ddevider - 1:   # на поседнем прогоне - лупе сделать запись  в базу
                 loop_is_successfull_is = formirovanie_dla_zapisi(goods_dict_bagoria)   
+    #finally:
+    #    webdriverr.quit()               
     except:
-        pass                                                                                                                                                                                               
+        pass  
     ###### END OF BAGORIA PARSING
+    finally:
+        webdriverr.quit() 
+                                                                                                                                                                                             
+
                                
 
 def russia_sites_parsing():
@@ -2301,7 +2316,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-        #    belarus_sites_parsing()
+            belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
