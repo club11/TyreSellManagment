@@ -291,8 +291,8 @@ def belarus_sites_parsing():
                     values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
                     print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
                     goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
-        #for k, v in goods_dict.items():
-        #   print('K==', k, 'V==', v, 'KV')
+        for k, v in goods_dict.items():
+           print('K==', k, 'V==', v, 'KV')
         #print(goods_dict.items())
         # формируем отдельный список ПРОИЗВОДИТЕЛИ:
         onliner_companies_list = []  # список компаний-производителей Oliner
@@ -2316,7 +2316,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-        #    belarus_sites_parsing()
+            belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
