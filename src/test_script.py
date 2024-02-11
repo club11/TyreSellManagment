@@ -30,7 +30,7 @@ def main():
             #        break
             #    elif current_time.hour == end_execution.hour and current_time.minute == end_execution.minute:  
             #        break
-        if get_current_time > start:
+        if get_current_time < start:
             prices_models.SCRIPT_IS_RUNNING = True
             views.running_programm() 
             print('END OF PARSING')    
