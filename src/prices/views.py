@@ -2316,7 +2316,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-            belarus_sites_parsing()
+        #    belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
@@ -6784,7 +6784,7 @@ def running_programm():
 
     belarus_sites_parsing()
     #russia_sites_parsing()
-    print('script is running')
+    print('script is running == belarus_sites_parsing()')
 
 
     return 'the programm is fullfilled'
