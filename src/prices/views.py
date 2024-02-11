@@ -117,7 +117,6 @@ def belarus_sites_parsing():
         #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
         pages = soup.find('ul', class_='catalog-pagination__pages-list')
         urls = []
-        #links = pages.find_all('a', class_='schema-pagination__pages-link') #
         if pages:
             links = pages.find_all('a', class_='catalog-pagination__pages-link')
             for link in links:
@@ -136,10 +135,12 @@ def belarus_sites_parsing():
         #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         #    time.sleep(4)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
-            products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_secondary')
+            products = soup.find_all('div', class_='catalog-form__offers-flex')
             for data_got in products:
-                tyre_name = data_got.find('div', class_='schema-product__title')
-                price = data_got.find('div', 'schema-product__price')
+                #tyre_name = data_got.find('div', class_='schema-product__title')
+                tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
+                #price = data_got.find('div', class_='schema-product__price')
+                price = data_got.find('a', class_='catalog-form__link catalog-form__link_nodecor catalog-form__link_primary-additional catalog-form__link_huge-additional catalog-form__link_font-weight_bold')
                 if tyre_name and price:
                     # проверка на лишний тект в нелегковых шинахprice
                     check_name_is_foud = False
@@ -293,6 +294,8 @@ def belarus_sites_parsing():
                     goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
         for k, v in goods_dict.items():
            print('K==', k, 'V==', v, 'KV')
+        for v in goods_dict.values():
+            print('===========================================999===========', v)   
         #print(goods_dict.items())
         # формируем отдельный список ПРОИЗВОДИТЕЛИ:
         onliner_companies_list = []  # список компаний-производителей Oliner
@@ -2316,7 +2319,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-            belarus_sites_parsing()
+        #    belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
