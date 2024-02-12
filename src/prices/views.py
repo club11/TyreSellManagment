@@ -127,7 +127,7 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:
         list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
         shins_phrase = ['шины', 'Шины']
-        for slug in urls[1:1]:                               # c 1 по 2 станицы    
+        for slug in urls[0:1]:                               # c 1 по 2 станицы    
         #for slug in urls:      # рабочий вариант
             newUrl = url.replace('?', f'?page={slug}') 
             webdriverr.get(newUrl)
@@ -135,12 +135,15 @@ def belarus_sites_parsing():
         #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         #    time.sleep(4)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
-            products = soup.find_all('div', class_='catalog-form__offers-flex')
+            products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_primary')
             for data_got in products:
                 #tyre_name = data_got.find('div', class_='schema-product__title')
                 tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
                 #price = data_got.find('div', class_='schema-product__price')
                 price = data_got.find('a', class_='catalog-form__link catalog-form__link_nodecor catalog-form__link_primary-additional catalog-form__link_huge-additional catalog-form__link_font-weight_bold')
+                if tyre_name and price:
+                    print('=-=-=-=', tyre_name.text)
+                    print('+-=+=+=', price.text)
                 if tyre_name and price:
                     # проверка на лишний тект в нелегковых шинахprice
                     check_name_is_foud = False
@@ -172,7 +175,8 @@ def belarus_sites_parsing():
                     price_cleaned = price.text[start_str_serch : end_str_search]
                 ###### дополнительные праметры ищем: 
                 #for data_got in products:
-                    tyre_season = data_got.find('div', class_='schema-product__description')
+                    #tyre_season = data_got.find('div', class_='schema-product__description')
+                    tyre_season = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
                     seas_list = ['летние', 'зимние', 'всесезонные']
                     studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
                     group_list_cars = ['легковых', 'внедорожников', 'минивенов', 'кроссоверов'] 
@@ -193,31 +197,36 @@ def belarus_sites_parsing():
                         except:
                             pass
                         group_is = []
+
+                    t_gr = None
+                    split_str = data_got.find_all('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
+                    if split_str:
+                        split_str1 = split_str[1].text
+                        #print('--', split_str1) 
+                        split_str_group = split_str1   
                         # для грузовых
                         try:
-                            if split_str[1]:
-                                group_is = split_str[1]
+                            if split_str_group:
+                                group_is = split_str_group
                                 tyr_group_check is True
                         except:
                             try:
-                                #if 'BEL-318' in tyre_name_cleaned:
-                                #    print('split42334324', split_str[0])
-                                if split_str[0]:
+                                if split_str_group:
                                     for n in group_list_cars:
-                                        if n in split_str[0]:
+                                        if n in split_str_group:
                                             group_is = 'легковые'
                                             break
                                     for n in group_list_lt:
-                                        if n in split_str[0]:
+                                        if n in split_str_group:
                                             group_is = 'легкогруз'
                                     #        print('---====', group_is)
                                             break
                                     for n in group_list_trucks:
-                                        if n in split_str[0]:
+                                        if n in split_str_group:
                                             group_is = 'грузовые'
                                             break
                                     for n in group_list_agro:
-                                        if n in split_str[0]:
+                                        if n in split_str_group:
                                             group_is = 'с/х'
                                             break
                                 tyr_group = group_is        
@@ -2319,7 +2328,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-        #    belarus_sites_parsing()
+            #belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
