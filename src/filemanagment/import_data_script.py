@@ -19,12 +19,14 @@ from itertools import count, islice
 from abc_table_xyz import models as abc_table_xyz_models
 from datetime import datetime
 from prices import models as prices_models
-
 from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 
+import asyncio 
 
 
-def read_from_file(self):
+#async def read_from_file(self):
+def read_from_file(self):    
+    print('________SEEELLF__________')
     form_name = self.request.POST.get('form_name')
     row_value = int
     tyresize_list = []
@@ -1882,6 +1884,21 @@ def read_from_file(self):
         excel_sheet.cell(row=val, column=10).value = sales_obj.contragent.contragent_name
         excel_file.save(filename="Tyres.xlsx") 
 
+
+
+
+async def read_fromSSS():
+    print('________SEEELLF  ish__________')
+
+
+
+#async def main(self):
+#    task1 = asyncio.create_task(read_from_file(self))
+#    #task1 = asyncio.create_task(read_fromSSS())
+#    await task1
+#    
+#if __name__ == "__main__":
+#    asyncio.run(main())
 
 
 def main():
