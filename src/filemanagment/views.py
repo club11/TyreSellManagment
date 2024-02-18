@@ -46,7 +46,7 @@ class ExcelTemplateView(TemplateView):
 
     
     def post(self, request, *args, **kwargs):
-        #chem_cour_value = import_data_script.read_from_file(self)
+        chem_cour_value = import_data_script.read_from_file(self)
 
         t = threading.Thread(target=import_data_script.chem_courier_bulk_write_ib_bd, args=(chem_cour_value,))
         t.setDaemon(False)
