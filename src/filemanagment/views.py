@@ -36,26 +36,36 @@ from threading import Timer
 
 class ExcelTemplateView(TemplateView):
 #class ExcelTemplateView(View):    
+    
     template_name = 'filemanagment/excel_import.html'
     #view_is_async = True
+
 
     def get(self, request, *args, **kwargs):
         return self.render_to_response({'aform': forms.ImportDataForm(prefix='aform_pre'), 'bform': forms.ImportSalesDataForm(prefix='bform_pre')})
 
+    
     def post(self, request, *args, **kwargs):
-        #import_data_script.read_from_file(self)
+        chem_cour_value = import_data_script.read_from_file(self)
+
+        t = threading.Thread(target=import_data_script.chem_courier_bulk_write_ib_bd, args=(chem_cour_value,))
+        t.setDaemon(False)
+        t.start()
 
         ###p = multiprocessing.Process(target=import_data_script.read_from_file(self))
         ###p.start()
-        ##t = threading.Thread(target=import_data_script.read_from_file(self))
-        ##t.setDaemon(False)
-        ##t.start()
+        #Timer(2, import_data_script.read_from_file(self)).start()
+        ####try:
+        ####    form = forms.ImportSalesDataForm()  
+        ####    return render(self.request, 'filemanagment/excel_import.html', {'form': form})
+        ####finally:
+        ####    import_data_script.read_from_file(self)
 
-        Timer(2, import_data_script.read_from_file(self)).start()
 
         form = forms.ImportSalesDataForm()  
-        print('!!!!!!!!!!!!!55555555555555!!!!!!!!')            
+        print('!!! FORMA ', self, datetime.now())            
         return render(self.request, 'filemanagment/excel_import.html', {'form': form})
+    
        
 
 async def start_read_file_script():

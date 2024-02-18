@@ -21,12 +21,101 @@ from datetime import datetime
 from prices import models as prices_models
 from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 
+import time
 import asyncio 
+import threading
 
+
+
+
+def chem_courier_bulk_write_ib_bd(dict_of_data):
+        print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
+        MAIN_chemcirier_import_dict = dict_of_data
+        # 1.1 создать объекты продажа на дату:
+        che_curier_obj_tyre_bulk_list = []
+        currency_chem = dictionaries_models.Currency.objects.get_or_create(currency = 'USD')[0]
+        for key, val in MAIN_chemcirier_import_dict.items():
+        #    print(key[0], key, 'CHEM',  val[0][0])
+    #    # 1.2 создать объекты типоразмер производитель группа:  
+        #    print('tyre_size_chem', key[0])
+        #    print('producer_chem', key[2])
+        #    print('group_chem', key[3])
+        #    print('recipipient_namee', key[4])
+        #    print('recipipient_namee', key[5])
+            list_val_price_all_periods_for_row = val[0]
+            for data_month_chem_val in list_val_price_all_periods_for_row:
+                if data_month_chem_val[1] and data_month_chem_val[2]:           # если если есть шт. и сумма на дату - создать объект:
+        #            print('data_month_chem', data_month_chem_val[0])
+        #            print('val_on_moth_che', data_month_chem_val[1])
+        #            print('money_on_moth_chem ', data_month_chem_val[2])
+                    group_chem_obect = None
+                    if key[3] == 'Шиныдлястроительнойипромышленнойтехники' or key[3] == 'ШиныдлягрузовыхавтоЦМК':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='грузовые')
+                    elif key[3] == 'Шиныдлялегковыхавто':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легковые')
+                    elif key[3] == 'Шиныдляс/хтехники':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='с/х')
+                    elif key[3] == 'Шиныдлялегкогрузовыхавто':
+                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легкогруз')      
+                # РАБОЧИЙ ВАРИАНТ _ НО МЕДЛЕННЫЙ _ ЗАПИСЬ В БАЗУ ДАННЫХ    
+                ######    che_curier_obj_tyre = prices_models.ChemCurierTyresModel.objects.update_or_create(
+                ######        tyre_size_chem = key[0],
+                ######        producer_chem = key[2],
+                ######        # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
+                ######        group_chem = group_chem_obect,
+                ######        reciever_chem = key[4],
+                ######        prod_country = key[5],
+                ######        currency_chem = currency_chem,
+                ######        data_month_chem = data_month_chem_val[0],
+                ######        val_on_moth_chem = data_month_chem_val[1],
+                ######        money_on_moth_chem = data_month_chem_val[2], 
+                ######        average_price_in_usd = data_month_chem_val[3],
+                ######    #    month_counter = val[1] 
+                ######        #price_val_money_data = prices_models.DataPriceValMoneyChemCurierModel.objects.filter(data_month_chem__date=date_month)          #abc_obj_set[0].sales.add(sales_obj)
+                ######    )[0]
+                # END РАБОЧИЙ ВАРИАНТ _ НО МЕДЛЕННЫЙ _ ЗАПИСЬ В БАЗУ ДАННЫХ    
+        
+        # BULK_CREATE
+                    # ПРЕдварительно проверка - есть ли уже в базе данный объекту
+                    chem_obj_not_exist_alredy = True
+                    try:
+                        prices_models.ChemCurierTyresModel.objects.get(
+                        tyre_size_chem = key[0],
+                        producer_chem = key[2],
+                        # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
+                        group_chem = group_chem_obect,
+                        reciever_chem = key[4],
+                        prod_country = key[5],
+                        currency_chem = currency_chem,
+                        data_month_chem = data_month_chem_val[0],
+                        val_on_moth_chem = data_month_chem_val[1],
+                        money_on_moth_chem = data_month_chem_val[2], 
+                        average_price_in_usd = data_month_chem_val[3],                                
+                        )
+                    except:
+                        chem_obj_not_exist_alredy = False
+                    if chem_obj_not_exist_alredy is False:      # если объект в базе отстутствует - добавляем в список для bulk_create:
+                    # END ПРЕдварительно проверка - есть ли уже в базе данный объекту
+                        che_curier_obj_tyre_bulk_list.append(prices_models.ChemCurierTyresModel(
+                            tyre_size_chem = key[0],
+                            producer_chem = key[2],
+                            # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
+                            group_chem = group_chem_obect,
+                            reciever_chem = key[4],
+                            prod_country = key[5],
+                            currency_chem = currency_chem,
+                            data_month_chem = data_month_chem_val[0],
+                            val_on_moth_chem = data_month_chem_val[1],
+                            money_on_moth_chem = data_month_chem_val[2], 
+                            average_price_in_usd = data_month_chem_val[3],))
+                    
+        bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
+        return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
 #async def read_from_file(self):
-def read_from_file(self):    
-    print('________SEEELLF__________')
+def read_from_file(self):
+  
+    print('________SEEELLF__________ ', self)
     form_name = self.request.POST.get('form_name')
     row_value = int
     tyresize_list = []
@@ -111,7 +200,8 @@ def read_from_file(self):
     if form_name == "aform.prefix":
         form = forms.ImportDataForm(self.request.POST, self.request.FILES)
         if form.is_valid():
-            file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)     
+            file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)   
+            print('FILE TO READ  ===***', file_to_read )
             sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel
             #print(f'Total Rows = {sheet.max_row} and Total Columns = {sheet.max_column}')               # получить количество строк и колонок на листе
             # 1. Парсинг. поиск ячейки с названием 'Наименование продукции' и выборка данных из данной колонки с заголовком этой ячейки            
@@ -292,16 +382,70 @@ def read_from_file(self):
             #print('tyreparam_list', tyreparam_list)                 
             #print(list(ply_dict.values()))
             ###################################### 3. Создать объекты справочников (ИНДЕКС СКОРОСТИ НАГРУЗИ И НОРМ СЛОЙНОСТИ ЗАКИДЫВАЮТСЯ ЗДЕСЬ ОТДЕЛЬНО):
-            for tyre_model in tyremodel_list:
-                dictionaries_models.ModelNameModel.objects.update_or_create(model=tyre_model)
-            for tyre_size in tyresize_list:
-                dictionaries_models.TyreSizeModel.objects.update_or_create(tyre_size=tyre_size)
-            for tyre_ply_value in ply_dict.values():
-                dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_ply_value)   
-            for load_speed_index_value in load_speed_index_dict.values():
-                dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=load_speed_index_value)   
-            for tyre_type in tyreparametrs_list_cleaned_and_prepared:
-                dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_type)   
+            #for tyre_model in tyremodel_list:
+            #    dictionaries_models.ModelNameModel.objects.update_or_create(model=tyre_model)
+            #for tyre_size in tyresize_list:
+            #    dictionaries_models.TyreSizeModel.objects.update_or_create(tyre_size=tyre_size)
+            #for tyre_ply_value in ply_dict.values():
+            #    dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_ply_value)   
+            #for load_speed_index_value in load_speed_index_dict.values():
+            #    dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=load_speed_index_value)   
+            #for tyre_type in tyreparametrs_list_cleaned_and_prepared:
+            #    dictionaries_models.TyreParametersModel.objects.update_or_create(tyre_type=tyre_type) 
+
+            ## БОЛЕЕ БЫСТРАЯ ??????
+            tyre_model_bulk_list = []
+            for tyre_model in list(set(tyremodel_list)):
+                tyre_model_exist = True
+                try:
+                    dictionaries_models.ModelNameModel.objects.get(model=tyre_model)
+                except:
+                    tyre_model_exist = False
+                    if tyre_model_exist is False:    
+                        tyre_model_bulk_list.append(dictionaries_models.ModelNameModel(model=tyre_model))
+            tyre_size_bulk_list = []
+            for tyre_size in list(set(tyresize_list)):
+                tyre_size_exist = True
+                try:
+                    dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size)
+                except:
+                    tyre_size_exist = False
+                    if tyre_size_exist is False:
+                        tyre_size_bulk_list.append(dictionaries_models.TyreSizeModel(tyre_size=tyre_size))
+            tyre_ply_value_bulk_list = []    
+            for tyre_ply_value in list(set(ply_dict.values())):
+                tyre_ply_value_exist = True
+                try:
+                    dictionaries_models.TyreParametersModel.objects.get(tyre_type=tyre_ply_value)
+                except:
+                    tyre_ply_value_exist = False
+                    if tyre_ply_value_exist is False:
+                        tyre_ply_value_bulk_list.append(dictionaries_models.TyreParametersModel(tyre_type=tyre_ply_value)) 
+            load_speed_index_value_bulk_list = [] 
+            for load_speed_index_value in list(set(load_speed_index_dict.values())):
+                load_speed_index_value_exist = True
+                try:
+                    dictionaries_models.TyreParametersModel.objects.get(tyre_type=load_speed_index_value)
+                except: 
+                    load_speed_index_value_exist = False
+                    if load_speed_index_value_exist is False:                       
+                        load_speed_index_value_bulk_list.append(dictionaries_models.TyreParametersModel(tyre_type=load_speed_index_value))               
+            tyre_type_value_bulk_list = [] 
+            for tyre_type in list(set(tyreparametrs_list_cleaned_and_prepared)):
+                tyre_type_exist = True
+                try:
+                    dictionaries_models.TyreParametersModel.objects.get(tyre_type=tyre_type)
+                except:
+                    tyre_type_exist = False
+                    if tyre_type_exist is False:                         
+                        tyre_type_value_bulk_list.append(dictionaries_models.TyreParametersModel(tyre_type=tyre_type))
+            dictionaries_models.ModelNameModel.objects.bulk_create(tyre_model_bulk_list)
+            dictionaries_models.TyreSizeModel.objects.bulk_create(tyre_size_bulk_list)
+            dictionaries_models.TyreParametersModel.objects.bulk_create(tyre_ply_value_bulk_list)
+            dictionaries_models.TyreParametersModel.objects.bulk_create(load_speed_index_value_bulk_list)
+            dictionaries_models.TyreParametersModel.objects.bulk_create(tyre_type_value_bulk_list)  
+            ## END БОЛЕЕ БЫСТРАЯ ??????                
+
             ##### сверка данных спарсенных с данными в справочниках:
             tyre_model_obj_list = []
             tyre_size_obj_list = []
@@ -1115,87 +1259,13 @@ def read_from_file(self):
         # перечень всех доступных дат (месяцев):
         month_in_chemcurier_table = list(money_month_chemcurier_dict.keys())
         #print('month_in_chemcurier_table', month_in_chemcurier_table)
-        #### СОЗДАТЬ ОБЪЕКТЫ ХИМКУРЬЕР:
-        # 1.1 создать объекты продажа на дату:
-        che_curier_obj_tyre_bulk_list = []
-        currency_chem = dictionaries_models.Currency.objects.get_or_create(currency = 'USD')[0]
-        for key, val in MAIN_chemcirier_import_dict.items():
-        #    print(key[0], key, 'CHEM',  val[0][0])
-    #    # 1.2 создать объекты типоразмер производитель группа:  
-        #    print('tyre_size_chem', key[0])
-        #    print('producer_chem', key[2])
-        #    print('group_chem', key[3])
-        #    print('recipipient_namee', key[4])
-        #    print('recipipient_namee', key[5])
-            list_val_price_all_periods_for_row = val[0]
-            for data_month_chem_val in list_val_price_all_periods_for_row:
-                if data_month_chem_val[1] and data_month_chem_val[2]:           # если если есть шт. и сумма на дату - создать объект:
-        #            print('data_month_chem', data_month_chem_val[0])
-        #            print('val_on_moth_che', data_month_chem_val[1])
-        #            print('money_on_moth_chem ', data_month_chem_val[2])
-                    group_chem_obect = None
-                    if key[3] == 'Шиныдлястроительнойипромышленнойтехники' or key[3] == 'ШиныдлягрузовыхавтоЦМК':
-                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='грузовые')
-                    elif key[3] == 'Шиныдлялегковыхавто':
-                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легковые')
-                    elif key[3] == 'Шиныдляс/хтехники':
-                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='с/х')
-                    elif key[3] == 'Шиныдлялегкогрузовыхавто':
-                        group_chem_obect = dictionaries_models.TyreGroupModel.objects.get(tyre_group='легкогруз')      
-                # РАБОЧИЙ ВАРИАНТ _ НО МЕДЛЕННЫЙ _ ЗАПИСЬ В БАЗУ ДАННЫХ    
-                ######    che_curier_obj_tyre = prices_models.ChemCurierTyresModel.objects.update_or_create(
-                ######        tyre_size_chem = key[0],
-                ######        producer_chem = key[2],
-                ######        # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
-                ######        group_chem = group_chem_obect,
-                ######        reciever_chem = key[4],
-                ######        prod_country = key[5],
-                ######        currency_chem = currency_chem,
-                ######        data_month_chem = data_month_chem_val[0],
-                ######        val_on_moth_chem = data_month_chem_val[1],
-                ######        money_on_moth_chem = data_month_chem_val[2], 
-                ######        average_price_in_usd = data_month_chem_val[3],
-                ######    #    month_counter = val[1] 
-                ######        #price_val_money_data = prices_models.DataPriceValMoneyChemCurierModel.objects.filter(data_month_chem__date=date_month)          #abc_obj_set[0].sales.add(sales_obj)
-                ######    )[0]
-                # END РАБОЧИЙ ВАРИАНТ _ НО МЕДЛЕННЫЙ _ ЗАПИСЬ В БАЗУ ДАННЫХ    
         
-        # BULK_CREATE
-                    # ПРЕдварительно проверка - есть ли уже в базе данный объекту
-                    chem_obj_not_exist_alredy = True
-                    try:
-                        prices_models.ChemCurierTyresModel.objects.get(
-                        tyre_size_chem = key[0],
-                        producer_chem = key[2],
-                        # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
-                        group_chem = group_chem_obect,
-                        reciever_chem = key[4],
-                        prod_country = key[5],
-                        currency_chem = currency_chem,
-                        data_month_chem = data_month_chem_val[0],
-                        val_on_moth_chem = data_month_chem_val[1],
-                        money_on_moth_chem = data_month_chem_val[2], 
-                        average_price_in_usd = data_month_chem_val[3],                                
-                        )
-                    except:
-                        chem_obj_not_exist_alredy = False
-                    if chem_obj_not_exist_alredy is False:      # если объект в базе отстутствует - добавляем в список для bulk_create:
-                    # END ПРЕдварительно проверка - есть ли уже в базе данный объекту
-                        che_curier_obj_tyre_bulk_list.append(prices_models.ChemCurierTyresModel(
-                            tyre_size_chem = key[0],
-                            producer_chem = key[2],
-                            # #"'ШиныдлягрузовыхавтоЦМК   'Шиныдлялегковыхавто' 'Шиныдлялегкогрузовыхавто' 'Шиныдляс/хтехники' 'Шиныдлястроительнойипромышленнойтехники'
-                            group_chem = group_chem_obect,
-                            reciever_chem = key[4],
-                            prod_country = key[5],
-                            currency_chem = currency_chem,
-                            data_month_chem = data_month_chem_val[0],
-                            val_on_moth_chem = data_month_chem_val[1],
-                            money_on_moth_chem = data_month_chem_val[2], 
-                            average_price_in_usd = data_month_chem_val[3],))
-                    
-        bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
-        # END BULK_CREATE
+        #### СОЗДАТЬ ОБЪЕКТЫ ХИМКУРЬЕР: !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        #chem_courier_bulk_write_ib_bd(MAIN_chemcirier_import_dict)
+
+        # END BULK_CREATE  СОЗДАТЬ ОБЪЕКТЫ ХИМКУРЬЕР !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     #        che_curier_obj_tyre = che_curier_obj_tyre
         # 1.3 создать объекты продажа на дату:   
     #        dates_range = len(val[2])
@@ -1352,6 +1422,7 @@ def read_from_file(self):
         ### ЗДЕСЬ ПОНАДОБИТСЯ ДАЛЬШЕ когда получим нужный объект:
         #print(list_of_unique_tyres_objs_cleaned)
         sales_list_values_list = sales_list
+        obj_list_el_bulk_list = [] 
         for obj_list_el in list_of_unique_tyres_objs_cleaned:
             row_value_counter = 0
             #print(obj_list_el)
@@ -1397,30 +1468,37 @@ def read_from_file(self):
             #dictionaries_models.ContragentsModel.objects.get_or_create(
             #    contragent_name = 'БНХ РОС'
             #    )
-                     
+
+                    
             for obj in obj_list_el:
-            #    ############################################################################################################################
-                        #print(obj.tyre_model.model, obj.tyre_size.tyre_size)       # проверка совпавших параметров
-            #    course_qs = obj.tyre_type.all()                                                         # проверка совпавших параметров
-            #    for course in course_qs:                                                                    # проверка совпавших параметров
-            #        print(course.tyre_type)                                                                 # проверка совпавших параметров
-                ############################################################################################################################
-                        # берем значение из колонки 'объем продаж' ячейка n  и записываем в модель Sales, где tyre= tyre_is     
-                        #sale_value = sales_list[row_value_counter]
-                        #print(contragent, 'contragen') 
-                        ###n = 77 + 1
-                        sale_value = n 
-                        sales_obj = sales_models.Sales.objects.update_or_create(
-                            tyre = obj,
-                            #date_of_sales = date.today(),
-                            date_of_sales = datetime.date(sell_date),
-                            #date_of_sales = datetime.date(2022, 9, 23),
-                            #contragent = dictionaries_models.ContragentsModel.objects.all().last(),
-                            contragent = dictionaries_models.ContragentsModel.objects.get(contragent_name=contragent),
-                            sales_value = int(sale_value),
-                            table = sales_table
-                        )
+            #    # СТАРАЯ ВЕРСИЯ ЗАПИСИ
+            #    sale_value = n 
+            #    sales_obj = sales_models.Sales.objects.update_or_create(
+            #        tyre = obj,
+            #        #date_of_sales = date.today(),
+            #        date_of_sales = datetime.date(sell_date),
+            #        #date_of_sales = datetime.date(2022, 9, 23),
+            #        #contragent = dictionaries_models.ContragentsModel.objects.all().last(),
+            #        contragent = dictionaries_models.ContragentsModel.objects.get(contragent_name=contragent),
+            #        sales_value = int(sale_value),
+            #        table = sales_table
+            #    )
+            #row_value_counter += 1
+            #    # END СТАРАЯ ВЕРСИЯ ЗАПИСИ
+
+                sale_value = n 
+                obj_list_el_bulk_list.append(sales_models.Sales(
+                    tyre = obj,
+                    date_of_sales = datetime.date(sell_date),
+                    contragent = dictionaries_models.ContragentsModel.objects.get(contragent_name=contragent),
+                    sales_value = int(sale_value),
+                    table = sales_table
+                    )                                
+                )
             row_value_counter += 1
+        sales_models.Sales.objects.bulk_create(obj_list_el_bulk_list) 
+
+
         ####################################################################################################################################################################
         #for n in dictionaries_models.ContragentsModel.objects.all():
         #    print(n.contragent_name)
@@ -1884,24 +1962,28 @@ def read_from_file(self):
         excel_sheet.cell(row=val, column=10).value = sales_obj.contragent.contragent_name
         excel_file.save(filename="Tyres.xlsx") 
 
+    return MAIN_chemcirier_import_dict
 
 
+#async def read_fromSSS():
+def read_fromSSS():    
+    import time
+    time.sleep(15)
+    print('[*] Task  executed...')
 
-async def read_fromSSS():
-    print('________SEEELLF  ish__________')
 
 
 
 #async def main(self):
-#    task1 = asyncio.create_task(read_from_file(self))
-#    #task1 = asyncio.create_task(read_fromSSS())
+#    #task1 = asyncio.create_task(read_from_file(self))
+#    task1 = asyncio.create_task(read_fromSSS())
 #    await task1
 #    
 #if __name__ == "__main__":
 #    asyncio.run(main())
 
 
-def main():
+def main(self):
     read_from_file()
 
 if __name__ == "__main__":
