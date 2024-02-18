@@ -28,7 +28,20 @@ import threading
 
 
 
+
+
+
+
+def make_a_copy_of_users_chemc_file(file_to_read, sheet):
+
+    wb1 = file_to_read
+    wb1.save("PEMANENT_FILE.xlsx")
+
+    return wb1
+
 def chem_courier_bulk_write_ib_bd(dict_of_data):
+    
+        time.sleep(12)
         print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
         MAIN_chemcirier_import_dict = dict_of_data
         # 1.1 создать объекты продажа на дату:
@@ -112,10 +125,248 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
         bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
+
+
+def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func):
+    
+    brend_chemcurier_dict = {} # словарь, в который закидываются данные о действующих бренде ХИМКУРЬЕР
+    recipipient_chemcurier_dict = {} # словарь, в который закидываются данные о получателе. на дату ХИМКУРЬЕР
+    prod_country_column_dict = {} # словарь, в который закидываются данные о стране-производителе. на дату ХИМКУРЬЕР
+    tiresize_chemcurier_dict = {} # словарь, в который закидываются данные о действующих типоразмере ХИМКУРЬЕР
+    tire_group_chemcurier_dict = {} # словарь, в который закидываются данные о группе шин ХИМКУРЬЕР
+    pieces_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
+    money_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
+    MAIN_chemcirier_import_dict = {}    # главгый словарь вкуладки импорт ХИМКУРЬЕР
+
+    file_to_read = copy_file
+    list_of_sheets = list_of_sheet_potential_names_var_list
+    sheet = None
+    list_chemcurier_years = range(11, 50)
+    for year_d in list_chemcurier_years:
+        for sheet_name in list_of_sheet_potential_names_var_list:
+            try:
+                sheet = file_to_read[f'{sheet_name} 20{year_d}']
+                #sheet = file_to_read['ИМПОРТ 2022']    # Читаем файл и лист1 книги excel 
+            except:
+                pass
+    if sheet:   
+
+    ############ END создать физическую копию файла юзера для работы с ней
+    #    print(';******8888_____+')
+        brand_names_list = ['бренд', 'Бренд'] 
+        reciever_names_list = ['получатель', 'Получатель'] 
+        countr_names_list = ['страна производства', 'Страна производства']
+        trsz_names_list = ['типоразмер', 'Типоразмер']
+        group_names_list = ['подгруппа', 'Подгруппа']   
+        for row in sheet.rows:           
+            for cell in row:  
+                # 1 Парсинг 
+
+                if cell.value in brand_names_list:          # получаем колонку 'бренд'  ХИМКУРЬЕР
+                    brand_column = cell.column
+                    brand_row = cell.row
+                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=brand_column, max_col=brand_column, max_row=sheet.max_row):
+                        for cell in col:                            
+                            brend_chemcurier_dict[cell.row] = cell.value
+
+                if cell.value in reciever_names_list:          # получаем колонку 'получатель'  ХИМКУРЬЕР
+                    recipient_column = cell.column
+                    brand_row = cell.row
+                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
+                        for cell in col:                            
+                            recipipient_chemcurier_dict[cell.row] = cell.value        
+
+                if cell.value in countr_names_list:          # получаем колонку 'страна производства'  ХИМКУРЬЕР
+                    prod_country_column = cell.column
+                    brand_row = cell.row
+                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=prod_country_column, max_col=prod_country_column, max_row=sheet.max_row):
+                        for cell in col:                            
+                            prod_country_column_dict[cell.row] = cell.value   
+
+                if cell.value in trsz_names_list:          # получаем колонку 'типоразмер' ХИМКУРЬЕР
+                    tyr_group_column = cell.column
+                    tyr_group_row = cell.row
+                    for col in sheet.iter_cols(min_row=tyr_group_row+1, min_col=tyr_group_column, max_col=tyr_group_column, max_row=sheet.max_row):
+                        for cell in col: 
+                            if cell.value:                          
+                                tiresize_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
+
+                if cell.value in group_names_list:          # получаем колонку 'подгруппа' ХИМКУРЬЕР
+                    season_column = cell.column
+                    season_row = cell.row
+                    for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
+                        for cell in col:
+                            if cell.value:                                          
+                                tire_group_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
+                #### парсим штуки деньги из объединенных ячеек:
+                stuck_names_list = ['штук', 'тыс. штук', 'Штук', 'Тыс. Штук', 'тысяч штук', 'шт.', 'шт', 'тыс. шт.' ]
+                doll_names_list_list = ['долларов*', 'долларов', 'тыс. долларов*', 'тыс. долларов', 'Долларов*', 'Долларов', 'Тыс. долларов', 'Тыс. Долларов', 'тыс. долл.', 'Тыс. долл', 'тысяч долларов', 'тыс. долл',]
+                for merged_cell in sheet.merged_cells.ranges:           # для объединенных ячеек их поиск
+                    if cell.coordinate in merged_cell:
+                        #print('cell.coordinate', cell.coordinate)  
+                        if cell.value in stuck_names_list:
+                            stucki_coordiantes_merged = str(merged_cell).split(':')
+                            if stucki_coordiantes_merged:
+                                # получим начальные и конечные координаты ячеек - дат под заголовком штуки:
+                                start_coord = stucki_coordiantes_merged[0]
+                                end_coord = stucki_coordiantes_merged[1]
+                                # переводим координаты столбцов из буквенных в циферные значения:
+                                numbered_start_coord = coordinate_from_string(start_coord)
+                                numbered_end_coord = coordinate_from_string(end_coord)
+                                rowwww = numbered_start_coord[1] # rowwww  == rowwww1 = numbered_end_coord[1]   строка то ведь одна и та же
+                                colll_start_num = column_index_from_string(numbered_start_coord[0])
+                                colll_end_num = column_index_from_string(numbered_end_coord[0])
+                                #print('rowwww', rowwww, 'colll_start_num = ', colll_start_num, 'colll_end_num =', colll_end_num)
+                                for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
+                                    for cell in col:
+                                        #print(cell, '5656767756')
+                                        if cell.value:                                                                              # если ячейка с датой: проверка и получение даты
+                                            is_date = (isinstance(cell.value, datetime))
+                                            if is_date == True:
+                                                month_chemcurier = cell.value.date()
+                                                #print(month_chemcurier)
+                                                month_chemcurier_column = cell.column
+                                                month_chemcurier_row = cell.row
+                                                for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+                                                    list_col_values = []
+                                                    for cell in col:   
+                                                        #print(cell.value, 'VV')   
+                                                        column_value_row = cell.value, cell.row 
+                                                        list_col_values.append(column_value_row)
+                                                    pieces_month_chemcurier_dict[month_chemcurier] = list_col_values
+                                                #for roww in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+                                                #    list_col_values = []
+                                                #    for cell in roww:   
+                                                #        #print(cell.value, 'VV')   
+                                                #        column_value_row = cell.value, month_chemcurier
+                                                #        list_col_values.append(column_value_row)
+                                                #        #print(list_col_values)
+                                                #    pieces_month_chemcurier_dict[cell.row] = list_col_values 
+
+                        if cell.value in doll_names_list_list:
+                            stucki_coordiantes_merged = str(merged_cell).split(':')
+                            if stucki_coordiantes_merged:
+                                # получим начальные и конечные координаты ячеек - дат под заголовком штуки:
+                                start_coord = stucki_coordiantes_merged[0]
+                                end_coord = stucki_coordiantes_merged[1]
+                                # переводим координаты столбцов из буквенных в циферные значения:
+                                numbered_start_coord = coordinate_from_string(start_coord)
+                                numbered_end_coord = coordinate_from_string(end_coord)
+                                rowwww = numbered_start_coord[1] # rowwww  == rowwww1 = numbered_end_coord[1]   строка то ведь одна и та же
+                                colll_start_num = column_index_from_string(numbered_start_coord[0])
+                                colll_end_num = column_index_from_string(numbered_end_coord[0])
+                                #print('rowwww', rowwww, 'colll_start_num = ', colll_start_num, 'colll_end_num =', colll_end_num)
+                                for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
+                                    for cell in col:
+                                        #print(cell, '5656767756')
+                                        if cell.value:                                                                              # если ячейка с датой: проверка и получение даты
+                                            is_date = (isinstance(cell.value, datetime))
+                                            if is_date == True:
+                                                month_chemcurier = cell.value.date()
+                                                #print(month_chemcurier)
+                                                month_chemcurier_column = cell.column
+                                                month_chemcurier_row = cell.row
+                                                #for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+                                                for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+                                                    chemcirier_rows_counter = []
+                                                    list_col_values = []
+                                                    for cell in col:   
+                                                        #print(cell.value, 'VV') 
+                                                        chemcirier_rows_counter.append(cell.row) 
+                                                        column_value_row = cell.value, cell.row 
+                                                        list_col_values.append(column_value_row)
+                                                    money_month_chemcurier_dict[month_chemcurier] = list_col_values
+
+
+        #### ХИМКУРЬЕР Ч 2
+                       #### пересборка словаря pieces_month_chemcurier_dict ключ - номер строки, значения - дата и значение шт.     
+        #1.1 пересборка словарей pieces_month_chemcurier_dict и  money_month_chemcurier_dict:               # 2022-01-01 [(28, 8), (None, 9), (180, 10), (2426, 11), (24, 12), (17, 13), (6, 14), (89, 15)] PPP
+        if chemcirier_rows_counter:
+            min_row_value = min(chemcirier_rows_counter)                                                        # 2022-02-01 [(36, 8), (960, 9), (None, 10), (None, 11), (179, 12), (None, 13), (4, 14), (156, 15)] PPP
+            max_row_value = max(chemcirier_rows_counter)
+            chemcirier_rows_counter = [min_row_value, max_row_value]
+            new_pieces_month_chemcurier_dict ={}
+            list_col_values_len = max_row_value - min_row_value
+            for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
+                list_sates_values_on_row = []
+                for k, v in pieces_month_chemcurier_dict.items():
+            #        print('!!!', k, v)
+                    for list_iter in range(0, list_col_values_len+1):
+                        #print(k, v[list_iter][1])
+                        if v[list_iter][1] == str_n:
+                            cell_val = k, v[list_iter][0]
+                            #print(cell_val, 'OOOO')
+                            list_sates_values_on_row.append(cell_val)
+            #            print('===',list_sates_values_on_row)
+                new_pieces_month_chemcurier_dict[str_n] = list_sates_values_on_row
+            #for k, v in new_pieces_month_chemcurier_dict.items():
+            #    print('+++++', k, v)            
+            new_money_month_chemcurier_dict ={}
+            list_col_values_len = max_row_value - min_row_value
+            for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
+                list_sates_values_on_row = []
+                for k, v in money_month_chemcurier_dict.items():
+                    for list_iter in range(0, list_col_values_len+1):
+                        #print(k, v[list_iter][1])
+                        if v[list_iter][1] == str_n:
+                            cell_val = k, v[list_iter][0]
+                            #print(cell_val, 'OOOO')
+                            list_sates_values_on_row.append(cell_val)
+                        #print(list_sates_values_on_row)
+                new_money_month_chemcurier_dict[str_n] = list_sates_values_on_row
+            #print(new_money_month_chemcurier_dict)
+        #    for k, v in new_money_month_chemcurier_dict.items():
+        #        print('-----', k, v)
+            ################ ФОРМИРОВАНИЕ ЕДИНОГО СЛОВАРЯ ПО СПАРСЕННЫМ ДАННЫМ ХИМКУРЬЕР ВКЛАДКИ ИМПОРТ:
+            
+            for row_num, tyr_size in tiresize_chemcurier_dict.items():
+                brand_namee = brend_chemcurier_dict.get(row_num, 0)
+                group_namee = tire_group_chemcurier_dict.get(row_num, 0)
+                recipipient_namee = recipipient_chemcurier_dict.get(row_num, 0)
+                prod_country_namee = prod_country_column_dict.get(row_num, 0)
+                #print('LEN', len(new_money_month_chemcurier_dict.get(row_num, 1)),' ===== ')
+                periods_counter_max_val = len(new_money_month_chemcurier_dict.get(row_num, 1)) 
+                periods_counter = 0
+                values_prices_per_month_list = []
+            #    print('periods_counter]!!!!!', periods_counter)
+                if periods_counter_max_val: # если есть периоды
+                    while periods_counter < periods_counter_max_val:   
+            #            print('t7t7t7', new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter])                                        
+                        pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
+            #            print('===== 1', pices_per_month)
+                        money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
+            #            print('===== 2',money_per_month)
+                        period_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][0]                            
+                        if money_per_month is not None and pices_per_month is not None:
+                            average_price_in_usd_calc = money_per_month / pices_per_month 
+                        else:
+                            average_price_in_usd_calc = None
+                        pices_per_month_money_per_month = period_month, pices_per_month, money_per_month, average_price_in_usd_calc
+                        periods_counter += 1 
+                        values_prices_per_month_list.append(pices_per_month_money_per_month)
+                
+                #MAIN_chemcirier_import_dict[tyr_size, row_num] = brand_namee, group_namee, pices_per_month, money_per_month 
+                MAIN_chemcirier_import_dict[tyr_size, row_num, brand_namee, group_namee, recipipient_namee, prod_country_namee] = list(values_prices_per_month_list), periods_counter 
+        
+        # перечень всех доступных дат (месяцев):
+        month_in_chemcurier_table = list(money_month_chemcurier_dict.keys())
+        #print('month_in_chemcurier_table', month_in_chemcurier_table)
+
+    #print('MAIN_chemcirier_import_dict', MAIN_chemcirier_import_dict)
+        
+    some_func(MAIN_chemcirier_import_dict)
+
+
+    return MAIN_chemcirier_import_dict
+
+
+
+
+
 #async def read_from_file(self):
 def read_from_file(self):
   
-    print('________SEEELLF__________ ', self)
+    print('________SEEELLF__________ ',  datetime.now())
     form_name = self.request.POST.get('form_name')
     row_value = int
     tyresize_list = []
@@ -159,6 +410,10 @@ def read_from_file(self):
     chemcirier_rows_counter = []        # счетчик строк химкурьер
     date_period_of_doc = None   #ЗДЕСЬ ПРОtИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ ДЛДЯ СЕБЕСТОИМОСТИ и прайсов
     
+
+    copy_file_created = None
+    list_of_sheet_potential_names_var_list_is = []
+
     ply_dict = {}
     load_speed_index_dict = {}
     dict_of_param_to_remake_in_standart = {
@@ -594,11 +849,12 @@ def read_from_file(self):
     #### ЕСЛИ ЗАБРАСЫВАЮТСЯ ФАЙЛЫ ХИМКУРЬЕР:
     
     elif form_name == "bform.prefix":
+        
         list_of_sheet_potential_names_var_list = ['ИМПОРТ', 'импорт',]
         sheet = None
         form = forms.ImportSalesDataForm(self.request.POST, self.request.FILES)  
         if form.is_valid():
-            file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)   
+            file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True) 
             list_chemcurier_years = range(11, 50)
             for year_d in list_chemcurier_years:
                 for sheet_name in list_of_sheet_potential_names_var_list:
@@ -608,127 +864,19 @@ def read_from_file(self):
                     except:
                         pass
             if sheet:
-            #    print(';******8888_____+')
-                for row in sheet.rows:           
-                    for cell in row:  
-                        # 1 Парсинг 
-                        brand_names_list = ['бренд', 'Бренд']                            
-                        if cell.value in brand_names_list:          # получаем колонку 'бренд'  ХИМКУРЬЕР
-                            brand_column = cell.column
-                            brand_row = cell.row
-                            for col in sheet.iter_cols(min_row=brand_row+1, min_col=brand_column, max_col=brand_column, max_row=sheet.max_row):
-                                for cell in col:                            
-                                    brend_chemcurier_dict[cell.row] = cell.value
-                        reciever_names_list = ['получатель', 'Получатель']           
-                        if cell.value in reciever_names_list:          # получаем колонку 'получатель'  ХИМКУРЬЕР
-                            recipient_column = cell.column
-                            brand_row = cell.row
-                            for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
-                                for cell in col:                            
-                                    recipipient_chemcurier_dict[cell.row] = cell.value        
-                        countr_names_list = ['страна производства', 'Страна производства']
-                        if cell.value in countr_names_list:          # получаем колонку 'страна производства'  ХИМКУРЬЕР
-                            prod_country_column = cell.column
-                            brand_row = cell.row
-                            for col in sheet.iter_cols(min_row=brand_row+1, min_col=prod_country_column, max_col=prod_country_column, max_row=sheet.max_row):
-                                for cell in col:                            
-                                    prod_country_column_dict[cell.row] = cell.value   
-                        trsz_names_list = ['типоразмер', 'Типоразмер']                                                                   
-                        if cell.value in trsz_names_list:          # получаем колонку 'типоразмер' ХИМКУРЬЕР
-                            tyr_group_column = cell.column
-                            tyr_group_row = cell.row
-                            for col in sheet.iter_cols(min_row=tyr_group_row+1, min_col=tyr_group_column, max_col=tyr_group_column, max_row=sheet.max_row):
-                                for cell in col: 
-                                    if cell.value:                          
-                                        tiresize_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
-                        group_names_list = ['подгруппа', 'Подгруппа']              
-                        if cell.value in group_names_list:          # получаем колонку 'подгруппа' ХИМКУРЬЕР
-                            season_column = cell.column
-                            season_row = cell.row
-                            for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    if cell.value:                                          
-                                        tire_group_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
-                        #### парсим штуки деньги из объединенных ячеек:
-                        for merged_cell in sheet.merged_cells.ranges:           # для объединенных ячеек их поиск
-                            if cell.coordinate in merged_cell:
-                                #print('cell.coordinate', cell.coordinate)
-                                stuck_names_list = ['штук', 'тыс. штук', 'Штук', 'Тыс. Штук', 'тысяч штук', 'шт.', 'шт', 'тыс. шт.' ]
-                                if cell.value in stuck_names_list:
-                                    stucki_coordiantes_merged = str(merged_cell).split(':')
-                                    if stucki_coordiantes_merged:
-                                        # получим начальные и конечные координаты ячеек - дат под заголовком штуки:
-                                        start_coord = stucki_coordiantes_merged[0]
-                                        end_coord = stucki_coordiantes_merged[1]
-                                        # переводим координаты столбцов из буквенных в циферные значения:
-                                        numbered_start_coord = coordinate_from_string(start_coord)
-                                        numbered_end_coord = coordinate_from_string(end_coord)
-                                        rowwww = numbered_start_coord[1] # rowwww  == rowwww1 = numbered_end_coord[1]   строка то ведь одна и та же
-                                        colll_start_num = column_index_from_string(numbered_start_coord[0])
-                                        colll_end_num = column_index_from_string(numbered_end_coord[0])
-                                        #print('rowwww', rowwww, 'colll_start_num = ', colll_start_num, 'colll_end_num =', colll_end_num)
-                                        for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
-                                            for cell in col:
-                                                #print(cell, '5656767756')
-                                                if cell.value:                                                                              # если ячейка с датой: проверка и получение даты
-                                                    is_date = (isinstance(cell.value, datetime))
-                                                    if is_date == True:
-                                                        month_chemcurier = cell.value.date()
-                                                        #print(month_chemcurier)
-                                                        month_chemcurier_column = cell.column
-                                                        month_chemcurier_row = cell.row
-                                                        for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
-                                                            list_col_values = []
-                                                            for cell in col:   
-                                                                #print(cell.value, 'VV')   
-                                                                column_value_row = cell.value, cell.row 
-                                                                list_col_values.append(column_value_row)
-                                                            pieces_month_chemcurier_dict[month_chemcurier] = list_col_values
-                                                        #for roww in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
-                                                        #    list_col_values = []
-                                                        #    for cell in roww:   
-                                                        #        #print(cell.value, 'VV')   
-                                                        #        column_value_row = cell.value, month_chemcurier
-                                                        #        list_col_values.append(column_value_row)
-                                                        #        #print(list_col_values)
-                                                        #    pieces_month_chemcurier_dict[cell.row] = list_col_values 
-                                
-                                doll_names_list_list = ['долларов*', 'долларов', 'тыс. долларов*', 'тыс. долларов', 'Долларов*', 'Долларов', 'Тыс. долларов', 'Тыс. Долларов', 'тыс. долл.', 'Тыс. долл', 'тысяч долларов', 'тыс. долл',]
-                                if cell.value in doll_names_list_list:
-                                    stucki_coordiantes_merged = str(merged_cell).split(':')
-                                    if stucki_coordiantes_merged:
-                                        # получим начальные и конечные координаты ячеек - дат под заголовком штуки:
-                                        start_coord = stucki_coordiantes_merged[0]
-                                        end_coord = stucki_coordiantes_merged[1]
-                                        # переводим координаты столбцов из буквенных в циферные значения:
-                                        numbered_start_coord = coordinate_from_string(start_coord)
-                                        numbered_end_coord = coordinate_from_string(end_coord)
-                                        rowwww = numbered_start_coord[1] # rowwww  == rowwww1 = numbered_end_coord[1]   строка то ведь одна и та же
-                                        colll_start_num = column_index_from_string(numbered_start_coord[0])
-                                        colll_end_num = column_index_from_string(numbered_end_coord[0])
-                                        #print('rowwww', rowwww, 'colll_start_num = ', colll_start_num, 'colll_end_num =', colll_end_num)
-                                        for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
-                                            for cell in col:
-                                                #print(cell, '5656767756')
-                                                if cell.value:                                                                              # если ячейка с датой: проверка и получение даты
-                                                    is_date = (isinstance(cell.value, datetime))
-                                                    if is_date == True:
-                                                        month_chemcurier = cell.value.date()
-                                                        #print(month_chemcurier)
-                                                        month_chemcurier_column = cell.column
-                                                        month_chemcurier_row = cell.row
-                                                        #for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
-                                                        for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
-                                                            chemcirier_rows_counter = []
-                                                            list_col_values = []
-                                                            for cell in col:   
-                                                                #print(cell.value, 'VV') 
-                                                                chemcirier_rows_counter.append(cell.row) 
-                                                                column_value_row = cell.value, cell.row 
-                                                                list_col_values.append(column_value_row)
-                                                            money_month_chemcurier_dict[month_chemcurier] = list_col_values  
-                                        
-        ##print('brend_chemcurier_dict', brend_chemcurier_dict)
+
+                ############ создать физическую копию файла юзера для работы с ней 
+                # необходим для работы "за кадром" вне POST запроса
+                # opening the source excel file 
+
+                file_to_copy = file_to_read
+                sheet_to_copy = sheet
+
+                copy_file_created = make_a_copy_of_users_chemc_file(file_to_copy, sheet_to_copy)
+                list_of_sheet_potential_names_var_list_is = list_of_sheet_potential_names_var_list
+
+            #    return copy_file_created, list_of_sheet_potential_names_var_list_is
+
         ##print('tiresize_chemcurier_dict', tiresize_chemcurier_dict)
         ##print('tire_group_chemcurier_dict', tire_group_chemcurier_dict)
         #print('month_chemcurier_dict', pieces_month_chemcurier_dict)
@@ -1153,112 +1301,13 @@ def read_from_file(self):
                             el = ' '.join(tyreparametrs_list_cleaned_and_prepared) 
                         tyreparametrs_list_clean.append(el)  
                     params_row_dict[keys] = tyreparametrs_list_clean
-                #
-                ##print(row_parsing_dict)
-                #print('tyretype_row_dict', len(tyretype_row_dict))
-                #print('model_row_dict', len(model_row_dict))
-                #print('model_row_dict', len(params_row_dict), params_row_dict)
-                #print('saless_row_dict',len(saless_row_dict)) 
-                #print('planned_costs_row_dict ', len(planned_costs_row_dict))  
-                #print('semi_variable_costs_row_dict', len(semi_variable_costs_row_dict))   
-                #print('belarus902price_costs_row_dict', len(belarus902price_costs_row_dict))   
-                #print('tpsrussiafcaprice_costs_row', len(tpsrussiafcaprice_costs_row) )                                        
-                #print('tpskazfcaprice_cost_row', len(tpskazfcaprice_cost_row))  
-                #print('tpsmiddleasiafcaprice_costs_row', len(tpsmiddleasiafcaprice_costs_row))  
-                #r_item = ' '
-                #for item in tyresize_list:
-                #    if item == r_item:
-                #        tyresize_list.remove(item)
-                #
-#  
-                #print(len(tyresize_list), 'tyresize_list', tyresize_list)           
-                #print(len(tyresize_list), 'tyresize_list', tyresize_list)    
-                #print(len(tyremodel_list), 'tyremodel_list')
-                #print(len(tyreparametrs_list), 'tyreparametrs_list')  
-                #print(len(tpsmiddleasiafcaprice_costs), 'tpsmiddleasiafcaprice_costs')
-                #print(len(tpskazfcaprice_costs), 'tpskazfcaprice_costs') 
-                #print(len(tpsrussiafcaprice_costs), 'tpsrussiafcaprice_costs')
-                #print(len(belarus902price_costs), 'belarus902price_costs')
-                #print(len(semi_variable_costs), 'semi_variable_costs')
-                #print(len(planned_costs), 'planned_costs')
+
             except:
                 pass
             
             
             
-        #### ХИМКУРЬЕР Ч 2
-                       #### пересборка словаря pieces_month_chemcurier_dict ключ - номер строки, значения - дата и значение шт.     
-        #1.1 пересборка словарей pieces_month_chemcurier_dict и  money_month_chemcurier_dict:               # 2022-01-01 [(28, 8), (None, 9), (180, 10), (2426, 11), (24, 12), (17, 13), (6, 14), (89, 15)] PPP
-        if chemcirier_rows_counter:
-            min_row_value = min(chemcirier_rows_counter)                                                        # 2022-02-01 [(36, 8), (960, 9), (None, 10), (None, 11), (179, 12), (None, 13), (4, 14), (156, 15)] PPP
-            max_row_value = max(chemcirier_rows_counter)
-            chemcirier_rows_counter = [min_row_value, max_row_value]
-            new_pieces_month_chemcurier_dict ={}
-            list_col_values_len = max_row_value - min_row_value
-            for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
-                list_sates_values_on_row = []
-                for k, v in pieces_month_chemcurier_dict.items():
-            #        print('!!!', k, v)
-                    for list_iter in range(0, list_col_values_len+1):
-                        #print(k, v[list_iter][1])
-                        if v[list_iter][1] == str_n:
-                            cell_val = k, v[list_iter][0]
-                            #print(cell_val, 'OOOO')
-                            list_sates_values_on_row.append(cell_val)
-            #            print('===',list_sates_values_on_row)
-                new_pieces_month_chemcurier_dict[str_n] = list_sates_values_on_row
-            #for k, v in new_pieces_month_chemcurier_dict.items():
-            #    print('+++++', k, v)            
-            new_money_month_chemcurier_dict ={}
-            list_col_values_len = max_row_value - min_row_value
-            for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
-                list_sates_values_on_row = []
-                for k, v in money_month_chemcurier_dict.items():
-                    for list_iter in range(0, list_col_values_len+1):
-                        #print(k, v[list_iter][1])
-                        if v[list_iter][1] == str_n:
-                            cell_val = k, v[list_iter][0]
-                            #print(cell_val, 'OOOO')
-                            list_sates_values_on_row.append(cell_val)
-                        #print(list_sates_values_on_row)
-                new_money_month_chemcurier_dict[str_n] = list_sates_values_on_row
-            #print(new_money_month_chemcurier_dict)
-        #    for k, v in new_money_month_chemcurier_dict.items():
-        #        print('-----', k, v)
-            ################ ФОРМИРОВАНИЕ ЕДИНОГО СЛОВАРЯ ПО СПАРСЕННЫМ ДАННЫМ ХИМКУРЬЕР ВКЛАДКИ ИМПОРТ:
-            
-            for row_num, tyr_size in tiresize_chemcurier_dict.items():
-                brand_namee = brend_chemcurier_dict.get(row_num, 0)
-                group_namee = tire_group_chemcurier_dict.get(row_num, 0)
-                recipipient_namee = recipipient_chemcurier_dict.get(row_num, 0)
-                prod_country_namee = prod_country_column_dict.get(row_num, 0)
-                #print('LEN', len(new_money_month_chemcurier_dict.get(row_num, 1)),' ===== ')
-                periods_counter_max_val = len(new_money_month_chemcurier_dict.get(row_num, 1)) 
-                periods_counter = 0
-                values_prices_per_month_list = []
-            #    print('periods_counter]!!!!!', periods_counter)
-                if periods_counter_max_val: # если есть периоды
-                    while periods_counter < periods_counter_max_val:   
-            #            print('t7t7t7', new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter])                                        
-                        pices_per_month = new_pieces_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
-            #            print('===== 1', pices_per_month)
-                        money_per_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][1]
-            #            print('===== 2',money_per_month)
-                        period_month = new_money_month_chemcurier_dict.get(row_num, 0)[periods_counter][0]                            
-                        if money_per_month is not None and pices_per_month is not None:
-                            average_price_in_usd_calc = money_per_month / pices_per_month 
-                        else:
-                            average_price_in_usd_calc = None
-                        pices_per_month_money_per_month = period_month, pices_per_month, money_per_month, average_price_in_usd_calc
-                        periods_counter += 1 
-                        values_prices_per_month_list.append(pices_per_month_money_per_month)
-                
-                #MAIN_chemcirier_import_dict[tyr_size, row_num] = brand_namee, group_namee, pices_per_month, money_per_month 
-                MAIN_chemcirier_import_dict[tyr_size, row_num, brand_namee, group_namee, recipipient_namee, prod_country_namee] = list(values_prices_per_month_list), periods_counter 
-        
-        # перечень всех доступных дат (месяцев):
-        month_in_chemcurier_table = list(money_month_chemcurier_dict.keys())
-        #print('month_in_chemcurier_table', month_in_chemcurier_table)
+
         
         #### СОЗДАТЬ ОБЪЕКТЫ ХИМКУРЬЕР: !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -1962,7 +2011,8 @@ def read_from_file(self):
         excel_sheet.cell(row=val, column=10).value = sales_obj.contragent.contragent_name
         excel_file.save(filename="Tyres.xlsx") 
 
-    return MAIN_chemcirier_import_dict
+
+    return copy_file_created, list_of_sheet_potential_names_var_list_is
 
 
 #async def read_fromSSS():

@@ -46,20 +46,19 @@ class ExcelTemplateView(TemplateView):
 
     
     def post(self, request, *args, **kwargs):
-        chem_cour_value = import_data_script.read_from_file(self)
+        #print('!!!!!copy_file_created!!!!!', import_data_script.read_from_file(self))
+        val1, val2 = import_data_script.read_from_file(self)
+        print('val1, val2', val1, val2)
 
-        t = threading.Thread(target=import_data_script.chem_courier_bulk_write_ib_bd, args=(chem_cour_value,))
-        t.setDaemon(False)
-        t.start()
 
-    ###    ###p = multiprocessing.Process(target=import_data_script.read_from_file(self))
-    ###    ###p.start()
-    ###    #Timer(2, import_data_script.read_from_file(self)).start()
-    ###    ####try:
-    ###    ####    form = forms.ImportSalesDataForm()  
-    ###    ####    return render(self.request, 'filemanagment/excel_import.html', {'form': form})
-    ###    ####finally:
-    ###    ####    import_data_script.read_from_file(self)
+        t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
+        t2.setDaemon(False)
+        t2.start()
+
+
+        #t2 = threading.Thread(target=import_data_script.chem_courier_bulk_write_ib_bd, args=(import_data_script.read_from_chem_courier_copy_file(val1, val2),))
+        #t2.setDaemon(False)
+        #t2.start()      
 
 
         form = forms.ImportSalesDataForm()  
