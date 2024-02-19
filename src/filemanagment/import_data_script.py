@@ -869,13 +869,17 @@ def read_from_file(self):
                 # необходим для работы "за кадром" вне POST запроса
                 # opening the source excel file 
 
-                file_to_copy = file_to_read
-                sheet_to_copy = sheet
+                # если есть файл от юзера для хим курьера - работаем дальше
+                if file_to_read:
+                    file_to_copy = file_to_read
+                    sheet_to_copy = sheet
+                    copy_file_created = make_a_copy_of_users_chemc_file(file_to_copy, sheet_to_copy)
+                    list_of_sheet_potential_names_var_list_is = list_of_sheet_potential_names_var_list
+                    return copy_file_created, list_of_sheet_potential_names_var_list_is
+                # если нет файла от юзера для хим курьера - скипнуть
+                else:
+                    return copy_file_created,  list_of_sheet_potential_names_var_list_is 
 
-                copy_file_created = make_a_copy_of_users_chemc_file(file_to_copy, sheet_to_copy)
-                list_of_sheet_potential_names_var_list_is = list_of_sheet_potential_names_var_list
-
-            #    return copy_file_created, list_of_sheet_potential_names_var_list_is
 
         ##print('tiresize_chemcurier_dict', tiresize_chemcurier_dict)
         ##print('tire_group_chemcurier_dict', tire_group_chemcurier_dict)
@@ -2015,8 +2019,7 @@ def read_from_file(self):
 
     
     ## если не химкурьер импорт - то вернуть флаг что был импорт не химкурьер BИНАЧЕ- смотри выше return
-    #secod_val = 'prove not chem courier'
-    return copy_file_created,  list_of_sheet_potential_names_var_list_is #secod_val #
+    return copy_file_created,  list_of_sheet_potential_names_var_list_is 
 
 
 #async def read_fromSSS():

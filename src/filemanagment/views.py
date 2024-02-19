@@ -46,24 +46,34 @@ class ExcelTemplateView(TemplateView):
 
     
     def post(self, request, *args, **kwargs):
-        # если import_data_script.read_from_file(self) возвращает два str- выполняется импортданных не хим курьер:
-        # import_data_script.read_from_file(self) возвращает val1, val2 не str - выполняется импортданных хим курьер:
 
         # если форма а
+        #if self.request.POST.get('form_name') == "aform.prefix":
+        #    import_data_script.read_from_file(self)
+        ## если "bform.prefix"  - импорт либо дополнительных данных ценах либо импорт таблицы Химкурьер  
+        #else:
+        #    val1, val2 = import_data_script.read_from_file(self)
+        #    print('val1, val2', val1, val2)
+        #    # импорт либо дополнительных данных ценах:
+        #    if val2 == 'prove not chem courier':
+        #        print('val1, val2', val1, val2)
+        #    # импорт таблицы Химкурьер:      
+        #    else:
+        #        t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
+        #        t2.setDaemon(False)
+        #        t2.start()   
+
         if self.request.POST.get('form_name') == "aform.prefix":
             import_data_script.read_from_file(self)
         # если "bform.prefix"  - импорт либо дополнительных данных ценах либо импорт таблицы Химкурьер  
         else:
             val1, val2 = import_data_script.read_from_file(self)
-            print('val1, val2', val1, val2)
-            # импорт либо дополнительных данных ценах:
-            if val2 == 'prove not chem courier':
+            if val1 != 'Not chem courier import file':
                 print('val1, val2', val1, val2)
-            # импорт таблицы Химкурьер:      
-            else:
                 t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
                 t2.setDaemon(False)
-                t2.start()   
+                t2.start()  
+
 
         form = forms.ImportSalesDataForm()  
         print('!!! FORMA ', self, datetime.now())            
