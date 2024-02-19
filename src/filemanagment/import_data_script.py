@@ -411,7 +411,7 @@ def read_from_file(self):
     date_period_of_doc = None   #ЗДЕСЬ ПРОtИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ ДЛДЯ СЕБЕСТОИМОСТИ и прайсов
     
 
-    copy_file_created = None
+    copy_file_created = 'Not chem courier import file'
     list_of_sheet_potential_names_var_list_is = []
 
     ply_dict = {}
@@ -2012,7 +2012,11 @@ def read_from_file(self):
         excel_file.save(filename="Tyres.xlsx") 
 
 
-    return copy_file_created, list_of_sheet_potential_names_var_list_is
+
+    
+    ## если не химкурьер импорт - то вернуть флаг что был импорт не химкурьер BИНАЧЕ- смотри выше return
+    #secod_val = 'prove not chem courier'
+    return copy_file_created,  list_of_sheet_potential_names_var_list_is #secod_val #
 
 
 #async def read_fromSSS():
