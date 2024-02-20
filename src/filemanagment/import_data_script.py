@@ -24,6 +24,7 @@ from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 import time
 import asyncio 
 import threading
+import os
 
 
 
@@ -43,7 +44,7 @@ def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
 def chem_courier_bulk_write_ib_bd(dict_of_data):
     
-        time.sleep(12)
+
         print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
         MAIN_chemcirier_import_dict = dict_of_data
         # 1.1 создать объекты продажа на дату:
@@ -125,6 +126,16 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
                             average_price_in_usd = data_month_chem_val[3],))
                     
         bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
+        
+    ##    os.remove("/tmp/<file_name>.txt")
+
+        asss = os.path.abspath("PEMANENT_FILE.xlsx")
+        print('PATH', asss)
+
+        os.remove("PEMANENT_FILE.xlsx")
+
+            
+
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
 
@@ -2026,13 +2037,6 @@ def read_from_file(self):
     
     ## если не химкурьер импорт - то вернуть флаг что был импорт не химкурьер BИНАЧЕ- смотри выше return
     return copy_file_created,  list_of_sheet_potential_names_var_list_is 
-
-
-#async def read_fromSSS():
-def read_fromSSS():    
-    import time
-    time.sleep(15)
-    print('[*] Task  executed...')
 
 
 
