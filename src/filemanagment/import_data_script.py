@@ -356,7 +356,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
 
     #print('MAIN_chemcirier_import_dict', MAIN_chemcirier_import_dict)
         
-    #file_to_read.close()  
+    file_to_read.close()  
 
     some_func(MAIN_chemcirier_import_dict)
 
