@@ -37,6 +37,8 @@ def make_a_copy_of_users_chemc_file(file_to_read, sheet):
     wb1 = file_to_read
     wb1.save("PEMANENT_FILE.xlsx")
 
+    print('FILE CREATED')
+
     return wb1
 
 def chem_courier_bulk_write_ib_bd(dict_of_data):
