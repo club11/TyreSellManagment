@@ -68,11 +68,11 @@ class ExcelTemplateView(TemplateView):
         # если "bform.prefix"  - импорт либо дополнительных данных ценах либо импорт таблицы Химкурьер  
         else:
             val1, val2 = import_data_script.read_from_file(self)
-        #    if val1 != 'Not chem courier import file':
-        #        print('val1, val2', val1, val2)
-        #        t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
-        #        t2.setDaemon(False)
-        #        t2.start()  
+            if val1 != 'Not chem courier import file':
+                print('val1, val2', val1, val2)
+                t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
+                t2.setDaemon(False)
+                t2.start()  
 
 
         form = forms.ImportSalesDataForm()  

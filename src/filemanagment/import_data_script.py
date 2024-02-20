@@ -846,6 +846,7 @@ def read_from_file(self):
             excel_file.save(filename="Tyres.xlsx")
     ############################################################
             form = forms.ImportDataForm()
+            file_to_read.close()
             return render(self.request, 'filemanagment/excel_import.html', {'form': form})        
     ##########################################################################   ##### ПАРСИНГ ХИМКУРЬЕРА #########
     #### ЕСЛИ ЗАБРАСЫВАЮТСЯ ФАЙЛЫ ХИМКУРЬЕР:
@@ -877,6 +878,7 @@ def read_from_file(self):
                     sheet_to_copy = sheet
                     copy_file_created = make_a_copy_of_users_chemc_file(file_to_copy, sheet_to_copy)
                     list_of_sheet_potential_names_var_list_is = list_of_sheet_potential_names_var_list
+                    file_to_read.close()
                     return copy_file_created, list_of_sheet_potential_names_var_list_is
                 # если нет файла от юзера для хим курьера - скипнуть
                 else:
