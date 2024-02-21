@@ -31,6 +31,9 @@ import threading
 from threading import Timer
 #import multiprocessing
 
+import sqlalchemy
+from sqlalchemy import create_engine
+import os
 
 
 
@@ -47,22 +50,6 @@ class ExcelTemplateView(TemplateView):
     
     def post(self, request, *args, **kwargs):
 
-        # если форма а
-        #if self.request.POST.get('form_name') == "aform.prefix":
-        #    import_data_script.read_from_file(self)
-        ## если "bform.prefix"  - импорт либо дополнительных данных ценах либо импорт таблицы Химкурьер  
-        #else:
-        #    val1, val2 = import_data_script.read_from_file(self)
-        #    print('val1, val2', val1, val2)
-        #    # импорт либо дополнительных данных ценах:
-        #    if val2 == 'prove not chem courier':
-        #        print('val1, val2', val1, val2)
-        #    # импорт таблицы Химкурьер:      
-        #    else:
-        #        t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
-        #        t2.setDaemon(False)
-        #        t2.start()   
-
         if self.request.POST.get('form_name') == "aform.prefix":
             import_data_script.read_from_file(self)
         # если "bform.prefix"  - импорт либо дополнительных данных ценах либо импорт таблицы Химкурьер  
@@ -70,6 +57,24 @@ class ExcelTemplateView(TemplateView):
             val1, val2 = import_data_script.read_from_file(self)
             if val1 != 'Not chem courier import file':
                 print('val1, val2', val1, val2)
+
+
+
+
+
+                #try:
+                #db_sqlite3 = os.path.abspath("db.sqlite3")
+                #print('PATH db_sqlite3', db_sqlite3)
+                #e = create_engine(f'sqlite:{db_sqlite3}', pool_recycle=3600)
+                #e = create_engine('sqlite:////src/db.sqlite3')
+                    
+                e = create_engine('sqlite:///sqlite3.db', pool_recycle=3600) 
+                print('E', e)
+                if e:
+                    print(' BASE D is connected')
+                #except:
+                #    pass
+
                 t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
                 t2.setDaemon(False)
                 t2.start()  
