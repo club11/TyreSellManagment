@@ -68,7 +68,7 @@ class ExcelTemplateView(TemplateView):
                 #e = create_engine(f'sqlite:{db_sqlite3}', pool_recycle=3600)
                 #e = create_engine('sqlite:////src/db.sqlite3')
                     
-                e = create_engine('sqlite:///sqlite3.db', pool_recycle=18000) 
+                e = create_engine('sqlite:///sqlite3.db', pool_recycle=3600) 
                 print('E', e)
                 if e:
                     print(' BASE D is connected')
