@@ -893,6 +893,7 @@ def read_from_file(self):
                     return copy_file_created, list_of_sheet_potential_names_var_list_is
                 # если нет файла от юзера для хим курьера - скипнуть
                 else:
+                    file_to_read.close()
                     return copy_file_created,  list_of_sheet_potential_names_var_list_is 
 
 
