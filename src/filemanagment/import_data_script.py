@@ -33,12 +33,14 @@ import os
 
 
 
+
+
 def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
     wb1 = file_to_read
     wb1.save("PEMANENT_FILE.xlsx")
 
-    print('FILE CREATED')
+    print('создана копия файла - FILE CREATED')
 
     return wb1
 
@@ -126,16 +128,12 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
                             average_price_in_usd = data_month_chem_val[3],))
                     
         bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
-        
-    ##    os.remove("/tmp/<file_name>.txt")
 
-        asss = os.path.abspath("PEMANENT_FILE.xlsx")
-        print('PATH', asss)
-
+        temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
+        print('PATH', temporary_created_file)
         os.remove("PEMANENT_FILE.xlsx")
 
             
-
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
 
@@ -381,7 +379,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
 #async def read_from_file(self):
 def read_from_file(self):
   
-    print('________SEEELLF__________ ',  datetime.now())
+    print('ПРОВЕРКА ФАЙЛА - выбор форма а либо b/ b химкурьер ',  datetime.now())
     form_name = self.request.POST.get('form_name')
     row_value = int
     tyresize_list = []

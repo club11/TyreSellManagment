@@ -59,9 +59,6 @@ class ExcelTemplateView(TemplateView):
                 print('val1, val2', val1, val2)
 
 
-
-
-
                 #try:
                 #db_sqlite3 = os.path.abspath("db.sqlite3")
                 #print('PATH db_sqlite3', db_sqlite3)
@@ -69,9 +66,8 @@ class ExcelTemplateView(TemplateView):
                 #e = create_engine('sqlite:////src/db.sqlite3')
                     
                 e = create_engine('sqlite:///sqlite3.db', pool_recycle=3600) 
-                print('E', e)
                 if e:
-                    print(' BASE D is connected')
+                    print('связь с базой данных')
                 #except:
                 #    pass
 
@@ -81,7 +77,7 @@ class ExcelTemplateView(TemplateView):
 
 
         form = forms.ImportSalesDataForm()  
-        print('!!! FORMA ', self, datetime.now())            
+        print('!!!ОТРИСОВКА СТРАНИЦЫ ВЫЧИСЛЕНИЯ В БЭКЕ ', self, datetime.now())            
         return render(self.request, 'filemanagment/excel_import.html', {'form': form})
     
        
