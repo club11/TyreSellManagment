@@ -129,16 +129,69 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
                     
         bulk_msj = prices_models.ChemCurierTyresModel.objects.bulk_create(che_curier_obj_tyre_bulk_list)
 
-        temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
-        print('PATH', temporary_created_file)
-        os.remove("PEMANENT_FILE.xlsx")
+        #temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
+        #print('PATH', temporary_created_file)
+        #os.remove("PEMANENT_FILE.xlsx")
 
             
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
+def delete_temp_file():
+    temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
+    print('PATH', temporary_created_file)
+    os.remove("PEMANENT_FILE.xlsx")
+    print('временный файл удален')
 
 
-def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func):
+def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some_func):
+    file_to_read = copy_file
+    sheet = None
+    list_chemcurier_years = range(11, 50)
+    for year_d in list_chemcurier_years:
+        for sheet_name in list_of_sheet_potential_names_var_list:
+            try:
+                sheet = file_to_read[f'{sheet_name} 20{year_d}']
+                #sheet = file_to_read['ИМПОРТ 2022']    # Читаем файл и лист1 книги excel 
+            except:
+                pass
+    if sheet:       # РАЗБИТИЕ EXCEL НА ЧАСТИ ДЛЯ СЧИТЫВАНИЯ:
+        max_row = sheet.max_row
+        #print('sheet.max_row', sheet.max_row) 
+        SSTEP = 1000      # шаг cсчитывания с excel
+        big_steps_num = int(max_row / SSTEP)
+        small_step = max_row % SSTEP
+        #print('list_of_cycles', big_steps_num, 'ttttt', small_step, '@@@')
+        excel_red_cycles_list = []
+        st_row = 1
+        end_row = 0
+        for n in range(0, big_steps_num):  #1, 2, 
+            end_row += SSTEP
+            cyycle = st_row, end_row
+            excel_red_cycles_list.append(cyycle)
+            st_row = end_row + 1
+            if n == big_steps_num-1 and end_row + 1 < end_row + small_step:
+                cyycle = end_row + 1, end_row + small_step
+                excel_red_cycles_list.append(cyycle)
+        if not excel_red_cycles_list:
+            cyycle = 1, small_step
+            excel_red_cycles_list.append(cyycle)
+
+
+
+        for cccycle_ten_thosand in excel_red_cycles_list: 
+            print('cccycle_ten_thosand', cccycle_ten_thosand)  
+            read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
+        
+        delete_temp_file()
+
+    return print('###', excel_red_cycles_list)
+
+           
+
+
+
+
+def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, step_to_read):
     
     brend_chemcurier_dict = {} # словарь, в который закидываются данные о действующих бренде ХИМКУРЬЕР
     recipipient_chemcurier_dict = {} # словарь, в который закидываются данные о получателе. на дату ХИМКУРЬЕР
@@ -164,15 +217,29 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
 
     ############ END создать физическую копию файла юзера для работы с ней
     #    print(';******8888_____+')
+        
+
+        counter_limiter_counter = 0       # счетчик считывания для формирования словаря для записи до 1000 строк
+        #print('!pp!', cell.row)
+
+        chemcirier_rows_counter = []
         brand_names_list = ['бренд', 'Бренд'] 
         reciever_names_list = ['получатель', 'Получатель'] 
         countr_names_list = ['страна производства', 'Страна производства']
         trsz_names_list = ['типоразмер', 'Типоразмер']
         group_names_list = ['подгруппа', 'Подгруппа']   
-        for row in sheet.rows:           
-            for cell in row:  
-                # 1 Парсинг 
+        #for row in sheet.rows:  # БЫСТРЫЙ СПОСОБ
 
+
+        # модификация
+        step_to_read = step_to_read
+        print('KKKYY', step_to_read[0], step_to_read[1])
+        for row in sheet.iter_rows(step_to_read[0], step_to_read[1]):
+        # END модификация    
+
+            #print('ROW', row )        
+            for cell in row: 
+                # 1 Парсинг 
                 if cell.value in brand_names_list:          # получаем колонку 'бренд'  ХИМКУРЬЕР
                     brand_column = cell.column
                     brand_row = cell.row
@@ -201,7 +268,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                         for cell in col: 
                             if cell.value:                          
                                 tiresize_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
-
+                                
                 if cell.value in group_names_list:          # получаем колонку 'подгруппа' ХИМКУРЬЕР
                     season_column = cell.column
                     season_row = cell.row
@@ -288,15 +355,17 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                                                         list_col_values.append(column_value_row)
                                                     money_month_chemcurier_dict[month_chemcurier] = list_col_values
 
-
         #### ХИМКУРЬЕР Ч 2
                        #### пересборка словаря pieces_month_chemcurier_dict ключ - номер строки, значения - дата и значение шт.     
         #1.1 пересборка словарей pieces_month_chemcurier_dict и  money_month_chemcurier_dict:               # 2022-01-01 [(28, 8), (None, 9), (180, 10), (2426, 11), (24, 12), (17, 13), (6, 14), (89, 15)] PPP
         if chemcirier_rows_counter:
+            #print('+++', chemcirier_rows_counter)
             min_row_value = min(chemcirier_rows_counter)                                                        # 2022-02-01 [(36, 8), (960, 9), (None, 10), (None, 11), (179, 12), (None, 13), (4, 14), (156, 15)] PPP
             max_row_value = max(chemcirier_rows_counter)
             chemcirier_rows_counter = [min_row_value, max_row_value]
+
             new_pieces_month_chemcurier_dict ={}
+            new_money_month_chemcurier_dict ={}
             list_col_values_len = max_row_value - min_row_value
             for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
                 list_sates_values_on_row = []
@@ -310,21 +379,20 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                             list_sates_values_on_row.append(cell_val)
             #            print('===',list_sates_values_on_row)
                 new_pieces_month_chemcurier_dict[str_n] = list_sates_values_on_row
-            #for k, v in new_pieces_month_chemcurier_dict.items():
-            #    print('+++++', k, v)            
-            new_money_month_chemcurier_dict ={}
-            list_col_values_len = max_row_value - min_row_value
-            for str_n in range(chemcirier_rows_counter[0], chemcirier_rows_counter[1]+1):
-                list_sates_values_on_row = []
+                list_sates_values_on_row1 = []
                 for k, v in money_month_chemcurier_dict.items():
                     for list_iter in range(0, list_col_values_len+1):
                         #print(k, v[list_iter][1])
                         if v[list_iter][1] == str_n:
                             cell_val = k, v[list_iter][0]
                             #print(cell_val, 'OOOO')
-                            list_sates_values_on_row.append(cell_val)
-                        #print(list_sates_values_on_row)
-                new_money_month_chemcurier_dict[str_n] = list_sates_values_on_row
+                            list_sates_values_on_row1.append(cell_val)
+                        #print(list_sates_values_on_row1)
+                new_money_month_chemcurier_dict[str_n] = list_sates_values_on_row1
+
+
+
+
             #print(new_money_month_chemcurier_dict)
         #    for k, v in new_money_month_chemcurier_dict.items():
         #        print('-----', k, v)

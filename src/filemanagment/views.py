@@ -71,7 +71,10 @@ class ExcelTemplateView(TemplateView):
                 #except:
                 #    pass
 
-                t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
+                #import_data_script.rows_in_file_limiter(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd)
+
+                #t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
+                t2 = threading.Thread(target=import_data_script.rows_in_file_limiter, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
                 t2.setDaemon(False)
                 t2.start()  
 
