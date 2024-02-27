@@ -65,7 +65,7 @@ class ExcelTemplateView(TemplateView):
                 #e = create_engine(f'sqlite:{db_sqlite3}', pool_recycle=3600)
                 #e = create_engine('sqlite:////src/db.sqlite3')
                     
-                e = create_engine('sqlite:///sqlite3.db', pool_recycle=21600) 
+                e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
                 if e:
                     print('связь с базой данных')
                 #except:
@@ -74,7 +74,7 @@ class ExcelTemplateView(TemplateView):
                 #import_data_script.rows_in_file_limiter(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd)
 
                 #t2 = threading.Thread(target=import_data_script.read_from_chem_courier_copy_file, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
-                t2 = threading.Thread(target=import_data_script.rows_in_file_limiter, args=(val1, val2, import_data_script.chem_courier_bulk_write_ib_bd,))
+                t2 = threading.Thread(target=import_data_script.rows_in_file_limiter, args=(val1, val2, ))
                 t2.setDaemon(False)
                 t2.start()  
 

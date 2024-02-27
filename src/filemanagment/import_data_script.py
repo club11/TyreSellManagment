@@ -25,30 +25,25 @@ import time
 import asyncio 
 import threading
 import os
+from openpyxl import load_workbook
 
 
 
-
-
-
-
-
-
-
+# создать временный файл
 def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
     wb1 = file_to_read
     wb1.save("PEMANENT_FILE.xlsx")
-
     print('создана копия файла - FILE CREATED')
 
     return wb1
 
+# запись в базу данных
 def chem_courier_bulk_write_ib_bd(dict_of_data):
     
-
         print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
         MAIN_chemcirier_import_dict = dict_of_data
+        print('LEN DICT', len(MAIN_chemcirier_import_dict))
         # 1.1 создать объекты продажа на дату:
         che_curier_obj_tyre_bulk_list = []
         currency_chem = dictionaries_models.Currency.objects.get_or_create(currency = 'USD')[0]
@@ -136,6 +131,8 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
             
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
+
+# удалить временный файл        
 def delete_temp_file():
     temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
     print('PATH', temporary_created_file)
@@ -143,7 +140,9 @@ def delete_temp_file():
     print('временный файл удален')
 
 
-def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some_func):
+# расчет объема для считывания из файла по N строк
+#def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some_func):
+def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):    
     file_to_read = copy_file
     sheet = None
     list_chemcurier_years = range(11, 50)
@@ -157,7 +156,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some
     if sheet:       # РАЗБИТИЕ EXCEL НА ЧАСТИ ДЛЯ СЧИТЫВАНИЯ:
         max_row = sheet.max_row
         #print('sheet.max_row', sheet.max_row) 
-        SSTEP = 100      # шаг cсчитывания с excel
+        SSTEP = 1000      # шаг cсчитывания с excel
         big_steps_num = int(max_row / SSTEP)
         small_step = max_row % SSTEP
         #print('list_of_cycles', big_steps_num, 'ttttt', small_step, '@@@')
@@ -177,11 +176,15 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some
             excel_red_cycles_list.append(cyycle)
 
 
-
         for cccycle_ten_thosand in excel_red_cycles_list: 
-            print('cccycle_ten_thosand', cccycle_ten_thosand)  
-            read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
-        
+
+            #read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
+            read_result = read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, cccycle_ten_thosand)
+            chem_courier_bulk_write_ib_bd(read_result)
+            #time.sleep(20)
+            #print('AWAITING 15 SEC')
+
+        # удалить временный файл
         delete_temp_file()
 
     return print('###', excel_red_cycles_list)
@@ -190,8 +193,9 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some
 
 
 
-
-def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, step_to_read):
+# считывание  с временного файла
+#def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, step_to_read):
+def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, step_to_read):
     
     brend_chemcurier_dict = {} # словарь, в который закидываются данные о действующих бренде ХИМКУРЬЕР
     recipipient_chemcurier_dict = {} # словарь, в который закидываются данные о получателе. на дату ХИМКУРЬЕР
@@ -203,14 +207,24 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
     MAIN_chemcirier_import_dict = {}    # главгый словарь вкуладки импорт ХИМКУРЬЕР
 
     file_to_read = copy_file
+
+    ### корявая вставка - но на отткытие -закрытие файла
+    #temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
+    created2 = load_workbook(filename = 'PEMANENT_FILE.xlsx')
+    file_to_read = created2
+    ######
+
+
     list_of_sheets = list_of_sheet_potential_names_var_list
     sheet = None
     list_chemcurier_years = range(11, 50)
     for year_d in list_chemcurier_years:
         for sheet_name in list_of_sheet_potential_names_var_list:
             try:
-                sheet = file_to_read[f'{sheet_name} 20{year_d}']
-                #sheet = file_to_read['ИМПОРТ 2022']    # Читаем файл и лист1 книги excel 
+            #    sheet = file_to_read[f'{sheet_name} 20{year_d}']
+                sheet =created2[f'{sheet_name} 20{year_d}']
+
+                #
             except:
                 pass
     if sheet:   
@@ -228,43 +242,82 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
         countr_names_list = ['страна производства', 'Страна производства']
         trsz_names_list = ['типоразмер', 'Типоразмер']
         group_names_list = ['подгруппа', 'Подгруппа']   
-        #for row in sheet.rows:  # БЫСТРЫЙ СПОСОБ
+        
+
 
 
         # модификация
         step_to_read = step_to_read
         print('KKKYY', step_to_read[0], step_to_read[1])
-        for row in sheet.iter_rows(step_to_read[0], step_to_read[1]):
+
+        #mmmax_row = sheet.max_row
+        
+        mmmin_row = step_to_read[0]
+        mmmax_row = step_to_read[1]
+        
+        for row in sheet.rows:  # БЫСТРЫЙ СПОСОБ
+        #for row in sheet.iter_rows(step_to_read[0], step_to_read[1]):
         # END модификация    
 
-            #print('ROW', row )        
+
+        #    print('ROW iss', row )        
             for cell in row: 
                 # 1 Парсинг 
                 if cell.value in brand_names_list:          # получаем колонку 'бренд'  ХИМКУРЬЕР
                     brand_column = cell.column
                     brand_row = cell.row
-                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=brand_column, max_col=brand_column, max_row=sheet.max_row):
+
+                    if step_to_read[0] == 1:
+                        mmmin_row = step_to_read[0]
+                    else:
+                        mmmin_row = step_to_read[0] - brand_row
+
+
+                    #for col in sheet.iter_cols(min_row=brand_row+1, min_col=brand_column, max_col=brand_column, max_row=mmmax_row):
+                    for col in sheet.iter_cols(min_row=brand_row+mmmin_row, min_col=brand_column, max_col=brand_column, max_row=mmmax_row):                    
                         for cell in col:                            
                             brend_chemcurier_dict[cell.row] = cell.value
 
                 if cell.value in reciever_names_list:          # получаем колонку 'получатель'  ХИМКУРЬЕР
                     recipient_column = cell.column
                     brand_row = cell.row
-                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
+
+                    if step_to_read[0] == 1:
+                        mmmin_row = step_to_read[0]
+                    else:
+                        mmmin_row = step_to_read[0] - brand_row
+
+                    #for col in sheet.iter_cols(min_row=brand_row+1, min_col=recipient_column, max_col=recipient_column, max_row=sheet.max_row):
+                    for col in sheet.iter_cols(min_row=brand_row+mmmin_row, min_col=recipient_column, max_col=recipient_column, max_row=mmmax_row):    
                         for cell in col:                            
                             recipipient_chemcurier_dict[cell.row] = cell.value        
 
                 if cell.value in countr_names_list:          # получаем колонку 'страна производства'  ХИМКУРЬЕР
                     prod_country_column = cell.column
                     brand_row = cell.row
-                    for col in sheet.iter_cols(min_row=brand_row+1, min_col=prod_country_column, max_col=prod_country_column, max_row=sheet.max_row):
+
+                    if step_to_read[0] == 1:
+                        mmmin_row = step_to_read[0]
+                    else:
+                        mmmin_row = step_to_read[0] - brand_row
+
+                    #for col in sheet.iter_cols(min_row=brand_row+1, min_col=prod_country_column, max_col=prod_country_column, max_row=sheet.max_row):
+                    for col in sheet.iter_cols(min_row=brand_row+mmmin_row, min_col=prod_country_column, max_col=prod_country_column, max_row=mmmax_row):    
                         for cell in col:                            
                             prod_country_column_dict[cell.row] = cell.value   
 
                 if cell.value in trsz_names_list:          # получаем колонку 'типоразмер' ХИМКУРЬЕР
                     tyr_group_column = cell.column
                     tyr_group_row = cell.row
-                    for col in sheet.iter_cols(min_row=tyr_group_row+1, min_col=tyr_group_column, max_col=tyr_group_column, max_row=sheet.max_row):
+
+
+                    if step_to_read[0] == 1:
+                        mmmin_row = step_to_read[0]
+                    else:
+                        mmmin_row = step_to_read[0] - tyr_group_row
+
+                    #for col in sheet.iter_cols(min_row=tyr_group_row+1, min_col=tyr_group_column, max_col=tyr_group_column, max_row=sheet.max_row):
+                    for col in sheet.iter_cols(min_row=tyr_group_row+mmmin_row, min_col=tyr_group_column, max_col=tyr_group_column, max_row=mmmax_row):    
                         for cell in col: 
                             if cell.value:                          
                                 tiresize_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
@@ -272,7 +325,14 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                 if cell.value in group_names_list:          # получаем колонку 'подгруппа' ХИМКУРЬЕР
                     season_column = cell.column
                     season_row = cell.row
-                    for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
+
+                    if step_to_read[0] == 1:
+                        mmmin_row = step_to_read[0]
+                    else:
+                        mmmin_row = step_to_read[0] - season_row
+
+                    #for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
+                    for col in sheet.iter_cols(min_row=season_row+mmmin_row, min_col=season_column, max_col=season_column, max_row=mmmax_row):
                         for cell in col:
                             if cell.value:                                          
                                 tire_group_chemcurier_dict[cell.row] = cell.value.replace(' ', '')
@@ -295,7 +355,8 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                                 colll_start_num = column_index_from_string(numbered_start_coord[0])
                                 colll_end_num = column_index_from_string(numbered_end_coord[0])
                                 #print('rowwww', rowwww, 'colll_start_num = ', colll_start_num, 'colll_end_num =', colll_end_num)
-                                for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
+                                #for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
+                                for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=mmmax_row, min_col=colll_start_num):
                                     for cell in col:
                                         #print(cell, '5656767756')
                                         if cell.value:                                                                              # если ячейка с датой: проверка и получение даты
@@ -305,7 +366,14 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                                                 #print(month_chemcurier)
                                                 month_chemcurier_column = cell.column
                                                 month_chemcurier_row = cell.row
-                                                for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+
+                                                if step_to_read[0] == 1:
+                                                    mmmin_row = step_to_read[0]
+                                                else:
+                                                    mmmin_row = step_to_read[0] - month_chemcurier_row
+
+                                                #for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+                                                for col in sheet.iter_cols(min_row=month_chemcurier_row+mmmin_row, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=mmmax_row):
                                                     list_col_values = []
                                                     for cell in col:   
                                                         #print(cell.value, 'VV')   
@@ -334,7 +402,9 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                                 colll_start_num = column_index_from_string(numbered_start_coord[0])
                                 colll_end_num = column_index_from_string(numbered_end_coord[0])
                                 #print('rowwww', rowwww, 'colll_start_num = ', colll_start_num, 'colll_end_num =', colll_end_num)
-                                for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
+
+                                #for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=rowwww+1, min_col=colll_start_num):
+                                for col in sheet.iter_cols(min_row=rowwww+1, max_col=colll_end_num, max_row=step_to_read[1], min_col=colll_start_num):
                                     for cell in col:
                                         #print(cell, '5656767756')
                                         if cell.value:                                                                              # если ячейка с датой: проверка и получение даты
@@ -344,8 +414,14 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                                                 #print(month_chemcurier)
                                                 month_chemcurier_column = cell.column
                                                 month_chemcurier_row = cell.row
+
+                                                if step_to_read[0] == 1:
+                                                    mmmin_row = step_to_read[0]
+                                                else:
+                                                    mmmin_row = step_to_read[0] - month_chemcurier_row
+
                                                 #for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
-                                                for col in sheet.iter_cols(min_row=month_chemcurier_row+1, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=sheet.max_row):
+                                                for col in sheet.iter_cols(min_row=month_chemcurier_row+mmmin_row, min_col=month_chemcurier_column, max_col=month_chemcurier_column, max_row=step_to_read[1]):                           
                                                     chemcirier_rows_counter = []
                                                     list_col_values = []
                                                     for cell in col:   
@@ -359,9 +435,11 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                        #### пересборка словаря pieces_month_chemcurier_dict ключ - номер строки, значения - дата и значение шт.     
         #1.1 пересборка словарей pieces_month_chemcurier_dict и  money_month_chemcurier_dict:               # 2022-01-01 [(28, 8), (None, 9), (180, 10), (2426, 11), (24, 12), (17, 13), (6, 14), (89, 15)] PPP
         if chemcirier_rows_counter:
-            #print('+++', chemcirier_rows_counter)
+            print('+++', chemcirier_rows_counter)
             min_row_value = min(chemcirier_rows_counter)                                                        # 2022-02-01 [(36, 8), (960, 9), (None, 10), (None, 11), (179, 12), (None, 13), (4, 14), (156, 15)] PPP
             max_row_value = max(chemcirier_rows_counter)
+            print('min_row_value', min_row_value)
+            print('max_row_value', max_row_value)
             chemcirier_rows_counter = [min_row_value, max_row_value]
 
             new_pieces_month_chemcurier_dict ={}
@@ -389,9 +467,6 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                             list_sates_values_on_row1.append(cell_val)
                         #print(list_sates_values_on_row1)
                 new_money_month_chemcurier_dict[str_n] = list_sates_values_on_row1
-
-
-
 
             #print(new_money_month_chemcurier_dict)
         #    for k, v in new_money_month_chemcurier_dict.items():
@@ -435,7 +510,12 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
         
     file_to_read.close()  
 
-    some_func(MAIN_chemcirier_import_dict)
+    #MAIN_chemcirier_import_dict_is = MAIN_chemcirier_import_dict
+    #MAIN_chemcirier_import_dict = {} # обнулить
+
+    #some_func(MAIN_chemcirier_import_dict_is)
+    #print('LLEN', len(MAIN_chemcirier_import_dict_is))
+    #chem_courier_bulk_write_ib_bd(MAIN_chemcirier_import_dict_is)
 
 
     return MAIN_chemcirier_import_dict
@@ -932,6 +1012,7 @@ def read_from_file(self):
     
     elif form_name == "bform.prefix":
         
+        flag_chem_import = False
         list_of_sheet_potential_names_var_list = ['ИМПОРТ', 'импорт',]
         sheet = None
         form = forms.ImportSalesDataForm(self.request.POST, self.request.FILES)  
@@ -952,7 +1033,9 @@ def read_from_file(self):
                 # opening the source excel file 
 
                 # если есть файл от юзера для хим курьера - работаем дальше
+
                 if file_to_read:
+                    flag_chem_import = True 
                     file_to_copy = file_to_read
                     sheet_to_copy = sheet
                     copy_file_created = make_a_copy_of_users_chemc_file(file_to_copy, sheet_to_copy)
@@ -982,416 +1065,419 @@ def read_from_file(self):
     #    form = forms.ImportSalesDataForm(self.request.POST, self.request.FILES)  
     #    if form.is_valid():
     #        file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)  
-            try:   
-                sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel 
-                for row in sheet.rows:                    
-                    for cell in row:      
-                       # 1 Парсинг    
-                           
-                    
-                        # ПАРСИНГ ДАТЫ ДЛЯ ТАБЛИЦЫ ДАННЫХ МИНИМАЛКИ И ПРОЧЕЕ
-                        if isinstance(cell.value, datetime):
-                            date_period_of_doc = cell.value.date()
-                        #    print('cell.is_date === !!!!!!!!!!!!!!!!!!!!!!!!!!!', date_period_of_doc)        
-                        ###############   
-                        #                      
-                        
-                              
-                        if cell.value == 'контрагент':          # получаем колонку 'контрагент'
-                            contragent_column = cell.column
-                            contragent_row = cell.row
-                            for col in sheet.iter_cols(min_row=contragent_row+1, min_col=contragent_column, max_col=contragent_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    contragent_value = ''
-                                    contragent_value =  cell.value                               
-                                    contragent_list.append(contragent_value)
-                        elif cell.value == 'объем продаж':
-                            saless_row_temp = int
-                            #sales_column = cell.coordinate          # получаем колонку 'объем продаж'
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value                            
-                                    sales_list.append(sell_value)
-                                    #print('saless_row', saless_row, 'current_row_number', current_row_numberr, cell.row)
-                                    saless_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение объем продаж
-                                    pass       
-                            sales_list = [float(x) for x in sales_list]    # str значения в float
-                        elif cell.value == 'Полные затраты':
-                            #sales_column = cell.coordinate          # получаем колонку 'полные затраты'    planned_costs
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        #print('cell.value.lstrip().rstrip()', cell.value.lstrip().rstrip() )
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value  
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                                       
-                                        planned_costs.append(sell_value)
-                                        planned_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            #print(planned_costs)
-                            planned_costs = [float(x) for x in planned_costs]    # str значения в float
-                        elif cell.value == 'прямые затраты':
-                            #sales_column = cell.coordinate          # получаем колонку 'прямые затраты'    semi_variable_costs
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value   
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                          
-                                        semi_variable_costs.append(sell_value)
-                                        semi_variable_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            #print(semi_variable_costs)
-                            semi_variable_costs = [float(x) for x in semi_variable_costs]    # str значения в float
-                            #print(semi_variable_costs)
-                        elif cell.value == 'прейскуранты №№9, 902':
-                            #sales_column = cell.coordinate          # получаем колонку 'прейскуранты №№9, 902'    belarus902price_costs
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                              
-                                        belarus902price_costs.append(sell_value)
-                                        belarus902price_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            belarus902price_costs = [float(x) for x in belarus902price_costs]    # str значения в float
-                            #print(belarus902price_costs)
-                        elif cell.value == 'ТПС РФ FCA':
-                            #sales_column = cell.coordinate          # получаем колонку 'ТПС РФ FCA'    tpsrussiafcaprice
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                              
-                                        tpsrussiafcaprice_costs.append(sell_value)
-                                        tpsrussiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            tpsrussiafcaprice_costs = [float(x) for x in tpsrussiafcaprice_costs]    # str значения в float
-                            #print(tpsrussiafcaprice_costs)
-                        elif cell.value == 'ТПС Казахстан FCA':
-                            #sales_column = cell.coordinate          # получаем колонку 'ТПС Казахстан FCA'    tpskazfcaprice
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                              
-                                        tpskazfcaprice_costs.append(sell_value)
-                                        tpskazfcaprice_cost_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            tpskazfcaprice_costs = [float(x) for x in tpskazfcaprice_costs]    # str значения в float
-                            #print('tpskazfcaprice_costs', tpskazfcaprice_costs)
-                        elif cell.value == 'ТПС Средняя Азия, Закавказье, Молдова FCA':
-                            #sales_column = cell.coordinate          # получаем колонку 'ТПС Средняя Азия, Закавказье, Молдова FCA'    tpsmiddleasiafcaprice
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                              
-                                        tpsmiddleasiafcaprice_costs.append(sell_value)
-                                        tpsmiddleasiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            tpsmiddleasiafcaprice_costs = [float(x) for x in tpsmiddleasiafcaprice_costs]    # str значения в float
-                            #print(tpsmiddleasiafcaprice_costs)
-                        elif cell.value == 'Действующие цены':
-                            #sales_column = cell.coordinate          # получаем колонку 'Действующие цены'   
-                            sales_column = cell.column
-                            sales_row = cell.row
-                            for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    sell_value = ''
-                                    #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                    if sell_value is str:
-                                        sell_value = cell.value.lstrip().rstrip()   
-                                    else:
-                                        sell_value = cell.value
-                                    if sell_value is None:
-                                        pass
-                                    else:
-                                        if type(sell_value) is str:
-                                            sell_value = 0                              
-                                        current_prices.append(sell_value)
-                                        current_prices_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                    pass
-                            current_prices = [float(x) for x in current_prices]    # str значения в float
-                            #print(current_prices)
-                            #print('current_prices_row', current_prices_row)
-                        elif cell.value == 'индексы':          # получаем колонку 'индексы'   ДОПОЛНИТЕЛЬНЫЕ
-                            indexes_column = cell.column
-                            indexes_row = cell.row
-                            for col in sheet.iter_cols(min_row=indexes_row+1, min_col=indexes_column, max_col=indexes_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    indexes_value = ''
-                                    indexes_value =  cell.value                               
-                                    indexes_row_dict[cell.row] = cell.value
-                        #print('indexes_list', indexes_list)
-                        #print('indexes_row_dict', indexes_row_dict)
-                        elif cell.value == 'сезонность':          # получаем колонку 'сезонность' ДОПОЛНИТЕЛЬНЫЕ
-                            season_column = cell.column
-                            season_row = cell.row
-                            for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    season_value = ''
-                                    season_value =  cell.value                               
-                                    season_row_dict[cell.row] = cell.value
-                        #print('season_row_dict', season_row_dict)
-                        elif cell.value == 'рисунок протектора':          # получаем колонку 'рисунок протектора' ДОПОЛНИТЕЛЬНЫЕ
-                            thread_column = cell.column
-                            thread_row = cell.row
-                            for col in sheet.iter_cols(min_row=thread_row+1, min_col=thread_column, max_col=thread_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    threadn_value = ''
-                                    thread_value =  cell.value                               
-                                    thread_row_dict[cell.row] = cell.value
-                        #print('thread_row_dict', thread_row_dict)
-                        elif cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
-                            ax_column = cell.column
-                            ax_row = cell.row
-                            for col in sheet.iter_cols(min_row=ax_row+1, min_col=ax_column, max_col=ax_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    ax_value = ''
-                                    ax_value =  cell.value                               
-                                    ax_row_dict[cell.row] = cell.value 
-                        #print('ax_row_dict', ax_row_dict)
-                        elif cell.value == 'применяемость':          # получаем колонку 'применяемость' ДОПОЛНИТЕЛЬНЫЕ
-                            usability_column = cell.column
-                            usability_row = cell.row
-                            for col in sheet.iter_cols(min_row=usability_row+1, min_col=usability_column, max_col=usability_column, max_row=sheet.max_row):
-                                for cell in col:
-                                    usability_value = ''
-                                    usability_value =  cell.value                               
-                                    usability_row_dict[cell.row] = cell.value
-                        #print('usability_row_dict', usability_row_dict)
-                        #if cell.value == 'дата':        # получаем строку'дата'
-                        #    #print(cell.value)    
-                        #    #print(cell.coordinate) 
-                        #    cell = sheet.cell(row=cell.row+1, column=cell.column)
-                        #    column_sell_date = cell.value
-                        #    date_period = column_sell_date                      # ЗДЕСЬ ПОЛУЧЕНА ДАТА ДЛЯ СЕБЕСТОИМОСТИ И ПРАЙСОВ
-                        ##elif cell.is_date:          # получаем дату, для работы с периодом действия цен минималок в дальнейшем
-                        ##    date_period_of_doc = cell.value.date()
-                        ##    ##print('cell.is_date ===', cell.is_date, 'cell.is_date ===', cell.value, 'cell.is_date ===', cell.value.date())
-                        ##    print('date_period ======= ', date_period_of_doc)
-                        ##  ПОЛУЧЕНИЕ МОДЕЛИ ТИПОРАЗМЕРА и ТИПА ДЛЯ ФОРМИРОВАНИЯ СЛОВАРЯ И СВЕРКИ СОСПАВШИХ ШИН ИЗ БД ДЛЯ ВЫБОРКИ ДАННЫХ ПРДАЖИ И МИНИМАЛКИ И ПР ИЗ ЭТОЙ СТРОКИ  !!!!!!!!!!!
-                        ##
-                        current_row_number = int
-                        if cell.value == 'Наименование продукции':
-                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
-                                print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
-                                ### проверка если строка пустая
-                                if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
-                                    tyresize_list.append(' ')
-                                #######
-                                reg_list = [
-                                #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
-                                #'\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2}', 
-                                #'(\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2})',  # = '(\d{3}|\d{2})/\d{2}([A-Za-z]|-)\d{2}' +  '\d{3}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',    
-                                '(\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}))|(\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2})|((\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2}))', #3 в одном чтобы избежать повторений двойных в ячейке наподобие #АШ 480/80R42(18.4R42)
-                                '\d{2}(\.|\,)\d{1}[A-Za-z](R|-)\d{2}',
-                                '(\d{4}|\d{3})[A-Za-z]\d{3}([A-Za-z]|-)\d{3}',
-                                '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
-                                '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
-                                '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
-                                '\d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
-                                '\d{1}[A-Za-z]-\d{2} ',
-                                '\d{3}[A-Za-z]\d{2}[A-Za-z]',
-                                '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
-                                '\d{2}[A-Za-z][A-Za-z]\d{2}', 
-                                ]
-                                for n in reg_list:
-                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
-                                    if result:
-                                        #print('result.group(0)', result.group(0))
-                                        tyresize_list.append(result.group(0))
-                                        tyretype_row_dict[row[0].row] = result.group(0)                                     # закидываем в словарь строка значение 
-                                        #print(row[0].row, 'cell.row', result.group(0), 'result.group(0)')
-                                        ### удаление среза с типоразмером и всем что написано перед типоразмером
-                                        left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
-                                        if left_before_size_data_index > 0:
-                                            str_left_data = str(row[cell.column-1].value)[0:left_before_size_data_index-1]
-                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(str_left_data, '')
-                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
-                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):    
-                                ### проверка если строка пустая
-                                if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
-                                    tyremodel_list.append(' ')
-                                ####### 
-                                reg_list = ['BEL-\w+',
-                                '(ФБел-\d{3}-\d{1})|(Бел-\d{3}-\d{1})|ФБел-\d{3}([A-Za-z]|[А-Яа-я])|(ФБел-\d{3})|(Бел-\d{2}(\.|\,)\d{2}(\.|\,)\d{2})|(Бел-\w+)|(Бел ПТ-\w+|ПТ-\w+)|(БелОШ\w+)',
-                                #'БИ-\w+',
-                                #'ВИ-\w+',
-                                'И-\w+|ВИ-\w+|БИ-\w+',
-                                '(Ф-\d{3}-\d{1})|(Ф-\d{2}[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}\s[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}-\d{1})|(Ф-\w+|КФ-\w+|ВФ-\w+)',
-                                'ФД-\w+',
-                                'ИД-\w+',
-                                '(К|K)-\d{2}[А-Яа-я][А-Яа-я]',
-                                '(В-\d{2}-\d{1})|(В-\w+|ИЯВ-\w+)',
-                                'ФТ-\w+',
-                                'Я-\w+',]   
-                                for n in reg_list:
-                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
-                                    if result:
-                                        #print(result.group(0), 'result.group(0)')
-                                        tyremodel_list.append(result.group(0))
-                                        model_row_dict[row[0].row] = result.group(0)        # закидываем в словарь строка значение 
-                                        model_row = result.group(0)
-                                        ### удаление среза с моделью
-                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
-                                        #print(str(row[cell.column-1].value))
-                            for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):     
-                                reg_list = [
-                                    'ЗМШ',
-                                    'КГШ',
-                                    'Сер|сер|ср',
-                                    'СГ',
-                                    'Трп|Тр|Тпр',
-                                    'Масс',
-                                    'с/х|сх',
-                                    'Лег|лг|легк', 
-                                    'Груз|груз|гр',
-                                    'Л/гр|Л/г|л/г',
-                                    'бк|б/к',
-                                    'Погр',
-                                    'кам',
-                                    'LS-2|LS|L-2',  
-                                    'Type|Typ',
-                                    'S|H|C',
-                                    '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))', 
-                                    'Газель',
-                                    '(ВАЗ)',
-                                    'Вездеход'
-                                    'У-\d{1}',
-                                    'ошип|а/к|выт|п/ош',
-                                    '(ГК|ЕР)-\d{3}',
-                                    'РК-5-165',
-                                    '\(ак23.5\)|\(ол23.5\)|\(ГК-260\)|вен.260|\(РК-5А-145\)|\(о/л\)|о/л|\(кам.14.9\)|\(кам12,5\)|ЛК-35-16.5|\(ГК-165\)|\(вен.ТК\)|\(вен.161\)|вен.260|Подз|\(Подз\)|вен.|(о/л)|\(ЛК-35-16.5\)',
-                                    '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
-                                    '(\d{2}|\d{1})+$',
-                                ]                
-                                list_of_parametrs = []
-                                for n in reg_list:
-                                    result = re.search(rf'(?i){n}', str(row[cell.column-1].value)) 
-                                    if result:
-                                        list_of_parametrs.append(result.group(0)) 
-                                        #print(row[0].row, result.group(0), type(result.group(0)))
-                                        params_row_dict[row[0].row] = list_of_parametrs           # закидываем в словарь строка значение 
-                                        #print('rEsUlT', result, print('N is =', n))
-                                        ### удаление среза с моделью                                   
-                                        row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
-                                    #################################### дополнительно получаем и формируем данные стандартых параметров НОРМ СЛОЙНОСТИ для добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart    
-                                    dict_ply = ''
-                                    if n == '(\d{2}|\d{1})+$':
-                                        if result:
-                                            #print(n, 'НОРМА СЛОЙНОСТИ ПОЛУЧЕНА =', result.group(0))
-                                            dict_ply = str(result.group(0))
-                                            ply_dict[dict_ply] = result.group(0)
-                                    ###########################
-                                    #################################### дополнительно получаем и формируем данные индексов скорости нагрузки добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart:    
-                                    load_speed_index = ''
-                                    if n == '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))':
-                                        if result:
-                                            #print(n, 'ИНДЕКС НАГРУЗКИ СКОРОСТИ ПОЛУЧЕН =', result.group(0))
-                                            load_speed_index = str(result.group(0))
-                                            load_speed_index_dict[load_speed_index] = result.group(0)
-                                    ###########################
-                                    pp = str(row[cell.column-1].value)                                      #### ????? это зачем - не задействовано ЖИ!
-                                    #print(str(row[cell.column-1].value))    
-                                        ### 
-                                str_of_param = ' '.join(list_of_parametrs)
-                                tyreparametrs_list.append(str_of_param)
-                                #print(str_of_param, 'str_of_param')
-                ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря ply_dict:
-                dict_of_param_to_remake_in_standart.update(ply_dict)
-                #print(dict_of_param_to_remake_in_standart)
-                ############################################################
-                ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря load_speed_index_dict:
-                dict_of_param_to_remake_in_standart.update(load_speed_index_dict)
-                #print(dict_of_param_to_remake_in_standart)
-                ############################################################
-                # ПРЕОБРАЗОВАНИЕ СПАРСЕННЫХ ДАННЫХ В ВИД ПО БД   + при этом далее есть еще старый код по преобразованию не словаря а списка всех значений
-                for keys, values in params_row_dict.items():
-                    #print(keys, values)
-                    tyreparametrs_list_clean = []
-                    for n in (values):
-                        tyre_el = sorted(n.split(' '), reverse=True)
-                        tyreparametrs_list_cleaned_and_prepared = []
-                        for el_in_param in tyre_el:
-                            for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
-                                #print('HHHHHHHHH', type(tuple(standart_dict_param)), standart_dict_param)           ###### str значения словаря в тапл
-                                if el_in_param in list(standart_dict_param) or el_in_param == standart_dict_param: 
-                                    #print('el_in_param = ', el_in_param, 'standart_dict_param = ', standart_dict_param)      #!!!!!!!!!!!!!!!!
-                                    el_in_param = dict_of_param_to_remake_in_standart.get(standart_dict_param)
-                                    tyreparametrs_list_cleaned_and_prepared.append(el_in_param)  
-                            el = ' '.join(tyreparametrs_list_cleaned_and_prepared) 
-                        tyreparametrs_list_clean.append(el)  
-                    params_row_dict[keys] = tyreparametrs_list_clean
+            
+            else:
+                if flag_chem_import is False:
+                    try:   
+                        sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel 
+                        for row in sheet.rows:                    
+                            for cell in row:      
+                               # 1 Парсинг    
 
-            except:
-                pass
+
+                                # ПАРСИНГ ДАТЫ ДЛЯ ТАБЛИЦЫ ДАННЫХ МИНИМАЛКИ И ПРОЧЕЕ
+                                if isinstance(cell.value, datetime):
+                                    date_period_of_doc = cell.value.date()
+                                #    print('cell.is_date === !!!!!!!!!!!!!!!!!!!!!!!!!!!', date_period_of_doc)        
+                                ###############   
+                                #                      
+
+
+                                if cell.value == 'контрагент':          # получаем колонку 'контрагент'
+                                    contragent_column = cell.column
+                                    contragent_row = cell.row
+                                    for col in sheet.iter_cols(min_row=contragent_row+1, min_col=contragent_column, max_col=contragent_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            contragent_value = ''
+                                            contragent_value =  cell.value                               
+                                            contragent_list.append(contragent_value)
+                                elif cell.value == 'объем продаж':
+                                    saless_row_temp = int
+                                    #sales_column = cell.coordinate          # получаем колонку 'объем продаж'
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value                            
+                                            sales_list.append(sell_value)
+                                            #print('saless_row', saless_row, 'current_row_number', current_row_numberr, cell.row)
+                                            saless_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение объем продаж
+                                            pass       
+                                    sales_list = [float(x) for x in sales_list]    # str значения в float
+                                elif cell.value == 'Полные затраты':
+                                    #sales_column = cell.coordinate          # получаем колонку 'полные затраты'    planned_costs
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                #print('cell.value.lstrip().rstrip()', cell.value.lstrip().rstrip() )
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value  
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                                       
+                                                planned_costs.append(sell_value)
+                                                planned_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    #print(planned_costs)
+                                    planned_costs = [float(x) for x in planned_costs]    # str значения в float
+                                elif cell.value == 'прямые затраты':
+                                    #sales_column = cell.coordinate          # получаем колонку 'прямые затраты'    semi_variable_costs
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value   
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                          
+                                                semi_variable_costs.append(sell_value)
+                                                semi_variable_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    #print(semi_variable_costs)
+                                    semi_variable_costs = [float(x) for x in semi_variable_costs]    # str значения в float
+                                    #print(semi_variable_costs)
+                                elif cell.value == 'прейскуранты №№9, 902':
+                                    #sales_column = cell.coordinate          # получаем колонку 'прейскуранты №№9, 902'    belarus902price_costs
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                belarus902price_costs.append(sell_value)
+                                                belarus902price_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    belarus902price_costs = [float(x) for x in belarus902price_costs]    # str значения в float
+                                    #print(belarus902price_costs)
+                                elif cell.value == 'ТПС РФ FCA':
+                                    #sales_column = cell.coordinate          # получаем колонку 'ТПС РФ FCA'    tpsrussiafcaprice
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                tpsrussiafcaprice_costs.append(sell_value)
+                                                tpsrussiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    tpsrussiafcaprice_costs = [float(x) for x in tpsrussiafcaprice_costs]    # str значения в float
+                                    #print(tpsrussiafcaprice_costs)
+                                elif cell.value == 'ТПС Казахстан FCA':
+                                    #sales_column = cell.coordinate          # получаем колонку 'ТПС Казахстан FCA'    tpskazfcaprice
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                tpskazfcaprice_costs.append(sell_value)
+                                                tpskazfcaprice_cost_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    tpskazfcaprice_costs = [float(x) for x in tpskazfcaprice_costs]    # str значения в float
+                                    #print('tpskazfcaprice_costs', tpskazfcaprice_costs)
+                                elif cell.value == 'ТПС Средняя Азия, Закавказье, Молдова FCA':
+                                    #sales_column = cell.coordinate          # получаем колонку 'ТПС Средняя Азия, Закавказье, Молдова FCA'    tpsmiddleasiafcaprice
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                tpsmiddleasiafcaprice_costs.append(sell_value)
+                                                tpsmiddleasiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    tpsmiddleasiafcaprice_costs = [float(x) for x in tpsmiddleasiafcaprice_costs]    # str значения в float
+                                    #print(tpsmiddleasiafcaprice_costs)
+                                elif cell.value == 'Действующие цены':
+                                    #sales_column = cell.coordinate          # получаем колонку 'Действующие цены'   
+                                    sales_column = cell.column
+                                    sales_row = cell.row
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                current_prices.append(sell_value)
+                                                current_prices_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
+                                            pass
+                                    current_prices = [float(x) for x in current_prices]    # str значения в float
+                                    #print(current_prices)
+                                    #print('current_prices_row', current_prices_row)
+                                elif cell.value == 'индексы':          # получаем колонку 'индексы'   ДОПОЛНИТЕЛЬНЫЕ
+                                    indexes_column = cell.column
+                                    indexes_row = cell.row
+                                    for col in sheet.iter_cols(min_row=indexes_row+1, min_col=indexes_column, max_col=indexes_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            indexes_value = ''
+                                            indexes_value =  cell.value                               
+                                            indexes_row_dict[cell.row] = cell.value
+                                #print('indexes_list', indexes_list)
+                                #print('indexes_row_dict', indexes_row_dict)
+                                elif cell.value == 'сезонность':          # получаем колонку 'сезонность' ДОПОЛНИТЕЛЬНЫЕ
+                                    season_column = cell.column
+                                    season_row = cell.row
+                                    for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            season_value = ''
+                                            season_value =  cell.value                               
+                                            season_row_dict[cell.row] = cell.value
+                                #print('season_row_dict', season_row_dict)
+                                elif cell.value == 'рисунок протектора':          # получаем колонку 'рисунок протектора' ДОПОЛНИТЕЛЬНЫЕ
+                                    thread_column = cell.column
+                                    thread_row = cell.row
+                                    for col in sheet.iter_cols(min_row=thread_row+1, min_col=thread_column, max_col=thread_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            threadn_value = ''
+                                            thread_value =  cell.value                               
+                                            thread_row_dict[cell.row] = cell.value
+                                #print('thread_row_dict', thread_row_dict)
+                                elif cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
+                                    ax_column = cell.column
+                                    ax_row = cell.row
+                                    for col in sheet.iter_cols(min_row=ax_row+1, min_col=ax_column, max_col=ax_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            ax_value = ''
+                                            ax_value =  cell.value                               
+                                            ax_row_dict[cell.row] = cell.value 
+                                #print('ax_row_dict', ax_row_dict)
+                                elif cell.value == 'применяемость':          # получаем колонку 'применяемость' ДОПОЛНИТЕЛЬНЫЕ
+                                    usability_column = cell.column
+                                    usability_row = cell.row
+                                    for col in sheet.iter_cols(min_row=usability_row+1, min_col=usability_column, max_col=usability_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            usability_value = ''
+                                            usability_value =  cell.value                               
+                                            usability_row_dict[cell.row] = cell.value
+                                #print('usability_row_dict', usability_row_dict)
+                                #if cell.value == 'дата':        # получаем строку'дата'
+                                #    #print(cell.value)    
+                                #    #print(cell.coordinate) 
+                                #    cell = sheet.cell(row=cell.row+1, column=cell.column)
+                                #    column_sell_date = cell.value
+                                #    date_period = column_sell_date                      # ЗДЕСЬ ПОЛУЧЕНА ДАТА ДЛЯ СЕБЕСТОИМОСТИ И ПРАЙСОВ
+                                ##elif cell.is_date:          # получаем дату, для работы с периодом действия цен минималок в дальнейшем
+                                ##    date_period_of_doc = cell.value.date()
+                                ##    ##print('cell.is_date ===', cell.is_date, 'cell.is_date ===', cell.value, 'cell.is_date ===', cell.value.date())
+                                ##    print('date_period ======= ', date_period_of_doc)
+                                ##  ПОЛУЧЕНИЕ МОДЕЛИ ТИПОРАЗМЕРА и ТИПА ДЛЯ ФОРМИРОВАНИЯ СЛОВАРЯ И СВЕРКИ СОСПАВШИХ ШИН ИЗ БД ДЛЯ ВЫБОРКИ ДАННЫХ ПРДАЖИ И МИНИМАЛКИ И ПР ИЗ ЭТОЙ СТРОКИ  !!!!!!!!!!!
+                                ##
+                                current_row_number = int
+                                if cell.value == 'Наименование продукции':
+                                    for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
+                                        print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
+                                        ### проверка если строка пустая
+                                        if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
+                                            tyresize_list.append(' ')
+                                        #######
+                                        reg_list = [
+                                        #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
+                                        #'\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2}', 
+                                        #'(\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2})',  # = '(\d{3}|\d{2})/\d{2}([A-Za-z]|-)\d{2}' +  '\d{3}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',    
+                                        '(\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}))|(\d{2}(\.|\,)(\d{2}|\d{1})(R|-)\d{2})|((\d{3}|\d{2})/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2}[A-Za-z]|\d{2}))', #3 в одном чтобы избежать повторений двойных в ячейке наподобие #АШ 480/80R42(18.4R42)
+                                        '\d{2}(\.|\,)\d{1}[A-Za-z](R|-)\d{2}',
+                                        '(\d{4}|\d{3})[A-Za-z]\d{3}([A-Za-z]|-)\d{3}',
+                                        '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
+                                        '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
+                                        '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
+                                        '\d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
+                                        '\d{1}[A-Za-z]-\d{2} ',
+                                        '\d{3}[A-Za-z]\d{2}[A-Za-z]',
+                                        '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
+                                        '\d{2}[A-Za-z][A-Za-z]\d{2}', 
+                                        ]
+                                        for n in reg_list:
+                                            result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                            if result:
+                                                #print('result.group(0)', result.group(0))
+                                                tyresize_list.append(result.group(0))
+                                                tyretype_row_dict[row[0].row] = result.group(0)                                     # закидываем в словарь строка значение 
+                                                #print(row[0].row, 'cell.row', result.group(0), 'result.group(0)')
+                                                ### удаление среза с типоразмером и всем что написано перед типоразмером
+                                                left_before_size_data_index = str(row[cell.column-1].value).index(result.group(0))
+                                                if left_before_size_data_index > 0:
+                                                    str_left_data = str(row[cell.column-1].value)[0:left_before_size_data_index-1]
+                                                row[cell.column-1].value = str(row[cell.column-1].value).replace(str_left_data, '')
+                                                row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                    for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):    
+                                        ### проверка если строка пустая
+                                        if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
+                                            tyremodel_list.append(' ')
+                                        ####### 
+                                        reg_list = ['BEL-\w+',
+                                        '(ФБел-\d{3}-\d{1})|(Бел-\d{3}-\d{1})|ФБел-\d{3}([A-Za-z]|[А-Яа-я])|(ФБел-\d{3})|(Бел-\d{2}(\.|\,)\d{2}(\.|\,)\d{2})|(Бел-\w+)|(Бел ПТ-\w+|ПТ-\w+)|(БелОШ\w+)',
+                                        #'БИ-\w+',
+                                        #'ВИ-\w+',
+                                        'И-\w+|ВИ-\w+|БИ-\w+',
+                                        '(Ф-\d{3}-\d{1})|(Ф-\d{2}[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}\s[A-Za-z][A-Za-z]-\d{1})|(Ф-\d{2}-\d{1})|(Ф-\w+|КФ-\w+|ВФ-\w+)',
+                                        'ФД-\w+',
+                                        'ИД-\w+',
+                                        '(К|K)-\d{2}[А-Яа-я][А-Яа-я]',
+                                        '(В-\d{2}-\d{1})|(В-\w+|ИЯВ-\w+)',
+                                        'ФТ-\w+',
+                                        'Я-\w+',]   
+                                        for n in reg_list:
+                                            result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
+                                            if result:
+                                                #print(result.group(0), 'result.group(0)')
+                                                tyremodel_list.append(result.group(0))
+                                                model_row_dict[row[0].row] = result.group(0)        # закидываем в словарь строка значение 
+                                                model_row = result.group(0)
+                                                ### удаление среза с моделью
+                                                row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                                #print(str(row[cell.column-1].value))
+                                    for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):     
+                                        reg_list = [
+                                            'ЗМШ',
+                                            'КГШ',
+                                            'Сер|сер|ср',
+                                            'СГ',
+                                            'Трп|Тр|Тпр',
+                                            'Масс',
+                                            'с/х|сх',
+                                            'Лег|лг|легк', 
+                                            'Груз|груз|гр',
+                                            'Л/гр|Л/г|л/г',
+                                            'бк|б/к',
+                                            'Погр',
+                                            'кам',
+                                            'LS-2|LS|L-2',  
+                                            'Type|Typ',
+                                            'S|H|C',
+                                            '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))', 
+                                            'Газель',
+                                            '(ВАЗ)',
+                                            'Вездеход'
+                                            'У-\d{1}',
+                                            'ошип|а/к|выт|п/ош',
+                                            '(ГК|ЕР)-\d{3}',
+                                            'РК-5-165',
+                                            '\(ак23.5\)|\(ол23.5\)|\(ГК-260\)|вен.260|\(РК-5А-145\)|\(о/л\)|о/л|\(кам.14.9\)|\(кам12,5\)|ЛК-35-16.5|\(ГК-165\)|\(вен.ТК\)|\(вен.161\)|вен.260|Подз|\(Подз\)|вен.|(о/л)|\(ЛК-35-16.5\)',
+                                            '(кам.14.9)|(кам12,5)|вен.ЛК-35-16.5|ГК-145|РК.5-165',
+                                            '(\d{2}|\d{1})+$',
+                                        ]                
+                                        list_of_parametrs = []
+                                        for n in reg_list:
+                                            result = re.search(rf'(?i){n}', str(row[cell.column-1].value)) 
+                                            if result:
+                                                list_of_parametrs.append(result.group(0)) 
+                                                #print(row[0].row, result.group(0), type(result.group(0)))
+                                                params_row_dict[row[0].row] = list_of_parametrs           # закидываем в словарь строка значение 
+                                                #print('rEsUlT', result, print('N is =', n))
+                                                ### удаление среза с моделью                                   
+                                                row[cell.column-1].value = str(row[cell.column-1].value).replace(result.group(0), '')
+                                            #################################### дополнительно получаем и формируем данные стандартых параметров НОРМ СЛОЙНОСТИ для добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart    
+                                            dict_ply = ''
+                                            if n == '(\d{2}|\d{1})+$':
+                                                if result:
+                                                    #print(n, 'НОРМА СЛОЙНОСТИ ПОЛУЧЕНА =', result.group(0))
+                                                    dict_ply = str(result.group(0))
+                                                    ply_dict[dict_ply] = result.group(0)
+                                            ###########################
+                                            #################################### дополнительно получаем и формируем данные индексов скорости нагрузки добавления в словарь стандартых параметров dict_of_param_to_remake_in_standart:    
+                                            load_speed_index = ''
+                                            if n == '((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2})[A-Za-z]))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1}((\d{3}|\d{2}))|((\d{3}|\d{2})([А-Яа-я]|[A-Za-z])\d{1})|(\d{3}|\d{2})([А-Яа-я]|[A-Za-z]))':
+                                                if result:
+                                                    #print(n, 'ИНДЕКС НАГРУЗКИ СКОРОСТИ ПОЛУЧЕН =', result.group(0))
+                                                    load_speed_index = str(result.group(0))
+                                                    load_speed_index_dict[load_speed_index] = result.group(0)
+                                            ###########################
+                                            pp = str(row[cell.column-1].value)                                      #### ????? это зачем - не задействовано ЖИ!
+                                            #print(str(row[cell.column-1].value))    
+                                                ### 
+                                        str_of_param = ' '.join(list_of_parametrs)
+                                        tyreparametrs_list.append(str_of_param)
+                                        #print(str_of_param, 'str_of_param')
+                        ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря ply_dict:
+                        dict_of_param_to_remake_in_standart.update(ply_dict)
+                        #print(dict_of_param_to_remake_in_standart)
+                        ############################################################
+                        ############################################################ Дополняет справочник стандартных dict_of_param_to_remake_in_standart новыми ключасми и значениями норм слойности из доп словаря load_speed_index_dict:
+                        dict_of_param_to_remake_in_standart.update(load_speed_index_dict)
+                        #print(dict_of_param_to_remake_in_standart)
+                        ############################################################
+                        # ПРЕОБРАЗОВАНИЕ СПАРСЕННЫХ ДАННЫХ В ВИД ПО БД   + при этом далее есть еще старый код по преобразованию не словаря а списка всех значений
+                        for keys, values in params_row_dict.items():
+                            #print(keys, values)
+                            tyreparametrs_list_clean = []
+                            for n in (values):
+                                tyre_el = sorted(n.split(' '), reverse=True)
+                                tyreparametrs_list_cleaned_and_prepared = []
+                                for el_in_param in tyre_el:
+                                    for standart_dict_param in dict_of_param_to_remake_in_standart.keys():
+                                        #print('HHHHHHHHH', type(tuple(standart_dict_param)), standart_dict_param)           ###### str значения словаря в тапл
+                                        if el_in_param in list(standart_dict_param) or el_in_param == standart_dict_param: 
+                                            #print('el_in_param = ', el_in_param, 'standart_dict_param = ', standart_dict_param)      #!!!!!!!!!!!!!!!!
+                                            el_in_param = dict_of_param_to_remake_in_standart.get(standart_dict_param)
+                                            tyreparametrs_list_cleaned_and_prepared.append(el_in_param)  
+                                    el = ' '.join(tyreparametrs_list_cleaned_and_prepared) 
+                                tyreparametrs_list_clean.append(el)  
+                            params_row_dict[keys] = tyreparametrs_list_clean
+
+                    except:
+                        pass
             
             
             
