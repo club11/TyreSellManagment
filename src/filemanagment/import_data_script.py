@@ -134,10 +134,13 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
 
 # удалить временный файл        
 def delete_temp_file():
-    temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
-    print('PATH', temporary_created_file)
-    os.remove("PEMANENT_FILE.xlsx")
-    print('временный файл удален')
+    try:
+        temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
+        print('PATH', temporary_created_file)
+        os.remove("PEMANENT_FILE.xlsx")
+        print('временный файл удален')
+    except:
+        pass
 
 
 # расчет объема для считывания из файла по N строк
@@ -156,7 +159,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
     if sheet:       # РАЗБИТИЕ EXCEL НА ЧАСТИ ДЛЯ СЧИТЫВАНИЯ:
         max_row = sheet.max_row
         #print('sheet.max_row', sheet.max_row) 
-        SSTEP = 1000      # шаг cсчитывания с excel
+        SSTEP = 10      # шаг cсчитывания с excel
         big_steps_num = int(max_row / SSTEP)
         small_step = max_row % SSTEP
         #print('list_of_cycles', big_steps_num, 'ttttt', small_step, '@@@')
@@ -435,7 +438,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
                        #### пересборка словаря pieces_month_chemcurier_dict ключ - номер строки, значения - дата и значение шт.     
         #1.1 пересборка словарей pieces_month_chemcurier_dict и  money_month_chemcurier_dict:               # 2022-01-01 [(28, 8), (None, 9), (180, 10), (2426, 11), (24, 12), (17, 13), (6, 14), (89, 15)] PPP
         if chemcirier_rows_counter:
-            print('+++', chemcirier_rows_counter)
+        #    print('+++', chemcirier_rows_counter)
             min_row_value = min(chemcirier_rows_counter)                                                        # 2022-02-01 [(36, 8), (960, 9), (None, 10), (None, 11), (179, 12), (None, 13), (4, 14), (156, 15)] PPP
             max_row_value = max(chemcirier_rows_counter)
             print('min_row_value', min_row_value)
