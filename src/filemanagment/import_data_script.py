@@ -40,6 +40,10 @@ def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
 # запись в базу данных
 def chem_courier_bulk_write_ib_bd(dict_of_data):
+        
+        from sqlalchemy import create_engine
+        e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
+        c = e.connect()
     
         print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
         MAIN_chemcirier_import_dict = dict_of_data
@@ -159,7 +163,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
     if sheet:       # РАЗБИТИЕ EXCEL НА ЧАСТИ ДЛЯ СЧИТЫВАНИЯ:
         max_row = sheet.max_row
         #print('sheet.max_row', sheet.max_row) 
-        SSTEP = 100      # шаг cсчитывания с excel
+        SSTEP = 1000      # шаг cсчитывания с excel
         big_steps_num = int(max_row / SSTEP)
         small_step = max_row % SSTEP
         #print('list_of_cycles', big_steps_num, 'ttttt', small_step, '@@@')

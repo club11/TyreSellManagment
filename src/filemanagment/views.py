@@ -65,11 +65,9 @@ class ExcelTemplateView(TemplateView):
                 #e = create_engine(f'sqlite:{db_sqlite3}', pool_recycle=3600)
                 #e = create_engine('sqlite:////src/db.sqlite3')
                     
-                e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
-                #c = e.connect()
-                
-                c = e.connect()
-                print("Connection was CREATED")
+                ###e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
+                ###c = e.connect()
+                ###print("Connection was CREATED")
 
                 #except:
                 #    pass
