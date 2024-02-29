@@ -159,7 +159,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
     if sheet:       # РАЗБИТИЕ EXCEL НА ЧАСТИ ДЛЯ СЧИТЫВАНИЯ:
         max_row = sheet.max_row
         #print('sheet.max_row', sheet.max_row) 
-        SSTEP = 100      # шаг cсчитывания с excel
+        SSTEP = 10      # шаг cсчитывания с excel
         big_steps_num = int(max_row / SSTEP)
         small_step = max_row % SSTEP
         #print('list_of_cycles', big_steps_num, 'ttttt', small_step, '@@@')
@@ -179,6 +179,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
             excel_red_cycles_list.append(cyycle)
 
 
+        # проход по документу:
         for cccycle_ten_thosand in excel_red_cycles_list: 
 
             #read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
@@ -209,7 +210,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
     money_month_chemcurier_dict = {} # словарь, в который закидываются данные о шт. на дату ХИМКУРЬЕР
     MAIN_chemcirier_import_dict = {}    # главгый словарь вкуладки импорт ХИМКУРЬЕР
 
-    file_to_read = copy_file
+#    file_to_read = copy_file
 
     ### корявая вставка - но на отткытие -закрытие файла
     #temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
