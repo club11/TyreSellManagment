@@ -40,10 +40,6 @@ def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
 # запись в базу данных
 def chem_courier_bulk_write_ib_bd(dict_of_data):
-        
-        from sqlalchemy import create_engine
-        e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
-        c = e.connect()
     
         print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
         MAIN_chemcirier_import_dict = dict_of_data
@@ -135,6 +131,8 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
             
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
 
+        
+
 
 # удалить временный файл        
 def delete_temp_file():
@@ -186,9 +184,16 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
         # проход по документу:
         for cccycle_ten_thosand in excel_red_cycles_list: 
 
+            from sqlalchemy import create_engine
+            e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
+            c = e.connect()
+    
+            from django.db import connection
+
             #read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
             read_result = read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, cccycle_ten_thosand)
             chem_courier_bulk_write_ib_bd(read_result)
+            connection.close()
             #time.sleep(20)
             #print('AWAITING 15 SEC')
 
