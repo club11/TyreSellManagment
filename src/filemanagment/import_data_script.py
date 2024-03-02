@@ -161,7 +161,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
     if sheet:       # РАЗБИТИЕ EXCEL НА ЧАСТИ ДЛЯ СЧИТЫВАНИЯ:
         max_row = sheet.max_row
         #print('sheet.max_row', sheet.max_row) 
-        SSTEP = 1000      # шаг cсчитывания с excel
+        SSTEP = 5000      # шаг cсчитывания с excel
         big_steps_num = int(max_row / SSTEP)
         small_step = max_row % SSTEP
         #print('list_of_cycles', big_steps_num, 'ttttt', small_step, '@@@')
@@ -184,10 +184,10 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
         # проход по документу:
         for cccycle_ten_thosand in excel_red_cycles_list: 
 
-            from sqlalchemy import create_engine
-            
+
         ####    e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
         ####    c = e.connect()
+        ###    from sqlalchemy import create_engine
         ####    from django.db import connection
 
             #read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
