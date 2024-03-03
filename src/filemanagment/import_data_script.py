@@ -181,20 +181,20 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
             excel_red_cycles_list.append(cyycle)
 
 
-        # проход по документу:
-        for cccycle_ten_thosand in excel_red_cycles_list: 
-
-
         ####    e = create_engine('sqlite:///sqlite3.db', pool_recycle=39600) 
         ####    c = e.connect()
         ###    from sqlalchemy import create_engine
         ####    from django.db import connection
 
-            #read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
-            read_result = read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, cccycle_ten_thosand)
-            chem_courier_bulk_write_ib_bd(read_result)
+        # проход по документу:
+        for cccycle_ten_thosand in excel_red_cycles_list: 
+            try:
+                #read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, cccycle_ten_thosand)
+                read_result = read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, cccycle_ten_thosand)
+                chem_courier_bulk_write_ib_bd(read_result)
+            except:
+                cccycle_ten_thosand = cccycle_ten_thosand
         ####    connection.close()
-
 
         # удалить временный файл:
         delete_temp_file()
