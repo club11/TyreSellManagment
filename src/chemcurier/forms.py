@@ -255,5 +255,3 @@ class GroupForm(forms.Form):
         required=False,  
     )
 
-
-

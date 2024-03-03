@@ -887,7 +887,7 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
             #wb.save("ChemcourierProgr.xlsx")
                 #wb.save('/home/user/Desktop/FileName.xlsx')
 
-            # сохранение в папку DOWNLOADS пользователя:  
+            # сохранение в папку DOWNLOADS пользователя: 
             user_path_is = os.path.expanduser("~")
             #print('path_is', user_path_is)
             download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
