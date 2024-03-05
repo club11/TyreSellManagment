@@ -986,38 +986,20 @@ class ChemcourierTableProgressiveModelUpdateView(View):
 
         # 8. создать EXCEL CHEMCOURIER
         chemcuorier_download = request.POST.getlist('chemcuorier_progr_download') 
-
         response = None
         a_resp = None
-
-        from django.utils.text import slugify
-        def response_file(file_name):
-            response = FileResponse(open(file_name, "rb"), as_attachment=True, filename="Export.xlsx")
-            response['Content-Disposition'] = 'attachment; filename=' + "Export.xlsx"
-            print('!@!!!! response', response, )
-            return response
-        
         if chemcuorier_download:
             forms.CHEMCOURIER_PROGRESSIVE_EXCEL_CREATE = True
-   
-            from django.http import FileResponse, HttpResponse
-            models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME
-            print('models.FILE_TO_SAFE_FOR_DOWNLOADING    FILE =======', models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME)
-            temporary_created_file_path = os.path.abspath(models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME)
-            print('temporary_created_file_path ======== PATH', temporary_created_file_path)
-            print('response RESPONSE====', response, '||||', type(response))
-            a_resp = response_file(models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME)  
-
-            response = HttpResponse(models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME,
-                headers={
-                    "Content-Type": "application/vnd.ms-excel",
-                    "Content-Disposition": 'attachment; filename="foo.xls"',
-                },
-            )            
-
- 
-
+            if models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME:
+                from django.http import HttpResponse
+        #        temporary_created_file_path = os.path.abspath(models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME)
+                #with open("Tyres.xlsx", "rb") as excel:
+                with open(f"{models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME}", "rb") as excel:     
+                     data = excel.read()
+                response = HttpResponse(data, content_type='application/ms-excel')
+                response['Content-Disposition'] = f'attachment; filename="{models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME}"'
+                os.remove(f"{models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME}")
+                return response
             ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы   
-
 
         return HttpResponseRedirect(reverse_lazy('chemcurier:chemcurier_table_progressive'), a_resp) 
