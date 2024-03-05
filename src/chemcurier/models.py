@@ -10,6 +10,8 @@ CHEM_PNJ_IN_TABLE_LIST = []
 CHEM_TABLE_FINAL_DATA = {}
 CHEM_TABLE_FINAL_DATA_FINAL = {}
 
+FILE_TO_SAFE_FOR_DOWNLOADING_NAME = ''
+
 
 class ChemCourierTableModel(models.Model):
     customer = models.ForeignKey(
