@@ -398,7 +398,20 @@ class ChemcourierTableModelUpdateView(View):
         # 8. создать EXCEL CHEMCOURIER
         chemcuorier_download = request.POST.getlist('chemcuorier_download') 
         if chemcuorier_download:
+            response = None
+            a_resp = None
             forms.CHEMCOURIER_EXCEL_CREATE = True
+            if models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME:
+                from django.http import HttpResponse
+        #        temporary_created_file_path = os.path.abspath(models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME)
+                #with open("Tyres.xlsx", "rb") as excel:
+                with open(f"{models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME}", "rb") as excel:     
+                     data = excel.read()
+                response = HttpResponse(data, content_type='application/ms-excel')
+                response['Content-Disposition'] = f'attachment; filename="{models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME}"'
+                os.remove(f"{models.FILE_TO_SAFE_FOR_DOWNLOADING_NAME}")
+                return response
+            ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы   
 
 
         return HttpResponseRedirect(reverse_lazy('chemcurier:chemcurier_table'))
