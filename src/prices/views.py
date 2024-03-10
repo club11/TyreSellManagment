@@ -127,8 +127,8 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:
         list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
         shins_phrase = ['шины', 'Шины']
-        for slug in urls[0:1]:                               # c 1 по 2 станицы    
-        #for slug in urls:      # рабочий вариант
+        #for slug in urls[0:1]:                               # c 1 по 2 станицы    
+        for slug in urls:      # рабочий вариант
             newUrl = url.replace('?', f'?page={slug}') 
             webdriverr.get(newUrl)
             time.sleep(2)
