@@ -87,13 +87,11 @@ def belarus_sites_parsing():
     else:                                                                       # как было
         print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
         chrome_options = webdriver.ChromeOptions()  
-        chrome_options.add_argument("--no-sandbox") 
-        chrome_options.add_argument("--disable-setuid-sandbox") 
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument('--headless=old')
-        #chromeOptions1.add_argument("--headless") 
-        #chromeOptions1.add_argument("--disable-extensions") 
-        #chromeOptions1.add_argument("disable-infobars")
+    #    chrome_options.add_argument("--no-sandbox") 
+    #    chrome_options.add_argument("--disable-setuid-sandbox") 
+    #    chrome_options.add_argument("--disable-dev-shm-usage")
+    #    chrome_options.add_argument('--headless=old')
+
         webdriverr_global = webdriver.Chrome(options=chrome_options)  
     # END проверка - выполняется вызов функции для скрипта  
 
@@ -127,13 +125,14 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:
         list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
         shins_phrase = ['шины', 'Шины']
-        #for slug in urls[0:1]:                               # c 1 по 2 станицы    
-        for slug in urls:      # рабочий вариант
+        for slug in urls[0:3]:                               # c 1 по 2 станицы    
+        #for slug in urls:      # рабочий вариант
             newUrl = url.replace('?', f'?page={slug}') 
             webdriverr.get(newUrl)
             time.sleep(2)
         #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         #    time.sleep(4)
+            print('ONLINER PAGE', slug)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
             products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_primary')
             for data_got in products:
@@ -141,9 +140,9 @@ def belarus_sites_parsing():
                 tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
                 #price = data_got.find('div', class_='schema-product__price')
                 price = data_got.find('a', class_='catalog-form__link catalog-form__link_nodecor catalog-form__link_primary-additional catalog-form__link_huge-additional catalog-form__link_font-weight_bold')
-                if tyre_name and price:
-                    print('=-=-=-=', tyre_name.text)
-                    print('+-=+=+=', price.text)
+    #            if tyre_name and price:
+    #                print('=-=-=-=', tyre_name.text)
+    #                print('+-=+=+=', price.text)
                 if tyre_name and price:
                     # проверка на лишний тект в нелегковых шинахprice
                     check_name_is_foud = False
@@ -299,12 +298,12 @@ def belarus_sites_parsing():
                                 company_name = product_name.split(' ')[0]
                             tyre_param = str_right_data
                     values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
-                    print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
+#                    print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
                     goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
-        for k, v in goods_dict.items():
-           print('K==', k, 'V==', v, 'KV')
-        for v in goods_dict.values():
-            print('===========================================999===========', v)   
+##        for k, v in goods_dict.items():
+##           print('K==', k, 'V==', v, 'KV')
+#        for v in goods_dict.values():
+#            print('===========================================999===========', v)   
         #print(goods_dict.items())
         # формируем отдельный список ПРОИЗВОДИТЕЛИ:
         onliner_companies_list = []  # список компаний-производителей Oliner
@@ -510,7 +509,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
                 tyr_group = 'легковые'
-        #        print('=0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+                print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                 avtoset_good_num += 1
         # 2) Грузовые шины
@@ -574,7 +573,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
                 tyr_group = 'грузовые'
-            #    print('=1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
+                print(' avtoset gruz =1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyr_group, tyre_price_t 
                 avtoset_good_num += 1 
         # 3) Грузовые индустриальные спец. шины
@@ -637,7 +636,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
                 tyr_group = 'грузовые'
-            #    print('=0=', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
+                print('=0= avtoset avtoset gruz2  ', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts
         # 4) Сельскохозяйственные шины
         url = 'https://autoset.by/agricultural-tires/'
@@ -700,7 +699,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
                 tyr_group = 'с/х'
-            #    print('=8=', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
+                print('=8= avtoset s/x ', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro 
         #print(goods_dict_avtoset, len(goods_dict_avtoset.keys()))     # СЛОВАРЬ ключи = типоразмер, номер в словаре, данные = производитель, модель, индексы, цена
         #for k, v in goods_dict_avtoset.items():
@@ -1144,7 +1143,7 @@ def belarus_sites_parsing():
             for tyre in tyres_in_bd:
                 try:
                     for k, v in chosen_by_company_dict.items():
-                        #print(k, 'GGG', v, 'GGG', len(v))
+                        print(k, 'GGG baGGor', v, 'GGG', len(v))
                         if tyre.tyre_size.tyre_size == k[0]:
                         #    print('TTTT', k, 's111', v)           TTTT ('155/65R13', 431) s111 ('WestLake', 'SW618', '73T', 'зимние', 'легковые', '126.07')                                                                                  #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             #('13.0/65-18', 399) ('OZKA', 'KNK48', '144A8TL', 'нс16', 'с/х', '698.98')
@@ -2328,7 +2327,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-            #belarus_sites_parsing()
+            belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
