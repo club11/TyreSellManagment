@@ -78,14 +78,14 @@ def belarus_sites_parsing():
     
 
     if test_script_is_in_process:                                               # взято со скрипта
-        print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
+    #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         webdriverr_global = webdriver.Chrome(options=chrome_options)
     else:                                                                       # как было
-        print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
+    #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
         chrome_options = webdriver.ChromeOptions()  
     #    chrome_options.add_argument("--no-sandbox") 
     #    chrome_options.add_argument("--disable-setuid-sandbox") 
@@ -509,7 +509,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
                 tyr_group = 'легковые'
-                print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+    #            print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                 avtoset_good_num += 1
         # 2) Грузовые шины
@@ -573,7 +573,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_t = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_t = float(tyre_rub_price_t + '.' + tyre_coins_price_t)
                 tyr_group = 'грузовые'
-                print(' avtoset gruz =1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
+        #        print(' avtoset gruz =1=', tyre_title_t, '||', tyre_size_t, '||', tyre_index_t, '||', tyre_model_t, '||', tyre_price_t, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_t, avtoset_good_num] = tyre_title_t, tyre_model_t, tyre_index_t, tyr_group, tyre_price_t 
                 avtoset_good_num += 1 
         # 3) Грузовые индустриальные спец. шины
@@ -636,7 +636,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_ts = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_ts = float(tyre_rub_price_ts + '.' + tyre_coins_price_ts)
                 tyr_group = 'грузовые'
-                print('=0= avtoset avtoset gruz2  ', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
+        #        print('=0= avtoset avtoset gruz2  ', tyre_title_ts, '||', tyre_size_ts, '||', tyre_index_ts, '||', tyre_model_ts, '||', tyre_price_ts, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_ts, avtoset_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts
         # 4) Сельскохозяйственные шины
         url = 'https://autoset.by/agricultural-tires/'
@@ -699,7 +699,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
                 tyr_group = 'с/х'
-                print('=8= avtoset s/x ', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
+        #        print('=8= avtoset s/x ', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro 
         #print(goods_dict_avtoset, len(goods_dict_avtoset.keys()))     # СЛОВАРЬ ключи = типоразмер, номер в словаре, данные = производитель, модель, индексы, цена
         #for k, v in goods_dict_avtoset.items():
@@ -2327,7 +2327,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-            belarus_sites_parsing()
+        #    belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
@@ -6793,9 +6793,10 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
 
 def running_programm():
 
-    belarus_sites_parsing()
-    #russia_sites_parsing()
-    print('script is running == belarus_sites_parsing()')
+#    belarus_sites_parsing()
+    russia_sites_parsing()
+#    print('script is running == belarus_sites_parsing()')
+    print('script is running == russia_sites_parsing()')
 
 
     return 'the programm is fullfilled'
