@@ -550,7 +550,7 @@ def belarus_sites_parsing():
             urls_get.append(pageNum)            
     urls_get = max(urls_get)
     #2. получаем данные со всех страниц:                         
-    for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
+    #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
     #for slug in range(0, 1):
     for slug in range(0,urls_get):    
         newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
@@ -613,9 +613,9 @@ def belarus_sites_parsing():
             urls_get.append(pageNum)
     urls_get = max(urls_get)
     #2. получаем данные со всех страниц:                         
-    for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
+    #for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
     #for slug in range(0, 1):
-    #for slug in range(0,urls_get):     
+    for slug in range(0, urls_get):     
         newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
         webdriverr.get(newUrl)
         time.sleep(2)
@@ -677,7 +677,7 @@ def belarus_sites_parsing():
     urls_get = max(urls_get)
     #2. получаем данные со всех страниц:                         
     #for slug in range(0, 1):
-    for slug in range(0,urls_get): 
+    for slug in range(0, urls_get): 
         newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
         webdriverr.get(newUrl)
         time.sleep(2)
