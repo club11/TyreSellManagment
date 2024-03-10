@@ -916,7 +916,8 @@ def belarus_sites_parsing():
     webdriverr.get(url)
     soup = BeautifulSoup(webdriverr.page_source,'lxml')   
     #1. получаем количество страниц:
-    pages = soup.find('ul', class_='pagination')        
+    print('soup', soup)
+    pages = soup.find('ul', class_='pagination')  # pagination       
     urls_get = []
     #links = pages.find_all('a', class_='pagination__link')         # <li class="pagination__item"><a class="pagination__link" href="/legkovye-shiny/?nav=page-262">262</a></li>
     links = pages.find_all('li', class_='pagination__item')
