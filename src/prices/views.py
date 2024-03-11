@@ -1308,15 +1308,36 @@ def belarus_sites_parsing():
                                
 
 def russia_sites_parsing():
+            
+            # проверка - выполняется вызов функции для скрипта
+            test_script_is_in_process = models.SCRIPT_IS_RUNNING
+            from selenium import webdriver            
+            
+            if test_script_is_in_process:                                               # взято со скрипта
+            #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
+                chrome_options = webdriver.ChromeOptions()
+                chrome_options.add_argument("--no-sandbox")
+                chrome_options.add_argument("--headless")
+                chrome_options.add_argument("--disable-gpu")
+                webdriverr_global = webdriver.Chrome(options=chrome_options)
+            else:                                                                       # как было
+            #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
+                chrome_options = webdriver.ChromeOptions()  
+            #    chrome_options.add_argument("--no-sandbox") 
+            #    chrome_options.add_argument("--disable-setuid-sandbox") 
+            #    chrome_options.add_argument("--disable-dev-shm-usage")
+            #    chrome_options.add_argument('--headless=old')
 
-            chromeOptions1 = webdriver.ChromeOptions() 
-            chromeOptions1.add_argument("--no-sandbox") 
-            chromeOptions1.add_argument("--disable-setuid-sandbox") 
-            chromeOptions1.add_argument("--disable-dev-shm-usage");
-            chromeOptions1.add_argument("--headless") 
-            chromeOptions1.add_argument("--disable-extensions") 
+
+        ##    chromeOptions1 = webdriver.ChromeOptions() 
+        ##    chromeOptions1.add_argument("--no-sandbox") 
+        ##    chromeOptions1.add_argument("--disable-setuid-sandbox") 
+        ##    chromeOptions1.add_argument("--disable-dev-shm-usage");
+        ##    chromeOptions1.add_argument("--headless") 
+        ##    chromeOptions1.add_argument("--disable-extensions") 
             #chromeOptions1.add_argument("disable-infobars")
-            webdriverr_global = webdriver.Chrome(options=chromeOptions1)
+            webdriverr_global = webdriver.Chrome(options=chrome_options)  
+            #webdriverr_global = webdriver.Chrome(options=chromeOptions1)
         #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         # 1 ###### ПАРСИНГ express-shina:
 #        try:
@@ -1350,7 +1371,7 @@ def russia_sites_parsing():
                 webdriverr.get(newUrl)
                 time.sleep(2)
                 webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(3)
+                
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
                 products = soup.find_all('div', class_='b-offer')   
                 for data_got in products:
@@ -1411,6 +1432,7 @@ def russia_sites_parsing():
                     print(tyr_size, 'express-shina  парсинг грузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                     goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
                     express_shina_good_num += 1 
+                    time.sleep(4)
             # 2) парсинг легковых шин
             url = 'https://express-shina.ru/search/legkovyie-shinyi'       
             #webdriverr = webdriver.Chrome()
