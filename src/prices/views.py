@@ -1364,8 +1364,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 10):
                 print('page', slug )
                 newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/gruzovyie-shinyi?num=2
                 webdriverr.get(newUrl)
