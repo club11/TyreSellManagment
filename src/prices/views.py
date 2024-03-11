@@ -1408,7 +1408,7 @@ def russia_sites_parsing():
                                     tyre_period = tyre_period[0:end_pos]
                             #print('tyre_period', tyre_period)
                             #tyr_primenjaemost = tyre_period
-                        #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+                        print(tyr_size, 'express-shina  парсинг грузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                         goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
                         express_shina_good_num += 1 
                 # 2) парсинг легковых шин
@@ -1500,6 +1500,7 @@ def russia_sites_parsing():
                                 except:
                                     pass                            
                     ###        if slug < 1000:
+                                print(' express-shina.ru парсинг легковых шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike)
                                 goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
                     ###        else:
                     ###            goods_dict_express_shina_dopolnitelno[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
@@ -1620,7 +1621,7 @@ def russia_sites_parsing():
                                     tyr_spike = tyr_spike
                                 else:
                                     tyr_spike = ''
-                            #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+                            print(tyr_size, 'express-shina парсинг легкогрузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                             goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike, 
                             express_shina_good_num += 1 
                     except:
@@ -1693,7 +1694,7 @@ def russia_sites_parsing():
                                 tyr_group = 'прочая'
                             if tyr_size_index_in_list:
                                 try:
-                                    print('==-===--==', tyr_data_list, '----', tyr_size_index_in_list)
+                                    #print('==-===--==', tyr_data_list, '----', tyr_size_index_in_list)
                                     tyr_indexes = tyr_data_list[tyr_size_index_in_list+1]
                                     for nn in tyr_indexes_reg:
                                         result2 = re.search(rf'(?i){nn}', tyr_indexes)
@@ -1709,6 +1710,7 @@ def russia_sites_parsing():
                             if tyr_size == '':
                                 pass
                             else:
+                                print('express_shina парсинг спец шин', tyr_producer, tyr_model, tyr_indexes,  tyr_group,  tyre_rub_price)
                                 goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes,  tyr_group,  tyre_rub_price
                             express_shina_good_num += 1 
 
@@ -1847,7 +1849,7 @@ def russia_sites_parsing():
                                 else:
                                     tyr_model += nnn + ' '
                             tyr_group = 'легковые'
-                        #print ('tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
+                        print ('kolesatyt парсинг грузовых шин tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
 
                         #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                         #goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
@@ -1922,7 +1924,7 @@ def russia_sites_parsing():
                                 else:
                                     tyr_model += nnn + ' '
                             tyr_group = 'грузовые'
-                        #print ('tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
+                        print ('tyr_size kolesatyt парсинг легковых шин = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
 
                         #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                         #goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
@@ -1999,7 +2001,7 @@ def russia_sites_parsing():
                             tyr_group = 'легкогруз'
                         #print ('tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
 
-                        #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+                        print(tyr_size, ' kolesatyt парсинг легкогрузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                         #goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
                         goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model,  tyr_group,  tyre_rub_price
                         kolesatyt_good_num += 1 
@@ -2156,6 +2158,7 @@ def russia_sites_parsing():
                             for ii in reversed(tyr_size_data1[3 : ]):
                                 tyr_indexes += ii
                         #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
+                        print('kolesa_darom парсинг легковых зимних шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price)
                         goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
                         kolesa_darom_good_num += 1 
                 #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
@@ -2236,6 +2239,7 @@ def russia_sites_parsing():
                             for ii in reversed(tyr_size_data1[3 : ]):
                                 tyr_indexes += ii
                         #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
+                        print('kolesa_darom парсинг легковых летних шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price,  )
                         goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
                         kolesa_darom_good_num += 1 
                 # формируем отдельный список ПРОИЗВОДИТЕЛИ:
@@ -6793,7 +6797,7 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
 
 def running_programm():
 
-    belarus_sites_parsing()
+#    belarus_sites_parsing()
     russia_sites_parsing()
 #    print('script is running == belarus_sites_parsing()')
     print('script is running == russia_sites_parsing()')
