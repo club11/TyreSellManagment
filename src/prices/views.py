@@ -1354,66 +1354,63 @@ def russia_sites_parsing():
                 soup = BeautifulSoup(webdriverr.page_source,'lxml')   
                 products = soup.find_all('div', class_='b-offer')   
                 for data_got in products:
-                    try:
-                        #print('data_got', data_got)
-                        tyre_title = str(data_got.find('a', class_='b-offer-main__title').text.replace('Грузовая шина ', '').replace('новая', '')) 
-                        #print(tyre_title)
-                        if_price_exist = data_got.find('div', class_='b-offer-pay__price')
-                        if if_price_exist:
-                            tyre_rub_price = str(data_got.find('div', class_='b-offer-pay__price').text.replace('₽', '').replace(' ', '').replace('\xa0', ''))   
-                        #print('tyre_rub_price ===', tyre_rub_price)
-                        #print(tyre_title, ' ============',tyre_rub_price)
-                        if tyre_title and tyre_rub_price:            # Грузовая шина Н.Камск CRG VM-201 8.25R20 130/128K универсальная 12PR новая  ============ 13870 
-                            tyr_data_list = tyre_title.split(' ')
-                            tyr_size_index_in_list = None
-                            for some_param in tyr_data_list:        #['Н.Камск', 'НК-240', '8.25R20', '130/128K', 'универсальная', '12PR', '']
-                                for n in reg_list:
-                                    result = re.search(rf'(?i){n}', some_param)
-                                    if result:
-                                        #print(result, 'result', tyr_data_list.index(some_param))
-                                        tyr_size_index_in_list = tyr_data_list.index(some_param)
-                                        break
-                                if some_param == '':
-                                    tyr_data_list.remove(some_param)
-                            len_list = len(tyr_data_list)
-                            if tyr_size_index_in_list:
-                                tyr_size = tyr_data_list[tyr_size_index_in_list]
-                                tyr_producer = tyr_data_list[0]
-                                tyr_model = ''
-                                for n in range(1, tyr_size_index_in_list):
-                                    tyr_model += tyr_data_list[n]
-                                tyr_indexes = str
-                                tyr_usabiity = str   
-                                if tyr_size_index_in_list+1 < len_list or tyr_size_index_in_list+1 < len_list:
-                                    tyr_indexes_is = tyr_data_list[tyr_size_index_in_list+1]
-                                if tyr_indexes and tyr_indexes_is.isalpha():
-                                    tyr_usabiity = tyr_indexes_is
-                                else:
-                                    tyr_indexes = tyr_indexes_is
-                                if tyr_indexes and tyr_size_index_in_list+2 < len_list or tyr_size_index_in_list+2 < len_list:
-                                    tyr_usabiity = tyr_data_list[tyr_size_index_in_list+2]
-                                tyr_ply = str
-                                if tyr_data_list.index(tyr_usabiity) < (len_list-1):
-                                    tyr_ply = tyr_data_list[len_list-1]
-                                tyr_group = 'грузовая'
-                        tyre_period = str(data_got.find('ul', class_='b-offer-main__parameters').text)
-                        tyr_per = ''
-                        if tyre_period:
-                            obrezra = tyre_period.find('Ось применения грузовой шины: ') + 29
-                            tyre_period = tyre_period[obrezra:].split(' ')
-                            #print('tyre_period', tyre_period)
-                            if len(tyre_period) > 1:
-                                tyre_period = tyre_period[1]
-                                end_pos = tyre_period.find('Слойность')
-                                if end_pos:
-                                    tyre_period = tyre_period[0:end_pos]
-                            #print('tyre_period', tyre_period)
-                            #tyr_primenjaemost = tyre_period
-                        print(tyr_size, 'express-shina  парсинг грузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
-                        goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
-                        express_shina_good_num += 1 
-                    except:
-                        pass
+                    #print('data_got', data_got)
+                    tyre_title = str(data_got.find('a', class_='b-offer-main__title').text.replace('Грузовая шина ', '').replace('новая', '')) 
+                    #print(tyre_title)
+                    if_price_exist = data_got.find('div', class_='b-offer-pay__price')
+                    if if_price_exist:
+                        tyre_rub_price = str(data_got.find('div', class_='b-offer-pay__price').text.replace('₽', '').replace(' ', '').replace('\xa0', ''))   
+                    #print('tyre_rub_price ===', tyre_rub_price)
+                    #print(tyre_title, ' ============',tyre_rub_price)
+                    if tyre_title and tyre_rub_price:            # Грузовая шина Н.Камск CRG VM-201 8.25R20 130/128K универсальная 12PR новая  ============ 13870 
+                        tyr_data_list = tyre_title.split(' ')
+                        tyr_size_index_in_list = None
+                        for some_param in tyr_data_list:        #['Н.Камск', 'НК-240', '8.25R20', '130/128K', 'универсальная', '12PR', '']
+                            for n in reg_list:
+                                result = re.search(rf'(?i){n}', some_param)
+                                if result:
+                                    #print(result, 'result', tyr_data_list.index(some_param))
+                                    tyr_size_index_in_list = tyr_data_list.index(some_param)
+                                    break
+                            if some_param == '':
+                                tyr_data_list.remove(some_param)
+                        len_list = len(tyr_data_list)
+                        if tyr_size_index_in_list:
+                            tyr_size = tyr_data_list[tyr_size_index_in_list]
+                            tyr_producer = tyr_data_list[0]
+                            tyr_model = ''
+                            for n in range(1, tyr_size_index_in_list):
+                                tyr_model += tyr_data_list[n]
+                            tyr_indexes = str
+                            tyr_usabiity = str   
+                            if tyr_size_index_in_list+1 < len_list or tyr_size_index_in_list+1 < len_list:
+                                tyr_indexes_is = tyr_data_list[tyr_size_index_in_list+1]
+                            if tyr_indexes and tyr_indexes_is.isalpha():
+                                tyr_usabiity = tyr_indexes_is
+                            else:
+                                tyr_indexes = tyr_indexes_is
+                            if tyr_indexes and tyr_size_index_in_list+2 < len_list or tyr_size_index_in_list+2 < len_list:
+                                tyr_usabiity = tyr_data_list[tyr_size_index_in_list+2]
+                            tyr_ply = str
+                            if tyr_data_list.index(tyr_usabiity) < (len_list-1):
+                                tyr_ply = tyr_data_list[len_list-1]
+                            tyr_group = 'грузовая'
+                    tyre_period = str(data_got.find('ul', class_='b-offer-main__parameters').text)
+                    tyr_per = ''
+                    if tyre_period:
+                        obrezra = tyre_period.find('Ось применения грузовой шины: ') + 29
+                        tyre_period = tyre_period[obrezra:].split(' ')
+                        #print('tyre_period', tyre_period)
+                        if len(tyre_period) > 1:
+                            tyre_period = tyre_period[1]
+                            end_pos = tyre_period.find('Слойность')
+                            if end_pos:
+                                tyre_period = tyre_period[0:end_pos]
+                        #print('tyre_period', tyre_period)
+                        #tyr_primenjaemost = tyre_period
+                    print(tyr_size, 'express-shina  парсинг грузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+                    goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
+                    express_shina_good_num += 1 
             # 2) парсинг легковых шин
             url = 'https://express-shina.ru/search/legkovyie-shinyi'       
             #webdriverr = webdriver.Chrome()
