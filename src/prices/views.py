@@ -1362,8 +1362,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(0, 4):
                 print('page', slug )
                 newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/gruzovyie-shinyi?num=2
                 webdriverr.get(newUrl)
@@ -1458,8 +1458,8 @@ def russia_sites_parsing():
             if pages_num > 1000 :
                 thousands = 1000
             #!!!!!!!!!!!
-            pages_num_list = [[0, thousands],[thousands, pages_num]] 
-            #pages_num_list = [[0, 1],[1, 2]]                            # CТРАНИЦЫ
+            #pages_num_list = [[0, thousands],[thousands, pages_num]] 
+            pages_num_list = [[0, 1],[1, 5]]                            # CТРАНИЦЫ
             #!!!!!!!!!!!
             for pg in pages_num_list:                                         
                 for slug in pg:                             # мое добавление специально для express-shina  # c 1 по 2 станицы
@@ -1547,8 +1547,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                   
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 7):
                 print('page', slug )
                 try:
                     newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/legkogruzovyie-shinyi?num=2
@@ -1667,8 +1667,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 6):
                 print('page', slug )
                 newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/spetcshinyi?num=4
                 webdriverr.get(newUrl)
@@ -1823,8 +1823,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 6):
                 print('page', slug )
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -1892,8 +1892,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 6):
                 print('page', slug)
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -1961,8 +1961,8 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 7):
                 print('page', slug )
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -2104,8 +2104,8 @@ def russia_sites_parsing():
                         urls_get.append(pageNum)#
     #        print('!!!!======++', 'urls_get', urls_get)
             #2. получаем данные со всех страниц:                         
-            for slug in range(0, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(0, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 7):
                 print('page', slug )
                 newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
                 webdriverr.get(newUrl)
@@ -2185,8 +2185,8 @@ def russia_sites_parsing():
                     if pageNum != None:
                         urls_get.append(pageNum)#
             #2. получаем данные со всех страниц:                         
-            for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
+            for slug in range(1, 7):
                 print('page', slug )
                 newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
                 webdriverr.get(newUrl)
