@@ -2112,7 +2112,7 @@ def russia_sites_parsing():
                     webdriverr.get(newUrl)
                     time.sleep(2)
                     webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(2)
+                    time.sleep(5)
                     soup = BeautifulSoup(webdriverr.page_source,'lxml')   
                     products = soup.find_all('div', class_='product-card__wrapper')  
                     for data_got in products:
@@ -2160,6 +2160,7 @@ def russia_sites_parsing():
                         kolesa_darom_good_num += 1 
                 except:
                     pass
+                webdriverr.close()
             #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
             #    print(k, v)
             # 2) парсинг легковых летних шин
