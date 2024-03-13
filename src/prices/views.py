@@ -2160,7 +2160,7 @@ def russia_sites_parsing():
                         kolesa_darom_good_num += 1 
                 except:
                     pass
-                webdriverr.close()
+            webdriverr.close()
             #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
             #    print(k, v)
             # 2) парсинг легковых летних шин
