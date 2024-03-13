@@ -2165,7 +2165,8 @@ def russia_sites_parsing():
             #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
             #    print(k, v)
             # 2) парсинг легковых летних шин
-            url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'       
+            #url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'  
+            url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/'     
             #webdriverr = webdriver.Chrome()
             #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             webdriverr = webdriverr_global
