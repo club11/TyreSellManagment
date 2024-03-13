@@ -1459,7 +1459,7 @@ def russia_sites_parsing():
                 thousands = 1000
             #!!!!!!!!!!!
             #pages_num_list = [[0, thousands],[thousands, pages_num]] 
-            pages_num_list = [[0, 1],[1, 2]]                            # CТРАНИЦЫ
+            pages_num_list = [[0, 1],[1, 1]]                            # CТРАНИЦЫ
             #!!!!!!!!!!!
             for pg in pages_num_list:                                         
                 for slug in pg:                             # мое добавление специально для express-shina  # c 1 по 2 станицы
@@ -1548,7 +1548,7 @@ def russia_sites_parsing():
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                   
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 7):
+            for slug in range(1, 1):
                 print('page', slug )
                 try:
                     newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/legkogruzovyie-shinyi?num=2
@@ -1809,7 +1809,7 @@ def russia_sites_parsing():
             webdriverr.get(url)
             time.sleep(2)
             webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(5)
+            time.sleep(2)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')   
             products = soup.find_all('div', class_='cat-item w-100 block-rel mob-item')      
             #print('products', products)
@@ -1824,7 +1824,7 @@ def russia_sites_parsing():
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 2):
+            for slug in range(1, 1):
                 print('page', slug )
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -1893,7 +1893,7 @@ def russia_sites_parsing():
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 2):
+            for slug in range(1, 1):
                 print('page', slug)
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -1962,7 +1962,7 @@ def russia_sites_parsing():
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 2):
+            for slug in range(1, 1):
                 print('page', slug )
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -2106,57 +2106,60 @@ def russia_sites_parsing():
             #2. получаем данные со всех страниц:                         
             #for slug in range(0, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
             for slug in range(1, 7):
-                print('page', slug )
-                newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
-                webdriverr.get(newUrl)
-                time.sleep(2)
-                webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)
-                soup = BeautifulSoup(webdriverr.page_source,'lxml')   
-                products = soup.find_all('div', class_='product-card__wrapper')  
-                for data_got in products:
-                    #print('data_got', data_got)
-                    tyre_title = str(data_got.find('p', class_='product-card-properties__title').text.replace('tyre_rub_price', ' '))     
-                    #print(tyre_title)
-                    tyre_rub_price = str(data_got.find('div', class_='product-card__button-wrap').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
-                    tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
-                    #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
-                    tyr_model = ''
-                    tyr_group = ''
-                    tyr_season = ''
-                    tyr_indexes = ''
-                    tyr_size = ''
-                    tyr_producer = ''
-                    list_of_prod_names = ['Ling', 'Nokian', 'Royal', 'Киров']
-                    if tyre_title and tyre_rub_price:            
-                        tyre_title = tyre_title.split(' ')
-                        t_prod_n = tyre_title[0]
-                        t_index = 0
-                        if t_prod_n in list_of_prod_names:
-                            tyr_producer = tyre_title[0] + tyre_title[1]
-                            t_index = 1
-                        else:
-                            tyr_producer = tyre_title[0]
-                        llen = len(tyr_producer)
-                        for tt in tyre_title[t_index+1 : llen]:
-                            tyr_model += tt
-                        tyr_size_data1 = tyr_size_data1.split(' ')
-                        for kk in tyr_size_data1[0 : 3]:
-                            if tyr_size_data1.index(kk) == 1:
-                                tyr_size = tyr_size + '/'                        
-                            tyr_size += kk
-                        tyr_size_len = len(tyr_size)
-                        if tyr_size[tyr_size_len-1] == 'C':
-                            tyr_group = 'легкогруз'
-                        else:
-                            tyr_group = 'легковые'
-                        tyr_season = 'зимние'
-                        for ii in reversed(tyr_size_data1[3 : ]):
-                            tyr_indexes += ii
-                    #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
-                    print('kolesa_darom парсинг легковых зимних шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price)
-                    goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
-                    kolesa_darom_good_num += 1 
+                try:
+                    print('page', slug )
+                    newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
+                    webdriverr.get(newUrl)
+                    time.sleep(2)
+                    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                    time.sleep(2)
+                    soup = BeautifulSoup(webdriverr.page_source,'lxml')   
+                    products = soup.find_all('div', class_='product-card__wrapper')  
+                    for data_got in products:
+                        #print('data_got', data_got)
+                        tyre_title = str(data_got.find('p', class_='product-card-properties__title').text.replace('tyre_rub_price', ' '))     
+                        #print(tyre_title)
+                        tyre_rub_price = str(data_got.find('div', class_='product-card__button-wrap').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
+                        tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
+                        #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
+                        tyr_model = ''
+                        tyr_group = ''
+                        tyr_season = ''
+                        tyr_indexes = ''
+                        tyr_size = ''
+                        tyr_producer = ''
+                        list_of_prod_names = ['Ling', 'Nokian', 'Royal', 'Киров']
+                        if tyre_title and tyre_rub_price:            
+                            tyre_title = tyre_title.split(' ')
+                            t_prod_n = tyre_title[0]
+                            t_index = 0
+                            if t_prod_n in list_of_prod_names:
+                                tyr_producer = tyre_title[0] + tyre_title[1]
+                                t_index = 1
+                            else:
+                                tyr_producer = tyre_title[0]
+                            llen = len(tyr_producer)
+                            for tt in tyre_title[t_index+1 : llen]:
+                                tyr_model += tt
+                            tyr_size_data1 = tyr_size_data1.split(' ')
+                            for kk in tyr_size_data1[0 : 3]:
+                                if tyr_size_data1.index(kk) == 1:
+                                    tyr_size = tyr_size + '/'                        
+                                tyr_size += kk
+                            tyr_size_len = len(tyr_size)
+                            if tyr_size[tyr_size_len-1] == 'C':
+                                tyr_group = 'легкогруз'
+                            else:
+                                tyr_group = 'легковые'
+                            tyr_season = 'зимние'
+                            for ii in reversed(tyr_size_data1[3 : ]):
+                                tyr_indexes += ii
+                        #goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_season,  tyr_ply       #('195/60R15', 39) ('Nokian', 'Tyres7', '92T', 'легковая', '5380', 'Зима', 'Да') !!!
+                        print('kolesa_darom парсинг легковых зимних шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price)
+                        goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
+                        kolesa_darom_good_num += 1 
+                except:
+                    pass
             #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
             #    print(k, v)
             # 2) парсинг легковых летних шин
