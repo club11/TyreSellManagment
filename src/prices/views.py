@@ -2112,7 +2112,7 @@ def russia_sites_parsing():
                     webdriverr.get(newUrl)
                     time.sleep(2)
                     webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(5)
+                    time.sleep(3)
                     soup = BeautifulSoup(webdriverr.page_source,'lxml')   
                     products = soup.find_all('div', class_='product-card__wrapper')  
                     for data_got in products:
@@ -2158,6 +2158,7 @@ def russia_sites_parsing():
                         print('kolesa_darom парсинг легковых зимних шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price)
                         goods_dict_kolesa_darom[tyr_size, kolesa_darom_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_season
                         kolesa_darom_good_num += 1 
+                        time.sleep(3)
                 except:
                     pass
     #webdriverr.close()
@@ -2189,6 +2190,7 @@ def russia_sites_parsing():
                     if pageNum != None:
                         urls_get.append(pageNum)#
             #2. получаем данные со всех страниц:                         
+            time.sleep(5)
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
             for slug in range(1, 7):
                 print('page', slug )
