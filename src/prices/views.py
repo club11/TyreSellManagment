@@ -1517,8 +1517,8 @@ def russia_sites_parsing():
                             except:
                                 pass                            
                 ###        if slug < 1000:
-                            print(' express-shina.ru парсинг легковых шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike)
-                            goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
+                        print(' express-shina.ru парсинг легковых шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike)
+                        goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
                 ###        else:
                 ###            goods_dict_express_shina_dopolnitelno[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
                 ###        express_shina_good_num += 1 
@@ -2105,7 +2105,7 @@ def russia_sites_parsing():
     #        print('!!!!======++', 'urls_get', urls_get)
             #2. получаем данные со всех страниц:                         
             #for slug in range(0, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 7):
+            for slug in range(1, 5):
                 try:
                     print('page', slug )
                     newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
@@ -2121,7 +2121,7 @@ def russia_sites_parsing():
                         #print(tyre_title)
                         tyre_rub_price = str(data_got.find('div', class_='product-card__button-wrap').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
                         tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
-                        #print('tyre_title', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
+                        print('tyre_title FFF', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
                         tyr_model = ''
                         tyr_group = ''
                         tyr_season = ''
@@ -2165,8 +2165,8 @@ def russia_sites_parsing():
             #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
             #    print(k, v)
             # 2) парсинг легковых летних шин
-            #url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'  
-            url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/'     
+            url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/leto/'  
+            #url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/'     
             #webdriverr = webdriver.Chrome()
             #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
             webdriverr = webdriverr_global
