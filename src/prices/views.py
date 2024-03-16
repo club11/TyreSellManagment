@@ -83,6 +83,7 @@ def belarus_sites_parsing():
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument('--disable-dev-shm-usage')
         webdriverr_global = webdriver.Chrome(options=chrome_options)
     else:                                                                       # как было
     #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
@@ -91,6 +92,7 @@ def belarus_sites_parsing():
     #    chrome_options.add_argument("--disable-setuid-sandbox") 
     #    chrome_options.add_argument("--disable-dev-shm-usage")
     #    chrome_options.add_argument('--headless=old')
+    #    chrome_options.add_argument('--disable-dev-shm-usage')
 
         webdriverr_global = webdriver.Chrome(options=chrome_options)  
     # END проверка - выполняется вызов функции для скрипта  
@@ -1317,6 +1319,7 @@ def russia_sites_parsing():
                 chrome_options.add_argument("--no-sandbox")
                 chrome_options.add_argument("--headless")
                 chrome_options.add_argument("--disable-gpu")
+                chrome_options.add_argument('--disable-dev-shm-usage')
                 webdriverr_global = webdriver.Chrome(options=chrome_options)
             else:                                                                       # как было
             #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
@@ -1325,6 +1328,8 @@ def russia_sites_parsing():
             #    chrome_options.add_argument("--disable-setuid-sandbox") 
             #    chrome_options.add_argument("--disable-dev-shm-usage")
             #    chrome_options.add_argument('--headless=old')
+            #    chrome_options.add_argument('--disable-dev-shm-usage')
+                
 
             webdriverr_global = webdriver.Chrome(options=chrome_options)  
 
