@@ -2127,7 +2127,7 @@ def russia_sites_parsing():
                         #print(tyre_title)
                         tyre_rub_price = str(data_got.find('div', class_='product-card__button-wrap').text.replace('₽', '').replace(' ', ''))#.replace('\xa0', ''))   
                         tyr_size_data1 = str(data_got.find('ul', class_='product-card-properties__group product-card-properties__group--full-width product-card-properties__group--chips kd-chips').text) # !!!!!!!!!!!!!!
-                        print('tyre_title FFF', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
+                        #print('tyre_title FFF', tyre_title, 'tyre_rub_price', tyre_rub_price, 'tyr_size', tyr_size_data1)
                         tyr_model = ''
                         tyr_group = ''
                         tyr_season = ''
@@ -6807,7 +6807,7 @@ class ComparativeAnalysisTableModelRussiaUpdateView(View):
 
 def running_programm():
 
-#    belarus_sites_parsing()
+    belarus_sites_parsing()
     russia_sites_parsing()
 #    print('script is running == belarus_sites_parsing()')
     print('script is running == russia_sites_parsing()')
