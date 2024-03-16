@@ -1311,39 +1311,39 @@ def belarus_sites_parsing():
 
 def russia_sites_parsing():
             
-            test_script_is_in_process = models.SCRIPT_IS_RUNNING
-            from selenium import webdriver
-            if test_script_is_in_process:                                               # взято со скрипта
-            #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
-                chrome_options = webdriver.ChromeOptions()
-                chrome_options.add_argument("--no-sandbox")
-                chrome_options.add_argument("--headless")
-                chrome_options.add_argument("--disable-gpu")
-                chrome_options.add_argument('--disable-dev-shm-usage')
-                webdriverr_global = webdriver.Chrome(options=chrome_options)
-            else:                                                                       # как было
-            #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
-                chrome_options = webdriver.ChromeOptions()  
-            #    chrome_options.add_argument("--no-sandbox") 
-            #    chrome_options.add_argument("--disable-setuid-sandbox") 
-            #    chrome_options.add_argument("--disable-dev-shm-usage")
-            #    chrome_options.add_argument('--headless=old')
-            #    chrome_options.add_argument('--disable-dev-shm-usage')
+        test_script_is_in_process = models.SCRIPT_IS_RUNNING
+        from selenium import webdriver
+        if test_script_is_in_process:                                               # взято со скрипта
+        #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            webdriverr_global = webdriver.Chrome(options=chrome_options)
+        else:                                                                       # как было
+        #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
+            chrome_options = webdriver.ChromeOptions()  
+        #    chrome_options.add_argument("--no-sandbox") 
+        #    chrome_options.add_argument("--disable-setuid-sandbox") 
+        #    chrome_options.add_argument("--disable-dev-shm-usage")
+        #    chrome_options.add_argument('--headless=old')
+        #    chrome_options.add_argument('--disable-dev-shm-usage')
                 
 
-            webdriverr_global = webdriver.Chrome(options=chrome_options)  
+        webdriverr_global = webdriver.Chrome(options=chrome_options)  
 
 
-            #chromeOptions1 = webdriver.ChromeOptions() 
-            #chromeOptions1.add_argument("--no-sandbox") 
-            #chromeOptions1.add_argument("--disable-setuid-sandbox") 
-            #chromeOptions1.add_argument("--disable-dev-shm-usage");
-            #chromeOptions1.add_argument("--headless") 
-            #chromeOptions1.add_argument("--disable-extensions") 
-            #webdriverr_global = webdriver.Chrome(options=chromeOptions1)
+        #chromeOptions1 = webdriver.ChromeOptions() 
+        #chromeOptions1.add_argument("--no-sandbox") 
+        #chromeOptions1.add_argument("--disable-setuid-sandbox") 
+        #chromeOptions1.add_argument("--disable-dev-shm-usage");
+        #chromeOptions1.add_argument("--headless") 
+        #chromeOptions1.add_argument("--disable-extensions") 
+        #webdriverr_global = webdriver.Chrome(options=chromeOptions1)
 
         # 1 ###### ПАРСИНГ express-shina:
-#        try:
+        try:
             express_shina_good_num = 0
             # 1) парсинг грузовых шин
             url = 'https://express-shina.ru/search/gruzovyie-shinyi'       
@@ -1801,11 +1801,11 @@ def russia_sites_parsing():
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'express-shina.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
                         obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
-#        except:
-#            pass   
+        except:
+            pass   
         ##### END OF express-shina PARSING
         # 2 ###### ПАРСИНГ kolesatyt:
- #       try:
+        try:
             kolesatyt_good_num = 0
             # 1) парсинг грузовых шин
             url = 'https://kolesatyt.ru/podbor/gruzovye-shiny/'       
@@ -2077,11 +2077,11 @@ def russia_sites_parsing():
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'kolesatyt.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
                         obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
-#        except:
-#            pass                                                                                                                                                                                                                   
+        except:
+            pass                                                                                                                                                                                                                   
         ###### END OF kolesatyt PARSING
         # 3 ###### ПАРСИНГ KOLESA_DAROM:
-#        try:     
+        try:     
             kolesa_darom_good_num = 0
             # 1) парсинг легковых зимних шин
             url = 'https://www.kolesa-darom.ru/catalog/avto/shiny/zima/'       
@@ -2313,11 +2313,11 @@ def russia_sites_parsing():
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'kolesa-darom.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
                         obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)                
-#        except:
-#            pass
+        except:
+            pass
         # 3 END  ###### ПАРСИНГ KOLESA_DAROM
-    #finally:
-    #    webdriverr.quit()                 
+        finally:
+            webdriverr.quit()                 
 
 
 
