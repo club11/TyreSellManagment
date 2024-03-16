@@ -2111,7 +2111,7 @@ def russia_sites_parsing():
     #        print('!!!!======++', 'urls_get', urls_get)
             #2. получаем данные со всех страниц:                         
             #for slug in range(0, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 3):
+            for slug in range(1, 5):
                 try:
                     print('page - парсинг легковых зимних шин', slug )
                     newUrl = url + f'nav/page-{slug}/'       #https://www.kolesa-darom.ru/catalog/avto/shiny/zima/nav/page-2/
@@ -2166,7 +2166,7 @@ def russia_sites_parsing():
                         kolesa_darom_good_num += 1 
                 except:
                     pass
-    #webdriverr.close()
+            webdriverr.close()
             #for k, v in goods_dict_kolesa_darom.items():           # ('235 65 R17 ', 16) ('Goodyear', 'UltraGrip Ice Gen-1 SUV ', 'T 108  ', 'легковые', '11000', 'зимние')
             #    print(k, v)
             # 2) парсинг легковых летних шин
