@@ -99,13 +99,16 @@ def currency_on_date():
     text_with_no_beginn_val = res_cut[start_point_val:] 
     end_point_val = text_with_no_beginn_val.find('</Value>')   
     res_cut_val = text_with_no_beginn_val[:end_point_val].replace(',', '.')
-    #print('res_cut_val ==', res_cut_val) 
-    curr_value = float(res_cut_val)
-    if curr_value:
-        currency = '1 USD'
-        shown_date = prices_models.CURRENCY_DATE_GOT_FROM_USER
-        return currency, curr_value, shown_date
-    return 'Нет данных', 0, 'Ошибка сервера НБ РБ'
+    if res_cut_val:
+        print('res_cut_val ==', res_cut_val) 
+        curr_value = float(res_cut_val)
+        if curr_value:
+            currency = '1 USD'
+            shown_date = prices_models.CURRENCY_DATE_GOT_FROM_USER
+            return currency, curr_value, shown_date
+        return 'Нет данных', 0, 'Ошибка сервера НБ РБ'
+    else:
+        return 'Нет данных', 0, 'Ошибка сервера НБ РБ'
     # END КУРС ПО ЦБ РФ:
 
 
