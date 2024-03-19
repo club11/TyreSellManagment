@@ -106,7 +106,7 @@ def currency_on_date():
             currency = '1 USD'
             shown_date = prices_models.CURRENCY_DATE_GOT_FROM_USER
             return currency, curr_value, shown_date
-        return 'Нет данных', 0, 'Ошибка сервера НБ РБ'
+        return 'Нет данных', 0, 'Ошибка сервера - НБ РБ'
     else:
         return 'Нет данных', 0, 'Ошибка сервера НБ РБ'
     # END КУРС ПО ЦБ РФ:

@@ -1369,7 +1369,7 @@ def russia_sites_parsing():
             #2. получаем данные со всех страниц:                         
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
             for slug in range(0, 1):
-                print('page', slug )
+        #        print('page', slug )
                 newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/gruzovyie-shinyi?num=2
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1432,7 +1432,7 @@ def russia_sites_parsing():
                                 tyre_period = tyre_period[0:end_pos]
                         #print('tyre_period', tyre_period)
                         #tyr_primenjaemost = tyre_period
-                    print(tyr_size, 'express-shina  парсинг грузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+            #        print(tyr_size, 'express-shina  парсинг грузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply', '=tyr_group', tyr_group)
                     goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
                     express_shina_good_num += 1 
             # 2) парсинг легковых шин
@@ -1457,7 +1457,7 @@ def russia_sites_parsing():
                 if pageNum != None:
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:    
-    #        goods_dict_express_shina_dopolnitelno = {} 
+#            goods_dict_express_shina_dopolnitelno = {} 
             pages_num = urls_get[-1] 
             thousands = urls_get[-1]
             if pages_num > 1000 :
@@ -1469,7 +1469,7 @@ def russia_sites_parsing():
             #!!!!!!!!!!!
             for pg in pages_num_list:                                         
                 for slug in pg:                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-                    print('page', slug )
+        #            print('page', slug )
             #for slug in range(1, 2):
             #        if slug == 1000:
             #            time.sleep(100)
@@ -1507,7 +1507,7 @@ def russia_sites_parsing():
                                 if tyr_size_index_in_list:
                                     for some_data in (1, tyr_size_index_in_list-1):
                                         tyr_model += tyr_data_list[some_data]
-                                tyr_group = 'легковая'
+                                tyr_group = 'легковые'
                         tyre_period = str(data_got.find('ul', class_='b-offer-main__parameters').text.replace('Наличие шипов:', ''))
                         tyr_per = ''
                         tyr_spike = ''
@@ -1523,7 +1523,7 @@ def russia_sites_parsing():
                             except:
                                 pass                            
                 ###        if slug < 1000:
-                        print(' express-shina.ru парсинг легковых шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike)
+                #        print(' express-shina.ru парсинг легковых шин', tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike)
                         goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
                 ###        else:
                 ###            goods_dict_express_shina_dopolnitelno[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike,
@@ -1555,7 +1555,7 @@ def russia_sites_parsing():
             #2. получаем данные со всех страниц:                   
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
             for slug in range(1, 2):
-                print('page', slug )
+        #        print('page', slug )
                 try:
                     newUrl = url + f'?num={slug}'       #https://express-shina.ru/search/legkogruzovyie-shinyi?num=2
                     webdriverr.get(newUrl)
@@ -1645,14 +1645,14 @@ def russia_sites_parsing():
                                 tyr_spike = tyr_spike
                             else:
                                 tyr_spike = ''
-                        print(tyr_size, 'express-shina парсинг легкогрузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+            #            print(tyr_size, 'express-shina парсинг легкогрузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                         goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group, tyre_rub_price, tyr_per, tyr_spike, 
                         express_shina_good_num += 1 
                 except:
                     pass
             #   for k, v in goods_dict_express_shina.items():
             #       print(k, v, '!!!')
-       #    3) парсинг спец шин
+   #        3) парсинг спец шин
             url = 'https://express-shina.ru/search/spetcshinyi'       
             #webdriverr = webdriver.Chrome()
             #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
@@ -1735,7 +1735,7 @@ def russia_sites_parsing():
                         if tyr_size == '':
                             pass
                         else:
-                            print('express_shina парсинг спец шин', tyr_producer, tyr_model, tyr_indexes,  tyr_group,  tyre_rub_price)
+            #                print('express_shina парсинг спец шин', tyr_producer, tyr_model, tyr_indexes,  tyr_group,  tyre_rub_price)
                             goods_dict_express_shina[tyr_size, express_shina_good_num] = tyr_producer, tyr_model, tyr_indexes,  tyr_group,  tyre_rub_price
                         express_shina_good_num += 1 
             #for k, v in goods_dict_express_shina.items(): # СЛОВАРЬ ключи = типоразмер, номер в словаре, данные = производитель, модель, индексы, группа, цена
@@ -1758,7 +1758,7 @@ def russia_sites_parsing():
             tyres_in_bd = tyres_models.Tyre.objects.all()
             for tyre in tyres_in_bd:
                 for k, v in chosen_by_company_dict.items():
-                    #print(k, 'GGG', v, 'GGG', len(v))
+                #    print(k, 'GGG EXPRESS yyy', v, 'GGG', len(v))
                 #    name_competitor = None
                     if tyre.tyre_size.tyre_size == k[0]:
                         #print('TTTT', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
@@ -1766,7 +1766,15 @@ def russia_sites_parsing():
                         pr = None                
                         name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
                             competitor_name = v[0]
-                        )
+                      )
+
+                        tyre_gggroup = None
+                        if v[3]:
+                            tyre_gggroup = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[3]) 
+                        if tyre_gggroup:
+                            tyre_gggroup = tyre_gggroup[0] 
+
+
                         #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',  name_competitor, 'name_competitor =', v[0])
                         #if len(v) > 5 or len(v) == 5:
                         #    print(v[4])
@@ -1793,7 +1801,7 @@ def russia_sites_parsing():
                             name_competitor = v[1], 
                             parametres_competitor = v[2],
                         #    season = season_usage,
-                        #    group = ,
+                            group = tyre_gggroup,
                         )        
                         )
             bulk_express_compet = models.CompetitorSiteModel.objects.bulk_create(express_shina_compet_obj_tyre_bulk_list)
@@ -1869,10 +1877,10 @@ def russia_sites_parsing():
                             else:
                                 tyr_model += nnn + ' '
                         tyr_group = 'легковые'
-                    print ('kolesatyt парсинг грузовых шин tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
+            #        print ('kolesatyt парсинг грузовых шин tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
                     #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                     #goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
-                    goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model,  tyr_group,  tyre_rub_price
+                    goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_group, tyre_rub_price
                     kolesatyt_good_num += 1 
             #for k, v in goods_dict_kolesatyt.items():
             #    print(k, v)
@@ -1899,8 +1907,8 @@ def russia_sites_parsing():
                     urls_get.append(pageNum)
             #2. получаем данные со всех страниц:                         
             #for slug in range(1, urls_get[-1]):                             # мое добавление специально для express-shina  # c 1 по 2 станицы
-            for slug in range(1, 2):
-                print('page', slug)
+            for slug in range(1, 3):
+                print('page kolesa ', slug)
                 newUrl = url + f'?PAGEN_1={slug}'       #https://kolesatyt.ru/podbor/gruzovye-shiny/?PAGEN_1=2
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1937,11 +1945,23 @@ def russia_sites_parsing():
                                 tyr_producer = nnn
                             else:
                                 tyr_model += nnn + ' '
-                        tyr_group = 'грузовые'
-                    print ('tyr_size kolesatyt парсинг легковых шин = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
+                        tyr_group = 'легковые'
+                        tyre_indexx = ''
+                        tyr_indexes = str(data_got.find('ul', class_='list-style-line-min').text)
+                        if tyr_indexes:
+                            first_index_st_ind = tyr_indexes.find(':') + 1
+                            first_index_lt_ind = tyr_indexes.find('(')
+                            first_index = tyr_indexes[first_index_st_ind  : first_index_lt_ind].replace(' ', '')
+                            second_index_st_ind = tyr_indexes.rfind(':') + 1
+                            second_index_lt_ind = tyr_indexes.rfind('(')
+                            second_index = tyr_indexes[second_index_st_ind : second_index_lt_ind].replace(' ', '') 
+                            tyre_indexx = first_index + second_index
+                            tyre_indexx = tyre_indexx.replace(' ', '').replace('\t', '') 
+                    #        print('99 tyre_indexx',  tyre_indexx)
+                    #print ('tyr_size kolesatyt парсинг легковых шин = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
                     #print(tyr_size, '=tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                     #goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
-                    goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model,  tyr_group,  tyre_rub_price
+                    goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyre_indexx,  tyr_group,  tyre_rub_price
                     kolesatyt_good_num += 1 
             #for k, v in goods_dict_kolesatyt.items():
             #    print(k, v)
@@ -2007,10 +2027,21 @@ def russia_sites_parsing():
                             else:
                                 tyr_model += nnn + ' '
                         tyr_group = 'легкогруз'
+                        tyre_indexx = ''
+                        tyr_indexes = str(data_got.find('ul', class_='list-style-line-min').text)
+                        if tyr_indexes:
+                            first_index_st_ind = tyr_indexes.find(':') + 1
+                            first_index_lt_ind = tyr_indexes.find('(')
+                            first_index = tyr_indexes[first_index_st_ind  : first_index_lt_ind].replace(' ', '')
+                            second_index_st_ind = tyr_indexes.rfind(':') + 1
+                            second_index_lt_ind = tyr_indexes.rfind('(')
+                            second_index = tyr_indexes[second_index_st_ind : second_index_lt_ind].replace(' ', '') 
+                            tyre_indexx = first_index + second_index
+                            tyre_indexx = tyre_indexx.replace(' ', '').replace('\t', '') 
                     #print ('tyr_size = ', tyr_size, 'tyre_rub_price = ', tyre_rub_price, 'tyr_producer = ', tyr_producer, 'tyr_model = ', tyr_model, 'tyr_group = ', tyr_group )
-                    print(tyr_size, ' kolesatyt парсинг легкогрузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
+            #        print(tyr_size, ' kolesatyt парсинг легкогрузовых шин =tyr_size', tyr_producer, '=tyr_producer', tyr_model, '=tyr_model', tyr_indexes, '=tyr_indexes', tyr_usabiity, '=tyr_usabiity', tyr_ply, '=tyr_ply')
                     #goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyr_indexes, tyr_group,  tyre_rub_price, tyr_usabiity,  tyr_ply
-                    goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model,  tyr_group,  tyre_rub_price
+                    goods_dict_kolesatyt[tyr_size, kolesatyt_good_num] = tyr_producer, tyr_model, tyre_indexx, tyr_group,  tyre_rub_price
                     kolesatyt_good_num += 1 
             #for k, v in goods_dict_kolesatyt.items():           # ('295/35R23', 30) ('HANKOOK', 'Winter I*cept evo2 W320A ', 'грузовые', '65 000')
             #    print(k, v)
@@ -2029,7 +2060,7 @@ def russia_sites_parsing():
             # сопоставление с БД  и запись в БД конкурентов (kolesatyt):
             kolesatyt_compet_obj_tyre_bulk_list = []
             list_tyre_sizes = []                
-            
+
             # сопоставление с БД  и запись в БД конкурентов (kolesatyt):
             tyres_in_bd = tyres_models.Tyre.objects.all()
             for tyre in tyres_in_bd:
@@ -2042,6 +2073,12 @@ def russia_sites_parsing():
                         name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
                             competitor_name =  v[0]
                         )
+                        tyre_gggroup = None 
+                        if v[3]:
+                            tyre_gggroup = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[3]) 
+                        #    print('!!!!!', tyre_gggroup)
+                        if tyre_gggroup:
+                            tyre_gggroup = tyre_gggroup[0]                
                         #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',  name_competitor, 'name_competitor =', v[0])
                         #if len(v) > 5 or len(v) == 5:
                         #    print(v[4])
@@ -2056,7 +2093,7 @@ def russia_sites_parsing():
                         #else:
                         #    season_usage = None 
                         if coma and len(v) > 3:  #len(v[4]) == 5 :
-                            pr = float(str(v[3]).replace(',', '.').replace(' ', ''))
+                            pr = float(str(v[4]).replace(',', '.').replace(' ', ''))
                         list_tyre_sizes.append(k[0])
                         kolesatyt_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
                             site = 'kolesatyt.ru',
@@ -2068,11 +2105,10 @@ def russia_sites_parsing():
                             name_competitor = v[1], 
                             parametres_competitor = v[2],
                         #    season = season_usage,
-                        #    group = tyre_groupp,
+                            group = tyre_gggroup,
                         )    
                         )
             kolesatyt_compet = models.CompetitorSiteModel.objects.bulk_create(kolesatyt_compet_obj_tyre_bulk_list)
-
             list_tyre_sizes = set(list_tyre_sizes)
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'kolesatyt.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
@@ -2269,7 +2305,7 @@ def russia_sites_parsing():
             tyres_in_bd = tyres_models.Tyre.objects.all()
             for tyre in tyres_in_bd:
                 for k, v in chosen_by_company_dict.items():
-                    #print(k, 'GGG', v, 'GGG', len(v))
+       #             print(k, 'GGG', v, 'GGG', len(v))
                     if tyre.tyre_size.tyre_size == k[0]:
                         #print('TTTT', k)                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                         coma = v[4].find(',')           
@@ -2277,6 +2313,21 @@ def russia_sites_parsing():
                         name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
                             competitor_name =  v[0]
                         )
+                        tyre_gggroup = None 
+                        if v[3]:
+                            tyre_gggroup = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[3]) 
+                        #    print('!!!!!', tyre_gggroup)
+                        if tyre_gggroup:
+                            tyre_gggroup = tyre_gggroup[0]
+
+                        try:
+                           if v[5]:
+                               season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
+                           if season_usage:
+                               season_usage = season_usage[0]
+                            #   print('season_usage', season_usage)
+                        except:
+                               season_usage = None 
                         #print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',  name_competitor, 'name_competitor =', v[0])     # ('225/65R16C', 39) ('LingLong', 'Green-MaxVAN', '112R', 'легкогруз', '6590', 'летние')
                         #if len(v) > 5 or len(v) == 5:
                         #    print(v[4])
@@ -2303,7 +2354,7 @@ def russia_sites_parsing():
                             tyresize_competitor = k[0],                                               
                             name_competitor = v[1], 
                             parametres_competitor = v[2],
-                        #    group = tyre_gggroup,                       
+                            group = tyre_gggroup,                       
                         #    season = season_usage
                             #tyre_to_compare = models.ComparativeAnalysisTyresModel.objects.get
                         ) 
