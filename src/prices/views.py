@@ -1146,7 +1146,7 @@ def belarus_sites_parsing():
             for tyre in tyres_in_bd:
                 try:
                     for k, v in chosen_by_company_dict.items():
-                        print(k, 'GGG baGGor', v, 'GGG', len(v))
+                    #    print(k, 'GGG baGGor', v, 'GGG', len(v))
                         if tyre.tyre_size.tyre_size == k[0]:
                         #    print('TTTT', k, 's111', v)           TTTT ('155/65R13', 431) s111 ('WestLake', 'SW618', '73T', 'зимние', 'легковые', '126.07')                                                                                  #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             #('13.0/65-18', 399) ('OZKA', 'KNK48', '144A8TL', 'нс16', 'с/х', '698.98')
@@ -2392,7 +2392,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
             pass
         #### END проверки
         else:
-        #    belarus_sites_parsing()
+            belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
@@ -4558,6 +4558,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ  С САЙТОВ: PANDAS
 
         return context
+    
 class ComparativeAnalysisTableModelUpdateView(View):
 
     def post(self, request):
@@ -5988,15 +5989,16 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
         edyniy_slovar_dict_dlja_pandas_chart_graphic = {}               ##### И.С.Х.О.Д.Н.И.К. Д.Л.Я. О.Т.Р.И.С.О.В.К.И. Г.Р.А.Ф.И.К.А. !!!WARNING IMPORTANT
         spisok_competitors_filtered = []
+        print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)
 
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
-            competitors_ids1 = models.ONLINER_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
+            competitors_ids1 = models.EXPRESS_SHINA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids1 is None:
                 competitors_ids1 = []
-            competitors_ids2 = models.AVTOSET_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
+            competitors_ids2 = models.KOLESATYT_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids2 is None:
                 competitors_ids2 = []              
-            competitors_ids3 = models.BAGORIA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
+            competitors_ids3 = models.KOLESA_DAROM_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
             if competitors_ids3 is None:
                 competitors_ids3 = []
             #for nnit in competitors_ids3:
