@@ -73,7 +73,7 @@
                 </span>
                 <span>
                   {% if in_base_tyres_by_group_checked_bage %}
-                  Поиск по группа шин:
+                  Поиск по группе шин:
                     {% for group in in_base_tyres_by_group_checked_bage %}
                       <span class="badge bg-light text-dark">{{ group.tyre_group }} </span> 
                     {% endfor %}
@@ -359,7 +359,8 @@
                       chart.draw(data, options);
                     }
                   </script>
-                  <div id="piechart" style="height: 400px;"></div>
+                {#  <div id="piechart" style="height: 400px;"></div> #}
+                  <div id="piechart" ></div>
                 
             </div>
           
@@ -398,7 +399,7 @@
                       legend: {
                       position: 'bottom'  // top не работает, рабочие лишь left, right
                       },
-                      title:'Общее оличество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                      title:'Общее количество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                       colors:['#d11616','#05a107','#2307d9'],
                       theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                       // bar: {groupWidth:'40%'},
@@ -468,7 +469,8 @@
 
             }
               </script>
-                    <div id="chart_div1" style="height: 390px;"></div>
+                  {#   <div id="chart_div1" style="height: 390px;"></div> #}
+                    <div id="chart_div1"></div>
                     <div id="colFilter_div1"></div>
             </div>    
           
@@ -578,7 +580,8 @@
 
             }
               </script>
-                    <div id="chart_div2" style="height: 390px;"></div>
+                  {#   <div id="chart_div2" style="height: 390px;"></div> #}
+                    <div id="chart_div2"></div>
                     <div id="colFilter_div2"></div>
             </div> 
           
@@ -643,7 +646,7 @@
                         {% if full_lined_chart_checked_flag %}
                           interpolateNulls: true,         // !!!!!!  автозаполнение 0 значений                        
                         {% endif %}
-
+width
                         
                         //  curveType: 'function',    //   сгладить изгиб линии
                           pointSize: 7,
@@ -656,13 +659,13 @@
                               },
                             
                           chartArea: {
-                            left: 100,
-                            width: '70%',
+                            left: 100;
+                            width: '70%';
                           },
                         
-                          subtitle: "BYN",
+                          subtitle: "BYN";
                           //width: 600,                                       // ширина таблицы
-                          height:400,
+                        //  height: 400,
                           legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
                           //legend: { position: 'bottom' },
                           //lineWidth: 20,                    // ширина лини
@@ -741,7 +744,7 @@
                             ui: {
                                 chartOptions: {
                                     hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
-                                    height: 50,
+                                  //  height: 50,
                                     chartArea: {
                                         left: 100,
                                         width: '70%'
