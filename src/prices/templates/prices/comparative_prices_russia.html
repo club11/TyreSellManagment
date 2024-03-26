@@ -398,7 +398,7 @@
                   legend: {
                   position: 'bottom'  // top не работает, рабочие лишь left, right
                   },
-                  title:'Общее оличество позиций на сайтах в разрезе брендов на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                  title:'Кол-во позиций на сайтах в разрезе брендов на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                   colors:['#d11616','#05a107','#2307d9'],
                   theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                   // bar: {groupWidth:'40%'},
@@ -510,7 +510,7 @@
                     legend: {
                     position: 'bottom'  // top не работает, рабочие лишь left, right
                     },
-                    title:'Общее количество позиций на сайтах в разрезе типоразмеров на дату {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                    title:'Кол-во позиций на сайтах в разрезе типоразмеров на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                     colors:['#d11616','#05a107','#2307d9'],
                     theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                     // bar: {groupWidth:'40%'},
@@ -525,7 +525,7 @@
                     titleTextStyle: {
                         color: 'black',    
                       //  fontName: 'Times New Roman', 
-                        fontSize: 13, 
+                        fontSize: 12, 
                         bold: true,    
                         italic: false,  
                     },      
@@ -667,7 +667,7 @@
                   //      width: '70%',
                       },
 
-                      subtitle: "BYN",
+                      subtitle: "RUB",
                       //width: 600,                                       // ширина таблицы
                   //    height:400,
                       legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
@@ -676,7 +676,7 @@
                       vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
                         //gridlines:{color: 'blue'}, // цвет полос оси У
                         format: '0',  // '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
-                        title:'бел. руб.',
+                        title:'RUB',
                       },
                       hAxis: {
                           format: 'dd.MM.Y',
@@ -691,7 +691,7 @@
                           },
                           y: {
                             0: { 
-                              label: 'бел. руб.',
+                              label: 'RUB.',
                               textStyle: {color: 'red'},
 
                             } 
