@@ -629,189 +629,190 @@
                     initState.selectedValues.push(data.getColumnLabel(i));
                 }
                 // ЗДЕСЬ САМ ГРАФИК ПРЕДСТАВЛЕНИЕ
-
-
+              
+              
                 var chart = new google.visualization.ChartWrapper({
                 
-                    chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!      ///  ВЫБОР КАК ОТОБРАЖАТЬ ГРАФИК
-                    //chartType: 'Line',
+                chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!      ///  ВЫБОР КАК ОТОБРАЖАТЬ ГРАФИК
+                //chartType: 'Line',
                 
-                    containerId: 'chart_div',
-                    dataTable: data,
+                containerId: 'chart_div',
+                dataTable: data,
                 
-                    options: google.charts.Line.convertOptions({
-                      
-                      chart: {
-                        title:"{{ chart_title|safe }}",
-                        subtitle: "BYN",
+                options: google.charts.Line.convertOptions({
+                  
+                  chart: {
+                    title:"{{ chart_title|safe }}",
+                    subtitle: "BYN",
+                  },
+                     
+                {% if full_lined_chart_checked_flag %}
+                  interpolateNulls: true,         // !!!!!!  автозаполнение 0 значений                        
+                {% endif %}
+                  
+                
+                //  curveType: 'function',    //   сгладить изгиб линии
+                  pointSize: 7,
+                  lineWidth: 7,
+                  title:"{{ chart_title|safe }}",
+                  titleTextStyle: { 
+                      fontSize: 15,
+                      fontName: 'Times New Roman',
+                      bold: true,
                       },
-                         
-                    {% if full_lined_chart_checked_flag %}
-                      interpolateNulls: true,         // !!!!!!  автозаполнение 0 значений                        
-                    {% endif %}
-                      
- 
-                    //  curveType: 'function',    //   сгладить изгиб линии
-                      pointSize: 7,
-                      lineWidth: 7,
-                      title:"{{ chart_title|safe }}",
-                      titleTextStyle: { 
-                          fontSize: 18,
-                          fontName: 'Times New Roman',
-                          bold: true,
-                          },
-                      
-                      chartArea: {
-                  //      left: 100,
-                  //      width: '70%',
-                      },
-
-                      subtitle: "BYN",
-                      //width: 600,                                       // ширина таблицы
-                  //    height:400,
-                      legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
-                      //legend: { position: 'bottom' },
-                      //lineWidth: 20,                    // ширина лини
-                      vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
-                        //gridlines:{color: 'blue'}, // цвет полос оси У
-                        format: '0',  // '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
-                        title:'бел. руб.',
-                      },
-                      hAxis: {
-                          format: 'dd.MM.Y',
-                          gridlines: {count: 15},
-                        },
-                      axes: {                                             // вертикальная ось, дописываем оси здесь
-                          x: {
-                            0: { 
-                              // side: 'top',
-                              label: '',
-                            } 
-                          },
-                          y: {
-                            0: { 
-                              label: 'бел. руб.',
-                              textStyle: {color: 'red'},
-
-                            } 
-                          }                  
-                        },
-                      
-                    }),  
-                });
-
-              
-              // ЗДЕСЬ опция выбора:
-                var columnFilter = new google.visualization.ControlWrapper({
-                    controlType: 'CategoryFilter',
-                    containerId: 'colFilter_div',
-                    dataTable: columnsTable,
-                    options: {
-                        filterColumnLabel: 'colLabel',
-                        ui: {
-                            label: '',
-                            allowTyping: false,
-                            allowMultiple: true,
-                            allowNone: false,
-                            selectedValuesLayout: 'aside',
-                          //  selectedValuesLayout:'belowStacked',
-                            caption: 'фильтр',
-                        }
+                    
+                  chartArea: {
+              //      left: 100,
+              //      width: '70%',
+                  },
+                
+                  subtitle: "RUB",
+                  //width: 600,                                       // ширина таблицы
+              //    height:400,
+          //        legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
+                  legend: { position: 'bottom' },
+                  //lineWidth: 20,                    // ширина лини
+                  vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
+                    //gridlines:{color: 'blue'}, // цвет полос оси У
+                    format: '0',  // '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
+                    title:'RUB',
+                  //  textPosition: 'out',
+                  },
+                  hAxis: {
+                      format: 'dd.MM.Y',
+                      gridlines: {count: 15},
                     },
-                    state: initState
-                });
-              
-                function setChartView () {
-                    var state = columnFilter.getState();
-                    var row;
-                    var view = {
-                        columns: [0]
-                    };
-                    for (var i = 0; i < state.selectedValues.length; i++) {
-                        row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
-                        view.columns.push(columnsTable.getValue(row, 0));
+                  axes: {                                             // вертикальная ось, дописываем оси здесь
+                      x: {
+                        0: { 
+                          // side: 'top',
+                          label: '',
+                        } 
+                      },
+                      y: {
+                        0: { 
+                          label: 'RUB.',
+                          textStyle: {color: 'red'},
+                        
+                        } 
+                      }                  
+                    },
+                  
+                }),  
+            });
+          
+          
+          // ЗДЕСЬ опция выбора:
+            var columnFilter = new google.visualization.ControlWrapper({
+                controlType: 'CategoryFilter',
+                containerId: 'colFilter_div',
+                dataTable: columnsTable,
+                options: {
+                    filterColumnLabel: 'colLabel',
+                    ui: {
+                        label: '',
+                        allowTyping: false,
+                        allowMultiple: true,
+                        allowNone: false,
+                        selectedValuesLayout: 'aside',
+                      //  selectedValuesLayout:'belowStacked',
+                        caption: 'фильтр',
                     }
-                    // sort the indices into their original order
-                    view.columns.sort(function (a, b) {
-                        return (a - b);
-                    });
-                    chart.setView(view);
-                    chart.draw();
+                },
+                state: initState
+            });
+          
+            function setChartView () {
+                var state = columnFilter.getState();
+                var row;
+                var view = {
+                    columns: [0]
+                };
+                for (var i = 0; i < state.selectedValues.length; i++) {
+                    row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+                    view.columns.push(columnsTable.getValue(row, 0));
                 }
-
-                var control = new google.visualization.ControlWrapper({
-                    controlType: 'ChartRangeFilter',
-                    containerId: 'control_div',
-                    options: {
-                        filterColumnIndex: 0,
-                        ui: {
-                            chartOptions: {
-                                hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
-                                height: 35,
-                                chartArea: {
-                                    left: 100,
-                        //            width: '70%',
-                                }
+                // sort the indices into their original order
+                view.columns.sort(function (a, b) {
+                    return (a - b);
+                });
+                chart.setView(view);
+                chart.draw();
+            }
+          
+            var control = new google.visualization.ControlWrapper({
+                controlType: 'ChartRangeFilter',
+                containerId: 'control_div',
+                options: {
+                    filterColumnIndex: 0,
+                    ui: {
+                        chartOptions: {
+                            hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
+                            height: 35,
+                            chartArea: {
+                    //            left: 100,
+                    //            width: '70%',
                             }
                         }
                     }
-                });
-
-
-                function setOptions() {
-                    var firstDate;
-                    var lastDate;
-                    var v = control.getState();
-
-                    if (v.range) {
-                      document.getElementById('dbgchart').innerHTML = v.range.start + ' to ' + v.range.end;
-                      firstDate = new Date(v.range.start.getTime() + 1);
-                      lastDate = new Date(v.range.end.getTime() - 1);
-                      data.setValue(v.range.start.getMonth(), 0, firstDate);
-                      data.setValue(v.range.end.getMonth(), 0, lastDate);
-                    } else {
-                      firstDate = data.getValue(0, 0);
-                      lastDate = data.getValue(data.getNumberOfRows() - 1, 0);
-                    }
-                  
-                    var ticks = [];
-                    for (var i = firstDate.getMonth(); i <= lastDate.getMonth(); i++) {
-                      ticks.push(data.getValue(i, 0));
-                    }
-                  
-                    chart.setOption('hAxis.ticks', ticks);
-                    chart.setOption('hAxis.viewWindow.min', firstDate);
-                    chart.setOption('hAxis.viewWindow.max', lastDate);
-                    if (dash) {
-                      chart.draw();
-                    }
                 }
-
-
-                google.visualization.events.addListener(columnFilter, 'statechange', setChartView, control, setOptions);
+            });
+          
+          
+            function setOptions() {
+                var firstDate;
+                var lastDate;
+                var v = control.getState();
+            
+                if (v.range) {
+                  document.getElementById('dbgchart').innerHTML = v.range.start + ' to ' + v.range.end;
+                  firstDate = new Date(v.range.start.getTime() + 1);
+                  lastDate = new Date(v.range.end.getTime() - 1);
+                  data.setValue(v.range.start.getMonth(), 0, firstDate);
+                  data.setValue(v.range.end.getMonth(), 0, lastDate);
+                } else {
+                  firstDate = data.getValue(0, 0);
+                  lastDate = data.getValue(data.getNumberOfRows() - 1, 0);
+                }
               
-                setChartView();
-                columnFilter.draw();
-
-                var dash = new google.visualization.Dashboard(document.getElementById('dashboard'));
-                dash.bind([control], [chart]);
-                dash.draw(data);
-                
+                var ticks = [];
+                for (var i = firstDate.getMonth(); i <= lastDate.getMonth(); i++) {
+                  ticks.push(data.getValue(i, 0));
+                }
+              
+                chart.setOption('hAxis.ticks', ticks);
+                chart.setOption('hAxis.viewWindow.min', firstDate);
+                chart.setOption('hAxis.viewWindow.max', lastDate);
+                if (dash) {
+                  chart.draw();
+                }
             }
-          </script>
+          
+          
+            google.visualization.events.addListener(columnFilter, 'statechange', setChartView, control, setOptions);
+          
+            setChartView();
+            columnFilter.draw();
+          
+            var dash = new google.visualization.Dashboard(document.getElementById('dashboard'));
+            dash.bind([control], [chart]);
+            dash.draw(data);
+            
+        }
+      </script>
 
-          <div id="colFilter_div"></div>
-          <div id="chart_div" ></div>
-
-
-
-            <div id="dashboard">
-                <div id="chart_div"></div>
-                <div id="control_div"></div>
-                <p><span id='dbgchart'></span></p>
-            </div>
-          </div>
+      <div id="colFilter_div"></div>
+      <div id="chart_div" ></div>
+    
+    
+    
+        <div id="dashboard">
+            <div id="chart_div"></div>
+            <div id="control_div"></div>
+            <p><span id='dbgchart'></span></p>
         </div>
+      </div>
+    </div>
                 
 
             
