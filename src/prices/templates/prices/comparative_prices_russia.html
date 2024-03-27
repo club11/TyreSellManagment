@@ -655,7 +655,7 @@
                     //  curveType: 'function',    //   сгладить изгиб линии
                       pointSize: 7,
                       lineWidth: 7,
-                      title:"FULL {{ chart_title|safe }}",
+                      title:"{{ chart_title|safe }}",
                       titleTextStyle: { 
                           fontSize: 15,
                           fontName: 'Times New Roman',
@@ -664,14 +664,14 @@
                       
                       chartArea: {
                   //      left: 100,
-                        width: '70%',
+                  //      width: '70%',
                       },
 
                       subtitle: "RUB",
                       //width: 600,                                       // ширина таблицы
                   //    height:400,
-                      legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
-                      //legend: { position: 'bottom' },
+              //        legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
+                      legend: { position: 'bottom' },
                       //lineWidth: 20,                    // ширина лини
                       vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
                         //gridlines:{color: 'blue'}, // цвет полос оси У
@@ -752,7 +752,7 @@
                                 height: 35,
                                 chartArea: {
                         //            left: 100,
-                                    width: '70%',
+                        //            width: '70%',
                                 }
                             }
                         }
