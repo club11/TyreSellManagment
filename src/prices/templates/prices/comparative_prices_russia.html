@@ -103,7 +103,7 @@
                     <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат</p></span></th>
                   
                     {% if object.express_shina_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.express_shina_heders_lengt }}"" valign="middle"><span class="align-middle"><p class="text-center">express_shina<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.express_shina_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">express_shina<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.kolesatyt_heders_lengt %}
@@ -111,7 +111,7 @@
                     {% endif %}
                   
                     {% if object.kolesa_darom_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.kolesa_darom_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">kolesa_darom_heders_lengt<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.kolesa_darom_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">kolesa_darom<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.chemcurier_heders_lengt %}
@@ -215,8 +215,8 @@
             <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
                 {% csrf_token %}
 
-            <div>задать начальную дату <input type="date" name="parcing_date_start" value="{{ chosen_date_start }}">  <input type="hidden" value="select"><br></div>
-            <div>задать конечную дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br></div>
+            <div>задать начальную дату:<input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"> <input type="hidden" value="select"><br></div>
+            <div>задать конечную дату:<input type="date" name="parcing_date" value="{{ chosen_date }}"> <input type="hidden" value="select"><br></div>
 
             <div class="dropdown dropstart">  
               <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -349,7 +349,8 @@
                     2: {offset: 0.05},
                     3: {offset: 0.05},
                     },
-                    colors:['#d11616','#05a107','#2307d9']
+                    colors:['#d11616','#05a107','#2307d9'],
+                    backgroundColor: '#eae8dc',
                   };
                 
                   var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -400,6 +401,7 @@
                   },
                   title:'Кол-во позиций на сайтах в разрезе брендов на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                   colors:['#d11616','#05a107','#2307d9'],
+                  backgroundColor: '#f3f2ec',
                   theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                   // bar: {groupWidth:'40%'},
                   // chartArea:{left:32,width:'70%'},
@@ -413,7 +415,7 @@
                   titleTextStyle: {
                       color: 'black',    
                     //  fontName: 'Times New Roman', 
-                      fontSize: 10, 
+                      fontSize: 18, 
                       bold: true,    
                       italic: false,  
                   },      
@@ -512,9 +514,10 @@
                     },
                     title:'Кол-во позиций на сайтах в разрезе типоразмеров на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                     colors:['#d11616','#05a107','#2307d9'],
+                    backgroundColor: '#f3f2ec',
                     theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                     // bar: {groupWidth:'40%'},
-                    // chartArea:{left:32,width:'70%'},
+                    // chartArea:{left:32,height:'70%'},
                     vAxis: { 
                         //  title:'бел. руб.',                            // вертикальная ось, но здесь не все можно прописать в материальной таблице
                           viewWindow: {                                   // количество отображаемых на странице линий  (здесь просто только первые 10 позиций)                      
@@ -525,7 +528,7 @@
                     titleTextStyle: {
                         color: 'black',    
                       //  fontName: 'Times New Roman', 
-                        fontSize: 10, 
+                        fontSize: 12, 
                         bold: true,    
                         italic: false,  
                     },      
@@ -655,16 +658,16 @@
                     //  curveType: 'function',    //   сгладить изгиб линии
                       pointSize: 7,
                       lineWidth: 7,
-                      title:"{{ chart_title|safe }}",
+                      title:"Типоразмер {{ chart_title|safe }}",
                       titleTextStyle: { 
-                          fontSize: 15,
+                          fontSize: 19,
                           fontName: 'Times New Roman',
                           bold: true,
                           },
-                      
+                      backgroundColor: '#f3f2ec',
                       chartArea: {
                   //      left: 100,
-                  //      width: '70%',
+                        width: '90%',
                       },
 
                       subtitle: "RUB",
@@ -750,9 +753,11 @@
                             chartOptions: {
                                 hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
                                 height: 35,
+                                backgroundColor: '#f3f2ec',
                                 chartArea: {
                         //            left: 100,
                         //            width: '70%',
+                                      backgroundColor: '#f3f2ec',
                                 }
                             }
                         }

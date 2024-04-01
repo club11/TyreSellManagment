@@ -36,6 +36,10 @@
     }
 /* <END для сворачивания выбранных элементов (бренд/прдукция/группа)*/
 
+.div1 {
+  font-size: 2.425rem;
+}
+
 
 .pagination {
   display: inline-block;
@@ -58,18 +62,26 @@
         main{
           width: 100%;
           height: auto;
-          background-color: rgb(204, 4, 4);  /* <--цвет текста   background-color: rgb(204, 4, 4); */
+        /* <--  background-color: rgb(204, 4, 4);  /* <--цвет текста   background-color: rgb(204, 4, 4); */
+          background-color: rgb(234, 232, 220);
           clear: both;
         
         }
         td{
-          color: rgb(0, 0, 0);        /* <--цвет текста */
+          color: rgb(0, 0, 0);        цвет текста */
         }
         footer{
-          background-color: #9bab1d;
+          background-color: #CC0404;
           text-align: center; 
           flex-shrink: 0;
+
+        /* <--    position: relative;
+          height: 3%;
+          bottom: 0;
+          width: 100%;*/
         } 
+
+
 
         .dropdown-menu {          /* <--выпадающие списки меню (бренд, продукция и т.п. - чтоб не на всю ширину экрана)*/
           max-height: 200px;
@@ -90,24 +102,24 @@
             row-gap: 40px;
             /* Отступы между колонками */
             column-gap: 5px; 
-            background-color: rgb(204, 4, 4);
+            background-color: rgb(234, 232, 220);
             min-width: 80%;
           }          
 
           .el-0 {
-            background-color: #ffe9e9;
+            background-color: #eae8dc;
             text-align: right;
             grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
             grid-row: 1;
           }
           .el-01 {
-            background-color: #ab3535;;
+            background-color: #eae8dc;
             text-align: left;
             grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
             grid-row: 3;
           }
           .el-1 {
-            background-color: #ffe9e9;
+            background-color: #eae8dc;
             text-align: right;
             grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
             grid-row: 2;
@@ -115,45 +127,48 @@
           .el-2 {
             grid-column: 1;
             grid-row: 4;
-            background-color: #ffe9e9;
+            background-color: #f3f2ec;
           }
           .el-3 {
             grid-column: 2 / span 5;
             grid-row: 4;
             width: auto;
-            background-color: #ffe9e9;
+            background-color: #f3f2ec; 
+            margin-bottom: 3%;
           }
           .el-4 {
             grid-column: 1 / span 1;
             grid-row: 5;
-            background-color: #d11616;
+            background-color: #eae8dc;
             height: 100%;     
           } 
           .el-5 {
             grid-column: 1 / span 3;
             grid-row: 6;
             width: 100%;
-            background-color: #d5b6b6;
+            background-color: #eae8dc;
             height: 500px;
+            margin-bottom: 3%;                    
           }   
           .el-55 {
             grid-column: 4 / span 3;
             grid-row: 6;
             width: 100%;
-            background-color: #524e4e;
+            background-color: #eae8dc;
             height: 500px;
+            margin-bottom: 3%;
           }     
 
           .el-6 {
             grid-column: 2 / span 6;     
             grid-row: 5;
             width: auto;
-            background-color: #d11616;
+            background-color: #eae8dc;
           }
           .el-7 {
             grid-column: 1 / span 6;     
             grid-row: 5;
-            background-color: #05a107;
+            background-color: #eae8dc;
             height: 1%;
           }
         }
@@ -168,24 +183,24 @@
             row-gap: 20px;
             /* Отступы между колонками */
             column-gap: 2px; 
-            background-color: rgb(204, 4, 4);
+            background-color: rgb(234, 232, 220);
             min-width: 90%;
           }            
 
           .el-0 {
-            background-color: #ffe9e9;
+            background-color: #eae8dc;
             text-align: right;
             grid-column: 1 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
             grid-row: 1;
           }
           .el-01 {
-            background-color: #ab3535;;
+            background-color: #eae8dc;
             text-align: left;
             grid-column: 1 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
             grid-row: 3;
           }
           .el-1 {
-            background-color: #ffe9e9;
+            background-color: #eae8dc;
             text-align: right;
             grid-column: 1 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
             grid-row: 2;
@@ -193,45 +208,48 @@
           .el-2 {
             grid-column: 1 / span 2;
             grid-row: 4;
-            background-color: #ffe9e9;
+            background-color: #f3f2ec; 
           }
           .el-3 {
             grid-column: 1 / span 2;
             grid-row: 5;
             width: auto;
-            background-color: #ffe9e9;
+            background-color: #f3f2ec; 
+            margin-bottom: 3%;
           }
           .el-4 {
             grid-column: 1 / span 2;
             grid-row: 7;
-            background-color: #d11616;
+            background-color: #eae8dc;
             height: 100%;     
           } 
           .el-5 {
             grid-column: 1 / span 2;
             grid-row: 8;
             width: 100%;
-            background-color: #d5b6b6;
+            background-color: #eae8dc;
             height: 500px;
+            margin-bottom: 3%;
           }   
           .el-55 {
             grid-column: 1 / span 2;
             grid-row: 9;
             width: 100%;
-            background-color: #524e4e;
+            background-color: #eae8dc;
             height: 500px;
+            margin-bottom: 3%;
           }     
 
           .el-6 {
             grid-column: 1 / span 2;     
             grid-row: 6;
             width: auto;
-            background-color: #A89C35;
+            background-color: #eae8dc;
           }
           .el-7 {
             grid-column: 1 / span 2;     
             grid-row: 10;
-            background-color: #05a107;
+            background-color: #eae8dc;
             height: 1%;
           }
         }
@@ -255,21 +273,21 @@ thead tr:nth-child(1) th {
   position: sticky;
   top: 0;
   z-index:2;
-  background-color: #c8c8c8;
+  background-color: #eae8dc;
 }
 
 thead tr:nth-child(2) th {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   top: 40px; 
-  background-color: #c8c8c8;
+  background-color: #eae8dc;
 }
 
 thead th:first-child {
   left: 0;
   z-index:2;
 
-  background-color: #ffe9e9;
+  background-color: #eae8dc;
 }
 
 thead tr:nth-child(1) th:nth-child(1) {z-index:2;}
@@ -286,14 +304,14 @@ tbody td:first-child {
   position: sticky;
   left: 0;
 
-  background-color: #ffe9e9;
+  background-color: #eae8dc;
 }
 tbody td:nth-child(2) {
   position: -webkit-sticky; /* for Safari */
   position: sticky;
   left: 17px;
 
-  background-color: #ffe9e9;
+  background-color: #eae8dc;
 }
 
 
@@ -317,18 +335,10 @@ table th {
   float: left;
 }
 
-footer {
-    position: relative;
-    height: 3%;
-    bottom: 0;
-    width: 100%;
-}
-
-
 
   .pagination > li > a /* СТИЛИ ПАГИНАЦИИ*/
   {
-    color: rgb(150, 149, 149);
+    color: rgb(216, 195, 164);
   }
   .pagination > li > a:focus,
   .pagination > li > a:hover,
@@ -342,10 +352,10 @@ footer {
   .pagination > .active > a
   {
       color: white;
-      background-color: rgb(247, 20, 20);
+      background-color: rgb(216, 195, 164);
   }
   .pagination li a:hover:not(.active) {
-    background-color: rgb(247, 20, 20);
+    background-color: rgb(216, 195, 164);
   }
 
 
@@ -353,7 +363,7 @@ footer {
   .main_chem{
           width: 100%;
           height: auto;
-          background-color: rgb(233, 46, 46);  /* <--цвет текста   background-color: rgb(204, 4, 4); */
+          background-color: rgb(234, 232, 220);  /* <--цвет текста   background-color: rgb(204, 4, 4); */
           clear: both;
         
         }
@@ -374,10 +384,10 @@ footer {
     grid-column: 1 / span 6;;
     grid-row: 1;
     width: auto;
-    background-color: #d3ea0c;
+    background-color: #eae8dc;
   } 
   .el_chem-1 {
-    background-color: #ffe9e9;
+    background-color: #eae8dc;
     text-align: right;
     grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
     grid-row: 3;
@@ -388,7 +398,7 @@ footer {
     grid-column: 1 / span 6;
     grid-row: 2;
     width: auto;
-    background-color: #059d14;
+    background-color: #eae8dc;
   } 
   .el_chem-3 {
     grid-column: 1 / span 6;
@@ -396,7 +406,7 @@ footer {
     width: auto;
   /*   height: 100vh;                /* РАСТЯНУТЬ НА ВЫСОТУ ВСЕГО ЭКРАНА*/ 
     height: auto;
-    background-color: #ffe9e9;
+    background-color: #eae8dc;
   } 
 
 
@@ -413,8 +423,8 @@ footer {
 /*      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(0,0,0,0.25)'/></svg>"); */
 /*  } */
   .form-switch .form-check-input:checked {
-      background-color: rgb(247, 20, 20);
-      border-color: rgb(247, 20, 20);
+      background-color: rgb(234, 22, 26); 
+      border-color: rgb(204, 4, 4);
       border: none;
 /*      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255,255,255,1.0)'/></svg>"); */
     }
@@ -455,7 +465,7 @@ footer {
 
     </main>
 
-    <footer class="footer mt-auto py-3 bg-black .fixed-bottom " >
+    <footer class="footer mt-auto py-3 .fixed-bottom" >
       <div class="container-fluid">
         <span class="text-muted">Wlad Filippow, 2024</span>
       </div>
