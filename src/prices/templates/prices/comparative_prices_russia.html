@@ -31,11 +31,18 @@
         </div>
 
         <div class="el-01">
+
+
+
+
+
+          
           <p>
             <a class="btn-sm btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
               X
             </a>
-          <div class=".collapse.show" id="collapseExample">
+          {# <div class=".collapse.show" id="collapseExample"> #}
+          <div class="collapse show" id="collapseExample">  
               <span>
                 {% if end_date_is_not_chosen_bage %} 
                   {{ end_date_is_not_chosen_bage }}
@@ -342,7 +349,7 @@
                   );
                 
                   var options = {
-                    title: 'Общее количество собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
+                    title: 'Кол-во собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                   //  height: 300,
                   legend: { position: 'bottom' },
                   slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
@@ -351,6 +358,7 @@
                     },
                     colors:['#d11616','#05a107','#2307d9'],
                     backgroundColor: '#eae8dc',
+                    fontSize: 15, 
                   };
                 
                   var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -528,7 +536,7 @@
                     titleTextStyle: {
                         color: 'black',    
                       //  fontName: 'Times New Roman', 
-                        fontSize: 12, 
+                        fontSize: 18, 
                         bold: true,    
                         italic: false,  
                     },      
