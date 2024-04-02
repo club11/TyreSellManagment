@@ -20,8 +20,10 @@ import calendar
 from datetime import datetime, timedelta
 import pandas
 ###
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
-class AbcxyzTemplateDetailView(DetailView):
+class AbcxyzTemplateDetailView(LoginRequiredMixin, DetailView):
     model = models.AbcxyzTable
     template_name = 'abc_table_xyz/abc.html'
     #login_url = reverse_lazy('abc_table_xyz:abctable')
@@ -412,7 +414,7 @@ class AbcxyzTemplateDetailView(DetailView):
 
         return context
 
-class ABCXYZTemplateUpdateView(View):
+class ABCXYZTemplateUpdateView(LoginRequiredMixin, View):
     def post(self, request):
         #print(request.POST, 'TTT')
         #print(self.request.POST.get('change_period'))

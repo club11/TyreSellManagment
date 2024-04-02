@@ -31,12 +31,6 @@
         </div>
 
         <div class="el-01">
-
-
-
-
-
-          
           <p>
             <a class="btn-sm btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
               X
@@ -110,19 +104,19 @@
                     <th scope="col"; rowspan="2"; valign="middle"><span class="align-middle"><p class="text-center">отклонение прямых затрат</p></span></th>
                   
                     {% if object.express_shina_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.express_shina_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">express_shina<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample" colspan="{{ object.express_shina_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center" id="collapseWidthExample-header">express_shina <p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.kolesatyt_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.kolesatyt_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">kolesatyt<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample1" colspan="{{ object.kolesatyt_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center" id="collapseWidthExample-header">kolesatyt<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.kolesa_darom_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.kolesa_darom_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">kolesa_darom<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample2" colspan="{{ object.kolesa_darom_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center" id="collapseWidthExample-header">kolesa_darom<p align="center">({{ table_current_date_for_header }})</p></p></span></th>
                     {% endif %}
                   
                     {% if object.chemcurier_heders_lengt %}
-                    <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.chemcurier_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center">Chemcurier</p></span></th>
+                    <th class="collapse collapse-horizontal show" id="collapseWidthExample3" colspan="{{ object.chemcurier_heders_lengt }}" valign="middle"><span class="align-middle"><p class="text-center" id="collapseWidthExample-header">Chemcurier</p></span></th>
                     {% endif %}
                   </tr>
                   <tr>

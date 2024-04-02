@@ -35,9 +35,10 @@ import sqlalchemy
 from sqlalchemy import create_engine
 import os
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
-
-class ExcelTemplateView(TemplateView):
+class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 #class ExcelTemplateView(View):    
     
     template_name = 'filemanagment/excel_import.html'

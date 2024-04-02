@@ -43,6 +43,9 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 import random
 import itertools
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -2372,7 +2375,7 @@ def russia_sites_parsing():
 
 
 
-class ComparativeAnalysisTableModelDetailView(DetailView):
+class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
     model = models.ComparativeAnalysisTableModel
     template_name = 'prices/comparative_prices.html'
 
@@ -4559,7 +4562,7 @@ class ComparativeAnalysisTableModelDetailView(DetailView):
 
         return context
     
-class ComparativeAnalysisTableModelUpdateView(View):
+class ComparativeAnalysisTableModelUpdateView(LoginRequiredMixin, View):
 
     def post(self, request):
 
@@ -4750,7 +4753,7 @@ class ComparativeAnalysisTableModelUpdateView(View):
 
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_bel'))
 
-class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
+class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailView):
     model = models.ComparativeAnalysisTableModel
     template_name = 'prices/comparative_prices_russia.html'
 
@@ -6692,7 +6695,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(DetailView):
 
         return context             
 
-class ComparativeAnalysisTableModelRussiaUpdateView(View):
+class ComparativeAnalysisTableModelRussiaUpdateView(LoginRequiredMixin, View):
 
     def post(self, request):
         ### СБРОС ДАННЫХ _ ОЧИСТКА ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ:
