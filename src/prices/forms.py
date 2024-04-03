@@ -41,15 +41,15 @@ class FilterRussiaForm(forms.Form):
     )
 
 class DeflectionInputForm(forms.Form):
-    deflection_data = forms.FloatField(label='размер снимаемой торговой надбавки, (%)', required=None, max_value=100, min_value=0, 
+    deflection_data = forms.FloatField(label='размер снимаемой торг. надбавки, (%)', required=None, max_value=100, min_value=0, 
     widget=forms.NumberInput(attrs={'id': 'deflection_data', 'step': "0.01"}))
 
 class PaginationInputForm(forms.Form):
-    pagination_data = forms.IntegerField(label='количество выводимых позиций в таблице (1-25)', required=None, max_value=25, min_value=0, 
+    pagination_data = forms.IntegerField(label='кол-во позиций в таблице (1-25)', required=None, max_value=25, min_value=0, 
     widget=forms.NumberInput(attrs={'id': 'pagination_data', 'step': "1"}))
 
 class CompetitoPerSiteInputForm(forms.Form):
-    competitor_pagination_data = forms.IntegerField(label='количество выводимых конкурентов в таблице (0-5)', required=True, max_value=5, min_value=1, 
+    competitor_pagination_data = forms.IntegerField(label='кол-во конкурентов в таблице (0-5)', required=True, max_value=5, min_value=1, 
     widget=forms.NumberInput(attrs={'id': 'competitor_pagination_data', 'step': "1"}))
 
 class CurrencyDateInputForm(forms.Form):

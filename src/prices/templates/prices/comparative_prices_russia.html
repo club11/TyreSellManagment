@@ -216,8 +216,8 @@
             <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
                 {% csrf_token %}
 
-            <div>задать начальную дату:<input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"> <input type="hidden" value="select"><br></div>
-            <div>задать конечную дату:<input type="date" name="parcing_date" value="{{ chosen_date }}"> <input type="hidden" value="select"><br></div>
+            <div>начальная дата:<input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"> <input type="hidden" value="select"><br></div>
+            <div>конечная дата:<input type="date" name="parcing_date" value="{{ chosen_date }}"> <input type="hidden" value="select"><br></div>
 
             <div class="dropdown dropstart">  
               <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -265,12 +265,11 @@
             </div>  
 
           
-          
+            <div>График:</div>
             <div class="form-check form-check-inline" >
               <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
-              <label class="form-check-label" for="inlineCheckbox2">Вывести информацию в графике в виде средневзвешенной цены на рынке</label>
+              <label class="form-check-label" for="inlineCheckbox2">Средневзвешенная цена на рынке</label>
             </div>
-
             <div class="form-check form-check-inline" >
               <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
               <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
@@ -282,10 +281,10 @@
         {#      <label class="form-check-label" for="inlineCheckbox5">Выводить график только на выбранную дату</label> #}
         {#    </div>      #}      
 
-            <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
-            </form>
+           
 
-            <form>
+
+
             <p>работа с источником данных:</p>
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
@@ -309,6 +308,9 @@
               <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
               <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
             </div>
+
+
+            <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
             </form>
           
 
