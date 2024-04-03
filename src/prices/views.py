@@ -2395,7 +2395,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             pass
         #### END проверки
         else:
-        #    belarus_sites_parsing()
+            belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
@@ -4772,7 +4772,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
         #### END проверки
         else:
             pass
-        #    russia_sites_parsing()
+            russia_sites_parsing()
     
         return comparative_analysis_table
     

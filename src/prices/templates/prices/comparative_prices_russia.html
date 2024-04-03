@@ -345,7 +345,8 @@
                   var options = {
                     title: 'Кол-во собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                   //  height: 300,
-                  legend: { position: 'bottom' },
+                  legend: { position: 'top', maxLines: 2}, 
+                  chartArea: {top:150,bottom:30,right:0,left:0, 'width': '100%' },
                   slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
                     2: {offset: 0.05},
                     3: {offset: 0.05},
