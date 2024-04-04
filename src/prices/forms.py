@@ -41,7 +41,7 @@ class FilterRussiaForm(forms.Form):
     )
 
 class DeflectionInputForm(forms.Form):
-    deflection_data = forms.FloatField(label='размер снимаемой торг. надбавки, (%)', required=None, max_value=100, min_value=0, 
+    deflection_data = forms.FloatField(label='торг. надбавка, (%)', required=None, max_value=100, min_value=0, 
     widget=forms.NumberInput(attrs={'id': 'deflection_data', 'step': "0.01"}))
 
 class PaginationInputForm(forms.Form):

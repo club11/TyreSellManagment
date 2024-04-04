@@ -18,7 +18,7 @@
         </div>
 
         <div class="el-1">
-                <div class="div1"> 
+                <div class="div1" id="market_name_header"> 
                   <strong>Маркетплейс-анализ. Рынок: Российская Федерация на {{ table_current_date_for_header }}</strong>
                 </div>
             <div class="div2">  
@@ -216,8 +216,8 @@
             <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
                 {% csrf_token %}
 
-            <div>начальная дата:<input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"> <input type="hidden" value="select"><br></div>
-            <div>конечная дата:<input type="date" name="parcing_date" value="{{ chosen_date }}"> <input type="hidden" value="select"><br></div>
+            <div>Начальная дата:<input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"> <input type="hidden" value="select"><br></div>
+            <div>Конечная дата:<input type="date" name="parcing_date" value="{{ chosen_date }}"> <input type="hidden" value="select"><br></div>
 
             <div class="dropdown dropstart">  
               <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -264,16 +264,17 @@
               {{ currency }} = {{ shown_date}} {{ curr_value }} BYN     
             </div>  
 
-          
-            <div>График:</div>
-            <div class="form-check form-check-inline" >
-              <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
-              <label class="form-check-label" for="inlineCheckbox2">Средневзвешенная цена на рынке</label>
-            </div>
-            <div class="form-check form-check-inline" >
-              <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
-              <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
-            </div>
+            <p> </p>
+            <p>График:
+              <div class="form-check form-check-inline" >
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
+                <label class="form-check-label" for="inlineCheckbox2">Средневзвешенная цена на рынке</label>
+              </div>
+              <div class="form-check form-check-inline" >
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
+                <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
+              </div>
+            </p>
 
 
         {#    <div class="form-check form-check-inline" > #}
@@ -284,30 +285,32 @@
            
 
 
-
-            <p>работа с источником данных:</p>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
-              <label class="form-check-label" for="btncheck1">показать/скрыть Express-shina</label> 
-            </div>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
-              <label class="form-check-label" for="btncheck2">показать/скрыть Kolesa-darom</label> 
-            </div>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
-              <label class="form-check-label" for="btncheck3">показать/скрыть Kolesatyt</label>
-            </div>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
-              <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
-            </div>
-          
-            <p>дополнительные данные:</p>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
-              <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
-            </div>
+            <p> </p>
+              <p>Фильтр торговых площадок:
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
+                <label class="form-check-label" for="btncheck1">показать/скрыть Express-shina</label> 
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
+                <label class="form-check-label" for="btncheck2">показать/скрыть Kolesa-darom</label> 
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
+                <label class="form-check-label" for="btncheck3">показать/скрыть Kolesatyt</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
+                <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
+              </div>
+            </p>
+              <p>Дополнительные данные:
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
+                  <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
+                </div>
+              </p>
+            
 
 
             <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
