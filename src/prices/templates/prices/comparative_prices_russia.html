@@ -216,8 +216,8 @@
             <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
                 {% csrf_token %}
 
-            <div>Начальная дата:<input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"> <input type="hidden" value="select"><br></div>
-            <div>Конечная дата:<input type="date" name="parcing_date" value="{{ chosen_date }}"> <input type="hidden" value="select"><br></div>
+            <div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select"> Начальная дата<br></div>
+            <div><input type="date" name="parcing_date" value="{{ chosen_date }}"><input type="hidden" value="select">Конечная дата<br></div>
 
             <div class="dropdown dropstart">  
               <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -255,12 +255,12 @@
               </ul>
             </div>
           
-            <div>{{ pagination_val_per_form }}</div>
-            <div>{{ compet_per_site_form }}</div>
+            <div>{{ pagination_val_per_form }} кол-во позиций в таблице (1-25)</div>
+            <div>{{ compet_per_site_form }} кол-во конкурентов в таблице (0-5)</div>
 
-            <div>{{ deflection_form }}</div>
+            <div>{{ deflection_form }} торг. надбавка, (%)</div>
              
-            <div>{{ currency_input_form }}<br>
+            <div>{{ currency_input_form }} курс НБ РБ<br>
               {{ currency }} = {{ shown_date}} {{ curr_value }} BYN     
             </div>  
 

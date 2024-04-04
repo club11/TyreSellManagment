@@ -41,21 +41,25 @@ class FilterRussiaForm(forms.Form):
     )
 
 class DeflectionInputForm(forms.Form):
-    deflection_data = forms.FloatField(label='торг. надбавка, (%)', required=None, max_value=100, min_value=0, 
-    widget=forms.NumberInput(attrs={'id': 'deflection_data', 'step': "0.01"}))
+    deflection_data = forms.FloatField(required=None, max_value=100, min_value=0, 
+    #widget=forms.NumberInput(attrs={'id': 'deflection_data', 'step': "0.01"}), label='торг. надбавка, (%)',)
+    widget=forms.NumberInput(attrs={'id': 'deflection_data', 'step': "0.01"}), label='')
 
 class PaginationInputForm(forms.Form):
-    pagination_data = forms.IntegerField(label='кол-во позиций в таблице (1-25)', required=None, max_value=25, min_value=0, 
-    widget=forms.NumberInput(attrs={'id': 'pagination_data', 'step': "1"}))
+    pagination_data = forms.IntegerField(required=None, max_value=25, min_value=0, 
+    #widget=forms.NumberInput(attrs={'id': 'pagination_data', 'step': "1"}), label='кол-во позиций в таблице (1-25)')
+    widget=forms.NumberInput(attrs={'id': 'pagination_data', 'step': "1"}), label='')
 
 class CompetitoPerSiteInputForm(forms.Form):
-    competitor_pagination_data = forms.IntegerField(label='кол-во конкурентов в таблице (0-5)', required=True, max_value=5, min_value=1, 
-    widget=forms.NumberInput(attrs={'id': 'competitor_pagination_data', 'step': "1"}))
+    competitor_pagination_data = forms.IntegerField(required=True, max_value=5, min_value=1, 
+    #widget=forms.NumberInput(attrs={'id': 'competitor_pagination_data', 'step': "1"}), label='кол-во конкурентов в таблице (0-5)')
+    widget=forms.NumberInput(attrs={'id': 'competitor_pagination_data', 'step': "1"}), label='')
 
 class CurrencyDateInputForm(forms.Form):
     #chosen_date_for_currency = forms.DateField(widget=forms.DateInput(format='%m-%Y-%d'))
     chosen_date_for_currency = forms.DateField(widget=forms.SelectDateWidget(years=range(2022,2024)),
-    label='курс НБ РБ на:',
+    #label='курс НБ РБ на:',
+    label='',
     initial='2022-7-7'
 
     )
