@@ -216,7 +216,7 @@
             <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
                 {% csrf_token %}
 
-            <div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select"> Начальная дата<br></div>
+            <div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select">Начальная дата<br></div>
             <div><input type="date" name="parcing_date" value="{{ chosen_date }}"><input type="hidden" value="select">Конечная дата<br></div>
 
             <div class="dropdown dropstart">  
