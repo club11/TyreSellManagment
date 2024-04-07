@@ -212,109 +212,105 @@
       
         <div class="el-2">
         {#<div id="menu">#}
-        
-            <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
-                {% csrf_token %}
+  
+          <form action="{% url 'prices:apricestable_russia_update' %}" method="post">
 
-            <div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select">Начальная дата<br></div>
-            <div><input type="date" name="parcing_date" value="{{ chosen_date }}"><input type="hidden" value="select">Конечная дата<br></div>
-
-            <div class="dropdown dropstart">  
-              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-flip="false">выбрать бренд:</button>
-              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
-                {% for comp, status in producer_filter_brand_list %}
-                  <li><input type="checkbox" name="producer_filter_brand_list" value="{{ comp }}" {{ status }}>{{ comp }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          
-            <div class="dropdown dropstart">  
-              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать продукцию:</button>
-              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-          {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
-                {% for ttyre, status in in_base_tyres  %}
-                  <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}" {{ status }}>{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          
-            <div class="dropdown dropstart">  
-              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать группу шин:</button>
-              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                  <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
-                {% for group, status in in_base_tyres_by_group %}
-                  <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}" {{ status }}>{{ group.tyre_group }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          
-            <div>{{ pagination_val_per_form }} кол-во позиций в таблице (1-25)</div>
-            <div>{{ compet_per_site_form }} кол-во конкурентов в таблице (0-5)</div>
-
-            <div>{{ deflection_form }} торг. надбавка, (%)</div>
+            {% csrf_token %}
              
-            <div>{{ currency_input_form }} курс НБ РБ<br>
-              {{ currency }} = {{ shown_date}} {{ curr_value }} BYN     
-            </div>  
+              <ul>
 
-            <p> </p>
-            <p>График:
-              <div class="form-check form-check-inline" >
-                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
-                <label class="form-check-label" for="inlineCheckbox2">Средневзвешенная цена на рынке</label>
-              </div>
-              <div class="form-check form-check-inline" >
-                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
-                <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
-              </div>
-            </p>
+                
+                <li><div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select">Начальная дата<br></div></li>
+                <li><div><input type="date" name="parcing_date" value="{{ chosen_date }}"><input type="hidden" value="select">Конечная дата<br></div></li>
 
+                <li><div class="dropdown dropstart">  
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-flip="false">выбрать бренд:</button>
+                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+                      <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
+                    {% for comp, status in producer_filter_brand_list %}
+                      <li><input type="checkbox" name="producer_filter_brand_list" value="{{ comp }}" {{ status }}>{{ comp }}</li>
+                    {% endfor %}
+                  </ul>
+                </div></li>
+              
+                <li><div class="dropdown dropstart">  
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать продукцию:</button>
+                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+                {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
+                    {% for ttyre, status in in_base_tyres  %}
+                      <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}" {{ status }}>{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
+                    {% endfor %}
+                  </ul>
+                </div></li>
+              
+                <li><div class="dropdown dropstart">  
+                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать группу шин:</button>
+                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+                      <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
+                    {% for group, status in in_base_tyres_by_group %}
+                      <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}" {{ status }}>{{ group.tyre_group }}</li>
+                    {% endfor %}
+                  </ul>
+                </div></li>
+              
+                <li><div>{{ pagination_val_per_form }} кол-во позиций в таблице (1-25)</div></li>
+                <li><div>{{ compet_per_site_form }} кол-во конкурентов в таблице (0-5)</div></li>
+              
+                <li><div>{{ deflection_form }} торг. надбавка, (%)</div></li>
 
-        {#    <div class="form-check form-check-inline" > #}
-        {#      <input class="form-check-input" type="checkbox" id="inlineCheckbox5" value="true" name="only_on_current_date" {{ only_on_current_date_checked }}> #}
-        {#      <label class="form-check-label" for="inlineCheckbox5">Выводить график только на выбранную дату</label> #}
-        {#    </div>      #}      
-
-           
-
-
-            <p> </p>
-              <p>Фильтр торговых площадок:
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
-                <label class="form-check-label" for="btncheck1">показать/скрыть Express-shina</label> 
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
-                <label class="form-check-label" for="btncheck2">показать/скрыть Kolesa-darom</label> 
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
-                <label class="form-check-label" for="btncheck3">показать/скрыть Kolesatyt</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
-                <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
-              </div>
-            </p>
-              <p>Дополнительные данные:
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
-                  <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
-                </div>
-              </p>
+                <li><div>{{ currency_input_form }} курс НБ РБ<br>
+                  {{ currency }} = {{ shown_date}} {{ curr_value }} BYN </div></li> 
+              
+                <li><p> </p></li> 
+                <li>График:</li> 
+                <li>  <div class="form-check form-check-inline" >
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
+                    <label class="form-check-label" for="inlineCheckbox2">Средневзвешенная цена на рынке</label>
+                  </div></li> 
+                  <li>  <div class="form-check form-check-inline" >
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
+                    <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
+                  </div></li> 
+              
+              
+                {#    <div class="form-check form-check-inline" > #}
+                {#      <input class="form-check-input" type="checkbox" id="inlineCheckbox5" value="true" name="only_on_current_date" {{ only_on_current_date_checked }}> #}
+                {#      <label class="form-check-label" for="inlineCheckbox5">Выводить график только на выбранную дату</label> #}
+                {#    </div>      #}      
             
-
-
-            <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
-            </form>
+            
+                <li><p> </p></li>
+                <li> Фильтр торговых площадок: </li>
+                <li>  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
+                    <label class="form-check-label" for="btncheck1">показать/скрыть Express-shina</label> 
+                  </div></li>
+                <li>  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
+                    <label class="form-check-label" for="btncheck2">показать/скрыть Kolesa-darom</label> 
+                  </div></li>
+                <li>  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
+                    <label class="form-check-label" for="btncheck3">показать/скрыть Kolesatyt</label>
+                  </div></li>
+                <li>  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
+                    <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
+                  </div></li>
+ 
+                <li>  Дополнительные данные:
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
+                      <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
+                    </div>
+                  </p></li>
+                
+                
+              </ul>  
+                <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
+          </form>
           
-
         </div>
-
-
-
 
 
       {# % include 'prices/charts.html' % #}
