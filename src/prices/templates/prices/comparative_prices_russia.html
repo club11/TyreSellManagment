@@ -220,9 +220,7 @@
             <div><input type="date" name="parcing_date" value="{{ chosen_date }}"><input type="hidden" value="select">Конечная дата<br></div>
 
             <div class="dropdown dropstart">  
-              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-flip="false">
-                выбрать бренд:
-              </button>
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-flip="false">выбрать бренд:</button>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
                 {% for comp, status in producer_filter_brand_list %}
@@ -232,9 +230,7 @@
             </div>
           
             <div class="dropdown dropstart">  
-              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                выбрать продукцию:
-              </button>
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать продукцию:</button>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
           {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
                 {% for ttyre, status in in_base_tyres  %}
@@ -244,9 +240,7 @@
             </div>
           
             <div class="dropdown dropstart">  
-              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                выбрать группу шин:
-              </button>
+              <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать группу шин:</button>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                   <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
                 {% for group, status in in_base_tyres_by_group %}
