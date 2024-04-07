@@ -94,8 +94,7 @@
         }
 
 
-        @media (min-width: 1253px) {      
-          
+        @media (min-width: 1253px) {   
           .container {    /* container-fluid  */
             display: grid;
             grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
@@ -106,8 +105,7 @@
             column-gap: 5px; 
             background-color: rgb(234, 232, 220);
             min-width: 80%;
-          }          
-
+          }         
           .el-0 {
             background-color: #eae8dc;
             text-align: right;
@@ -176,7 +174,11 @@
         }
 
         @media (max-width: 1252px) {   
-          
+           .navbar-nav>li {             /* NAVBAR для маленьких экранов расположение элементов  */
+            /*   display: inline-block; */
+            font-size: small;
+          }  
+      
           .container {    /* container-fluid  */
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* <--2 колонок в сетке*/
@@ -259,7 +261,6 @@
             text-align: center;
             font-size: 0.5;
           }
-
         }
 
 
@@ -453,15 +454,31 @@ table th {
   <body>
     <header>
           <!-- Fixed navbar -->
+          
+          
+
+  <!--   <a class="btn-sm btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" id="collapse_header_if_small_screen">
+            X
+          </a>
+          <div class="collapse show" id="collapseExample">  
+            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+              {% if user.is_authenticated %}
+                {% include './top_menu.html' %}
+              {% else %}
+                {% include './top_menu_no_r.html' %} 
+              {% endif %}
+            </nav>
+          </div> -->
+
+
           <nav class="navbar navbar-expand-md navbar-dark bg-dark">
             {% if user.is_authenticated %}
               {% include './top_menu.html' %}
             {% else %}
               {% include './top_menu_no_r.html' %} 
             {% endif %}
-              </div>
-            </div>
           </nav>
+          
       </header>
     <!-- Begin page content -->
     {#<main class="flex-shrink-0">#}

@@ -1,6 +1,8 @@
 {% load my_tags %}
 
-<ul class="navbar-nav me-auto mb-2 mb-md-0">
+<div class="navbar-collapse">
+  <ul class="navbar-nav ">
+  
       <li class="nav-item">
       <a class="navbar-brand" href="{% url 'homepage:home' %}">
         {#  <img src='/media/logo.png' alt="" width="250" height="30" class="d-inline-block align-text-left"></a> #} 
@@ -37,13 +39,21 @@
 
       <li class="nav-item">
           {#   <a class="nav-link" href=""> Курс валют НБ РБ на {% current_date %}: <b>RUB</b>={% currency_rate_russia_rub %}, <b>USD</b>={% currency_rate_usd %} </a> #} 
-      </li>
-{% include './check_if_logged.html' %} 
-</ul>
+      </li>    
+      {% include './check_if_logged.html' %} 
+  </ul>
+</div>
+
+
+<div class="navbar-collapse">
+  <ul class="navbar-nav ms-auto">
+    {% if user.is_active is True %}
+      {% include './user_name.html' %} 
+    {% endif %}
+  </ul>
+</div>
        
-{% if user.is_active is True %}
-  {% include './user_name.html' %} 
-{% endif %}
+
 
 
 
