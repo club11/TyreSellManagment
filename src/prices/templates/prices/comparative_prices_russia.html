@@ -217,7 +217,7 @@
 
             {% csrf_token %}
              
-              <ul>
+              <ul class="ul_menu">
 
                 
                 <li><div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select">Начальная дата<br></div></li>
@@ -258,7 +258,8 @@
               
                 <li><div>{{ deflection_form }} торг. надбавка, (%)</div></li>
 
-                <li><div>{{ currency_input_form }} курс НБ РБ<br>
+                <li>курс НБ РБ на:</li>
+                <li><div>{{ currency_input_form }} 
                   {{ currency }} = {{ shown_date}} {{ curr_value }} BYN </div></li> 
               
                 <li><p> </p></li> 
