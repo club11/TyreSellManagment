@@ -32,12 +32,16 @@
         height: 50px;
         }*/
 
-      footer {
-          position: relative;
-          height: 3%;
-          bottom: 0;
-          width: 100%;
-      }
+        footer{
+          background-color: #686363;
+          text-align: center; 
+          flex-shrink: 0;
+          color: white;
+        } 
+
+        li {
+           list-style-type: none; 
+        }
 
       </style>
 
@@ -71,9 +75,52 @@
 
     </main>
 
-    <footer class="footer mt-auto py-3 bg-black .fixed-bottom " >
-      <div class="container-fluid">
-        <span class="text-muted">Wlad Filippow, 2023</span>
+    <footer class="py-5">
+      <div class="row">
+        <div class="col-2">
+          <h5>Section</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
+          </ul>
+        </div>
+  
+        <div class="col-2">
+          <h5>Section</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
+          </ul>
+        </div>
+  
+        <div class="col-2"> 
+      {#    <h5>Section</h5> #}
+      {#    <ul class="nav flex-column"> #}
+      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li> #}
+      {#    </ul> #}
+        </div> 
+  
+        <div class="col-4 offset-1">
+          <form>
+            <h5>Отправить запрос для регистрации</h5>
+          {#  <p>доп информация.</p> #}
+            <div class="d-flex w-10 gap-2">
+              <label for="newsletter1" class="visually-hidden">Отправить запрос</label>
+              <input id="newsletter1" type="text" class="form-control" placeholder="Отправить запрос">
+              <button class="btn btn-primary" type="button">Отправить</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {# <div class="d-flex justify-content-between py-4 my-4 border-top"> #}
+      <div class="d-flex py-4 justify-content-center my-4 border-top">
+      {#   <p>© 2024 Marketerexmachina.</p> #}
+        <ul class="d-flex align-items-end">
+          <li class="ms-2">© 2024 Marketerexmachina.</li>          
+          <li class="ms-2"><a class="link-light" href="https://t.me/marketerexmachina"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-telegram text-white" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/><use xlink:href="https://t.me/marketerexmachina"></use></svg></a></li>
+        </ul>
       </div>
     </footer>
     

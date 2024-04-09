@@ -74,18 +74,15 @@ li {
         
         }
         td{
-          color: rgb(0, 0, 0);        цвет текста */
+          color: rgb(0, 0, 0);      /* <--  цвет текста */
         }
         footer{
-          background-color: #CC0404;
+          background-color: #686363;
           text-align: center; 
           flex-shrink: 0;
-          color: yellow;
-        /* <--    position: relative;
-          height: 3%;
-          bottom: 0;
-          width: 100%;*/
+          color: white;
         } 
+
 
         #logo_footer {
           width: 15%;
@@ -507,44 +504,45 @@ table th {
 
     </main>
 
-    <footer class="row border-top mt-auto py-3 .fixed-bottom    row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 ">
-      <div class="col mb-3">
-        <a href="/" class="d-flex align-items-center mb-3 link-dark text-decoration-none">
-          <img class="logo_footer" id="logo_footer" src="/media/logo2.png" alt="логотип bootstrap"> 
-        </a>
-        <p class="text-muted">© Wlad Filippow, 2024</p>
+    <footer class="py-5">
+      <div class="row">
+        <div class="col-2">
+          <h5>Section</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
+          </ul>
+        </div>
+  
+        <div class="col-2">
+          <h5>Section</h5>
+          <ul class="nav flex-column">
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
+          </ul>
+        </div>
+  
+        <div class="col-2"> 
+      {#    <h5>Section</h5> #}
+      {#    <ul class="nav flex-column"> #}
+      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li> #}
+      {#    </ul> #}
+        </div> 
+  
+        <div class="col-4 offset-1">
+        </div>
       </div>
-  
-      <div class="col mb-3">
-  
-      </div>
-  
-      <div class="col mb-3">
-        <h5></h5>
-        <ul class="nav flex-column">
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted"></a></li>
-        </ul>
-      </div>
-  
-      <div class="col mb-3">
-        <h5>Section</h5>
-        <ul class="nav flex-column">
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted"></a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted"></a></li>
-        </ul>
-      </div>
-  
-      <div class="col mb-3">
-        <h5>Контактные данные:</h5>
-        <ul class="nav flex-column">
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
-            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
-          </svg> marketerexmachina@mail.ru</a></li>
-          <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/>
-          </svg></a></li>
-        </ul>
 
+      {# <div class="d-flex justify-content-between py-4 my-4 border-top"> #}
+      <div class="d-flex py-4 justify-content-center my-4 border-top">
+      {#   <p>© 2024 Marketerexmachina.</p> #}
+        <ul class="d-flex align-items-end">
+          <li class="ms-2">© 2024 Marketerexmachina.</li>          
+          <li class="ms-2"><a class="link-light" href="https://t.me/marketerexmachina"><svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-telegram text-white" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/><use xlink:href="https://t.me/marketerexmachina"></use></svg></a>
+          </li>
+        </ul>
+      </div>
     </footer>
     
       <script src='{% static "js/bootstrap.bundle.min.js" %}'></script>  
