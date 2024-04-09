@@ -232,19 +232,7 @@
                     {% endfor %}
                   </ul>
                 </div></li>
-
-                <li><div class="dropdown dropstart">  
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-flip="false">выбрать бренд:</button>
-                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                    <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> 
-                    {% for ttyre, status in in_base_tyres  %}
-                      <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}" {{ status }}>{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
-                    {% endfor %}
-                  </ul>
-                </div></li>
-
-
-              
+         
                 <li><div class="dropdown dropstart">  
                   <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать продукцию:</button>
                   <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
