@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'chemcurier',
     'profiles',
 
-    #'crispy_forms',
+
+    'crispy_forms',
 
 
 ]
