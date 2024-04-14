@@ -13,6 +13,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from django.contrib.auth.forms import PasswordChangeForm
+from django.core.mail import BadHeaderError, send_mail
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 class RegisterFormView(LoginRequiredMixin, FormView):
     template_name = 'profiles/create_user.html'
@@ -34,10 +37,37 @@ class SomeUserLoginView(auth_views.LoginView):
     template_name = 'registration/login.html'
     redirect_field_name = 'next'
 
+    # в случае отправки почтового запроса для регистрации:
+    def send_email(sself, request_is):
+        print('request_is !!', request_is)
+    #    subject = request.POST.get("subject", "")
+    #    message = request.POST.get("message", "")
+        got_registr_request_mail = request_is
+        if got_registr_request_mail:
+            try:
+                send_mail(
+                    "Получен запрос на регистрацию в Marketer ex Machina!",
+                    f"от {got_registr_request_mail}",  # имя ящика обратившегося
+                    'club11@bk.ru',                     # адрес marketerwxmachina должен быть здесь - приложение шлет себе уведомление
+                    ['club11@bk.ru'],                   # рассылка - собственный адрес marketerwxmachina должен быть здесь
+                    fail_silently=False,
+                )
+            except BadHeaderError:
+                pass
+                return HttpResponse("Invalid header found.")
+            return HttpResponseRedirect('login')
+        else:
+            # In reality we'd use a form class
+            # to get proper validation errors.
+            return HttpResponse("Make sure all fields are entered and valid.")
+    # end в случае отправки почтового запроса для регистрации:      
+
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
-    #    print('===============', kwargs.keys())
+        #print('===============', kwargs.keys())
+        #print('===============', kwargs.items())
         if self.request.GET.get('data'):
             # remember old state
             _mutable = kwargs['data']._mutable
@@ -51,6 +81,20 @@ class SomeUserLoginView(auth_views.LoginView):
             # set mutable flag back
             kwargs['data']._mutable = _mutable
     #    print("+++++", kwargs)
+        
+        # в случае отправки почтового запроса для регистрации:
+        if self.request.POST.get('mail_registr_request_from_noname'):
+            verify_got_email = self.request.POST.get('mail_registr_request_from_noname')
+            #print('verify_got_email', verify_got_email)
+            try:
+                validate_email(verify_got_email)
+            except ValidationError as e:
+                context = super().get_context_data(**kwargs)
+                context['not_valid_email'] = f'Некорректный почтовый адрес {e}'
+            else:
+                self.send_email(verify_got_email)
+            #return 'Почта направлена'
+        # end в случае отправки почтового запроса для регистрации:    
         return kwargs
     
 
