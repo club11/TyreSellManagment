@@ -33,7 +33,7 @@
         }*/
 
         @media (min-width: 1253px) {   
-            footer{
+          footer{
             background-color: #686363;
             text-align: center; 
             flex-shrink: 0;
@@ -42,13 +42,18 @@
         }
 
         @media (max-width: 1253px) {   
-            footer{
+          footer{
             background-color: #686363;
             text-align: center; 
             flex-shrink: 0;
             color: white;
             font-size: 1.7vw;
+            width: auto;
           } 
+          #footer_h5 {
+            font-size: 2.0vw;
+          }
+
         } 
 
         li {
@@ -90,7 +95,7 @@
     <footer class="py-5">
       <div class="row">
         <div class="col-2">
-          <h5>Section</h5>
+          <h5 id="footer_h5">Section</h5>
           <ul class="nav flex-column">
             <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
             <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
@@ -98,7 +103,7 @@
         </div>
   
         <div class="col-2">
-          <h5>Section</h5>
+          <h5 id="footer_h5">Section</h5>
           <ul class="nav flex-column">
             <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
             <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
@@ -112,15 +117,15 @@
       {#    </ul> #}
         </div> 
   
-        <div class="col-4 offset-1">
+        <div class="col-4 offset-1" id="footer_email_form">
           <form class="form-signin" method="post" action="{% url 'login' %}">  
             {% csrf_token %}
-            <h5>Отправить запрос для регистрации</h5>
+            <h5 id="footer_h5">Отправить запрос для регистрации</h5>
             <p class="small">Укажите Ваш почтовый адрес. В случае подтверждения запроса на указанный адрес будут направлены данные для входа в систему.</p> 
             <div class="d-flex w-10 gap-2">
               <label for="newsletter1" class="visually-hidden">Ваш почтовый адрес</label>
               <input type="email" id="newsletter1" type="text" class="form-control" placeholder="Ваш почтовый адрес" {{ not_valid_email }} name="mail_registr_request_from_noname">
-              <button class="btn btn-primary" type="submit">Отправить</button>
+              <button class="btn btn-primary btn-sm" type="submit" >Отправить</button>
             </div>
           </form>
         </div>
