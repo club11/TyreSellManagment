@@ -54,7 +54,7 @@
             font-size: 3.0vw;
           } 
           input[type="email"]{
-              font-size:2.3vw;
+              font-size:2.7vw;
           }
 
 
@@ -98,44 +98,26 @@
 
     <footer class="py-5">
       <div class="row">
-      {#  <div class="col-2"> #}
-      {#    <h5 id="footer_h5">Section</h5> #}
-      {#    <ul class="nav flex-column"> #}
-      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li> #}
-      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li> #}
-      {#    </ul> #}
-      {#  </div> #}
-  
-      {#  <div class="col-2"> #}
-      {#    <h5 id="footer_h5">Section</h5> #}
-      {#    <ul class="nav flex-column"> #}
-      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li> #}
-      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li> #}
-      {#    </ul> #}
-      {#  </div> #}
-  
-      {#   <div class="col-2">  #}
-      {#    <h5>Section</h5> #}
-      {#    <ul class="nav flex-column"> #}
-      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li> #}
-      {#    </ul> #}
-      {#   </div>  #}
-  
-       {#   <div class="col-4 offset-1"> #}
-       {#     <form class="form-signin" method="post" action="{% url 'login' %}">  #}
-       {#       {% csrf_token %} #}
-       {#       <h5 id="footer_h5">Отправить запрос для регистрации</h5> #}
-       {#       <p class="small">Укажите Ваш почтовый адрес. В случае подтверждения запроса на указанный адрес будут направлены данные для входа в систему.</p>  #}
-       {#       <div class="d-flex w-10 gap-2 id="footer_email_form""> #}
-       {#         <label for="newsletter1" class="visually-hidden">Ваш почтовый адрес</label> #}
-       {#         <input type="email" id="newsletter1" type="text" class="form-control" placeholder="Ваш почтовый адрес" {{ not_valid_email }} name="mail_registr_request_from_noname"> #}
-       {#         <button class="btn btn-primary btn-sm" type="submit" >Отправить</button> #}
-       {#       </div> #}
-       {#     </form> #}
-       {#   </div> #}
-       {# </div> #} 
 
-        <div class="col-xs-6 col-sm-4" >
+
+      {#  <div class="col-md-4">  #}
+      {#    <h5 id="footer_h5"></h5>  #}
+      {#    <ul class="nav flex-column">  #}
+      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white"></a></li>  #}
+      {#    </ul>  #}
+      {#  </div>  #}
+
+      {#  <div class="col-md-1">  #}
+      {#    <h5></h5> #}
+      {#    <ul class="nav flex-column"> #}
+      {#      <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white"></a></li> #}
+      {#    </ul> #}
+      {#  </div>    #}
+
+
+
+      {#   <div class="col-md-5 offset-md-1"> #}
+        <div class="col-md-4 offset-md-7">
           <form class="form-signin" method="post" action="{% url 'login' %}"  >  
             {% csrf_token %}
             <h5 id="footer_h5">Отправить запрос для регистрации</h5>
@@ -147,15 +129,8 @@
             </div>
           </form>
         </div>
-      </div>
 
-        <div class="col-xs-6 col-sm-4"> 
-            <h5 id="footer_h5">Section</h5> 
-            <ul class="nav flex-column"> 
-              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li> 
-              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li> 
-            </ul> 
-        </div> 
+      </div>  
 
 
       {# <div class="d-flex justify-content-between py-4 my-4 border-top"> #}
