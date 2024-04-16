@@ -15,6 +15,7 @@
   <div class="container">
 
         <div class="el-0">
+          
         </div>
 
         <div class="el-1">
@@ -54,30 +55,30 @@
                   {{ no_chosen_production_checked_bage }}
                 {% endif %}<br>
 
-              {% if producer_filter_brand_list_checked_bage %}  
-              Поиск по брендам:
-                {% for brand_name in producer_filter_brand_list_checked_bage %}
-                  <span class="badge bg-light text-dark">{{ brand_name }}</span>
-                {% endfor %}
-              {% endif %}
-            </span>
-            <span>
-              {% if in_base_tyres_list_checked_bage %}
-              Поиск по продукции:
-
-                {% for production_name in in_base_tyres_list_checked_bage %}
-                  <span class="badge bg-light text-dark">{{ production_name.tyre.tyre_size.tyre_size }} {{ production_name.tyre.tyre_model.model }}</span> 
-                {% endfor %}
-              {% endif %}
-            </span>
-            <span>
-              {% if in_base_tyres_by_group_checked_bage %}
-              Поиск по группе шин:
-                {% for group in in_base_tyres_by_group_checked_bage %}
-                  <span class="badge bg-light text-dark">{{ group.tyre_group }} </span> 
-                {% endfor %}
-              {% endif %}          
-            </span>
+                {% if producer_filter_brand_list_checked_bage %}  
+                Поиск по брендам:
+                  {% for brand_name in producer_filter_brand_list_checked_bage %}
+                    <span class="badge bg-light text-dark">{{ brand_name }}</span>
+                  {% endfor %}
+                {% endif %}
+              </span>
+              <span>
+                {% if in_base_tyres_list_checked_bage %}
+                Поиск по продукции:
+              
+                  {% for production_name in in_base_tyres_list_checked_bage %}
+                    <span class="badge bg-light text-dark">{{ production_name.tyre.tyre_size.tyre_size }} {{ production_name.tyre.tyre_model.model }}</span> 
+                  {% endfor %}
+                {% endif %}
+              </span>
+              <span>
+                {% if in_base_tyres_by_group_checked_bage %}
+                Поиск по группе шин:
+                  {% for group in in_base_tyres_by_group_checked_bage %}
+                    <span class="badge bg-light text-dark">{{ group.tyre_group }} </span> 
+                  {% endfor %}
+                {% endif %}          
+              </span>
           </div>
         </div>
  
@@ -223,7 +224,11 @@
                 <li><div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}"><input type="hidden" value="select">Начальная дата<br></div></li>
                 <li><div><input type="date" name="parcing_date" value="{{ chosen_date }}"><input type="hidden" value="select">Конечная дата<br></div></li>
 
-                <li><div class="dropdown dropstart">  
+
+
+
+                {#<li><div class="dropdown dropstart">#}  
+                <li><div class="dropdown">    
                   <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-flip="false">выбрать бренд:</button>
                   <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                       <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
@@ -233,7 +238,8 @@
                   </ul>
                 </div></li>
          
-                <li><div class="dropdown dropstart">  
+                {#<li><div class="dropdown dropstart">#}  
+                  <li><div class="dropdown">   
                   <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать продукцию:</button>
                   <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                 {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
@@ -243,7 +249,8 @@
                   </ul>
                 </div></li>
               
-                <li><div class="dropdown dropstart">  
+                {#<li><div class="dropdown dropstart">#}  
+                  <li><div class="dropdown">  
                   <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать группу шин:</button>
                   <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
                       <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
