@@ -37,7 +37,7 @@
                 <a class="btn-sm btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                   X
                 </a>
-              <div class=".collapse.show" id="collapseExample">
+                <div class="collapse show" id="collapseExample"> 
                   <span>
                     {% if end_date_is_not_chosen_bage %} 
                       {{ end_date_is_not_chosen_bage }}
@@ -214,105 +214,98 @@
             <div class="el-2">
             {#<div id="menu">#}
             
-                <form action="{% url 'prices:apricestable_update' %}" method="post">
+              <form action="{% url 'prices:apricestable_update' %}" method="post">
                     {% csrf_token %}
-                
-                <div>задать начальную дату <input type="date" name="parcing_date_start" value="{{ chosen_date_start }}">  <input type="hidden" value="select"><br></div>
-                <div>задать конечную дату <input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select"><br></div>
-                
-                <div class="dropdown dropstart">  
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    выбрать бренд:
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                      <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
-                    {% for comp, status in producer_filter_brand_list %}
-                      <li><input type="checkbox" name="producer_filter_brand_list" value="{{ comp }}" {{ status }}>{{ comp }}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              
-                <div class="dropdown dropstart">  
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    выбрать продукцию:
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-              {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
-                    {% for ttyre, status in in_base_tyres  %}
-                      <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}" {{ status }}>{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              
-                <div class="dropdown dropstart">  
-                  <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    выбрать группу шин:
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
-                      <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
-                    {% for group, status in in_base_tyres_by_group %}
-                      <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}" {{ status }}>{{ group.tyre_group }}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              
-                <div>{{ pagination_val_per_form }}</div>
-                <div>{{ compet_per_site_form }}</div>
-              
-                <div>{{ deflection_form }}</div>
 
-                <div>{{ currency_input_form }}<br>
-                  {{ currency }} = {{ shown_date}} {{ curr_value }} BYN     
-                </div>  
+                <ul class="ul_menu">    
+                
+                  <li><div><input type="date" name="parcing_date_start" value="{{ chosen_date_start }}">  <input type="hidden" value="select">Начальная дата<br></div></li>
+                  <li><div><input type="date" name="parcing_date" value="{{ chosen_date }}">  <input type="hidden" value="select">Конечная дата<br></div></li>
+                  
+                  <li><div class="dropdown">   
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать бренд:</button>
+                    <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><input type="checkbox" name="producers_all" value="{{ producer_filter_all.all }}"><b>все бренды</b></li>
+                      {% for comp, status in producer_filter_brand_list %}
+                        <li><input type="checkbox" name="producer_filter_brand_list" value="{{ comp }}" {{ status }}>{{ comp }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                
+                  <li><div class="dropdown">  
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать продукцию:</button>
+                    <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+                {#       <li><input type="checkbox" name="self_production_all" value="{{ in_base_tyres.all }}"><b>вся продукция</b></li> #} 
+                      {% for ttyre, status in in_base_tyres  %}
+                        <li><input type="checkbox" name="self_production" value="{{ ttyre.id }}" {{ status }}>{{ ttyre.tyre.tyre_size.tyre_size }} {{ ttyre.tyre.tyre_model.model }} {% for param in ttyre.tyre.tyre_type.all %} {{ param.tyre_type }} {% endfor %}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                
+                  <li><div class="dropdown">  
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">выбрать группу шин:</button>
+                    <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDarkDropdownMenuLink">
+                        <li><b><input type="checkbox" name="self_production_group_id_all" value="{{ in_base_tyres_by_group.all }}">все группы</b></li>
+                      {% for group, status in in_base_tyres_by_group %}
+                        <li><input type="checkbox" name="self_production_group_id" value="{{ group.id }}" {{ status }}>{{ group.tyre_group }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                                 
+                  <li><div>{{ pagination_val_per_form }} кол-во позиций в таблице (1-25)</div></li>
+                  <li><div>{{ compet_per_site_form }} кол-во конкурентов в таблице (0-5)</div></li>  
+                  
+                  <li><div>{{ deflection_form }} торг. надбавка, (%)</div></li>
+               
+                  <li>курс НБ РБ на:</li>
+                  <li><div>{{ currency_input_form }} 
+                    {{ currency }} = {{ shown_date}} {{ curr_value }} BYN</div>
+                  </li>                   
+                
+               
+                  <li><p> </p></li> 
+                  <li>График:</li> 
+                  <li>  <div class="form-check form-check-inline" >
+                      <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
+                      <label class="form-check-label" for="inlineCheckbox2">Средневзвешенная цена на рынке</label>
+                    </div></li> 
+                    <li>  <div class="form-check form-check-inline" >
+                      <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
+                      <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
+                    </div></li> 
+                             
+                
               
+                  <li><p> </p></li>
+                  <li>Фильтр торговых площадок:</li>
+                  <li><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
+                    <label class="form-check-label" for="btncheck1">показать/скрыть Onliner</label> 
+                  </div></li>
+                  <li><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
+                    <label class="form-check-label" for="btncheck2">показать/скрыть Avtoset</label> 
+                  </div></li>
+                  <li><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
+                    <label class="form-check-label" for="btncheck3">показать/скрыть Bagoria</label>
+                  </div></li>
+                  <li><div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
+                    <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
+                  </div></li>
+                
+                  <li>Дополнительные данные:
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
+                    <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
+                  </div>
+                  </form></li>
               
-              
-                <div class="form-check form-check-inline" >
-                  <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="true" name="weighted_average" {{ weighted_average_checked }}>
-                  <label class="form-check-label" for="inlineCheckbox2">Вывести информацию в графике в виде средневзвешенной цены на рынке</label>
-                </div>
-              
-                <div class="form-check form-check-inline" >
-                  <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="true" name="full_lined_chart" {{ full_lined_chart_checked }}>
-                  <label class="form-check-label" for="inlineCheckbox3">Линейный график без разрывов</label>
-                </div>
-              
-              
-            {#    <div class="form-check form-check-inline" > #}
-            {#      <input class="form-check-input" type="checkbox" id="inlineCheckbox5" value="true" name="only_on_current_date" {{ only_on_current_date_checked }}> #}
-            {#      <label class="form-check-label" for="inlineCheckbox5">Выводить график только на выбранную дату</label> #}
-            {#    </div>      #}      
-            
+                </ul>    
                 <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
-                </form>
-              
-                <form>
-                <p>работа с источником данных:</p>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
-                  <label class="form-check-label" for="btncheck1">показать/скрыть Onliner</label> 
-                </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
-                  <label class="form-check-label" for="btncheck2">показать/скрыть Avtoset</label> 
-                </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
-                  <label class="form-check-label" for="btncheck3">показать/скрыть Bagoria</label>
-                </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
-                  <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
-                </div>
-              
-                <p>дополнительные данные:</p>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
-                  <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
-                </div>
-                </form>
-              
-              
+              </form>
+
             </div>
           
           
@@ -346,12 +339,16 @@
                       var options = {
                         title: 'Кол-во собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                       //  height: 300,
-                      legend: { position: 'bottom' },
+                    //  legend: { position: 'bottom' },
+                      legend: { position: 'bottom', maxLines: 2}, 
+                      chartArea: {top:150,bottom:30,right:10,left:10, 'width': '90%' },
                       slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
                         2: {offset: 0.05},
                         3: {offset: 0.05},
                         },
-                        colors:['#d11616','#05a107','#2307d9']
+                        colors:['#d11616','#05a107','#2307d9'],
+                        backgroundColor: '#eae8dc',
+                        fontSize: 15, 
                       };
                     
                       var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -401,6 +398,7 @@
                       },
                       title:'Кол-во позиций на сайтах в разрезе брендов на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                       colors:['#d11616','#05a107','#2307d9'],
+                      backgroundColor: '#f3f2ec',
                       theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                       // bar: {groupWidth:'40%'},
                       // chartArea:{left:32,width:'70%'},
@@ -415,7 +413,7 @@
                       titleTextStyle: {
                           color: 'black',    
                         //  fontName: 'Times New Roman', 
-                          fontSize: 12, 
+                          fontSize: 16, 
                           bold: true,    
                           italic: false,  
                       },      
@@ -513,6 +511,7 @@
                         },
                         title:'Кол-во позиций на сайтах в разрезе типоразмеров на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
                         colors:['#d11616','#05a107','#2307d9'],
+                        backgroundColor: '#f3f2ec',
                         theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
                         // bar: {groupWidth:'40%'},
                         // chartArea:{left:32,width:'70%'},
@@ -526,7 +525,7 @@
                         titleTextStyle: {
                             color: 'black',    
                           //  fontName: 'Times New Roman', 
-                            fontSize: 12, 
+                            fontSize: 16, 
                             bold: true,    
                             italic: false,  
                         },      
@@ -545,9 +544,11 @@
                              label: 'Маркетплейс',
                              allowTyping: false,
                              allowMultiple: false,
-                             caption : 'Все маркетплейсы',
+                             caption : 'Все маркетплейсы +',
                              allowNone: true,
                           //   selectedValuesLayout: 'belowStacked'
+                          //  labelStacking: 'vertical',
+                          
                          }
                      },
                      state: initState
@@ -657,17 +658,17 @@
                   lineWidth: 7,
                   title:"Типоразмер {{ chart_title|safe }}",
                   titleTextStyle: { 
-                      fontSize: 15,
+                      fontSize: 19,
                       fontName: 'Times New Roman',
                       bold: true,
                       },
-                    
+                  backgroundColor: '#f3f2ec',  
                   chartArea: {
               //      left: 100,
-              //      width: '70%',
+                    width: '90%',
                   },
                 
-                  subtitle: "RUB",
+                  subtitle: "BYN",
                   //width: 600,                                       // ширина таблицы
               //    height:400,
           //        legend: { position: 'right' },   ///// РАБОТАЕТ (и left),
@@ -676,7 +677,7 @@
                   vAxis: {                                                // вертикальная ось, но здесь не все можно прописать в материальной таблице
                     //gridlines:{color: 'blue'}, // цвет полос оси У
                     format: '0',  // '0.00',       //format: '#'                    // 2 знака поле запятой            // КОСТЫЛЬ - НО РАБОЧИЙ! ФОРМАТ ЧИСЕЛ В ТАБЛИЦЕ
-                    title:'RUB',
+                    title:'BYN',
                   //  textPosition: 'out',
                   },
                   hAxis: {
@@ -692,7 +693,7 @@
                       },
                       y: {
                         0: { 
-                          label: 'RUB.',
+                          label: 'BYN.',
                           textStyle: {color: 'red'},
                         
                         } 
@@ -750,9 +751,11 @@
                         chartOptions: {
                             hAxis: {'baselineColor': 'none', format: 'dd.MM.Y' },
                             height: 35,
+                            backgroundColor: '#f3f2ec',
                             chartArea: {
                     //            left: 100,
                     //            width: '70%',
+                                  backgroundColor: '#f3f2ec',
                             }
                         }
                     }

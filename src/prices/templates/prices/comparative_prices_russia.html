@@ -267,7 +267,8 @@
 
                 <li>курс НБ РБ на:</li>
                 <li><div>{{ currency_input_form }} 
-                  {{ currency }} = {{ shown_date}} {{ curr_value }} BYN </div></li> 
+                  {{ currency }} = {{ shown_date}} {{ curr_value }} RUB</div>
+                </li> 
               
                 <li><p> </p></li> 
                 <li>График:</li> 
@@ -288,25 +289,25 @@
             
             
                 <li><p> </p></li>
-                <li> Фильтр торговых площадок: </li>
-                <li>  <div class="form-check form-switch">
+                <li>Фильтр торговых площадок:</li>
+                <li><div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="btncheck1" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="true" aria-controls="collapseWidthExample">
                     <label class="form-check-label" for="btncheck1">показать/скрыть Express-shina</label> 
                   </div></li>
-                <li>  <div class="form-check form-switch">
+                <li><div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="btncheck2" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="true" aria-controls="collapseWidthExample1"> 
                     <label class="form-check-label" for="btncheck2">показать/скрыть Kolesa-darom</label> 
                   </div></li>
-                <li>  <div class="form-check form-switch">
+                <li><div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="btncheck3" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="true" aria-controls="collapseWidthExample2">
                     <label class="form-check-label" for="btncheck3">показать/скрыть Kolesatyt</label>
                   </div></li>
-                <li>  <div class="form-check form-switch">
+                <li><div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="btncheck4" checked data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="true" aria-controls="collapseWidthExample3">
                     <label class="form-check-label" for="btncheck4">показать/скрыть Chemcurier</label> 
                   </div></li>
  
-                <li>  Дополнительные данные:
+                <li>Дополнительные данные:
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" role="switch" id="btncheck5" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample5 collapseWidthExample6">
                       <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
@@ -315,7 +316,7 @@
                 
                 
               </ul>  
-                <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
+              <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
           </form>
           
         </div>
@@ -348,8 +349,8 @@
                   var options = {
                     title: 'Кол-во собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                   //  height: 300,
-                  legend: { position: 'top', maxLines: 2}, 
-                  chartArea: {top:150,bottom:30,right:0,left:0, 'width': '100%' },
+                  legend: { position: 'bottom', maxLines: 2}, 
+                  chartArea: {top:150,bottom:30,right:10,left:10, 'width': '90%' },
                   slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
                     2: {offset: 0.05},
                     3: {offset: 0.05},
@@ -421,7 +422,7 @@
                   titleTextStyle: {
                       color: 'black',    
                     //  fontName: 'Times New Roman', 
-                      fontSize: 18, 
+                      fontSize: 16, 
                       bold: true,    
                       italic: false,  
                   },      
@@ -534,7 +535,7 @@
                     titleTextStyle: {
                         color: 'black',    
                       //  fontName: 'Times New Roman', 
-                        fontSize: 18, 
+                        fontSize: 16, 
                         bold: true,    
                         italic: false,  
                     },      

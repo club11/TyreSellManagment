@@ -17,7 +17,7 @@
 
 <form class="form-signin" method="post" action="{% url 'login' %}">   
   {% csrf_token %}
-    <img class="mb-4" src="/media/logo2.png" alt="логотип bootstrap" width="203" height="170">  
+  {#  <img class="mb-4" src="/media/logo2.png" alt="логотип bootstrap" width="203" height="170">  #}
     <h1 class="h3 mb-3 font-weight-normal"><font color="#ffffff">Вход в систему</font></h1>
     <label for="inputLogin" class="sr-only"><font color="#ffffff">Логин</font></label>
     <input type="password" id="inputLogin" class="form-control" placeholder="Логин" required="" autofocus="" name="username">
@@ -29,7 +29,9 @@
       </label>
     </div>
     
-    <button class="btn btn-lg btn-light btn-block" type="submit" value="{{ next }}">Войти</button>
+    {#<button class="btn btn-outline-ligh btn-sm" type="submit" style="color:white" value="{{ next }}">Войти</button>#}
+    <button type="submit" class="btn btn-warning" value="{{ next }}">Войти</button>
+
 </form>
 
 
