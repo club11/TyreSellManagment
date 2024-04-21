@@ -3,7 +3,7 @@ from operator import index
 from queue import Empty
 from turtle import update
 from django.shortcuts import render
-from django.views.generic import DetailView, View
+from django.views.generic import DetailView, View, TemplateView
 from . import models, forms 
 from tyres import models as tyre_models
 from abc_table_xyz import models as abc_table_xyz_models
@@ -416,9 +416,10 @@ class HomeTemplateUpdateView(View):
 
 
 
-class MainTemplateView(View):
+class MainTemplateView(TemplateView):
 
-    template_name = 'homepage/main.html'
+   #template_name = 'homepage/main.html'
+   template_name = 'main.html'
 
 
 

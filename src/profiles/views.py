@@ -36,10 +36,12 @@ class RegisterFormView(LoginRequiredMixin, FormView):
 class SomeUserLoginView(auth_views.LoginView):
     template_name = 'registration/login.html'
     redirect_field_name = 'next'
+    #redirect_field_name = 'main'
+    
 
     # в случае отправки почтового запроса для регистрации:
     def send_email(sself, request_is):
-        print('request_is !!', request_is)
+    #    print('request_is !!', request_is)
     #    subject = request.POST.get("subject", "")
     #    message = request.POST.get("message", "")
         got_registr_request_mail = request_is
@@ -102,6 +104,7 @@ class SomePasswordChangeView(auth_views.PasswordChangeView):
     template_name = 'registration/chp.html'
     form_class = PasswordChangeForm
     success_url = reverse_lazy('chemcurier:chemcurier_table')
+
 
     def get_form_kwargs(self):
 
