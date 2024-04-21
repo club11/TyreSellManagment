@@ -4497,11 +4497,13 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             total_quantity = num_of_parsed_brand_onliner + num_of_parsed_brand_bagoria + num_of_parsed_brand_autoset        # для сортировки по наибольшему кол-ву спарсенных с сайтов
 
             brand_quantity_per_site = brand, num_of_parsed_brand_onliner, num_of_parsed_brand_bagoria, num_of_parsed_brand_autoset, total_quantity 
-            list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
-            quantity_counter += 1
+            if brand_quantity_per_site[4] != 0: 
+                list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
+                quantity_counter += 1
         list_of_parrsed_brands_sites = sorted(list_of_parrsed_brands_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
 
         top_brands_counter_for_chart = 0
+        #print('quantity_counter', ' #########  ===', quantity_counter)
         if quantity_counter == 10 or quantity_counter > 10:               # ели брендов более 10 - то берем то 10
             top_brands_counter_for_chart = 10
         elif quantity_counter < 10 and quantity_counter > 0:
@@ -4540,8 +4542,9 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             total_quantity = num_of_parsed_tyresize_onliner + num_of_parsed_tyresize_bagoria + num_of_parsed_tyresize_autoset        # для сортировки по наибольшему кол-ву спарсенных с сайтов
 
             tyresize_quantity_per_site = ttyyrr_sizze, num_of_parsed_tyresize_onliner, num_of_parsed_tyresize_bagoria, num_of_parsed_tyresize_autoset, total_quantity 
-            list_of_parrsed_tyresize_sites.append(list(tyresize_quantity_per_site))
-            quantity_counter += 1
+            if tyresize_quantity_per_site[4] != 0:  
+                list_of_parrsed_tyresize_sites.append(list(tyresize_quantity_per_site))
+                quantity_counter += 1
         list_of_parrsed_tyresize_sites = sorted(list_of_parrsed_tyresize_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
 
         top_tyresizes_counter_for_chart = 0
@@ -5992,7 +5995,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
 
         edyniy_slovar_dict_dlja_pandas_chart_graphic = {}               ##### И.С.Х.О.Д.Н.И.К. Д.Л.Я. О.Т.Р.И.С.О.В.К.И. Г.Р.А.Ф.И.К.А. !!!WARNING IMPORTANT
         spisok_competitors_filtered = []
-        print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)
+        #print('list_of_tyre_comparative_objects_ids', list_of_tyre_comparative_objects_ids)
 
         for tyre_for_chart_need_all_checked_competitors in list_of_tyre_comparative_objects_ids:
             competitors_ids1 = models.EXPRESS_SHINA_COMPETITORS_NAMES_FILTER_IDS.get(tyre_for_chart_need_all_checked_competitors)
@@ -6634,8 +6637,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
             total_quantity = num_of_parsed_brand_express_shina + num_of_parsed_brand_kolesa_darom + num_of_parsed_brand_kolesatyt        # для сортировки по наибольшему кол-ву спарсенных с сайтов
 
             brand_quantity_per_site = brand, num_of_parsed_brand_express_shina, num_of_parsed_brand_kolesa_darom, num_of_parsed_brand_kolesatyt, total_quantity 
-            list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
-            quantity_counter += 1
+            if brand_quantity_per_site[4] != 0: 
+                list_of_parrsed_brands_sites.append(list(brand_quantity_per_site))
+                quantity_counter += 1
         list_of_parrsed_brands_sites = sorted(list_of_parrsed_brands_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
 
         top_brands_counter_for_chart = 0
@@ -6673,8 +6677,9 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
             total_quantity = num_of_parsed_tyresize_express_shina + num_of_parsed_tyresize_kolesa_darom + num_of_parsed_tyresize_kolesatyt        # для сортировки по наибольшему кол-ву спарсенных с сайтов
 
             tyresize_quantity_per_site = ttyyrr_sizze, num_of_parsed_tyresize_express_shina, num_of_parsed_tyresize_kolesa_darom, num_of_parsed_tyresize_kolesatyt, total_quantity 
-            list_of_parrsed_tyresize_sites.append(list(tyresize_quantity_per_site))
-            quantity_counter += 1
+            if tyresize_quantity_per_site[4] != 0:  
+                list_of_parrsed_tyresize_sites.append(list(tyresize_quantity_per_site))
+                quantity_counter += 1
         list_of_parrsed_tyresize_sites = sorted(list_of_parrsed_tyresize_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
 
         top_tyresizes_counter_for_chart = 0
@@ -6689,6 +6694,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['tyresizes_from_sites_date'] = date_to_look_parsed_data
         list_of_parrsed_tyresize_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_tyresize_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
+        #print('list_of_parrsed_tyresize_sites =======00===', list_of_parrsed_tyresize_sites)
         context['tyresizes_from_sites'] = list_of_parrsed_tyresize_sites
 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ  С САЙТОВ: PANDAS

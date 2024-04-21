@@ -339,7 +339,7 @@
                       var options = {
                         title: 'Кол-во собранных данных о конкурентах с маркет-плейсов на {{ final_parsed_data_from_sites_data|safe }}. Всего: {{ final_parsed_data_from_sites_whole|safe }}',
                       //  height: 300,
-                    //  legend: { position: 'bottom' },
+                    //  legend: { position: 'top' },
                       legend: { position: 'bottom', maxLines: 2}, 
                       chartArea: {top:150,bottom:30,right:10,left:10, 'width': '90%' },
                       slices: {  1: {offset: 0.05},      //  разделить срез на смещение (от 0 до 1)
@@ -509,7 +509,7 @@
                         legend: {
                         position: 'bottom'  // top не работает, рабочие лишь left, right
                         },
-                        title:'Кол-во позиций на сайтах в разрезе типоразмеров на {{ brands_from_sites_date }}, топ-{{ top_brands_num }}',
+                        title:'Кол-во позиций на сайтах в разрезе типоразмеров на {{ tyresizes_from_sites_date }}, топ-{{ top_tyresizes_num }}',
                         colors:['#d11616','#05a107','#2307d9'],
                         backgroundColor: '#f3f2ec',
                         theme: 'material',       // должно было работать, не нет - не меняет тему на курутую материалку
@@ -544,7 +544,7 @@
                              label: 'Маркетплейс',
                              allowTyping: false,
                              allowMultiple: false,
-                             caption : 'Все маркетплейсы +',
+                             caption : 'Все маркетплейсы',
                              allowNone: true,
                           //   selectedValuesLayout: 'belowStacked'
                           //  labelStacking: 'vertical',

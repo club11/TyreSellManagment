@@ -412,6 +412,15 @@ class HomeTemplateUpdateView(View):
         else:
             models.TYRE_GROUP_MODELS = tyre_models_list
         return HttpResponseRedirect(reverse_lazy('homepage:home'))
+    
+
+
+
+class MainTemplateView(View):
+
+    template_name = 'homepage/main.html'
+
+
 
 
 
