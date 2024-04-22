@@ -20,9 +20,9 @@
             </div>
           
             <div class="el-1">
-                    <div class="div1"> 
-                      <strong>Маркетплейс-анализ. Рынок: Республика Беларусь на {{ table_current_date_for_header }}</strong>
-                    </div>
+                <div class="div1" id="market_name_header"> 
+                  <strong>Маркетплейс-анализ. Рынок: Республика Беларусь на {{ table_current_date_for_header }}</strong>
+                </div>
                 <div class="div2">  
                   <form action="{% url 'prices:apricestable_update' %}" method="post">
                     {% csrf_token %}
