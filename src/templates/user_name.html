@@ -2,11 +2,11 @@
 {#<ul class="navbar-nav ms-auto">#} 
   <li class="nav-item">
     <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <font color="#ffffff"><b>{{ user }}</b></font>
+      <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
+        <b>{{ user }}</b>
       </a>
       <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-        <li><a class="dropdown-item" href="{% url 'logged_out' %}">Выйти</a></li>
+        <li><a class="dropdown-item" style="color: white;" href="{% url 'logged_out' %}">Выйти</a></li>
       </ul>
     </li> 
   </li>

@@ -471,7 +471,28 @@ table th {
 
 
 
-/*  MAIN PAIGE */
+/*  MAIN PAIGE*/ 
+
+
+    #main_paige_card{
+    /*  height: 35rem;*/
+    /*    height: auto;*/
+    height: 70vh;
+    }
+    .card{
+      color: black;  
+    }
+    .card-body{ 
+      background-color:#f58c3e;
+    }
+
+    .carousel-inner > .carousel-item > img 
+    {
+    width: 50%;
+    }
+
+
+
     @media (min-width: 1253px) {   
           .container_main {    /* container-fluid  */
             display: grid;
@@ -483,25 +504,45 @@ table th {
             column-gap: 5px; 
             background-color: rgb(234, 232, 220);
             min-width: 80%;
+          }
+          .el_header{
+            background-color:#f58c3e;
+            text-align: left;
+            grid-column: 1 / span 6;  
+            grid-row: 1;
           }         
           .el1 {
-            background-color: #debe0d;
-            text-align: right;
-            grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 1;
+          /*   background-color: #debe0d;*/
+            background-color: #eae8dc;
+            text-align: left;
+            grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+            grid-row: 2;
           }
           .el2 {
             background-color: #eae8dc;
             text-align: left;
-            grid-column: 1 / span 4;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+            grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
             grid-row: 2;
           }
           .el3 {
             background-color: #eae8dc;
             text-align: left;
-            grid-column: 4 / span 2;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 2;
+            grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+            grid-row: 3;
           }
+          .el4 {
+            background-color: #eae8dc;
+            text-align: left;
+            grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+            grid-row: 3;
+          }
+          .el5 {
+            background-color: #eae8dc;
+            text-align: left;
+            grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+            grid-row: 4;
+          }
+
 
           #market_name_header {   /* <--Маркетплейс-анализ. Рынок:    */
             text-align: center;
