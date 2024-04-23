@@ -494,68 +494,125 @@ table th {
 
 
     @media (min-width: 1253px) {   
-          .container_main {    /* container-fluid  */
-            display: grid;
-            grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
-            /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
-              /* Отступы между рядами */
-            row-gap: 40px;
-            /* Отступы между колонками */
-            column-gap: 5px; 
-            background-color: rgb(234, 232, 220);
-            min-width: 80%;
-          }
-          .el_header{
-            background-color:#f58c3e;
-            text-align: left;
-            grid-column: 1 / span 6;  
-            grid-row: 1;
-          }         
-          .el1 {
-          /*   background-color: #debe0d;*/
-            background-color: #eae8dc;
-            text-align: left;
-            grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 2;
-          }
-          .el2 {
-            background-color: #eae8dc;
-            text-align: left;
-            grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 2;
-          }
-          .el3 {
-            background-color: #eae8dc;
-            text-align: left;
-            grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 3;
-          }
-          .el4 {
-            background-color: #eae8dc;
-            text-align: left;
-            grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 3;
-          }
-          .el5 {
-            background-color: #eae8dc;
-            text-align: left;
-            grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
-            grid-row: 4;
-          }
-
-
-          #market_name_header {   /* <--Маркетплейс-анализ. Рынок:    */
-            text-align: center;
-            font-size: 1.7vw;
-          }   
-          footer{
-          background-color: #686363;
-          text-align: center; 
-          flex-shrink: 0;
-          color: white;
-        }        
-        }
+      .container_main {    /* container-fluid  */
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
+        /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
+          /* Отступы между рядами */
+        row-gap: 40px;
+        /* Отступы между колонками */
+        column-gap: 5px; 
+        background-color: rgb(234, 232, 220);
+        min-width: 80%;
+      }
+      .el_header{
+        background-color: rgb(234, 232, 220);
+        text-align: justify;
+        grid-column: 1 / span 6;  
+        grid-row: 1;
+        margin-top: 2%;
+      }         
+      .el1 {
+      /*   background-color: #debe0d;*/
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 2;
+      }
+      .el2 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 2;
+      }
+      .el3 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 3;
+      }
+      .el4 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 3;
+      }
+      .el5 {
+        background-color: #eae8dc;
+        text-align: justify;;
+        grid-column: 1 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 4;
+        margin-bottom: 2%;
+      }
+      .el6 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 4 / span 3;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 4;
+        margin-bottom: 3%;
+      }       
+    } 
+    
+    @media (max-width: 1253px) {   
+      .container_main {    /* container-fluid  */
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
+        /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
+          /* Отступы между рядами */
+        row-gap: 40px;
+        /* Отступы между колонками */
+        column-gap: 5px; 
+        background-color: rgb(234, 232, 220);
+        min-width: 80%;
+      }
+      .el_header{
+        background-color: rgb(234, 232, 220);
+        text-align: justify;
+        grid-column: 1 / span 6;  
+        grid-row: 1;
+        margin-top: 2%;
+      }         
+      .el1 {
+      /*   background-color: #debe0d;*/
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 2;
+      }
+      .el2 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 3;
+      }
+      .el3 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 4;
+      }
+      .el4 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 5;
+      }
+      .el5 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 6;
+      }
+      .el6 {
+        background-color: #eae8dc;
+        text-align: justify;
+        grid-column: 1 / span 6;  /* <--или же можно grid-column: 1 / span 6;  - тип растянить на 6*/
+        grid-row: 7;
+        margin-bottom: 3%;
+      }      
+    }     
 /* END   MAIN PAIGE */
+
 
 
       </style>
