@@ -6592,7 +6592,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
             context['list_of_competitor_values_new'] = {(' '): ['null']}
         else:            
             context['list_of_competitor_values_new'] = list_of_competitor_values_new_dict  
-    #        print('GGGOOODDD 3', context['list_of_competitor_values_new'])
+        #    print('GGGOOODDD 3', context['list_of_competitor_values_new'])
 
         #### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
         
@@ -6642,6 +6642,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
                 quantity_counter += 1
         list_of_parrsed_brands_sites = sorted(list_of_parrsed_brands_sites, key=itemgetter(4), reverse=True) # сортируем по наиб количеству спарсенных
 
+        date_to_look_parsed_datas = list_of_parrsed_brands_sites
         top_brands_counter_for_chart = 0
         if quantity_counter == 10 or quantity_counter > 10:               # ели брендов более 10 - то берем то 10
             top_brands_counter_for_chart = 10
@@ -6653,10 +6654,72 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
 
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['brands_from_sites_date'] = date_to_look_parsed_data
+        
         list_of_parrsed_brands_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
         #print('!!!', list_of_parrsed_brands_sites)
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
+        # ГРАФИК ДИНАМИКА ТОП БРЕНДОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
+        period_list_of_parrsed_brands_sites_dict = {}
+        daterange_is = pd.date_range(min_date, max_date)
+        number_of_shown_brands_in_chart = 0             # количество показываемых в таблице брендов (например, топ-5)
+        for ppeeerrr in daterange_is:
+            date_to_look = ppeeerrr.date()
+            quantity_in_day = 0
+            period_list_of_parrsed_brands_sites = []
+            brand_counter = 0
+
+            all_brands_all_sites_in_date = models.CompetitorSiteModel.objects.filter(date_period=date_to_look).count()      # всего все бренды на дату
+            print('all_brands_all_sites_in_date', all_brands_all_sites_in_date)
+
+            for brand in date_to_look_parsed_datas:
+            #    print('brand', brand)
+                num_of_parsed_brand_express_shina = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='express-shina.ru').count()
+                num_of_parsed_brand_kolesa_darom = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='kolesa-darom.ru').count()
+                num_of_parsed_brand_kolesatyt = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='kolesatyt.ru').count() 
+                total_quantity = num_of_parsed_brand_express_shina + num_of_parsed_brand_kolesa_darom + num_of_parsed_brand_kolesatyt  
+            #    gath_data =  brand[0], total_quantity #'express-shina.ru', num_of_parsed_brand_express_shina, 'kolesa-darom.ru', num_of_parsed_brand_kolesa_darom, 'kolesatyt.ru', num_of_parsed_brand_kolesatyt, ppeeerrr,      
+                brand_counter += 1 
+            #    gath_data =  total_quantity
+                if all_brands_all_sites_in_date: 
+                    gath_data = total_quantity / all_brands_all_sites_in_date  # доля бренда в общем количестве на дату
+                else:
+                    gath_data = 0
+            #    print('gath_data', gath_data)
+                period_list_of_parrsed_brands_sites.append(gath_data)
+                if brand_counter == 5:
+                    number_of_shown_brands_in_chart = brand_counter
+                    break
+
+
+
+            t = ppeeerrr.date()
+            t = t.strftime('%Y,%m,%d') 
+            #period_list_of_parrsed_brands_sites.insert(0, t)  
+            #period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites
+            #period_list_of_parrsed_brands_sites = list(map(str,period_list_of_parrsed_brands_sites))
+            period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites
+
+        brands_list_for_chart_header = []
+        for brand in date_to_look_parsed_datas:
+            brands_list_for_chart_header.append(brand[0])
+        #for v, nn in period_list_of_parrsed_brands_sites_dict.items():          # значения брендов суммарные списком на дату
+        #    nn.insert(0, v)
+        dates_brands_list_for_chart_header = ['Date']                           #  списком даты
+        for brand in date_to_look_parsed_datas:
+            dates_brands_list_for_chart_header.append(brand[0])
+        context['dates_brands_list_for_chart_header'] = dates_brands_list_for_chart_header[0:number_of_shown_brands_in_chart+1]
+        #context['dates_brands_list_for_chart_header'] = dates_brands_list_for_chart_header
+        context['period_list_of_parrsed_brands_sites_dict'] = period_list_of_parrsed_brands_sites_dict
+        print(context['dates_brands_list_for_chart_header'])
+        print(context['period_list_of_parrsed_brands_sites_dict'])
+
+        for i, v in context['period_list_of_parrsed_brands_sites_dict'].items():
+            print('len2', len(v))    
+
+
+
+    #    print('!!@@!', period_list_of_parrsed_brands_sites)
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
 
 
