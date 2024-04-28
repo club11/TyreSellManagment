@@ -4541,6 +4541,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 num_of_parsed_brand_kolesatyt = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='autoset.by').count() 
                 total_quantity = num_of_parsed_brand_express_shina + num_of_parsed_brand_kolesa_darom + num_of_parsed_brand_kolesatyt      
                 brand_counter += 1 
+                number_of_shown_brands_in_chart = brand_counter
             #    gath_data =  total_quantity
                 if all_brands_all_sites_in_date: 
                     gath_data = float("{:.1f}".format(total_quantity / all_brands_all_sites_in_date * 100 ))   # доля бренда в общем количестве на дату 
@@ -4549,7 +4550,6 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             #    print('gath_data', gath_data)
                 period_list_of_parrsed_brands_sites.append(gath_data)
                 if brand_counter == 5:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
-                    number_of_shown_brands_in_chart = brand_counter
                     break
             t = ppeeerrr.date()
             t = t.strftime('%Y,%m,%d') 
@@ -4577,7 +4577,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             another_top_brands_counter_for_chart = second_quantity_counter
         else:
             another_top_brands_counter_for_chart = 'лист без данных'
-        context['second_top_brands_num'] = another_top_brands_counter_for_chart        
+        context['top_brands_num'] = another_top_brands_counter_for_chart        
 
     #    print(context['dates_brands_list_for_chart_header'])
     #    print(context['period_list_of_parrsed_brands_sites_dict'])
@@ -4640,6 +4640,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 num_of_parsed_tyresize_kolesatyt = models.CompetitorSiteModel.objects.filter(tyresize_competitor=tyresize[0], date_period=date_to_look, site='autoset.by').count() 
                 total_quantity = num_of_parsed_tyresize_express_shina + num_of_parsed_tyresize_kolesa_darom + num_of_parsed_tyresize_kolesatyt      
                 tyresize_counter += 1 
+                number_of_shown_tyresizes_in_chart = tyresize_counter
             #    gath_data =  total_quantity
                 if all_tyresizes_all_sites_in_date: 
                 #    gath_data = total_quantity / all_tyresizes_all_sites_in_date  # доля бренда в общем количестве на дату
@@ -4649,8 +4650,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                     gath_data = 0
             #    print('gath_data', gath_data)
                 period_list_of_parrsed_tyresizes_sites.append(gath_data)
-                if tyresize_counter == 5:
-                    number_of_shown_tyresizes_in_chart = tyresize_counter
+                if tyresize_counter == 5:                                # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
                     break
             t = ppeeerrr.date()
             t = t.strftime('%Y,%m,%d') 
@@ -4667,6 +4667,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             dates_tyresizes_list_for_chart_header.append(trsize[0])
         context['dates_tyresizes_list_for_chart_header'] = dates_tyresizes_list_for_chart_header[0:number_of_shown_tyresizes_in_chart+1]
         context['period_list_of_parrsed_tyresizes_sites_dict'] = period_list_of_parrsed_tyresizes_sites_dict
+
 
         second_quantity_tyresizes_counter = number_of_shown_tyresizes_in_chart
         another_top_tyresize_counter_for_chart = 0
@@ -4828,7 +4829,7 @@ class ComparativeAnalysisTableModelUpdateView(LoginRequiredMixin, View):
         pagination_data_got = request.POST.get('pagination_data')  
         #print('pagination_data_got', pagination_data_got)
         if pagination_data_got:
-            print('pagination_data_got', pagination_data_got)
+        #    print('pagination_data_got', pagination_data_got)
             models.PAGINATION_VAL = int(request.POST.get('pagination_data'))
         else:
             pass
@@ -4837,7 +4838,7 @@ class ComparativeAnalysisTableModelUpdateView(LoginRequiredMixin, View):
         competitor_pagination_data_got = request.POST.get('competitor_pagination_data')  
         #print('competitor_pagination_data_got', competitor_pagination_data_got)
         if competitor_pagination_data_got:
-            print('competitor_pagination_data_got', competitor_pagination_data_got)
+        #    print('competitor_pagination_data_got', competitor_pagination_data_got)
             models.COMPET_PER_SITE = int(request.POST.get('competitor_pagination_data'))
         else:
             pass
@@ -6794,7 +6795,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
             period_list_of_parrsed_brands_sites = []
             brand_counter = 0
             all_brands_all_sites_in_date = models.CompetitorSiteModel.objects.filter(date_period=date_to_look, site__in=['express-shina.ru', 'kolesa-darom.ru', 'kolesatyt.ru']).count()      # всего все бренды на дату
-            print('all_brands_all_sites_in_date', all_brands_all_sites_in_date)
+            #print('all_brands_all_sites_in_date', all_brands_all_sites_in_date)
             for brand in date_to_look_parsed_datas:
             #    print('brand', brand)
                 num_of_parsed_brand_express_shina = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='express-shina.ru').count()
@@ -6808,7 +6809,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
                     gath_data = float("{:.1f}".format(total_quantity / all_brands_all_sites_in_date * 100 ))   # доля бренда в общем количестве на дату 
                 else:
                     gath_data = 0
-                print('gath_data', total_quantity, '===', gath_data)
+                #print('gath_data', total_quantity, '===', gath_data)
                 period_list_of_parrsed_brands_sites.append(gath_data)
                 if brand_counter == 5:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
                     number_of_shown_brands_in_chart = brand_counter
@@ -6905,6 +6906,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
                 total_quantity = num_of_parsed_tyresize_express_shina + num_of_parsed_tyresize_kolesa_darom + num_of_parsed_tyresize_kolesatyt  
             #    gath_data =  brand[0], total_quantity #'express-shina.ru', num_of_parsed_brand_express_shina, 'kolesa-darom.ru', num_of_parsed_brand_kolesa_darom, 'kolesatyt.ru', num_of_parsed_brand_kolesatyt, ppeeerrr,      
                 tyresize_counter += 1 
+                number_of_shown_tyresizes_in_chart = tyresize_counter
             #    gath_data =  total_quantity
                 if all_tyresizes_all_sites_in_date: 
                 #    gath_data = total_quantity / all_tyresizes_all_sites_in_date  # доля бренда в общем количестве на дату
@@ -6914,13 +6916,13 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
                     gath_data = 0
             #    print('gath_data', gath_data)
                 period_list_of_parrsed_tyresizes_sites.append(gath_data)
-                if tyresize_counter == 5:
-                    number_of_shown_tyresizes_in_chart = tyresize_counter
+                if tyresize_counter == 5:                                        # ОГРАНИЕЧЕНИЕ ТОП-5 для вывода в таблице значений
                     break
             t = ppeeerrr.date()
             t = t.strftime('%Y,%m,%d') 
 
             period_list_of_parrsed_tyresizes_sites_dict[t] = period_list_of_parrsed_tyresizes_sites
+
 
         tyresizes_list_for_chart_header = []
         for trsize in list_of_parrsed_tyresize_sites1:
@@ -6942,11 +6944,11 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
         else:
             another_top_tyresize_counter_for_chart = 'лист без данных'        
         context['second_top_tyresize_num'] = another_top_tyresize_counter_for_chart 
-        #print('dates_tyresizes_list_for_chart_header', dates_tyresizes_list_for_chart_header)
+        #print('context[dates_tyresizes_list_for_chart_header]', context['dates_tyresizes_list_for_chart_header'])
         #print('period_list_of_parrsed_tyresizes_sites_dict', period_list_of_parrsed_tyresizes_sites_dict)
         
         #for n, v in period_list_of_parrsed_tyresizes_sites_dict.items():
-        #    print(n, v)
+        #    print(n, '&&&^', v)
 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ  С САЙТОВ: PANDAS
 

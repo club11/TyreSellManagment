@@ -846,7 +846,7 @@
                 ]);
               
                 var options = {
-                  title: 'Доля представленности бренда в общем количестве брендов, Топ-{{ second_top_brands_num }}, динамика',
+                  title: 'Доля представленности бренда в общем количестве брендов, на {{ brands_from_sites_date }} Топ-{{ second_top_brands_num }}, динамика',
                   vAxis: {title: '%', viewWindow: {max:100, } },
                   backgroundColor: '#f3f2ec',
                   isStacked: true
@@ -873,15 +873,15 @@
               google.charts.setOnLoadCallback(drawChart);
             
               function drawChart() {
-                var data = google.visualization.arrayToDataTable([
-                {{ dates_tyresizes_list_for_chart_header|safe }},
-                  {% for key, value in period_list_of_parrsed_tyresizes_sites_dict.items %} 
-                    [new Date({{ key }}), {{ value|join:", " }}],
-                  {% endfor %}  
-                ]);
+              var data = google.visualization.arrayToDataTable([
+              {{ dates_tyresizes_list_for_chart_header|safe }},
+                {% for key, value in period_list_of_parrsed_tyresizes_sites_dict.items %} 
+                  [new Date({{ key }}), {{ value|join:", " }}],
+                {% endfor %}  
+              ]);
               
                 var options = {
-                  title: 'Доля представленности типоразмера в общем количестве типоразмеров, Топ-{{ second_top_tyresize_num }}, динамика',
+                  title: 'Доля представленности типоразмера в общем количестве типоразмеров, на {{ tyresizes_from_sites_date }} Топ-{{ top_tyresizes_num }}, динамика',
                   vAxis: {title: '%', viewWindow: {max:100, } },  
                   backgroundColor: '#f3f2ec',
                   isStacked: true,
@@ -897,7 +897,6 @@
             </body>
           </div>
          </div>
-
 
   </div>
 
