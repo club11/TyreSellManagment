@@ -7,7 +7,6 @@ certifi==2022.9.24
 cffi==1.15.1
 charset-normalizer==2.1.1
 contourpy==1.0.7
-crispy-forms-gds==0.2.4
 cycler==0.11.0
 Django==4.0.6
 django-crispy-forms==1.14.0
@@ -56,4 +55,5 @@ URLObject==2.4.3
 webdriver-manager==4.0.0
 wsproto==1.2.0
 xml-python==0.4.3
-xmltodict==0.13
+xmltodict==0.13.0
+zipp==3.15.0
