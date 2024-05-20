@@ -1,7 +1,7 @@
 from http.client import HTTPResponse
 from operator import index
 from queue import Empty
-from turtle import update
+#from turtle import update
 from django.shortcuts import render
 from django.views.generic import DetailView, View, TemplateView
 from . import models, forms 

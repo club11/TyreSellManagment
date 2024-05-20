@@ -1,4 +1,4 @@
-asgiref==3.5.2
+pipasgiref==3.5.2
 async-generator==1.10
 attrs==22.1.0
 beautifulsoup4==4.11.1
