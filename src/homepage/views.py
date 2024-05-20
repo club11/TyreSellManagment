@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from sales import models as sales_models
 from dictionaries import models as dictionaries_models
-
+#some improvements
 
 class HomeTemplateDetailView(DetailView):
 #class HomeTemplateListView(ListView):
