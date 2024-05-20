@@ -1,7 +1,7 @@
 import datetime
 from enum import unique
 from operator import index
-from turtle import st
+#from turtle import st
 from unicodedata import decimal, name
 from webbrowser import get
 from django.shortcuts import render
