@@ -1,4 +1,4 @@
-pipasgiref==3.5.2
+asgiref==3.5.2
 async-generator==1.10
 attrs==22.1.0
 beautifulsoup4==4.11.1
@@ -10,6 +10,7 @@ contourpy==1.0.7
 cycler==0.11.0
 Django==4.0.6
 django-crispy-forms==1.14.0
+django-environ==0.11.2
 django-google-charts==0.1.1
 django-qsstats-magic==1.1.0
 django-spurl==0.6.8
@@ -31,6 +32,7 @@ pandas==1.4.3
 pi==0.1.2
 Pillow==9.2.0
 proxy-requests==0.5.2
+
 pycparser==2.21
 pyparsing==3.0.9
 PySocks==1.7.1

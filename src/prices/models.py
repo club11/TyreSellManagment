@@ -285,7 +285,7 @@ class ComparativeAnalysisTableModel(models.Model):
     )
     market_table = models.CharField(
         verbose_name='рынок сбыта',
-        max_length=15,
+        max_length=35,
         blank=True,
         null=True
     )
@@ -1659,7 +1659,7 @@ class ComparativeAnalysisTyresModel(models.Model):
 
 class CompetitorSiteModel(models.Model):
     site = models.CharField(
-        max_length=30,
+        max_length=40,
         verbose_name='наименование сайта',
         null=True,
         blank=True,
@@ -1696,19 +1696,19 @@ class CompetitorSiteModel(models.Model):
         verbose_name='типоразмер конкурент',                
         null=False,
         blank=True, 
-        max_length=25
+        max_length=35
     )
     name_competitor = models.CharField(
         verbose_name='наименование конкурент',
         null=False,
         blank=True, 
-        max_length=25
+        max_length=35
     )
     parametres_competitor = models.CharField(
         verbose_name='параметры конкурент',
         null=False,
         blank=True, 
-        max_length=25
+        max_length=35
     )
     season = models.ForeignKey(
         dictionaries_models.SeasonUsageModel,
@@ -1729,21 +1729,21 @@ class CompetitorSiteModel(models.Model):
 class ChemCurierTyresModel(models.Model):
     tyre_size_chem = models.CharField(
         verbose_name='типоразмер химкурьер',            
-        max_length=10,
+        max_length=30,
     )
     producer_chem = models.CharField(
         verbose_name='производитель химкурьер',
-        max_length=15,
+        max_length=30,
     )
     reciever_chem = models.CharField(
         verbose_name='получатель химкурьер',
-        max_length=25,
+        max_length=50,
         null=False,
         blank=True,
     )
     prod_country = models.CharField(
         verbose_name='страна производства',
-        max_length=25,
+        max_length=30,
         null=False,
         blank=True,
     )    
@@ -1773,13 +1773,13 @@ class ChemCurierTyresModel(models.Model):
     )
     money_on_moth_chem = models.FloatField(                     #  Decimal
         verbose_name='объем поставки на дату(месяц) деньги',
-        max_length=20,
+        max_length=30,
         blank=True,
         null=True
     )
     average_price_in_usd = models.FloatField(
         verbose_name='средневзвешеная цена, в USD',
-        max_length=20,
+        max_length=30,
         blank=True,
         null=True
     )

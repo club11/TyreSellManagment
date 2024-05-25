@@ -5,7 +5,7 @@ from django.urls import reverse
 
 class Currency(models.Model):
     currency = models.CharField(
-        max_length=10,
+        max_length=30,
         verbose_name='валюта',
     )
     def get_absolute_url(self):
@@ -18,7 +18,7 @@ class Currency(models.Model):
 class TyreSizeModel(models.Model):
     tyre_size = models.CharField(
         verbose_name='типоразмер',
-        max_length=10,
+        max_length=30,
     )
 
     def get_absolute_url(self):
@@ -27,7 +27,7 @@ class TyreSizeModel(models.Model):
 class ModelNameModel(models.Model):
     model = models.CharField(
         verbose_name='модель',
-        max_length=10,
+        max_length=30,
     )
 
     def get_absolute_url(self):
@@ -37,7 +37,7 @@ class ModelNameModel(models.Model):
 class TyreParametersModel(models.Model):
     tyre_type = models.CharField(
         verbose_name='параметры шины',
-        max_length=10,
+        max_length=50,
     )
 
     def get_absolute_url(self):
@@ -46,7 +46,7 @@ class TyreParametersModel(models.Model):
 class TyreGroupModel(models.Model):
     tyre_group = models.CharField(
         verbose_name='группа шин',
-        max_length=15,
+        max_length=30,
     )
 
     def get_absolute_url(self):
@@ -55,7 +55,7 @@ class TyreGroupModel(models.Model):
 class QantityCountModel(models.Model):
     quantity_count = models.CharField(
         verbose_name='ед. измерения',
-        max_length=10,
+        max_length=20,
     )
 
     def get_absolute_url(self):
@@ -74,7 +74,7 @@ class ContragentsModel(models.Model):
 class CompetitorModel(models.Model):
     competitor_name = models.CharField(
         verbose_name='наименование производителя-конкурента',
-        max_length=20,
+        max_length=40,
     )
 
     def get_absolute_url(self):
@@ -87,7 +87,7 @@ class CompetitorModel(models.Model):
 class SeasonUsageModel(models.Model):
     season_usage_name = models.CharField(
         verbose_name='сезонность',
-        max_length=20,
+        max_length=30,
     )
 
     def get_absolute_url(self):
@@ -96,7 +96,7 @@ class SeasonUsageModel(models.Model):
 class StuddedUsageModel(models.Model):
     studded_name = models.CharField(
         verbose_name='ошиповка',
-        max_length=20,
+        max_length=30,
     )
 
     def get_absolute_url(self):

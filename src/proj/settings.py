@@ -12,22 +12,36 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from tokenize import Ignore
+
+import os
+import environ
+
 #from ignore_data import KEY
 #from . secret_key import SECRET_KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+##
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
+##
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+#SECRET_KEY = env('SECRET_KEY')
+print('ECRET_KEY)', env)
 SECRET_KEY = 'django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+#ALLOWED_HOSTS = ['192.168.0.136', '127.0.0.1',]
 ALLOWED_HOSTS = []
 
 
@@ -97,12 +111,26 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }   
+#}
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "django_prices",
+        "USER": "django_prices_admin",
+        "PASSWORD": "qq250465qq",
+        'HOST': "localhost",
+    #    'HOST': '127.0.0.1',  
+    #    'HOST': '192.168.0.136',
+        'PORT': '5432',
+        },
     }
-}
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'

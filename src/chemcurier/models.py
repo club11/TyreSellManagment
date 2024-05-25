@@ -24,7 +24,7 @@ class ChemCourierTableModel(models.Model):
     )
     chemcourier_table = models.CharField(
         verbose_name='Хим Курьер',
-        max_length=15,
+        max_length=50,
         blank=True,
         null=True
     )

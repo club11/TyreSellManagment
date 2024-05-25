@@ -95,17 +95,17 @@ class TyreAddedFeatureModel(models.Model):
     )    
     tyre_thread = models.CharField(
         verbose_name='рисунок протектора',
-        max_length=15,
+        max_length=40,
         null=True,
     )
     ax = models.CharField(
         verbose_name='ось',
-        max_length=15,
+        max_length=50,
         null=True,
     )
     usability = models.CharField(
         verbose_name='применяемость',
-        max_length=15,
+        max_length=50,
         null=True,
     )
     studded_usage = models.ForeignKey(
