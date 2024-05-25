@@ -14,7 +14,7 @@ from pathlib import Path
 from tokenize import Ignore
 
 import os
-import environ
+#import environ
 
 #from ignore_data import KEY
 #from . secret_key import SECRET_KEY
@@ -23,11 +23,8 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 ##
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
-environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
+#env = environ.Env()
+#environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
 ##
 
 # Quick-start development settings - unsuitable for production
@@ -35,8 +32,7 @@ environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 #SECRET_KEY = env('SECRET_KEY')
-print('ECRET_KEY)', env)
-SECRET_KEY = 'django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
