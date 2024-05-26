@@ -14,7 +14,6 @@ from pathlib import Path
 from tokenize import Ignore
 
 import os
-#import environ
 
 #from ignore_data import KEY
 #from . secret_key import SECRET_KEY
@@ -22,17 +21,13 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-##
-#env = environ.Env()
-#environ.Env.read_env(env_file=os.path.join(BASE_DIR, '.env'))
-##
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = env('SECRET_KEY')
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY='django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6',
+#SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -107,26 +102,33 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }   
-#}
-
+##### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "django_prices",
-        "USER": "django_prices_admin",
-        "PASSWORD": "qq250465qq",
-        'HOST': "localhost",
-    #    'HOST': '127.0.0.1',  
-    #    'HOST': '192.168.0.136',
-        'PORT': '5432',
-        },
-    }
-
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }   
+}
+#DATABASES = {
+#    "default": {
+#        "ENGINE": "django.db.backends.postgresql_psycopg2",
+#        #"ENGINE": "django.db.backends.postgresql",
+#        "NAME": "django_prices",
+#        'USER': "django_prices_admin",
+#        "PASSWORD": "qq250465qq",
+#        'HOST': "localhost",
+#        #'HOST': '127.0.0.1',  
+#        #'HOST': '192.168.0.136',
+#        #"PORT": '5433',
+#
+#    #    "NAME" : os.environ.get('NAME'),
+#    #    "USER" : os.environ.get('USER'),
+#    #    "PASSWORD" : os.environ.get('PASSWORD'),
+#    #    "HOST" : os.environ.get('HOST'),
+#    #    "PORT" : os.environ.get('PORT'),        
+#        },
+#    }
+##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'
@@ -171,10 +173,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/var/www/static/'
+#STATIC_ROOT = '/var/www/static/'
+##### ПЕРЕД сборкой докер-контейнера раскоментить
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
+##### END ПЕРЕД сборкой докер-контейнера раскоментить
+
 # для DEV:
 MEDIA_URL = '/media/'  
-MEDIA_ROOT = BASE_DIR /'media/'      
+MEDIA_ROOT = BASE_DIR /'media/'
+
+######STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
+######MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL) 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

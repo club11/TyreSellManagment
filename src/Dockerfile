@@ -10,7 +10,10 @@ RUN pip install -r requirenments.txt
 
 CMD python manage.py makemigrations \ 
 && python manage.py migrate \
-&& python manage.py initialize_db \
-&& python manage.py runserver 0.0.0.0:8000    
+#&& python manage.py initialize_db \
+&& python manage.py collectstatic \
+#&& python manage.py runserver 0.0.0.0:8000  
+&& gunicorn proj.wsgi:application -b 0.0.0.0:8000  
+
 
 # CMD gunicorn proj.wsgi:application -b 0.0.0.0:8000  
