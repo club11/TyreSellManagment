@@ -13,6 +13,7 @@ from django.views.generic import DetailView, View, TemplateView
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 import datetime
 import re
@@ -45,6 +46,12 @@ import itertools
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
+
+import schedule
+
+from celery import shared_task
+from proj.celery import app
+#from celery.schedules import crontab
 
 
 reg_list = [
@@ -80,344 +87,363 @@ def belarus_sites_parsing():
     from selenium import webdriver
     
 
-    if test_script_is_in_process:                                               # взято со скрипта
-    #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
+    if test_script_is_in_process:                                               # взято со скрипта          # ЕСЛИ ЗАПУЩЕН СКРИПТ на Pythonanywhere
+    #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)        
+        print('-----------test_script_is_not_in_process---------------')  
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument('--disable-dev-shm-usage')
-        webdriverr_global = webdriver.Chrome(options=chrome_options)
-    else:                                                                       # как было
-    #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
-        chrome_options = webdriver.ChromeOptions()  
-    #    chrome_options.add_argument("--no-sandbox") 
-    #    chrome_options.add_argument("--disable-setuid-sandbox") 
-    #    chrome_options.add_argument("--disable-dev-shm-usage")
-    #    chrome_options.add_argument('--headless=old')
-    #    chrome_options.add_argument('--disable-dev-shm-usage')
+        try:
+            webdriverr_global = webdriver.Chrome(options=chrome_options)
+        except:                                                                                                 # !!!!! ДОБАВИТЬ - СКРИПТ ДЛЯ Synology - ЕСЛИ ЗАПУЩЕН  СЕРВЕР для Synology
+            webdriverr_global = webdriver.Remote(command_executor='http://selenium:4444/wd/hub', options=chrome_options)  
+    #    webdriverr_global = webdriver.Remote('http://127.0.0.1:4444/wd/hub', options=chrome_options)    
+    else:                                                                       # как было                      # ЕСЛИ ЗАПУЩЕН ЛОКАЛЬНАЯ МАШИНА ЛИБО СЕРВЕР
+        try:                                                                                             # ЕСЛИ ЗАПУЩЕН  СЕРВЕР для Synology
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument('--disable-dev-shm-usage')
+            webdriverr_global = webdriver.Remote(command_executor='http://selenium:4444/wd/hub', options=chrome_options)
+        except:                                                                                                     # ЕСЛИ ЗАПУЩЕН ЛОКАЛЬНАЯ МАШИНА на компе
+            print('-----------pc_is_not_in_process---------------')
+            chrome_options = webdriver.ChromeOptions()  
+            #chrome_options.add_argument("--no-sandbox") 
+            #chrome_options.add_argument("--disable-setuid-sandbox") 
+            #chrome_options.add_argument("--disable-dev-shm-usage")
+            #chrome_options.add_argument('--headless=old')
+            #chrome_options.add_argument('--disable-dev-shm-usage')                                  
+            webdriverr_global = webdriver.Chrome(options=chrome_options)                                    
 
-        webdriverr_global = webdriver.Chrome(options=chrome_options)  
+    #chrome_options = webdriver.ChromeOptions()
+    #chrome_options.add_argument("--no-sandbox")
+    #chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--disable-gpu")
+    #chrome_options.add_argument('--disable-dev-shm-usage')
+    #webdriverr_global = webdriver.Remote(command_executor='http://selenium:4444/wd/hub', options=chrome_options)
+
     # END проверка - выполняется вызов функции для скрипта  
 
     # 1 ###### ПАРСИНГ Onliner:   
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     webdriverr = webdriverr_global    
-    try:
-        url = 'https://catalog.onliner.by/tires'
-        #response = requests.get(url)
-        #soup = BeautifulSoup(response.text,"lxml")
-        ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
-        #webdriverr = webdriver.Chrome()
-        #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        webdriverr.get(url)
+    #try:
+    url = 'https://catalog.onliner.by/tires'
+    #response = requests.get(url)
+    #soup = BeautifulSoup(response.text,"lxml")
+    ## ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SELENIUM
+    #webdriverr = webdriver.Chrome()
+    #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    webdriverr.get(url)
+    time.sleep(2)
+    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    time.sleep(5)
+    soup = BeautifulSoup(webdriverr.page_source,'lxml')
+    # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
+    #1. получаем количество страниц:
+    #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
+    pages = soup.find('ul', class_='catalog-pagination__pages-list')
+    urls = []
+    if pages:
+        links = pages.find_all('a', class_='catalog-pagination__pages-link')
+        for link in links:
+            pageNum = int(link.text) #if link.text.isdigit() else None
+            print('pageNum =====', pageNum)
+            if pageNum != None:
+                urls.append(pageNum)
+    #2. получаем данные со всех страниц:
+    list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
+    shins_phrase = ['шины', 'Шины']
+    for slug in urls[0:5]:                               # c 1 по 2 станицы    
+    #for slug in urls:      # рабочий вариант
+        newUrl = url.replace('?', f'?page={slug}') 
+        webdriverr.get(newUrl)
         time.sleep(2)
-        webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)
+    #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    #    time.sleep(4)
+    #    print('ONLINER PAGE', slug)
         soup = BeautifulSoup(webdriverr.page_source,'lxml')
-        # ХОЖДЕНИЕ ПО ВСЕМ СТРАНИЦАМ САЙТА ПАГИНАЦИЯ:
-        #1. получаем количество страниц:
-        #pages = soup.find('div', class_='schema-pagination schema-pagination_visible')
-        pages = soup.find('ul', class_='catalog-pagination__pages-list')
-        urls = []
-        if pages:
-            links = pages.find_all('a', class_='catalog-pagination__pages-link')
-            for link in links:
-                pageNum = int(link.text) #if link.text.isdigit() else None
-                #print('pageNum =====', pageNum)
-                if pageNum != None:
-                    urls.append(pageNum)
-        #2. получаем данные со всех страниц:
-        list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
-        shins_phrase = ['шины', 'Шины']
-        for slug in urls[0:5]:                               # c 1 по 2 станицы    
-        #for slug in urls:      # рабочий вариант
-            newUrl = url.replace('?', f'?page={slug}') 
-            webdriverr.get(newUrl)
-            time.sleep(2)
-        #    webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        #    time.sleep(4)
-            print('ONLINER PAGE', slug)
-            soup = BeautifulSoup(webdriverr.page_source,'lxml')
-            products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_primary')
-            for data_got in products:
-                #tyre_name = data_got.find('div', class_='schema-product__title')
-                tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
-                #price = data_got.find('div', class_='schema-product__price')
-                price = data_got.find('a', class_='catalog-form__link catalog-form__link_nodecor catalog-form__link_primary-additional catalog-form__link_huge-additional catalog-form__link_font-weight_bold')
-    #            if tyre_name and price:
-    #                print('=-=-=-=', tyre_name.text)
-    #                print('+-=+=+=', price.text)
-                if tyre_name and price:
-                    # проверка на лишний тект в нелегковых шинахprice
-                    check_name_is_foud = False
-                    for check_name in list_to_check:
-                        if check_name in tyre_name.text:
-                            phrase_len = len(check_name)
-                            wha_to_delete_start = tyre_name.text.find(check_name)
-                            wha_to_delete_end = tyre_name.text.find(check_name) + phrase_len
-                            text_with_no_phrase = tyre_name.text[: wha_to_delete_start] + tyre_name.text[wha_to_delete_end :]
-                            text_with_no_phrase = text_with_no_phrase.replace('для', '')
-                            text_to_delete1text_with_no_phrase = ''
-                            for sh_pr in shins_phrase:
-                                    text_to_delete1text_with_no_phrase = text_with_no_phrase.replace(sh_pr, '')
-                            tyre_name_cleaned = text_to_delete1text_with_no_phrase
-                            tyre_name_cleaned = tyre_name_cleaned.replace('\n', '') 
-                            tyre_name_cleaned_split = tyre_name_cleaned.split(' ')
-                            for n in tyre_name_cleaned_split:
-                                if n.isalnum() is True:
-                                    company_name = n
-                                    break
-                            check_name_is_foud = True
-                    # end проверка на лишний тект в нелегковых шинах
-                    if check_name_is_foud is False:
-                        text_to_delete1 = tyre_name.text.find('шины') + 5
-                        tyre_name_cleaned = tyre_name.text[text_to_delete1 : ]
-                        tyre_name_cleaned = tyre_name_cleaned.replace('\n', '')
-                    start_str_serch = price.text.find('от') + 3
-                    end_str_search = price.text.find('р') - 1
-                    price_cleaned = price.text[start_str_serch : end_str_search]
-                ###### дополнительные праметры ищем: 
-                #for data_got in products:
-                    #tyre_season = data_got.find('div', class_='schema-product__description')
-                    tyre_season = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
-                    seas_list = ['летние', 'зимние', 'всесезонные']
-                    studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
-                    group_list_cars = ['легковых', 'внедорожников', 'минивенов', 'кроссоверов'] 
-                    group_list_lt = ['микро'] # ['микроавтобусов', 'легкогрузовых']                
-                    group_list_trucks = ['грузовых', 'строительной', 'большегрузных'] #['автобусов', 'грузовых автомобилей', 'строительной и дорожной', 'большегрузных автомобилей']
-                    group_list_agro = ['тракторов и сельскохозяйственной']
-                    tyr_group_check = False
-                    tyr_seas_check = False
-                    tyr_group = None
-                    season = None
-                    if tyre_season:
-                        split_str_prepared = tyre_season.text
-                        split_str = split_str_prepared.replace('\n', '').split(', ')
-                        season_is = []
-                        try:
-                            if split_str[0] and split_str[0] in ['летние', 'зимние', 'всесезонные']:
-                                season_is = split_str[0]
-                        except:
-                            pass
-                        group_is = []
-
-                    t_gr = None
-                    split_str = data_got.find_all('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
-                    if split_str:
-                        split_str1 = split_str[1].text
-                        #print('--', split_str1) 
-                        split_str_group = split_str1   
-                        # для грузовых
+        products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_primary')
+        for data_got in products:
+            #tyre_name = data_got.find('div', class_='schema-product__title')
+            tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
+            #price = data_got.find('div', class_='schema-product__price')
+            price = data_got.find('a', class_='catalog-form__link catalog-form__link_nodecor catalog-form__link_primary-additional catalog-form__link_huge-additional catalog-form__link_font-weight_bold')
+#            if tyre_name and price:
+#                print('=-=-=-=', tyre_name.text)
+#                print('+-=+=+=', price.text)
+            if tyre_name and price:
+                # проверка на лишний тект в нелегковых шинахprice
+                check_name_is_foud = False
+                for check_name in list_to_check:
+                    if check_name in tyre_name.text:
+                        phrase_len = len(check_name)
+                        wha_to_delete_start = tyre_name.text.find(check_name)
+                        wha_to_delete_end = tyre_name.text.find(check_name) + phrase_len
+                        text_with_no_phrase = tyre_name.text[: wha_to_delete_start] + tyre_name.text[wha_to_delete_end :]
+                        text_with_no_phrase = text_with_no_phrase.replace('для', '')
+                        text_to_delete1text_with_no_phrase = ''
+                        for sh_pr in shins_phrase:
+                                text_to_delete1text_with_no_phrase = text_with_no_phrase.replace(sh_pr, '')
+                        tyre_name_cleaned = text_to_delete1text_with_no_phrase
+                        tyre_name_cleaned = tyre_name_cleaned.replace('\n', '') 
+                        tyre_name_cleaned_split = tyre_name_cleaned.split(' ')
+                        for n in tyre_name_cleaned_split:
+                            if n.isalnum() is True:
+                                company_name = n
+                                break
+                        check_name_is_foud = True
+                # end проверка на лишний тект в нелегковых шинах
+                if check_name_is_foud is False:
+                    text_to_delete1 = tyre_name.text.find('шины') + 5
+                    tyre_name_cleaned = tyre_name.text[text_to_delete1 : ]
+                    tyre_name_cleaned = tyre_name_cleaned.replace('\n', '')
+                start_str_serch = price.text.find('от') + 3
+                end_str_search = price.text.find('р') - 1
+                price_cleaned = price.text[start_str_serch : end_str_search]
+            ###### дополнительные праметры ищем: 
+            #for data_got in products:
+                #tyre_season = data_got.find('div', class_='schema-product__description')
+                tyre_season = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
+                seas_list = ['летние', 'зимние', 'всесезонные']
+                studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
+                group_list_cars = ['легковых', 'внедорожников', 'минивенов', 'кроссоверов'] 
+                group_list_lt = ['микро'] # ['микроавтобусов', 'легкогрузовых']                
+                group_list_trucks = ['грузовых', 'строительной', 'большегрузных'] #['автобусов', 'грузовых автомобилей', 'строительной и дорожной', 'большегрузных автомобилей']
+                group_list_agro = ['тракторов и сельскохозяйственной']
+                tyr_group_check = False
+                tyr_seas_check = False
+                tyr_group = None
+                season = None
+                if tyre_season:
+                    split_str_prepared = tyre_season.text
+                    split_str = split_str_prepared.replace('\n', '').split(', ')
+                    season_is = []
+                    try:
+                        if split_str[0] and split_str[0] in ['летние', 'зимние', 'всесезонные']:
+                            season_is = split_str[0]
+                    except:
+                        pass
+                    group_is = []
+                t_gr = None
+                split_str = data_got.find_all('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
+                if split_str:
+                    split_str1 = split_str[1].text
+                    #print('--', split_str1) 
+                    split_str_group = split_str1   
+                    # для грузовых
+                    try:
+                        if split_str_group:
+                            group_is = split_str_group
+                            tyr_group_check is True
+                    except:
                         try:
                             if split_str_group:
-                                group_is = split_str_group
-                                tyr_group_check is True
-                        except:
-                            try:
-                                if split_str_group:
-                                    for n in group_list_cars:
-                                        if n in split_str_group:
-                                            group_is = 'легковые'
-                                            break
-                                    for n in group_list_lt:
-                                        if n in split_str_group:
-                                            group_is = 'легкогруз'
-                                    #        print('---====', group_is)
-                                            break
-                                    for n in group_list_trucks:
-                                        if n in split_str_group:
-                                            group_is = 'грузовые'
-                                            break
-                                    for n in group_list_agro:
-                                        if n in split_str_group:
-                                            group_is = 'с/х'
-                                            break
-                                tyr_group = group_is        
-                                tyr_group_check = True
-                            except:
-                                pass
-                        # END для грузовых
-                        # группа для легковых
-                        if tyr_group_check is False:
-                            for tyr_group in group_list_cars:
-                                if tyr_group in group_is:
-                                    t_gr = 'легковые'
-                                #    print('tyr_group 111111', tyr_group)
-                                    break
-                                #for tyr_group in group_list_lt:
-                            tg_is_lt = False    
-                            for tyr_group in group_list_lt:
-                                if tyr_group in group_is:
-                                    t_gr = 'легкогруз'
-                                #    print('tyr_group 111222', tyr_group, '||||', group_is)
-                                    tg_is_lt = True
-                                    break
-                            if tg_is_lt is False:
-                                for tyr_group in group_list_trucks:
-                                    #for tyr_group in group_list_trucks:
-                                    if tyr_group in group_is:
-                                        t_gr = 'грузовые'
-                                #        print('tyr_group 11133', tyr_group, '||||', group_is)
+                                for n in group_list_cars:
+                                    if n in split_str_group:
+                                        group_is = 'легковые'
                                         break
-                            for tyr_group in group_list_agro:
-                                #for tyr_group in group_list_agro:
+                                for n in group_list_lt:
+                                    if n in split_str_group:
+                                        group_is = 'легкогруз'
+                                #        print('---====', group_is)
+                                        break
+                                for n in group_list_trucks:
+                                    if n in split_str_group:
+                                        group_is = 'грузовые'
+                                        break
+                                for n in group_list_agro:
+                                    if n in split_str_group:
+                                        group_is = 'с/х'
+                                        break
+                            tyr_group = group_is        
+                            tyr_group_check = True
+                        except:
+                            pass
+                    # END для грузовых
+                    # группа для легковых
+                    if tyr_group_check is False:
+                        for tyr_group in group_list_cars:
+                            if tyr_group in group_is:
+                                t_gr = 'легковые'
+                            #    print('tyr_group 111111', tyr_group)
+                                break
+                            #for tyr_group in group_list_lt:
+                        tg_is_lt = False    
+                        for tyr_group in group_list_lt:
+                            if tyr_group in group_is:
+                                t_gr = 'легкогруз'
+                            #    print('tyr_group 111222', tyr_group, '||||', group_is)
+                                tg_is_lt = True
+                                break
+                        if tg_is_lt is False:
+                            for tyr_group in group_list_trucks:
+                                #for tyr_group in group_list_trucks:
                                 if tyr_group in group_is:
-                                    t_gr = 'с/х'
-                            #        print('tyr_group 111', tyr_group)
+                                    t_gr = 'грузовые'
+                            #        print('tyr_group 11133', tyr_group, '||||', group_is)
                                     break
-                            tyr_group = t_gr
-                        # END группа для легковых    
-                        # сезонность
-                        studded_is = []                       # ШИПЫ - тут доработать
-                        for s_el in seas_list:
-                            if s_el in tyre_season.text:
-                                season = s_el
-                            #    if 'BEL-318' in tyre_name_cleaned:
-                            #        print('group_is ========88888=', tyre_season.text)  
-                            #        print('group_is =====================', season)  
-                        # END сезонность
-                        # шипы
-                        for studded_el in studded_list:
-                            if studded_el in tyre_season.text:
-                                studded = studded_el
-                        #print( season, '          ', studded)
-                        t_gr = None
-                        # END 
-            # выдираем типоразмер для добавления в словарь
-                    tyresize = str
-                    for n in reg_list:
-                        result = re.search(rf'(?i){n}', tyre_name_cleaned)
-                        if result:
-                            tyresize = result.group(0)
-                            #print(tyresize)
-                            ### удаление среза с типоразмером и всем что написано перед типоразмером
-                            left_before_size_data_index = tyre_name_cleaned.index(result.group(0))
-                            if left_before_size_data_index > 0:
-                                str_left_data = tyre_name_cleaned[0:left_before_size_data_index-1]
-                                tyresize_length = len(result.group(0)) + 1 
-                                right_after_size_data_index = tyre_name_cleaned.index(result.group(0)) + tyresize_length
-                                str_right_data = tyre_name_cleaned[right_after_size_data_index : ]
-                            product_name = str_left_data
-                            if check_name_is_foud is False:
-                                company_name = product_name.split(' ')[0]
-                            tyre_param = str_right_data
-                    values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
-#                    print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
-                    goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
-##        for k, v in goods_dict.items():
-##           print('K==', k, 'V==', v, 'KV')
-#        for v in goods_dict.values():
-#            print('===========================================999===========', v)   
-        #print(goods_dict.items())
-        # формируем отдельный список ПРОИЗВОДИТЕЛИ:
-        onliner_companies_list = []  # список компаний-производителей Oliner
-        for v in goods_dict.values():
-            if v[4] and v[4].isdigit() is False:
-                onliner_companies_list.append(v[4])
-        onliner_companies_list = list(set(onliner_companies_list))  
-        #print(onliner_companies_list, 'onliner_companies_list')
-        # выбор по производителю:                               
-        # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
-        #if models.ONLINER_COMPETITORS:
-        #    onliner_companies_list = models.ONLINER_COMPETITORS
-        #    print('onliner_companies_list', onliner_companies_list )
-        temp_goods_dict_list_k_names_to_delete = []
-        for v in goods_dict.values():
-            if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
-                pass
-            else:
-                temp_goods_dict_list_k_names_to_delete.extend(v[4])
-        for k_name in temp_goods_dict_list_k_names_to_delete:
-            goods_dict.pop(k_name)
-        # сопоставление с БД  и запись в БД конкурентов (Onliner):
-        onliner_compet_obj_tyre_bulk_list = []
-        list_tyre_sizes = []
-        tyres_in_bd = tyres_models.Tyre.objects.all()
-        for tyre in tyres_in_bd:
-            for k, v in goods_dict.items():
-                #   print(k, len(k), 'v', v)
-                if tyre.tyre_size.tyre_size == v[1]:                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
-                    # Goodyear EfficientGrip Performance 2 205/60R16 92H 50 v ('\n341,08', '205/60R16', 'Goodyear EfficientGrip Performance 2', '92H', 'Goodyear', 'летние', 'легковые')                                                                                   #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
-                    coma = v[0].find(',')
-                    pr = float
-                    name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
-                        competitor_name = v[4] 
-                    )
-                  ##     print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH', v[6])
-                    season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
-                    if season_usage:
-                        season_usage = season_usage[0]
-                    else:
-                        season_usage = None 
-                    if coma:
-                        no_with_coma = v[0].replace(',', '.').replace('\n', '')
-                        try:
-                            pr = float(no_with_coma) 
-                        except:
-                            pr = None
-                    tyre_group_ussage = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[6])
-                    if tyre_group_ussage:
-                        tyre_group_ussage = tyre_group_ussage[0]
-                    else:
-                        tyre_group_ussage = None 
-                    if coma:
-                        no_with_coma = v[0].replace(',', '.').replace('\n', '')
-                        try:
-                            pr = float(no_with_coma) 
-                        except:
-                            pr = None
-                    list_tyre_sizes.append(v[1])
-                    #list_comparative_analysis_tyre_objects = []
-                    #for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
-                    #    list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
-                    onliner_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
-                        site = 'onliner.by',
-                        #tyre = tyre,
-                        currency = dictionaries_models.Currency.objects.get(currency='BYN'),
-                        price = pr,
-                        date_period = datetime.datetime.today(),
-                        #developer = v[4],
-                        developer = name_competitor,
-                        tyresize_competitor = v[1],
-                        name_competitor = v[2], 
-                        parametres_competitor = v[3],
-                        season = season_usage,
-                        group = tyre_group_ussage,
-                    )        
-                    )
-        bulk_onl_compet = models.CompetitorSiteModel.objects.bulk_create(onliner_compet_obj_tyre_bulk_list)
-        list_tyre_sizes = set(list_tyre_sizes)
-        for t_szz in list_tyre_sizes:
-            for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                    obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
-                    # OLD VERSION       
-                    ####competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
-                    ####    site = 'onliner.by',
-                    ####    #tyre = tyre,
-                    ####    currency = dictionaries_models.Currency.objects.get(currency='BYN'),
-                    ####    price = pr,
-                    ####    date_period = datetime.datetime.today(),
-                    ####    #developer = v[4],
-                    ####    developer = name_competitor,
-                    ####    tyresize_competitor = v[1],
-                    ####    name_competitor = v[2], 
-                    ####    parametres_competitor = v[3],
-                    ####    season = season_usage,
-                    ####    group = tyre_group_ussage,
-                    ####    #tyre_to_compare = list_comparative_analys_tyres_model_objects_to_bound_with,
-                    ####)
-                    ####### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
-                #   #### print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
-                    ####for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
-                    ####    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
-                    #######
-                # END OLD VERSION   
+                        for tyr_group in group_list_agro:
+                            #for tyr_group in group_list_agro:
+                            if tyr_group in group_is:
+                                t_gr = 'с/х'
+                        #        print('tyr_group 111', tyr_group)
+                                break
+                        tyr_group = t_gr
+                    # END группа для легковых    
+                    # сезонность
+                    studded_is = []                       # ШИПЫ - тут доработать
+                    for s_el in seas_list:
+                        if s_el in tyre_season.text:
+                            season = s_el
+                        #    if 'BEL-318' in tyre_name_cleaned:
+                        #        print('group_is ========88888=', tyre_season.text)  
+                        #        print('group_is =====================', season)  
+                    # END сезонность
+                    # шипы
+                    for studded_el in studded_list:
+                        if studded_el in tyre_season.text:
+                            studded = studded_el
+                    #print( season, '          ', studded)
+                    t_gr = None
+                    # END 
+        # выдираем типоразмер для добавления в словарь
+                tyresize = str
+                for n in reg_list:
+                    result = re.search(rf'(?i){n}', tyre_name_cleaned)
+                    if result:
+                        tyresize = result.group(0)
+                        #print(tyresize)
+                        ### удаление среза с типоразмером и всем что написано перед типоразмером
+                        left_before_size_data_index = tyre_name_cleaned.index(result.group(0))
+                        if left_before_size_data_index > 0:
+                            str_left_data = tyre_name_cleaned[0:left_before_size_data_index-1]
+                            tyresize_length = len(result.group(0)) + 1 
+                            right_after_size_data_index = tyre_name_cleaned.index(result.group(0)) + tyresize_length
+                            str_right_data = tyre_name_cleaned[right_after_size_data_index : ]
+                        product_name = str_left_data
+                        if check_name_is_foud is False:
+                            company_name = product_name.split(' ')[0]
+                        tyre_param = str_right_data
+                values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
+#                   print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
+                goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
+##       for k, v in goods_dict.items():
+##          print('K==', k, 'V==', v, 'KV')
+#       for v in goods_dict.values():
+#           print('===========================================999===========', v)   
+    #print(goods_dict.items())
+    # формируем отдельный список ПРОИЗВОДИТЕЛИ:
+    onliner_companies_list = []  # список компаний-производителей Oliner
+    for v in goods_dict.values():
+        if v[4] and v[4].isdigit() is False:
+            onliner_companies_list.append(v[4])
+    onliner_companies_list = list(set(onliner_companies_list))  
+    #print(onliner_companies_list, 'onliner_companies_list')
+    # выбор по производителю:                               
+    # ФИЛЬТР 4  - задаваемые модели шин для работы в таблице:
+    #if models.ONLINER_COMPETITORS:
+    #    onliner_companies_list = models.ONLINER_COMPETITORS
+    #    print('onliner_companies_list', onliner_companies_list )
+    temp_goods_dict_list_k_names_to_delete = []
+    for v in goods_dict.values():
+        if v[4] and v[4] in onliner_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
+            pass
+        else:
+            temp_goods_dict_list_k_names_to_delete.extend(v[4])
+    for k_name in temp_goods_dict_list_k_names_to_delete:
+        goods_dict.pop(k_name)
+    # сопоставление с БД  и запись в БД конкурентов (Onliner):
+    onliner_compet_obj_tyre_bulk_list = []
+    list_tyre_sizes = []
+    tyres_in_bd = tyres_models.Tyre.objects.all()
+    for tyre in tyres_in_bd:
+        for k, v in goods_dict.items():
+            print(k, len(k), 'v', v)
+            if tyre.tyre_size.tyre_size == v[1]:                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
+                # Goodyear EfficientGrip Performance 2 205/60R16 92H 50 v ('\n341,08', '205/60R16', 'Goodyear EfficientGrip Performance 2', '92H', 'Goodyear', 'летние', 'легковые')                                                                                   #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
+                coma = v[0].find(',')
+                pr = float
+                name_competitor, created = dictionaries_models.CompetitorModel.objects.get_or_create(
+                    competitor_name = v[4] 
+                )
+              ##     print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH', v[6])
+                season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=v[5]) 
+                if season_usage:
+                    season_usage = season_usage[0]
+                else:
+                    season_usage = None 
+                if coma:
+                    no_with_coma = v[0].replace(',', '.').replace('\n', '')
+                    try:
+                        pr = float(no_with_coma) 
+                    except:
+                        pr = None
+                tyre_group_ussage = dictionaries_models.TyreGroupModel.objects.filter(tyre_group=v[6])
+                if tyre_group_ussage:
+                    tyre_group_ussage = tyre_group_ussage[0]
+                else:
+                    tyre_group_ussage = None 
+                if coma:
+                    no_with_coma = v[0].replace(',', '.').replace('\n', '')
+                    try:
+                        pr = float(no_with_coma) 
+                    except:
+                        pr = None
+                list_tyre_sizes.append(v[1])
+                #list_comparative_analysis_tyre_objects = []
+                #for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                #    list_comparative_analysis_tyre_objects.append(comparative_analys_tyres_model_object)
+                onliner_compet_obj_tyre_bulk_list.append(models.CompetitorSiteModel(
+                    site = 'onliner.by',
+                    #tyre = tyre,
+                    currency = dictionaries_models.Currency.objects.get(currency='BYN'),
+                    price = pr,
+                    date_period = datetime.datetime.today(),
+                    #developer = v[4],
+                    developer = name_competitor,
+                    tyresize_competitor = v[1],
+                    name_competitor = v[2], 
+                    parametres_competitor = v[3],
+                    season = season_usage,
+                    group = tyre_group_ussage,
+                )        
+                )
+    bulk_onl_compet = models.CompetitorSiteModel.objects.bulk_create(onliner_compet_obj_tyre_bulk_list)
+    list_tyre_sizes = set(list_tyre_sizes)
+    for t_szz in list_tyre_sizes:
+        for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
+                obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+                # OLD VERSION       
+                ####competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
+                ####    site = 'onliner.by',
+                ####    #tyre = tyre,
+                ####    currency = dictionaries_models.Currency.objects.get(currency='BYN'),
+                ####    price = pr,
+                ####    date_period = datetime.datetime.today(),
+                ####    #developer = v[4],
+                ####    developer = name_competitor,
+                ####    tyresize_competitor = v[1],
+                ####    name_competitor = v[2], 
+                ####    parametres_competitor = v[3],
+                ####    season = season_usage,
+                ####    group = tyre_group_ussage,
+                ####    #tyre_to_compare = list_comparative_analys_tyres_model_objects_to_bound_with,
+                ####)
+                ####### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
+            #   #### print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+                ####for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
+                ####    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
+                #######
+            # END OLD VERSION   
 
     #finally:
     #    webdriverr.quit()                                      
-    except:
-        pass                                                                                                                                                                                                       
+    #except:
+    #    pass                                                                                                                                                                                                       
     ##### END OF ONLINER PARSING
     # 2 ###### ПАРСИНГ АВТОСЕТЬ:
     webdriverr = webdriverr_global    
@@ -921,7 +947,7 @@ def belarus_sites_parsing():
         webdriverr.get(url)
         soup = BeautifulSoup(webdriverr.page_source,'lxml')   
         #1. получаем количество страниц:
-        print('soup', soup)
+        #print('soup', soup)
         pages = soup.find('ul', class_='pagination')  # pagination       
         urls_get = []
         links = pages.find_all('a', class_='pagination__link')         # <li class="pagination__item"><a class="pagination__link" href="/legkovye-shiny/?nav=page-262">262</a></li>
@@ -1313,37 +1339,38 @@ def belarus_sites_parsing():
                                
 
 def russia_sites_parsing():
-            
+
         test_script_is_in_process = models.SCRIPT_IS_RUNNING
-        from selenium import webdriver
-        if test_script_is_in_process:                                               # взято со скрипта
-        #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)
+        from selenium import webdriver        
+        if test_script_is_in_process:                                               # взято со скрипта          # ЕСЛИ ЗАПУЩЕН СКРИПТ на Pythonanywhere
+        #    print('|||||||||||test_script_is_in_process|||||||||||||||', test_script_is_in_process)        
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--headless")
             chrome_options.add_argument("--disable-gpu")
             chrome_options.add_argument('--disable-dev-shm-usage')
-            webdriverr_global = webdriver.Chrome(options=chrome_options)
-        else:                                                                       # как было
-        #    print('-----------test_script_is_in_process---------------', test_script_is_in_process)   
-            chrome_options = webdriver.ChromeOptions()  
-        #    chrome_options.add_argument("--no-sandbox") 
-        #    chrome_options.add_argument("--disable-setuid-sandbox") 
-        #    chrome_options.add_argument("--disable-dev-shm-usage")
-        #    chrome_options.add_argument('--headless=old')
-        #    chrome_options.add_argument('--disable-dev-shm-usage')
-                
-
-        webdriverr_global = webdriver.Chrome(options=chrome_options)  
-
-
-        #chromeOptions1 = webdriver.ChromeOptions() 
-        #chromeOptions1.add_argument("--no-sandbox") 
-        #chromeOptions1.add_argument("--disable-setuid-sandbox") 
-        #chromeOptions1.add_argument("--disable-dev-shm-usage");
-        #chromeOptions1.add_argument("--headless") 
-        #chromeOptions1.add_argument("--disable-extensions") 
-        #webdriverr_global = webdriver.Chrome(options=chromeOptions1)
+            try:
+                webdriverr_global = webdriver.Chrome(options=chrome_options)
+            except:                                                                                                 # !!!!! ДОБАВИТЬ - СКРИПТ ДЛЯ Synology - ЕСЛИ ЗАПУЩЕН  СЕРВЕР для Synology
+                webdriverr_global = webdriver.Remote(command_executor='http://selenium:4444/wd/hub', options=chrome_options)  
+        #    webdriverr_global = webdriver.Remote('http://127.0.0.1:4444/wd/hub', options=chrome_options)    
+        else:                                                                       # как было                      # ЕСЛИ ЗАПУЩЕН ЛОКАЛЬНАЯ МАШИНА ЛИБО СЕРВЕР
+            try:                                                                                             # ЕСЛИ ЗАПУЩЕН  СЕРВЕР для Synology
+                chrome_options = webdriver.ChromeOptions()
+                chrome_options.add_argument("--no-sandbox")
+                chrome_options.add_argument("--headless")
+                chrome_options.add_argument("--disable-gpu")
+                chrome_options.add_argument('--disable-dev-shm-usage')
+                webdriverr_global = webdriver.Remote(command_executor='http://selenium:4444/wd/hub', options=chrome_options)
+            except:                                                                                                     # ЕСЛИ ЗАПУЩЕН ЛОКАЛЬНАЯ МАШИНА на компе
+                print('-----------test_script_is_not_in_process---------------')  
+                chrome_options = webdriver.ChromeOptions()  
+                #chrome_options.add_argument("--no-sandbox") 
+                #chrome_options.add_argument("--disable-setuid-sandbox") 
+                #chrome_options.add_argument("--disable-dev-shm-usage")
+                #chrome_options.add_argument('--headless=old')
+                #chrome_options.add_argument('--disable-dev-shm-usage')                                  
+                webdriverr_global = webdriver.Chrome(options=chrome_options)  
 
         # 1 ###### ПАРСИНГ express-shina:
         try:
@@ -2395,7 +2422,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             pass
         #### END проверки
         else:
-            #belarus_sites_parsing()
+            belarus_sites_parsing()
             pass
  
         return comparative_analysis_table
@@ -7119,21 +7146,37 @@ class ComparativeAnalysisTableModelRussiaUpdateView(LoginRequiredMixin, View):
             models.FULL_LINED_CHART_ON = False
             
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_russia'))
-    
 
-
+@app.task
 def running_programm():
 
     belarus_sites_parsing()
-    russia_sites_parsing()
-#    print('script is running == belarus_sites_parsing()')
-    print('script is running == russia_sites_parsing()')
-
-
+    #russia_sites_parsing()
+    print('script is running == running_programmg()')
     return 'the programm is fullfilled'
 
+#@app.task
+#def dfgdg():
+#    print('777 ===================================7777')
+#    return(print('777 ===================================777'))
+
+###### SCHEDULE                 ##### !!!!!!!!!!! во время использования не работает перезагрузка CTRL + C
+
+#def run_schedule():
+#    #schedule.every().day.at("22:12").do(running_programm)
+#    schedule.every(10).seconds.do(dfgdg)
+#    while True:
+#        schedule.run_pending()
+#        time.sleep(1)
+#
+#from threading import Thread
+#thread = Thread(target=run_schedule)
+#thread.start()  
+
+###### END SCHEDULE
 
 
 if __name__ == "__main__":
     running_programm()
+
 

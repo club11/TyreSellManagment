@@ -15,6 +15,8 @@ from tokenize import Ignore
 
 import os
 
+from celery.schedules import crontab
+
 #from ignore_data import KEY
 #from . secret_key import SECRET_KEY
 
@@ -32,8 +34,8 @@ SECRET_KEY='django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6',
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['192.168.0.136', '127.0.0.1',]
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '192.168.0.136', '127.0.0.1',]
+#ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -56,10 +58,8 @@ INSTALLED_APPS = [
     'chemcurier',
     'profiles',
 
-
 #    'crispy_forms',
-
-
+    'django.contrib.postgres', #это модуль Django, который предоставляет интеграцию с базой данных PostgreSQL
 ]
 
 MIDDLEWARE = [
@@ -74,9 +74,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'proj.urls'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+
 
 TEMPLATES = [
     {
@@ -102,32 +100,24 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-##### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
+###### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }   
 }
+
 #DATABASES = {
-#    "default": {
-#        "ENGINE": "django.db.backends.postgresql_psycopg2",
-#        #"ENGINE": "django.db.backends.postgresql",
-#        "NAME": "django_prices",
-#        'USER': "django_prices_admin",
-#        "PASSWORD": "qq250465qq",
-#        'HOST': "localhost",
-#        #'HOST': '127.0.0.1',  
-#        #'HOST': '192.168.0.136',
-#        #"PORT": '5433',
-#
-#    #    "NAME" : os.environ.get('NAME'),
-#    #    "USER" : os.environ.get('USER'),
-#    #    "PASSWORD" : os.environ.get('PASSWORD'),
-#    #    "HOST" : os.environ.get('HOST'),
-#    #    "PORT" : os.environ.get('PORT'),        
-#        },
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',   # Используется PostgreSQL
+#        'NAME': 'postgres', # Имя базы данных
+#        'USER': 'postgres', # Имя пользователя
+#        'PASSWORD': 'postgres', # Пароль пользователя
+#        'HOST': 'postgres_db', # Наименование контейнера для базы данных в Docker Compose
+#        'PORT': '5432',  # Порт базы данных
 #    }
+#}
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -169,13 +159,32 @@ USE_I18N = True
 USE_TZ = True
 
 
+###### ДЛЯ redis -celery
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+
+CELERY_BEAT_SCHEDULE = {
+    'parcing': {
+        'task': 'prices.views.running_programm',
+        'schedule': crontab(hour=18, minute=59),
+    },
+#    'dfgdg': {
+#        'task': 'prices.views.dfgdg',
+#        'schedule': 5 #* 60,
+#    },
+}
+###### END ДЛЯ redis -celery
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = '/static/'
-#STATIC_ROOT = '/var/www/static/'
+STATIC_URL = 'static/'
+
+#STATIC_ROOT = '/var/www/static/' - версия для pythonanywhere
 ##### ПЕРЕД сборкой докер-контейнера раскоментить
-STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить
 
 # для DEV:
@@ -184,6 +193,10 @@ MEDIA_ROOT = BASE_DIR /'media/'
 
 ######STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
 ######MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL) 
+
+#STATICFILES_DIRS = [
+#    BASE_DIR / "static",
+#]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
