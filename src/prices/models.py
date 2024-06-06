@@ -1659,7 +1659,7 @@ class ComparativeAnalysisTyresModel(models.Model):
 
 class CompetitorSiteModel(models.Model):
     site = models.CharField(
-        max_length=40,
+        max_length=60,
         verbose_name='наименование сайта',
         null=True,
         blank=True,
@@ -1696,19 +1696,19 @@ class CompetitorSiteModel(models.Model):
         verbose_name='типоразмер конкурент',                
         null=False,
         blank=True, 
-        max_length=35
+        max_length=60,
     )
     name_competitor = models.CharField(
         verbose_name='наименование конкурент',
         null=False,
         blank=True, 
-        max_length=35
+        max_length=60,
     )
     parametres_competitor = models.CharField(
         verbose_name='параметры конкурент',
         null=False,
         blank=True, 
-        max_length=35
+        max_length=60,
     )
     season = models.ForeignKey(
         dictionaries_models.SeasonUsageModel,
@@ -1729,11 +1729,11 @@ class CompetitorSiteModel(models.Model):
 class ChemCurierTyresModel(models.Model):
     tyre_size_chem = models.CharField(
         verbose_name='типоразмер химкурьер',            
-        max_length=30,
+        max_length=60,
     )
     producer_chem = models.CharField(
         verbose_name='производитель химкурьер',
-        max_length=30,
+        max_length=60,
     )
     reciever_chem = models.CharField(
         verbose_name='получатель химкурьер',
@@ -1743,7 +1743,7 @@ class ChemCurierTyresModel(models.Model):
     )
     prod_country = models.CharField(
         verbose_name='страна производства',
-        max_length=30,
+        max_length=60,
         null=False,
         blank=True,
     )    
@@ -1773,13 +1773,13 @@ class ChemCurierTyresModel(models.Model):
     )
     money_on_moth_chem = models.FloatField(                     #  Decimal
         verbose_name='объем поставки на дату(месяц) деньги',
-        max_length=30,
+        max_length=60,
         blank=True,
         null=True
     )
     average_price_in_usd = models.FloatField(
         verbose_name='средневзвешеная цена, в USD',
-        max_length=30,
+        max_length=60,
         blank=True,
         null=True
     )

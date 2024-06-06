@@ -108,15 +108,17 @@ def belarus_sites_parsing():
             chrome_options.add_argument("--disable-gpu")
             chrome_options.add_argument('--disable-dev-shm-usage')
             webdriverr_global = webdriver.Remote(command_executor='http://selenium:4444/wd/hub', options=chrome_options)
+            print('-----------selenium:4444 _is_in_process---------------') 
         except:                                                                                                     # ЕСЛИ ЗАПУЩЕН ЛОКАЛЬНАЯ МАШИНА на компе
-            print('-----------pc_is_not_in_process---------------')
+            print('-----------pc_is_in_process---------------')            
             chrome_options = webdriver.ChromeOptions()  
             #chrome_options.add_argument("--no-sandbox") 
             #chrome_options.add_argument("--disable-setuid-sandbox") 
             #chrome_options.add_argument("--disable-dev-shm-usage")
             #chrome_options.add_argument('--headless=old')
             #chrome_options.add_argument('--disable-dev-shm-usage')                                  
-            webdriverr_global = webdriver.Chrome(options=chrome_options)                                    
+            webdriverr_global = webdriver.Chrome(options=chrome_options)  
+            pass                               
 
     #chrome_options = webdriver.ChromeOptions()
     #chrome_options.add_argument("--no-sandbox")
@@ -161,7 +163,7 @@ def belarus_sites_parsing():
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
     #for slug in range(1, 1000):                               # c 1 по 2 станицы  
-    for slug in range(1, 1):                               # c 1 по 2 станицы      
+    for slug in range(1, 3):                               # c 1 по 2 станицы      
     #for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
         newUrl = url + f'?page={slug}'
@@ -338,6 +340,8 @@ def belarus_sites_parsing():
                     values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
                     #print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
                     goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
+        else:
+            break
 ##       for k, v in goods_dict.items():
 ##          print('K==', k, 'V==', v, 'KV')
 #       for v in goods_dict.values():
@@ -369,7 +373,7 @@ def belarus_sites_parsing():
     tyres_in_bd = tyres_models.Tyre.objects.all()
     for tyre in tyres_in_bd:
         for k, v in goods_dict.items():
-            print(k, len(k), 'v', v)
+            #print(k, len(k), 'v', v)
             if tyre.tyre_size.tyre_size == v[1]:                                                                                            #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                 # Goodyear EfficientGrip Performance 2 205/60R16 92H 50 v ('\n341,08', '205/60R16', 'Goodyear EfficientGrip Performance 2', '92H', 'Goodyear', 'летние', 'легковые')                                                                                   #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                 coma = v[0].find(',')
@@ -441,7 +445,7 @@ def belarus_sites_parsing():
                 ####    #tyre_to_compare = list_comparative_analys_tyres_model_objects_to_bound_with,
                 ####)
                 ####### добавлено: привязка к ComparativeAnalysisTyresModel одинаковый типоразмер
-            #   #### print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
+               #### print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH1', competitor_site_model[0])
                 ####for comparative_analys_tyres_model_object in models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=v[1]):
                 ####    competitor_site_model[0].tyre_to_compare.add(comparative_analys_tyres_model_object)
                 #######
@@ -463,7 +467,7 @@ def belarus_sites_parsing():
         webdriverr.get(url)
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)
+        time.sleep(3)
         soup = BeautifulSoup(webdriverr.page_source,'lxml')   
         ##products_lt = soup.find_all('section', class_='container-block product__wrap')
         ### ВЕРСИЯ РАБОЧАЯ ДО ИЗМЕННЕНИЙ НА САЙТЕ
@@ -521,8 +525,8 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:                         
         ####for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы              
         #for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
-        for slug in range(1, 3):   
-        #for slug in range(0,urls_get):         #### !!!!!
+        #for slug in range(1, 3):   
+        for slug in range(0,urls_get):         #### !!!!!
             #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
             webdriverr.get(newUrl)
@@ -531,7 +535,7 @@ def belarus_sites_parsing():
             time.sleep(4)
             soup = BeautifulSoup(webdriverr.page_source,'lxml')
             products_lt = soup.find_all('section', class_='container-block product__wrap')
-            print('products_lt', products_lt)
+            #print('products_lt', products_lt)
             for data_got in products_lt:
                 tyre_title_lt = str(data_got.find('div', class_='brand').text).replace('\\n', '').replace('БЕСПЛАТНЫЙ ШИНОМОНТАЖ', '').replace('БЕСПЛАТНАЯ СПЕЦГАРАНТИЯ', '') 
                 tyre_title_lt = re.sub('\r?\n', '', tyre_title_lt)
@@ -548,7 +552,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
                 tyr_group = 'легковые'
-    #            print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+                print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                 avtoset_good_num += 1
         # 2) Грузовые шины
@@ -590,8 +594,8 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
-        for slug in range(0, 3):
-        #for slug in range(0,urls_get):    #!!!! working
+        #for slug in range(0, 3):
+        for slug in range(0,urls_get):    #!!!! working
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -653,8 +657,8 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         #for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        for slug in range(0, 3):
-        #for slug in range(0, urls_get):        # working   
+        #for slug in range(0, 3):
+        for slug in range(0, urls_get):        # working   
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -715,8 +719,8 @@ def belarus_sites_parsing():
                 urls_get.append(pageNum)
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
-        for slug in range(0, 3):
-        #for slug in range(0, urls_get): 
+        #for slug in range(0, 3):
+        for slug in range(0, urls_get): 
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -738,7 +742,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_agro = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_agro = float(tyre_rub_price_agro + '.' + tyre_coins_price_agro)
                 tyr_group = 'с/х'
-        #        print('=8= avtoset s/x ', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
+                #print('=8= avtoset s/x ', tyre_title_agro,'||', tyre_size_agro,'||', tyre_index_agro,'||', tyre_model_agro, '||', tyre_price_agro, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_agro, avtoset_good_num] = tyre_title_agro, tyre_model_agro, tyre_index_agro, tyr_group, tyre_price_agro 
         #print(goods_dict_avtoset, len(goods_dict_avtoset.keys()))     # СЛОВАРЬ ключи = типоразмер, номер в словаре, данные = производитель, модель, индексы, цена
         #for k, v in goods_dict_avtoset.items():
@@ -749,7 +753,7 @@ def belarus_sites_parsing():
             if v[0] and v[0].isdigit() is False:
                 avtoset_companies_list.append(v[0])
         avtoset_companies_list = list(set(avtoset_companies_list))  
-        #print(avtoset_companies_list, 'avtoset_companies_list')
+        print(avtoset_companies_list, 'avtoset_companies_list')
         chosen_by_company_dict = {}
         for k, v in goods_dict_avtoset.items():
             if v[0] and v[0] in avtoset_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
@@ -970,8 +974,8 @@ def belarus_sites_parsing():
         def legkovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/legkovye-shiny/' 
-        #    for slug in range(pages_quantity_start, pages_quantity_end): 
-            for slug in range(pages_quantity_start, 1):     
+            for slug in range(pages_quantity_start, pages_quantity_end): 
+            #for slug in range(pages_quantity_start, 1):     
                 #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                 newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                 webdriverr.get(newUrl)
@@ -979,10 +983,10 @@ def belarus_sites_parsing():
             #    print('val_sleep =', val_sleep)
                 if val_sleep == 10:
                 #    print('TIME TO WAIT 1')
-                    time.sleep(9)
+                    time.sleep(3)
                     webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 #    print('TIME TO WAIT 2')
-                    time.sleep(11)
+                    time.sleep(4)
                 else:
                     rand_val_to_wait = random.randint(5, 15)    # подождать рандомно неск секунд
                     time.sleep(rand_val_to_wait)
@@ -1010,6 +1014,7 @@ def belarus_sites_parsing():
                     tyre_price_lt = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())  
                     tyr_group = 'легковые'
                     goods_dict_bagoria[tyre_size_lt, bagoria_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt 
+                    print('BAGOR', tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt )
                     bagoria_good_num += 1
             func_is_succeed = 'GoT'
             return func_is_succeed
@@ -1038,8 +1043,8 @@ def belarus_sites_parsing():
         def gruzovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/gruzovye-shiny/'
-        #    for slug in range(pages_quantity_start, pages_quantity_end):   
-            for slug in range(pages_quantity_start, 1):   
+            for slug in range(pages_quantity_start, pages_quantity_end):   
+            #for slug in range(pages_quantity_start, 1):   
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(3)
@@ -1087,8 +1092,8 @@ def belarus_sites_parsing():
         def induztrial(pages_quantity_start, pages_quantity_end, bg_nm):
             url = 'https://bagoria.by/industr-shiny/'
             bagoria_good_num = bg_nm
-        #    for slug in range(pages_quantity_start, pages_quantity_end): 
-            for slug in range(pages_quantity_start, 1):     
+            for slug in range(pages_quantity_start, pages_quantity_end): 
+            #for slug in range(pages_quantity_start, 1):     
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1107,7 +1112,7 @@ def belarus_sites_parsing():
                     tyre_price_ts = str(data_got.find('span', class_='accordion-manufacturers__main_price').text.replace(' ', '').replace('р.', '').replace(',', '.').replace(' ', '').lstrip().rstrip())     
                     tyr_group = 'грузовые'
                     goods_dict_bagoria[tyre_size_ts, bagoria_good_num] = tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts 
-                #    print('III', tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts)
+                    #print('III', tyre_title_ts, tyre_model_ts, tyre_index_ts, tyr_group, tyre_price_ts, tyre_param_ts)
                     bagoria_good_num += 1  
             func_is_succeed = 'GoT'
             return func_is_succeed
@@ -1137,8 +1142,8 @@ def belarus_sites_parsing():
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/selhoz-shiny/'
         #    print('ISISISIISISSISS', pages_quantity_start, pages_quantity_end)
-        #    for slug in range(pages_quantity_start, pages_quantity_end):
-            for slug in range(pages_quantity_start, 1):
+            for slug in range(pages_quantity_start, pages_quantity_end):
+            #for slug in range(pages_quantity_start, 1):
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(4)
@@ -1183,7 +1188,7 @@ def belarus_sites_parsing():
             for tyre in tyres_in_bd:
                 try:
                     for k, v in chosen_by_company_dict.items():
-                    #    print(k, 'GGG baGGor', v, 'GGG', len(v))
+                        print(k, 'GGG baGGor', v, 'GGG', len(v))
                         if tyre.tyre_size.tyre_size == k[0]:
                         #    print('TTTT', k, 's111', v)           TTTT ('155/65R13', 431) s111 ('WestLake', 'SW618', '73T', 'зимние', 'легковые', '126.07')                                                                                  #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             #('13.0/65-18', 399) ('OZKA', 'KNK48', '144A8TL', 'нс16', 'с/х', '698.98')
@@ -7160,7 +7165,7 @@ def running_programm():
 
     belarus_sites_parsing()
     #russia_sites_parsing()
-    print('script is running == running_programmg()')
+    print(' running_programmg() ends')
     return 'the programm is fullfilled'
 
 #@app.task
