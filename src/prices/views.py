@@ -7160,6 +7160,16 @@ class ComparativeAnalysisTableModelRussiaUpdateView(LoginRequiredMixin, View):
             
         return HttpResponseRedirect(reverse_lazy('prices:comparative_prices_russia'))
 
+
+import redis
+r = redis.Redis(host='192.168.0.136', port=6379, db=0) 
+r.set('foo', 'bar')
+r.get('foo')
+print('!@~!@!~@@', r.get('foo'))
+
+
+
+
 @app.task
 def running_programm():
 
@@ -7168,10 +7178,11 @@ def running_programm():
     print(' running_programmg() ends')
     return 'the programm is fullfilled'
 
-#@app.task
-#def dfgdg():
-#    print('777 ===================================7777')
-#    return(print('777 ===================================777'))
+@app.task
+#@shared_task
+def dfgdg():
+    print('777 ===================================7777')
+    return(print('777 ===================================777'))
 
 ###### SCHEDULE                 ##### !!!!!!!!!!! во время использования не работает перезагрузка CTRL + C
 

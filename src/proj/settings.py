@@ -34,7 +34,7 @@ SECRET_KEY='django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6',
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '192.168.0.136', '127.0.0.1',]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.136',]
 #ALLOWED_HOSTS = []
 
 
@@ -101,23 +101,24 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 ###### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }   
-}
-
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql_psycopg2',   # Используется PostgreSQL
-#        'NAME': 'postgres', # Имя базы данных
-#        'USER': 'postgres', # Имя пользователя
-#        'PASSWORD': 'postgres', # Пароль пользователя
-#        'HOST': 'postgres_db', # Наименование контейнера для базы данных в Docker Compose
-#        'PORT': '5432',  # Порт базы данных
-#    }
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }   
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',   # Используется PostgreSQL
+        'NAME': 'postgres', # Имя базы данных
+        'USER': 'postgres', # Имя пользователя
+        'PASSWORD': 'postgres', # Пароль пользователя
+        'HOST': 'postgres_db', # Наименование контейнера для базы данных в Docker Compose
+    #    'HOST': 'postgres', # Наименование контейнера для базы данных в Docker Compose        
+        'PORT': '5433',  # Порт базы данных
+    }
+}
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -160,19 +161,24 @@ USE_TZ = True
 
 
 ###### ДЛЯ redis -celery
-CELERY_BROKER_URL = "redis://redis:6379/0"
-CELERY_RESULT_BACKEND = "redis://redis:6379/0"
-
+# 1/ для docker-compose:
+#CELERY_BROKER_URL = "redis://redis:6379/0"
+#CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+# 2/ для локальной машины:
+#- ????
+# 2/ для Synology:
+CELERY_BROKER_URL = 'redis://192.168.0.136:6379/0'
+# end
 
 CELERY_BEAT_SCHEDULE = {
     'parcing': {
         'task': 'prices.views.running_programm',
-        'schedule': crontab(hour=19, minute=15),
+        'schedule': crontab(hour=20, minute=4),
     },
-#    'dfgdg': {
-#        'task': 'prices.views.dfgdg',
-#        'schedule': 5 #* 60,
-#    },
+    'dfgdg': {
+        'task': 'prices.views.dfgdg',
+        'schedule': 5 #* 60,
+    },
 }
 ###### END ДЛЯ redis -celery
 
