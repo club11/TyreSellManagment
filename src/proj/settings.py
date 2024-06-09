@@ -114,7 +114,8 @@ DATABASES = {
         'NAME': 'postgres_db',
         'USER': 'postgres_db',
         'PASSWORD': 'postgres_db',
-        'HOST': '127.0.0.1',
+        #'HOST': '127.0.0.1',  # для локальной машины
+        'HOST': '192.168.0.136', # для Synology
         'PORT': '5433',
     }
 }
