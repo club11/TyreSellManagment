@@ -101,24 +101,23 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 ###### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }   
-#}
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',   # Используется PostgreSQL
-        'NAME': 'postgres', # Имя базы данных
-        'USER': 'postgres', # Имя пользователя
-        'PASSWORD': 'postgres', # Пароль пользователя
-        'HOST': 'postgres_db', # Наименование контейнера для базы данных в Docker Compose
-    #    'HOST': 'postgres', # Наименование контейнера для базы данных в Docker Compose        
-        'PORT': '5433',  # Порт базы данных
-    }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }   
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql_psycopg2',   # Используется PostgreSQL
+#        'NAME': 'postgres', # Имя базы данных
+#        'USER': 'postgres', # Имя пользователя
+#        'PASSWORD': 'postgres', # Пароль пользователя
+#        'HOST': 'postgres_db', # Наименование контейнера для базы данных в Docker Compose        
+#        'PORT': '5432',  # Порт базы данных
+#    }
+#}
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -175,10 +174,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'prices.views.running_programm',
         'schedule': crontab(hour=20, minute=4),
     },
-    'dfgdg': {
-        'task': 'prices.views.dfgdg',
-        'schedule': 5 #* 60,
-    },
+    #'dfgdg': {
+    #    'task': 'prices.views.dfgdg',
+    #    'schedule': 5 #* 60,
+    #},
 }
 ###### END ДЛЯ redis -celery
 
