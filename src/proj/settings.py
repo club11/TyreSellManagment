@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'profiles',
 
 #    'crispy_forms',
-    'django.contrib.postgres', #это модуль Django, который предоставляет интеграцию с базой данных PostgreSQL
+#    'django.contrib.postgres', #это модуль Django, который предоставляет интеграцию с базой данных PostgreSQL
 ]
 
 MIDDLEWARE = [
