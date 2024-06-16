@@ -162,7 +162,7 @@ def belarus_sites_parsing():
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
-    #for slug in range(1, 1000):                               # c 1 по 2 станицы  
+    #for slug in range(1, 1000):                               # !!!!!!!!!!! c 1 по 2 станицы  
     for slug in range(1, 3):                               # c 1 по 2 станицы      
     #for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
@@ -525,8 +525,8 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:                         
         ####for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы              
         #for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
-        #for slug in range(1, 3):   
-        for slug in range(0,urls_get):         #### !!!!!
+        for slug in range(1, 3):   
+        #for slug in range(0,urls_get):         #### !!!!!
             #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
             webdriverr.get(newUrl)
@@ -552,7 +552,7 @@ def belarus_sites_parsing():
                 tyre_coins_price_lt = str(data_got.find('span', class_='coins').text.replace(' ', '')) 
                 tyre_price_lt = float(tyre_rub_price_lt + '.' + tyre_coins_price_lt)
                 tyr_group = 'легковые'
-                print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
+            #    print(' avtoset legk =0=', tyre_title_lt,'||', tyre_size_lt,'||', tyre_index_lt,'||', tyre_model_lt, '||', tyre_season_lt, '||', tyre_price_lt, '||', tyr_group)
                 goods_dict_avtoset[tyre_size_lt, avtoset_good_num] = tyre_title_lt, tyre_model_lt, tyre_index_lt, tyr_group, tyre_price_lt, tyre_season_lt
                 avtoset_good_num += 1
         # 2) Грузовые шины
@@ -594,8 +594,8 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
-        #for slug in range(0, 3):
-        for slug in range(0,urls_get):    #!!!! working
+        for slug in range(0, 3):
+        #for slug in range(0,urls_get):    #!!!! working
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -657,8 +657,8 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         #for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        #for slug in range(0, 3):
-        for slug in range(0, urls_get):        # working   
+        for slug in range(0, 3):
+        #for slug in range(0, urls_get):        # working   
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -719,8 +719,8 @@ def belarus_sites_parsing():
                 urls_get.append(pageNum)
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
-        #for slug in range(0, 3):
-        for slug in range(0, urls_get): 
+        for slug in range(0, 3):
+        #for slug in range(0, urls_get): 
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -753,7 +753,7 @@ def belarus_sites_parsing():
             if v[0] and v[0].isdigit() is False:
                 avtoset_companies_list.append(v[0])
         avtoset_companies_list = list(set(avtoset_companies_list))  
-        print(avtoset_companies_list, 'avtoset_companies_list')
+        #print(avtoset_companies_list, 'avtoset_companies_list')
         chosen_by_company_dict = {}
         for k, v in goods_dict_avtoset.items():
             if v[0] and v[0] in avtoset_companies_list:                 # СЕЙЧАС ВЫДАЕТ ВСЕХ ПРОИЗВОДИТЕЛЕЙ  ВСЕЮ ПРОДУКЦИЮ или подкинутых пользователем
@@ -974,8 +974,8 @@ def belarus_sites_parsing():
         def legkovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/legkovye-shiny/' 
-            for slug in range(pages_quantity_start, pages_quantity_end): 
-            #for slug in range(pages_quantity_start, 1):     
+            #for slug in range(pages_quantity_start, pages_quantity_end): 
+            for slug in range(pages_quantity_start, 1):     
                 #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                 newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                 webdriverr.get(newUrl)
@@ -1043,8 +1043,8 @@ def belarus_sites_parsing():
         def gruzovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/gruzovye-shiny/'
-            for slug in range(pages_quantity_start, pages_quantity_end):   
-            #for slug in range(pages_quantity_start, 1):   
+            #for slug in range(pages_quantity_start, pages_quantity_end):   
+            for slug in range(pages_quantity_start, 1):   
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(3)
@@ -1092,8 +1092,8 @@ def belarus_sites_parsing():
         def induztrial(pages_quantity_start, pages_quantity_end, bg_nm):
             url = 'https://bagoria.by/industr-shiny/'
             bagoria_good_num = bg_nm
-            for slug in range(pages_quantity_start, pages_quantity_end): 
-            #for slug in range(pages_quantity_start, 1):     
+            #for slug in range(pages_quantity_start, pages_quantity_end): 
+            for slug in range(pages_quantity_start, 1):     
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1142,8 +1142,8 @@ def belarus_sites_parsing():
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/selhoz-shiny/'
         #    print('ISISISIISISSISS', pages_quantity_start, pages_quantity_end)
-            for slug in range(pages_quantity_start, pages_quantity_end):
-            #for slug in range(pages_quantity_start, 1):
+            #for slug in range(pages_quantity_start, pages_quantity_end):
+            for slug in range(pages_quantity_start, 1):
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(4)
@@ -1188,7 +1188,7 @@ def belarus_sites_parsing():
             for tyre in tyres_in_bd:
                 try:
                     for k, v in chosen_by_company_dict.items():
-                        print(k, 'GGG baGGor', v, 'GGG', len(v))
+                    #    print(k, 'GGG baGGor', v, 'GGG', len(v))
                         if tyre.tyre_size.tyre_size == k[0]:
                         #    print('TTTT', k, 's111', v)           TTTT ('155/65R13', 431) s111 ('WestLake', 'SW618', '73T', 'зимние', 'легковые', '126.07')                                                                                  #  ПРОСМОТР ВСЕХ СПАРСЕННЫХ 
                             #('13.0/65-18', 399) ('OZKA', 'KNK48', '144A8TL', 'нс16', 'с/х', '698.98')
@@ -7175,7 +7175,7 @@ def running_programm():
 
     belarus_sites_parsing()
     #russia_sites_parsing()
-    print(' running_programmg() ends')
+    print('running_programmg() ends')
     return 'the programm is fullfilled'
 
 #@app.task
