@@ -173,7 +173,7 @@ CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_BEAT_SCHEDULE = {
     'parcing': {
         'task': 'prices.views.running_programm',
-        'schedule': crontab(hour=11, minute=10),
+        'schedule': crontab(hour=16, minute=10),
     },
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',
