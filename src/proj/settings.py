@@ -111,12 +111,11 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres_db',
-        'USER': 'postgres_db',
-        'PASSWORD': 'postgres_db',
-        #'HOST': '127.0.0.1',  # для локальной машины
-        'HOST': '192.168.0.136', # для Synology
-        'PORT': '5433',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',  # Наименование контейнера для базы данных в Docker Compose
+        'PORT': '5432',
     }
 }
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
@@ -162,18 +161,18 @@ USE_TZ = True
 
 ###### ДЛЯ redis -celery
 # 1/ для docker-compose:
-#CELERY_BROKER_URL = "redis://redis:6379/0"
-#CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 # 2/ для локальной машины:
 #- ????
-# 2/ для Synology:
-CELERY_BROKER_URL = 'redis://192.168.0.136:6379/0'
-# end
+## 2/ для Synology: - НО БЕЗ ДОКЕР_КОМПОУЗ
+#CELERY_BROKER_URL = 'redis://192.168.0.136:6379/0'
+## end
 
 CELERY_BEAT_SCHEDULE = {
     'parcing': {
         'task': 'prices.views.running_programm',
-        'schedule': crontab(hour=20, minute=4),
+        'schedule': crontab(hour=0, minute=40),
     },
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',
@@ -185,12 +184,17 @@ CELERY_BEAT_SCHEDULE = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 #STATIC_ROOT = '/var/www/static/' - версия для pythonanywhere
 ##### ПЕРЕД сборкой докер-контейнера раскоментить
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
+##STATIC_ROOT = os.path.join(BASE_DIR,'/marketerexmachina_dir/static/')
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join('staticsss')
+print('STATIC_ROOT', STATIC_ROOT)
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить
 
 # для DEV:
@@ -200,7 +204,7 @@ MEDIA_ROOT = BASE_DIR /'media/'
 ######STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
 ######MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL) 
 
-#STATICFILES_DIRS = [
+#=STATICFILES_DIRS = [
 #    BASE_DIR / "static",
 #]
 

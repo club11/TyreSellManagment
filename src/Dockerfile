@@ -7,7 +7,6 @@ FROM python:3.9-slim
 WORKDIR /marketerexmachina_dir
 COPY . /marketerexmachina_dir/
 
-#RUN pip install psycopg2-binary
 RUN pip install -r requirenments.txt
 
 CMD python manage.py makemigrations \ 
@@ -18,6 +17,4 @@ CMD python manage.py makemigrations \
 #&& python manage.py runserver 0.0.0.0:8000 
 #&& celery -A proj worker --loglevel=info \
 && gunicorn proj.wsgi:application -b 0.0.0.0:8001  
-
-
-# CMD gunicorn proj.wsgi:application -b 0.0.0.0:8000  
+ 

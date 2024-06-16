@@ -51,7 +51,7 @@ import schedule
 
 from celery import shared_task
 from proj.celery import app
-#from celery.schedules import crontab
+from celery.schedules import crontab
 
 
 reg_list = [
