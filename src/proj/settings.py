@@ -32,8 +32,8 @@ SECRET_KEY='django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6',
 #SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-#DEBUG = False
+#DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.136',]
 #ALLOWED_HOSTS = []
@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-###### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
+##### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
@@ -175,6 +175,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'prices.views.running_programm',
         'schedule': crontab(hour=16, minute=10),
     },
+    'reading_filemanagementfile': {
+        'task': 'filemanagment.views.reading_filemanagementfile',
+        'schedule': crontab(hour=7, minute=55),
+    },    
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',
     #    'schedule': 5 #* 60,
@@ -195,7 +199,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join('staticsss')
-print('STATIC_ROOT', STATIC_ROOT)
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить
 
 # для DEV:
