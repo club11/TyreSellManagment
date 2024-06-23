@@ -177,7 +177,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'reading_filemanagementfile': {
         'task': 'filemanagment.views.reading_filemanagementfile',
-        'schedule': crontab(hour=7, minute=55),
+        'schedule': crontab(hour=22, minute=8),
     },    
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',

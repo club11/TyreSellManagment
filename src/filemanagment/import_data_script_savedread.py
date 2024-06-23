@@ -29,7 +29,6 @@ from openpyxl import load_workbook
 from django.core.files.storage import default_storage
 
 
-
 # создать временный файл
 def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
@@ -131,9 +130,7 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
 
             
         return print('ЗАПИСЬ В БАЗУ ХИМ ЗАВЕРШЕНА', datetime.now())
-
-        
-
+      
 
 # удалить временный файл        
 def delete_temp_file():
@@ -147,7 +144,6 @@ def delete_temp_file():
 
 
 # расчет объема для считывания из файла по N строк
-#def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list, some_func):
 def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):    
     file_to_read = copy_file
     sheet = None
@@ -201,10 +197,7 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
         delete_temp_file()
 
     return print('###', excel_red_cycles_list)
-
-           
-
-
+          
 
 # считывание  с временного файла
 #def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_var_list, some_func, step_to_read):
@@ -534,9 +527,6 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
     return MAIN_chemcirier_import_dict
 
 
-
-
-
 #async def read_from_file(self):
 def read_from_file():
   
@@ -628,12 +618,35 @@ def read_from_file():
             #'\d{3}([А-Яа-я]|[A-Za-z])\d{1}|\d{3} ([А-Яа-я]|[A-Za-z])\d{1}',
         }
     get_saved_file = None
-    get_saved_file_form_a = default_storage.open('aform_CHEM_.xlsx')
-    get_saved_file_form_b = default_storage.open('bform_CHEM_.xlsx')
+    get_saved_file_form_a = None
+    get_saved_file_form_b = None
+
+    for f in os.listdir('media'):
+        path_to = os.path.join('media',f)
+        print('RRRRRRRRRRRRRRRRRRRRRRRR', f)
+        if f == 'aform_CHEM_.xlsx':
+            #get_saved_file_form_a = openpyxl.load_workbook(path_to)  
+            get_saved_file_form_a = openpyxl.load_workbook(path_to) 
+            print('-----+++++++---',)
+            break 
+
+    #try:
+    for f in os.listdir('media'):
+        path_to = os.path.join('media',f)
+        print('RRRRR000000000000000000000000RRRRRRRRR', f)
+        if f == 'bform_CHEM_.xlsx': 
+            #get_saved_file_form_b = openpyxl.load_workbook(path_to)  
+            get_saved_file_form_b = openpyxl.load_workbook(path_to) 
+            print('-----+++++++---',)
+            break 
+    #except:
+    #    pass
 
     if get_saved_file_form_a:
-            path_to_a = os.path.realpath(get_saved_file_form_a.name)
-            file_to_read = openpyxl.load_workbook(path_to_a, data_only=True)   
+        try:
+            #path_to_a = os.path.abspath(get_saved_file_form_a)
+            #file_to_read = openpyxl.load_workbook(path_to_a, data_only=True) 
+            file_to_read = get_saved_file_form_a
             print('FILE TO READ  ===***', file_to_read )
             sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel
             #print(f'Total Rows = {sheet.max_row} and Total Columns = {sheet.max_column}')               # получить количество строк и колонок на листе
@@ -1026,13 +1039,20 @@ def read_from_file():
         #    return render(self.request, 'filemanagment/excel_import.html', {'form': form})        
     ##########################################################################   ##### ПАРСИНГ ХИМКУРЬЕРА #########
     #### ЕСЛИ ЗАБРАСЫВАЮТСЯ ФАЙЛЫ ХИМКУРЬЕР:
-    
-    if get_saved_file_form_b:        
+
+        except:
+            pass   
+  
+    if get_saved_file_form_b:  
+    #try:
         flag_chem_import = False
         list_of_sheet_potential_names_var_list = ['ИМПОРТ', 'импорт',]
         sheet = None
-        path_to_b = os.path.realpath(get_saved_file_form_b.name)
-        file_to_read = openpyxl.load_workbook(path_to_b, data_only=True)  
+        #path_to_b = os.path.abspath(get_saved_file_form_b)
+        #file_to_read = openpyxl.load_workbook(path_to_b, data_only=True)
+
+
+        file_to_read = get_saved_file_form_b
         list_chemcurier_years = range(11, 50)
         for year_d in list_chemcurier_years:
             for sheet_name in list_of_sheet_potential_names_var_list:
@@ -1041,18 +1061,22 @@ def read_from_file():
                     #sheet = file_to_read['ИМПОРТ 2022']    # Читаем файл и лист1 книги excel 
                 except:
                     pass
+        print('SSSHHHEEEEt', sheet)            
         if sheet:
             ############ создать физическую копию файла юзера для работы с ней 
             # необходим для работы "за кадром" вне POST запроса
             # opening the source excel file 
             # если есть файл от юзера для хим курьера - работаем дальше
             if file_to_read:
+                print('PPPPOOOGNALYYY')
                 flag_chem_import = True 
                 file_to_copy = file_to_read
                 sheet_to_copy = sheet
                 copy_file_created = make_a_copy_of_users_chemc_file(file_to_copy, sheet_to_copy)
                 list_of_sheet_potential_names_var_list_is = list_of_sheet_potential_names_var_list
+                rows_in_file_limiter(copy_file_created, list_of_sheet_potential_names_var_list)
                 file_to_read.close()
+                delete_temp_file()
                 return copy_file_created, list_of_sheet_potential_names_var_list_is
             # если нет файла от юзера для хим курьера - скипнуть
             else:
@@ -1065,7 +1089,6 @@ def read_from_file():
     #print('date_pieces_row_chemcurier_dict', date_pieces_row_chemcurier_dict)
     #print('recipipient_chemcurier_dict', recipipient_chemcurier_dict)
     #print('prod_country_column_dict', prod_country_column_dict)
-    
     ##################### END ХИМКУРЬЕР Ч.1
 ######################################################################### END ХИМКУРЬЕР ПАРРСИНГА
 #########################################################################
@@ -1075,7 +1098,6 @@ def read_from_file():
 #    form = forms.ImportSalesDataForm(self.request.POST, self.request.FILES)  
 #    if form.is_valid():
 #        file_to_read = openpyxl.load_workbook(self.request.FILES['file_fields'], data_only=True)  
-        
         else:
             if flag_chem_import is False:
                 try:   
@@ -1483,8 +1505,11 @@ def read_from_file():
                         params_row_dict[keys] = tyreparametrs_list_clean
                 except:
                     pass
+        
+        #except:
+        #    pass
             
-            
+                        
             
 
         
@@ -2191,8 +2216,14 @@ def read_from_file():
         excel_file.save(filename="Tyres.xlsx") 
 
 
-    get_saved_file_form_a.close()
-    get_saved_file_form_b.close()
+    try:
+        get_saved_file_form_a.close()
+    except:
+        pass
+    try:
+        get_saved_file_form_b.close()
+    except:
+        pass
     
     ## если не химкурьер импорт - то вернуть флаг что был импорт не химкурьер BИНАЧЕ- смотри выше return
     return copy_file_created,  list_of_sheet_potential_names_var_list_is 

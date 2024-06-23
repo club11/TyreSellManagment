@@ -41,6 +41,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from celery import shared_task
 from proj.celery import app
 from django.core.files.storage import default_storage
+from django.core.files.storage import FileSystemStorage
 
 
 
@@ -77,7 +78,22 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     #  Saving POST'ed file to storage
                     file_to_save = self.request.FILES['file_fields']
                     file_to_save.name = 'aform_CHEM_.xlsx'
-                    default_storage.save(file_to_save.name, file_to_save)              
+                    path_to_save = os.path.dirname(os.path.abspath('media')) + '/media/'
+                    file_already_exist = False
+                    # ПРОВЕРКА ЕСТЬ ЛИ УЖЕ СОЗДАННЫЙ ФАЙЛ В СИСТЕМЕ - ЕСЛИ НЕТ _ ТО ЗАПИСАТЬ
+                    for f in os.listdir('media'):
+                        #path_to = os.path.join('media',f)
+                        #print('f', f)
+                        if f == file_to_save.name:
+                            file_already_exist = True
+                            break
+                    if not file_already_exist:
+                        fs = FileSystemStorage()
+                        fs.save(file_to_save.name, file_to_save)
+                        #print(file_to_save.name, file_to_save, '=======')     
+
+                    #os.path.join(path_to_save, file_to_save.name)         
+
         else:            
             form_name = self.request.POST.get('form_name')
             if form_name == "bform.prefix":
@@ -86,42 +102,71 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     #  Saving POST'ed file to storage
                     file_to_save = self.request.FILES['file_fields']
                     file_to_save.name = 'bform_CHEM_.xlsx'
-                    default_storage.save(file_to_save.name, file_to_save)
+                    #path_to_save = os.path.dirname(os.path.abspath('media'))# + '/media/'   
+                    path_to_save = os.path.dirname(os.path.abspath('media')) 
+                    file_already_exist = False
+                    for f in os.listdir('media'):
+                        #print('f', f)
+                        #path_to = os.path.join('media',f)
+                        if f == file_to_save.name:
+                            file_already_exist = True
+                            break
+                    if not file_already_exist:
+                        fs = FileSystemStorage()
+                        fs.save(file_to_save.name, file_to_save)
+                        #print(file_to_save.name, file_to_save, '=======')   
+
+             
 
         form = forms.ImportSalesDataForm()  
-        print('!!!ОТРИСОВКА СТРАНИЦЫ ВЫЧИСЛЕНИЯ В БЭКЕ ', self, datetime.now())            
+        #print('!!!ОТРИСОВКА СТРАНИЦЫ ВЫЧИСЛЕНИЯ В БЭКЕ ', self, datetime.now())            
         return render(self.request, 'filemanagment/excel_import.html', {'form': form})
     
 
+
 @app.task
 def reading_filemanagementfile():
-    try:
-        temporary_created_file_a = os.path.abspath('aform_CHEM_.xlsx')
-        temporary_created_file_b = os.path.abspath('bform_CHEM_.xlsx')
-    except: 
-        pass
+
+    a_file_name = 'aform_CHEM_.xlsx'
+    b_file_name = 'bform_CHEM_.xlsx'
+    temporary_created_file_a = False
+    print('KUKUKU')
+    for f in os.listdir('media'):
+        path_to = os.path.join('media',f)
+        print('LLLLLL', f, '===', path_to)
+        if f == a_file_name:
+            temporary_created_file_a = True
+            print('IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
+            break
+    temporary_created_file_b = False
+    for f in os.listdir('media'):
+        print('TTTTTTT', f)
+        if f == b_file_name:
+            temporary_created_file_b = True
+            print('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+            break
     #  Reading file from storage
-    if temporary_created_file_a:
-    #1) check files from A_Form
+    if temporary_created_file_a is True or temporary_created_file_b is True:
+    #1) check files from A_Form or/and check files from B_Form
         import_data_script_savedread.read_from_file()
-    if temporary_created_file_b:
-    #2) check files from B_Form
-        import_data_script_savedread.read_from_file()
-    
+    #удаление временно созданных файлов воизбежание дубликатов / захламления / шибок
     try:  
-        temporary_created_file1 = os.path.abspath('aform_CHEM_.xlsx') 
-        print('temporary_created_file1', temporary_created_file1)
-        os.remove(temporary_created_file1, dir_fd=None)
-        print('временный файл aform_CHEM_.xlsx удален')
+        for f in os.listdir('media'):
+            path_to = os.path.join('media',f)
+            if f == a_file_name:
+                os.remove(path_to) 
+                print('временный файл aform_CHEM_.xlsx удален')
     except:
         pass
     try:    
-        temporary_created_file2 = os.path.abspath('bform_CHEM_.xlsx')  
-        print('temporary_created_file2', temporary_created_file2)
-        os.remove(temporary_created_file2, dir_fd=None)
-        print('временный файл bform_CHEM_.xlsx удален')
+        for f in os.listdir('media'):
+            path_to = os.path.join('media',f)
+            if f == b_file_name:
+                os.remove(path_to) 
+                print('временный файл bform_CHEM_.xlsx удален')
     except:
         pass
+   
 
 
 
