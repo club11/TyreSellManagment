@@ -2,11 +2,13 @@ version: '3.9'
 
 x-environment-defaults: &environment-defaults
   DEBUG: "False"
-  "NAME": "postgres"
-  'USER': "postgres"
-  "PASSWORD": "postgres"
-  'HOST': "postgres_db"
-  "PORT": 5432
+  NAME: "postgres"
+  USER: "postgres"
+  PASSWORD: "postgres"
+  HOST: "postgres"
+  PORT: 5432
+  CELERY_BROKER_URL: "redis://redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://redis:6379/0"
 
 services:
   selenium:
@@ -16,19 +18,16 @@ services:
       - 4444:4444
     restart: always
 
-  #postgres:
-  #  image: postgres:latest
-  #  container_name: postgres_db
-  #  environment:
-  #    - POSTGRES_DB=postgres
-  #    - POSTGRES_USER=postgres
-  #    - POSTGRES_PASSWORD=postgres    
-  #  #  POSTGRES_DB: postgres_db
-  #  #  POSTGRES_USER: postgres_db
-  #  #  POSTGRES_PASSWORD: qq250465qq
-  #  ports:
-  #    - "5432:5432"
-  #  restart: always
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:   
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    restart: always
 
   src: 
     build: 
@@ -44,8 +43,11 @@ services:
     environment:
       <<: *environment-defaults
     volumes:
-      - static_volume:/app/static  
-      - ./src/:/usr/src/app/            
+    #  - static_volume:/marketerexmachina_dir/static  
+      - static_volume:/marketerexmachina_dir/staticsss 
+    #  - ./src/:/usr/src/marketerexmachina_dir/ 
+      - ./src/:/marketerexmachina_dir 
+
 
   nginx:
     image: nginx:latest
@@ -53,7 +55,7 @@ services:
       - ./conf/nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/static
     ports:
-      - "80:80"
+      - "81:80"
     depends_on:
       - src
 
@@ -66,7 +68,8 @@ services:
     build:
       context: ./src
     volumes:
-      - ./src/:/usr/src/app/    
+    #  - ./src/:/usr/src/marketerexmachina_dir/ 
+      - ./src/:/marketerexmachina_dir  
     command: celery -A proj worker --loglevel=info
     depends_on:
       - redis
@@ -78,7 +81,8 @@ services:
     build:
       context: ./src
     volumes:
-      - ./src/:/usr/src/app/    
+      #- ./src/:/usr/src/marketerexmachina_dir/  
+      - ./src/:/marketerexmachina_dir   
     command: celery -A proj beat --loglevel=info
     depends_on:
       - redis
