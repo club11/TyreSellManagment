@@ -28,6 +28,20 @@ class ChemcourierTableModelDetailView(DetailView):
         obj = context.get('object')  
 
         context['chemcourier_table'] = obj
+
+        # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_groups_list() - если есть список данных - то считаем, что все формы популизированы данными
+        check_if_form_contais_data = forms.get_groups_list()
+        if check_if_form_contais_data == [('-','-')]:
+            try:
+                forms.PERIODS = forms.get_chem_periods()
+                forms.TYRESIZES = forms.get_tyresizes_list()
+                forms.BRANDS = forms.get_tyrebrands_list()
+                forms.RECIEVERS = forms.get_recievers_list()
+                forms.PRODCOUTRYS = forms.get_prod_countrys_list()
+                forms.GROUPS = forms.get_groups_list()
+            except:
+                pass
+
         # 1. 
         # 1.1 получить период дат (месяц-год), доступных в спарсенной базе Хим Курьер
         # сфомированно в форме
@@ -58,16 +72,18 @@ class ChemcourierTableModelDetailView(DetailView):
 
         # 2 получение типоразмера для отбора (создание формы):
         tyresizes_form = forms.TyreSizeForm()
+        #print('tyresizes_form ==', tyresizes_form )
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
-    #        print('1===', forms.INITIAL_TYREISIZE )
+            #print('1===', forms.INITIAL_TYREISIZE )
             tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
             tyresize_to_check = forms.INITIAL_TYREISIZE
         else:
-    #        print('2===')
+            #print('2===')
             if forms.TYRESIZES:
                 tyresizes_form = forms.TyreSizeForm()
-                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка    
+                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка 
+
         context['tyresizes_form'] = tyresizes_form
         context['current_tyresize'] = tyresize_to_check
         # 3 (необязательные)
@@ -430,6 +446,20 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         obj = context.get('object')  
 
         context['chemcourier_table'] = obj
+
+        # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_chem_periods() - если есть список данных - то считаем, что все формы популизированы данными
+        check_if_form_contais_data = forms.PERIODS
+        #print('check_if_form_contais_data ||||||||||||||', check_if_form_contais_data)
+        #if check_if_form_contais_data == []:
+        #    try:
+        #        forms.PERIODS = forms.get_chem_periods()
+        #        forms.TYRESIZES = forms.get_tyresizes_list()
+        #        forms.BRANDS = forms.get_tyrebrands_list()
+        #        forms.RECIEVERS = forms.get_recievers_list()
+        #        forms.PRODCOUTRYS = forms.get_prod_countrys_list()
+        #        forms.GROUPS = forms.get_groups_list()
+        #    except:
+        #        pass
         # 1. 
         # 1.1 получить период дат (месяц-год), доступных в спарсенной базе Хим Курьер
         # сфомированно в форме
@@ -437,28 +467,36 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         #1.2 форма для ввода периорда + получение месяца и года для поиска в базе Chemcurier объектов:
         chosen_per_num_start = None       
         chosen_per_num_end = None 
+        #print('forms.PERIODS', forms.PERIODS)
+        #print('forms.PERIODS', forms.INITIAL_PERIOD_START)
+        forms.PERIODS
         if forms.INITIAL_PERIOD_START or forms.INITIAL_PERIOD_END:
             if forms.INITIAL_PERIOD_START:                                                            # если пользователь выбрал период
                 period_form_start = forms.StartPeriodForm(initial={'periods_start': forms.INITIAL_PERIOD_START})
                 chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_START, '%Y-%m-%d').date()         
                 chosen_per_num_start = chosen_period
+            #print('1?')      
             if forms.INITIAL_PERIOD_END:      
                 period_form_end = forms.EndPeriodForm(initial={'periods_end': forms.INITIAL_PERIOD_END}) 
                 chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_END, '%Y-%m-%d').date()         
                 chosen_per_num_end = chosen_period     
+            #print('2?')  
         else: 
             try:                                                                               # если пользователь не выбрал период
                 period_form_start = forms.StartPeriodForm()
                 period_form_end = forms.EndPeriodForm()
                 last_period = forms.PERIODS[-1] 
                 chosen_period = last_period[0]
-
                 chosen_per_num_start = chosen_period 
-                chosen_per_num_end = chosen_per_num_start        
+                chosen_per_num_end = chosen_per_num_start 
+                print('3?', chosen_period )       
             except:
                 period_form_start = forms.StartPeriodForm()
                 period_form_end = forms.EndPeriodForm()
- 
+                chosen_per_num_start = datetime.date.today()
+                chosen_per_num_end = datetime.date.today()                
+                print('4?')  
+
         context['period_form_start'] = period_form_start
         context['period_form_end'] = period_form_end
 
@@ -466,14 +504,13 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         tyresizes_form = forms.TyreSizeForm()
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
-    #        print('1===', forms.INITIAL_TYREISIZE )
             tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
             tyresize_to_check = forms.INITIAL_TYREISIZE
         else:
-    #        print('2===')
             if forms.TYRESIZES:
                 tyresizes_form = forms.TyreSizeForm()
-                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка    
+                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка  
+
         context['tyresizes_form'] = tyresizes_form
         context['current_tyresize'] = tyresize_to_check
         # 3 (необязательные)

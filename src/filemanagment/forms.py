@@ -1,4 +1,5 @@
 from django import forms
+import datetime
 
 
 
@@ -21,4 +22,14 @@ class ImportSalesDataForm(forms.Form):
     file_fields = forms.FileField(
         allow_empty_file=None,
     )
-    
+
+from datetime import timedelta
+class ImportTimeForm(forms.Form):
+  time_task_a = forms.TimeField(
+      widget=forms.TimeInput(attrs={'class': 'unbold-form'}, format='%H:%M'), 
+      initial=datetime.time(),
+  )
+  time_task_b = forms.TimeField(
+      widget=forms.TimeInput(attrs={'class': 'unbold-form'}, format='%H:%M'), 
+      initial=datetime.time(),
+  )

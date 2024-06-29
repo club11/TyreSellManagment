@@ -170,14 +170,24 @@ CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 #CELERY_BROKER_URL = 'redis://192.168.0.136:6379/0'
 ## end
 
+hour1=None
+minute1=None
+hour2=None
+minute2=None
+if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
+    hour1=1
+    minute1=10
+    hour2=2
+    minute2=10
+
 CELERY_BEAT_SCHEDULE = {
     'parcing': {
         'task': 'prices.views.running_programm',
-        'schedule': crontab(hour=16, minute=25),
+        'schedule': crontab(hour=hour1, minute=minute1),
     },
     'reading_filemanagementfile': {
         'task': 'filemanagment.views.reading_filemanagementfile',
-        'schedule': crontab(hour=16, minute=15),
+        'schedule': crontab(hour=hour2, minute=minute2),
     },    
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',

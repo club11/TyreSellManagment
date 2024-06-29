@@ -1,13 +1,6 @@
 {% extends 'base.html' %}
 {% block title %} File import {% endblock title %}
 
-<style>
-    form{
-       position:fixed;
-       top:40%;
-       left:40%;
-        }
-</style>
 
 {% block body %} 
 
@@ -26,6 +19,25 @@
   {{ form.as_ul}}
     <button type="submit" name="form_name" value="bform.prefix">Импортировать</button>
 </form>
+<b>-----------</b>
+
+<form action="" method="post">
+  Установить время:
+  {% csrf_token %} 
+  {{ dform.as_ul }}
+    <button type="submit" name="form_name" value="dform.prefix">Установить</button>
+</form>
+<b>-----------</b>
+
+
+<form action="" method="post">
+  Перезагрузить сервер
+  {% csrf_token %} 
+    <button type="submit" name="form_name" value="cform_reload_nginx.prefix">Перезагрузить</button>
+</form>
+
+
+
 <a href="" class="btn btn-success">На главную</a>
 
 {% endblock body %}

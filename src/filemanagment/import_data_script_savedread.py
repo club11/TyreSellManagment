@@ -34,16 +34,16 @@ def make_a_copy_of_users_chemc_file(file_to_read, sheet):
 
     wb1 = file_to_read
     wb1.save("PEMANENT_FILE.xlsx")
-    print('создана копия файла - FILE CREATED')
+    #print('создана копия файла - FILE CREATED')
 
     return wb1
 
 # запись в базу данных
 def chem_courier_bulk_write_ib_bd(dict_of_data):
     
-        print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
+    #    print('ЗАПИСЬ В БАЗУ ХИМ ПАЧЫНАЕЦЦА', datetime.now())
         MAIN_chemcirier_import_dict = dict_of_data
-        print('LEN DICT', len(MAIN_chemcirier_import_dict))
+    #    print('LEN DICT', len(MAIN_chemcirier_import_dict))
         # 1.1 создать объекты продажа на дату:
         che_curier_obj_tyre_bulk_list = []
         currency_chem = dictionaries_models.Currency.objects.get_or_create(currency = 'USD')[0]
@@ -136,9 +136,9 @@ def chem_courier_bulk_write_ib_bd(dict_of_data):
 def delete_temp_file():
     try:
         temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
-        print('PATH', temporary_created_file)
+        #print('PATH', temporary_created_file)
         os.remove("PEMANENT_FILE.xlsx")
-        print('временный файл удален')
+        #print('временный файл удален')
     except:
         pass
 
@@ -196,7 +196,8 @@ def rows_in_file_limiter(copy_file, list_of_sheet_potential_names_var_list):
         # удалить временный файл:
         delete_temp_file()
 
-    return print('###', excel_red_cycles_list)
+    #return print('###', excel_red_cycles_list)
+    return print('')
           
 
 # считывание  с временного файла
@@ -254,7 +255,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
 
         # модификация
         step_to_read = step_to_read
-        print('KKKYY', step_to_read[0], step_to_read[1])
+    #    print('KKKYY', step_to_read[0], step_to_read[1])
 
         #mmmax_row = sheet.max_row
         
@@ -444,8 +445,8 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
         #    print('+++', chemcirier_rows_counter)
             min_row_value = min(chemcirier_rows_counter)                                                        # 2022-02-01 [(36, 8), (960, 9), (None, 10), (None, 11), (179, 12), (None, 13), (4, 14), (156, 15)] PPP
             max_row_value = max(chemcirier_rows_counter)
-            print('min_row_value', min_row_value)
-            print('max_row_value', max_row_value)
+            #print('min_row_value', min_row_value)
+            #print('max_row_value', max_row_value)
             chemcirier_rows_counter = [min_row_value, max_row_value]
 
             new_pieces_month_chemcurier_dict ={}
@@ -530,7 +531,7 @@ def read_from_chem_courier_copy_file(copy_file, list_of_sheet_potential_names_va
 #async def read_from_file(self):
 def read_from_file():
   
-    print('ПРОВЕРКА ФАЙЛА - выбор форма а либо b/ b химкурьер ',  datetime.now())
+    #print('ПРОВЕРКА ФАЙЛА - выбор форма а либо b/ b химкурьер ',  datetime.now())
 
 
     row_value = int
@@ -623,21 +624,21 @@ def read_from_file():
 
     for f in os.listdir('media'):
         path_to = os.path.join('media',f)
-        print('RRRRRRRRRRRRRRRRRRRRRRRR', f)
+        #print('RRRRRRRRRRRRRRRRRRRRRRRR', f)
         if f == 'aform_CHEM_.xlsx':
             #get_saved_file_form_a = openpyxl.load_workbook(path_to)  
             get_saved_file_form_a = openpyxl.load_workbook(path_to) 
-            print('-----+++++++---',)
+            #print('-----+++++++---',)
             break 
 
     #try:
     for f in os.listdir('media'):
         path_to = os.path.join('media',f)
-        print('RRRRR000000000000000000000000RRRRRRRRR', f)
+        #print('RRRRR000000000000000000000000RRRRRRRRR', f)
         if f == 'bform_CHEM_.xlsx': 
             #get_saved_file_form_b = openpyxl.load_workbook(path_to)  
             get_saved_file_form_b = openpyxl.load_workbook(path_to) 
-            print('-----+++++++---',)
+            #print('-----+++++++---',)
             break 
     #except:
     #    pass
@@ -647,7 +648,7 @@ def read_from_file():
             #path_to_a = os.path.abspath(get_saved_file_form_a)
             #file_to_read = openpyxl.load_workbook(path_to_a, data_only=True) 
             file_to_read = get_saved_file_form_a
-            print('FILE TO READ  ===***', file_to_read )
+            #print('FILE TO READ  ===***', file_to_read )
             sheet = file_to_read['Sheet1']      # Читаем файл и лист1 книги excel
             #print(f'Total Rows = {sheet.max_row} and Total Columns = {sheet.max_column}')               # получить количество строк и колонок на листе
             # 1. Парсинг. поиск ячейки с названием 'Наименование продукции' и выборка данных из данной колонки с заголовком этой ячейки            
@@ -1061,14 +1062,14 @@ def read_from_file():
                     #sheet = file_to_read['ИМПОРТ 2022']    # Читаем файл и лист1 книги excel 
                 except:
                     pass
-        print('SSSHHHEEEEt', sheet)            
+        #print('SSSHHHEEEEt', sheet)            
         if sheet:
             ############ создать физическую копию файла юзера для работы с ней 
             # необходим для работы "за кадром" вне POST запроса
             # opening the source excel file 
             # если есть файл от юзера для хим курьера - работаем дальше
             if file_to_read:
-                print('PPPPOOOGNALYYY')
+                #print('PPPPOOOGNALYYY')
                 flag_chem_import = True 
                 file_to_copy = file_to_read
                 sheet_to_copy = sheet

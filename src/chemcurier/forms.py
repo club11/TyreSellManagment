@@ -1,4 +1,5 @@
 from dataclasses import field, fields
+from django.forms import ModelForm
 from django import forms
 from prices import models as prices_models
 from . import models as chemcurier_models
@@ -45,7 +46,7 @@ def get_chem_periods():
         list_of_choices = list(reversed(list_of_choices))
     except:
         pass
-    #print('list_of_choices', list_of_choices)
+    print('list_of_choices', list_of_choices)
     return list_of_choices
 
 def get_tyresizes_list():
@@ -58,7 +59,7 @@ def get_tyresizes_list():
         for trsz in list_of_tyresizes_only:      # добавляем ключи:
             resizes_k_and_val = trsz, trsz
             list_of_tyresizes.append(resizes_k_and_val)
-    #    print('list_of_tyresizes === ')
+        #print('list_of_tyresizes === ')
         list_of_tyresizes.sort()
     except:
         list_of_tyresizes = []
@@ -193,6 +194,8 @@ class PeriodForm(forms.Form):
     #    choices = Parameter_CHOICES,
     #    label='Период',      
     #)
+
+ 
 
 class StartPeriodForm(forms.Form): 
     Parameter_CHOICES = PERIODS 
