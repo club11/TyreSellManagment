@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-##### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
+#### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
@@ -175,8 +175,8 @@ minute1=None
 hour2=None
 minute2=None
 if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
-    hour1=1
-    minute1=10
+    hour1=11
+    minute1=1
     hour2=2
     minute2=10
 

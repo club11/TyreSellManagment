@@ -7172,7 +7172,7 @@ class ComparativeAnalysisTableModelRussiaUpdateView(LoginRequiredMixin, View):
 
 @app.task
 def running_programm():
-
+    print('running_programmg() starts')
     belarus_sites_parsing()
     #russia_sites_parsing()
     print('running_programmg() ends')

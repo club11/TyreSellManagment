@@ -8,13 +8,15 @@
 
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %} 
-    Импортировать базу продукции:
+    Импортировать базу продукции(типоразмер, наименование продукции и т.д.):
     {{ form.as_ul}}
       <button type="submit" name="form_name" value="aform.prefix">Импортировать</button>
 </form>
 <b>-----------</b>
 <form action="" method="post" enctype="multipart/form-data">
-  Импортировать 1) данные о продажах. 2) базовые цены:
+  Импортировать<br>
+  1. цены базовой (собственной продукции:) - базовые цены.<br> 
+  2. база химкурьер<br>
   {% csrf_token %} 
   {{ form.as_ul}}
     <button type="submit" name="form_name" value="bform.prefix">Импортировать</button>

@@ -28,8 +28,10 @@ class ImportTimeForm(forms.Form):
   time_task_a = forms.TimeField(
       widget=forms.TimeInput(attrs={'class': 'unbold-form'}, format='%H:%M'), 
       initial=datetime.time(),
+      label='Установить время запуска парсинга сайтов',
   )
   time_task_b = forms.TimeField(
       widget=forms.TimeInput(attrs={'class': 'unbold-form'}, format='%H:%M'), 
       initial=datetime.time(),
+      label='Установить время считывания данных из импотируемого файла',
   )
