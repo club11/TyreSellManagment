@@ -162,7 +162,7 @@ def belarus_sites_parsing():
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
-    for slug in range(1, 1000):                               # !!!!!!!!!!! c 1 по 2 станицы  
+    for slug in range(1, 300):                               # !!!!!!!!!!! c 1 по 2 станицы  
     #for slug in range(1, 3):                               # c 1 по 2 станицы      
     #for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
@@ -240,10 +240,13 @@ def belarus_sites_parsing():
                     t_gr = None
                     split_str = data_got.find_all('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
                     if split_str:
-                        split_str1 = split_str[1].text
-                        #print('--', split_str1) 
-                        split_str_group = split_str1   
-                        # для грузовых
+                        try:
+                            split_str1 = split_str[1].text
+                            print('--', split_str1) 
+                            split_str_group = split_str1   
+                            # для грузовых
+                        except:
+                            pass
                         try:
                             if split_str_group:
                                 group_is = split_str_group
@@ -539,7 +542,7 @@ def belarus_sites_parsing():
             for data_got in products_lt:
                 tyre_title_lt = str(data_got.find('div', class_='brand').text).replace('\\n', '').replace('БЕСПЛАТНЫЙ ШИНОМОНТАЖ', '').replace('БЕСПЛАТНАЯ СПЕЦГАРАНТИЯ', '') 
                 tyre_title_lt = re.sub('\r?\n', '', tyre_title_lt)
-            #    print('&&&&!&!&!', tyre_title_lt)
+                print('&&&&!&!&! avtoset', tyre_title_lt)
                 tyre_model_lt = str(data_got.find('a', class_='model').text.replace('\\n', ''))  
                 tyre_model_lt = re.sub('\r?\n', '', tyre_model_lt)
                 tyre_size_lt_text = str(data_got.find('a', class_='size-val'))

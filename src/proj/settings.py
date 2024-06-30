@@ -175,8 +175,8 @@ minute1=None
 hour2=None
 minute2=None
 if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
-    hour1=15
-    minute1=1
+    hour1=3
+    minute1=10
     hour2=2
     minute2=10
 
