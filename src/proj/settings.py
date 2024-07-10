@@ -32,8 +32,8 @@ SECRET_KEY='django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6',
 #SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = False
+DEBUG = True
+#DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.136',]
 #ALLOWED_HOSTS = []
@@ -101,7 +101,7 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-#### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
+### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
 #DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
@@ -175,10 +175,10 @@ minute1=None
 hour2=None
 minute2=None
 if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
-    hour1=18
+    hour1=23
     minute1=15
-    hour2=2
-    minute2=10
+    hour2=23
+    minute2=35
 
 CELERY_BEAT_SCHEDULE = {
     'parcing': {

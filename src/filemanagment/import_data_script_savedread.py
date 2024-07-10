@@ -138,7 +138,7 @@ def delete_temp_file():
         temporary_created_file = os.path.abspath("PEMANENT_FILE.xlsx")
         #print('PATH', temporary_created_file)
         os.remove("PEMANENT_FILE.xlsx")
-        #print('временный файл удален')
+        print('временный файл удален')
     except:
         pass
 

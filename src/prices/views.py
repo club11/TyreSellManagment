@@ -162,8 +162,8 @@ def belarus_sites_parsing():
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
-    for slug in range(1, 300):                               # !!!!!!!!!!! c 1 по 2 станицы  
-    #for slug in range(1, 3):                               # c 1 по 2 станицы      
+    #for slug in range(1, 200):                               # !!!!!!!!!!! c 1 по 2 станицы  
+    for slug in range(1, 3):                               # c 1 по 2 станицы      
     #for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
         newUrl = url + f'?page={slug}'
@@ -528,8 +528,8 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:                         
         ####for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы              
         #for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
-        #for slug in range(1, 3):   
-        for slug in range(0,urls_get):         #### !!!!!
+        for slug in range(1, 3):   
+        #for slug in range(0,urls_get):         #### !!!!!
             #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
             webdriverr.get(newUrl)
@@ -597,8 +597,8 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
-        #for slug in range(0, 3):
-        for slug in range(0,urls_get):    #!!!! working
+        for slug in range(0, 3):
+        #for slug in range(0,urls_get):    #!!!! working
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -660,8 +660,8 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         #for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        #for slug in range(0, 3):
-        for slug in range(0, urls_get):        # working   
+        for slug in range(0, 3):
+        #for slug in range(0, urls_get):        # working   
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -722,8 +722,8 @@ def belarus_sites_parsing():
                 urls_get.append(pageNum)
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
-        #for slug in range(0, 3):
-        for slug in range(0, urls_get): 
+        for slug in range(0, 3):
+        #for slug in range(0, urls_get): 
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -852,7 +852,7 @@ def belarus_sites_parsing():
     except:
         pass                                                                                                                                                                                                                   
     ###### END OF АВТОСЕТЬ PARSING
-    # 2 ###### ПАРСИНГ BAGORIA:
+    # 3 ###### ПАРСИНГ BAGORIA:
     webdriverr = webdriverr_global    
     try:
         def switch_between_pages_generator(start, devider, lsegk_pages_quantity,  gruz_pages_quantity,  indus_pages_quantity,  selhoz_pages_quantity): 
@@ -977,8 +977,8 @@ def belarus_sites_parsing():
         def legkovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/legkovye-shiny/' 
-            for slug in range(pages_quantity_start, pages_quantity_end): 
-            #for slug in range(pages_quantity_start, 1):     
+            #for slug in range(pages_quantity_start, pages_quantity_end): 
+            for slug in range(pages_quantity_start, 1):     
                 #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                 newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                 webdriverr.get(newUrl)
