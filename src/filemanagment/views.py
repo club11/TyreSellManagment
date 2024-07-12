@@ -1,5 +1,6 @@
 #from asyncio.windows_events import NULL
 import datetime
+from datetime import timedelta
 from enum import unique
 from operator import index
 #from turtle import st
@@ -203,9 +204,10 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     minute1_in_int = int(minute1_in_str)
                     dt = datetime.now()
                     dt = dt.replace(hour=hour1_in_int, minute=minute1_in_int)
+                    dt = dt - timedelta(hours=3)         #сдвиг времени выполлнения по серваку на 3 часа назад
                     #dt = datetime.strptime(f'{hour1_in_int}:{minute1_in_int}', '%H:%M').time()
                     print('DDDDDTTTTT', dt)
-                    reading_filemanagementfile.apply_async(eta=dt)
+                    reading_filemanagementfile.apply_async(eta=dt)          ### ВСЯ МАГИЯ ЗДЕСЬ
 
             #print('settings.hour1 =============== ', settings.hour1)
             dots_position_b = gett_time_b.find(':')
@@ -221,7 +223,8 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     #dt = datetime.strptime(f'{hour2_in_int}:{minute2_in_int}', '%H:%M').time()
                     dt = datetime.now()
                     dt = dt.replace(hour=hour2_in_int, minute=minute2_in_int)
-                    reading_filemanagementfile.apply_async(eta=dt)
+                    dt = dt - timedelta(hours=3)         #сдвиг времени выполлнения по серваку на 3 часа назад
+                    reading_filemanagementfile.apply_async(eta=dt)      ### ВСЯ МАГИЯ ЗДЕСЬ
 
             #print('settings.hour2 =============== ', settings.hour2)
 
