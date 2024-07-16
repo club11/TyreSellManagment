@@ -22,6 +22,7 @@ from itertools import count, islice
 from abc_table_xyz import models as abc_table_xyz_models
 from datetime import datetime
 from prices import models as prices_models
+from prices import views as prices_views
 
 from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 from . import import_data_script
@@ -207,7 +208,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     dt = dt - timedelta(hours=3)         #сдвиг времени выполлнения по серваку на 3 часа назад
                     #dt = datetime.strptime(f'{hour1_in_int}:{minute1_in_int}', '%H:%M').time()
                     print('DDDDDTTTTT', dt)
-                    reading_filemanagementfile.apply_async(eta=dt)          ### ВСЯ МАГИЯ ЗДЕСЬ
+                    prices_views.running_programm.apply_async(eta=dt)          ### ВСЯ МАГИЯ ЗДЕСЬ
 
             #print('settings.hour1 =============== ', settings.hour1)
             dots_position_b = gett_time_b.find(':')
@@ -232,8 +233,8 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         if self.request.POST.get('form_name') == "cform_reload_nginx.prefix": 
             #subprocess.call('docker exec -it natjusha_project-nginx-1 nginx -s reload')
             #subprocess.run(["systemctl", "reload", "nginx"])
-            assss = subprocess.run('ls')
-            print('assss===', assss)
+            #assss = subprocess.run('ls')
+            #print('assss===', assss)
             ###subprocess.call(['gunicorn', 'proj.wsgi:application'])
 
             #cmd = 'gunicorn proj.wsgi:application -b 0.0.0.0:8001'
@@ -241,7 +242,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
             #print('args======--==', args)
             #p = subprocess.Popen(args)
 
-        #hello()
+            subprocess.call('docker restart tyresellmanagment-src')            
 
     
         form = forms.ImportSalesDataForm()  
@@ -251,10 +252,6 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 
                                         'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})})
     
-
-
-
-   
 
 
 async def start_read_file_script():
