@@ -37,7 +37,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '192.168.100.3', '127.0.0.1', '192.168.0.136', 'marketerexmachina.site',] # '[2a02:220d:2001:8600:b62:5215:4e8:440d]', ]   # [ipv6] - для ipv6 иное правило ввода
 #ALLOWED_HOSTS = []
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:81', 'http://192.168.0.136:81', 'http://192.168.100.3:81', 'http://[2a02:220d:2001:8600:b62:5215:4e8:440d]:81', 'http://marketerexmachina.site:81',]
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:81', 'http://192.168.0.136:81', 'http://192.168.100.3:81', 'http://marketerexmachina.site:81',]
 
 # Application definition
 
