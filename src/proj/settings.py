@@ -35,7 +35,7 @@ SECRET_KEY='django-insecure-(@71mq+18c)co_!&tmw_f8fr*hpf9-@2tjq!rmmdt1-b9v+!l6',
 DEBUG = True
 #DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '192.168.100.8', '127.0.0.1', '192.168.56.1', 'marketerexmachina.by', 'marketerexmachina.xyz',] # '[2a02:220d:2001:8600:b62:5215:4e8:440d]', ]   # [ipv6] - для ipv6 иное правило ввода
+ALLOWED_HOSTS = ['localhost', '192.168.100.8', '127.0.0.1', '192.168.56.1', 'marketerexmachina.by', 'marketerexmachina.xyz',] #  '[2a02:220d:2001:8600:b62:5215:4e8:440d]', ]   # [ipv6] - для ipv6 иное правило ввода
 #ALLOWED_HOSTS = []
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:81', 'http://192.168.56.1:80', 'http://192.168.100.8:80', 'http://marketerexmachina.by:80', 'http://marketerexmachina.xyz:80',]
 
