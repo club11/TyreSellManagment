@@ -29,8 +29,9 @@ services:
       - "5433:5432"
     restart: always
     ############
-    #volumes:
+    volumes:
     #  - ./postgres-data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data 
     ############
 
   src: 
@@ -101,6 +102,7 @@ services:
 
 volumes:
   static_volume:
+  pgdata:
 
     
 
