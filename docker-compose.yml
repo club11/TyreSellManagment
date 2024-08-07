@@ -28,9 +28,8 @@ services:
     ports:
       - "5433:5432"
     restart: always
-    ############
+    ############    # расшареная папка БД - при удалении контейнера (не образа!!!!) данные в сторонке и при установке заново все гуд
     volumes:
-    #  - ./postgres-data:/var/lib/postgresql/data
       - pgdata:/var/lib/postgresql/data 
     ############
 
