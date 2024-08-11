@@ -78,7 +78,7 @@ services:
       context: ./src
     volumes:
     #  - ./src/:/usr/src/marketerexmachina_dir/ 
-      - ./src/:/marketerexmachina_dir  
+      - ./src/:/marketerexmachina_dir   
     command: celery -A proj worker --loglevel=info
     depends_on:
       - redis
