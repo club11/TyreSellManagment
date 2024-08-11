@@ -1115,72 +1115,84 @@ def read_from_file():
                             if cell.value == 'контрагент':          # получаем колонку 'контрагент'
                                 contragent_column = cell.column
                                 contragent_row = cell.row
-                                for col in sheet.iter_cols(min_row=contragent_row+1, min_col=contragent_column, max_col=contragent_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        contragent_value = ''
-                                        contragent_value =  cell.value                               
-                                        contragent_list.append(contragent_value)
+                                try:
+                                    for col in sheet.iter_cols(min_row=contragent_row+1, min_col=contragent_column, max_col=contragent_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            contragent_value = ''
+                                            contragent_value =  cell.value                               
+                                            contragent_list.append(contragent_value)
+                                except:
+                                    pass
                             elif cell.value == 'объем продаж':
                                 saless_row_temp = int
                                 #sales_column = cell.coordinate          # получаем колонку 'объем продаж'
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value                            
-                                        sales_list.append(sell_value)
-                                        #print('saless_row', saless_row, 'current_row_number', current_row_numberr, cell.row)
-                                        saless_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение объем продаж
-                                        pass       
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value                            
+                                            sales_list.append(sell_value)
+                                            #print('saless_row', saless_row, 'current_row_number', current_row_numberr, cell.row)
+                                            saless_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение объем продаж
+                                            pass  
+                                except:
+                                    pass     
                                 sales_list = [float(x) for x in sales_list]    # str значения в float
                             elif cell.value == 'Полные затраты':
                                 #sales_column = cell.coordinate          # получаем колонку 'полные затраты'    planned_costs
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            #print('cell.value.lstrip().rstrip()', cell.value.lstrip().rstrip() )
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value  
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                #print('cell.value.lstrip().rstrip()', cell.value.lstrip().rstrip() )
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value  
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                                       
+                                                planned_costs.append(sell_value)
+                                                planned_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                                       
-                                            planned_costs.append(sell_value)
-                                            planned_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 #print(planned_costs)
                                 planned_costs = [float(x) for x in planned_costs]    # str значения в float
                             elif cell.value == 'прямые затраты':
                                 #sales_column = cell.coordinate          # получаем колонку 'прямые затраты'    semi_variable_costs
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value   
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value   
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                          
+                                                semi_variable_costs.append(sell_value)
+                                                semi_variable_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                          
-                                            semi_variable_costs.append(sell_value)
-                                            semi_variable_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 #print(semi_variable_costs)
                                 semi_variable_costs = [float(x) for x in semi_variable_costs]    # str значения в float
                                 #print(semi_variable_costs)
@@ -1188,158 +1200,188 @@ def read_from_file():
                                 #sales_column = cell.coordinate          # получаем колонку 'прейскуранты №№9, 902'    belarus902price_costs
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                belarus902price_costs.append(sell_value)
+                                                belarus902price_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                              
-                                            belarus902price_costs.append(sell_value)
-                                            belarus902price_costs_row_dict[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 belarus902price_costs = [float(x) for x in belarus902price_costs]    # str значения в float
                                 #print(belarus902price_costs)
                             elif cell.value == 'ТПС РФ FCA':
                                 #sales_column = cell.coordinate          # получаем колонку 'ТПС РФ FCA'    tpsrussiafcaprice
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                tpsrussiafcaprice_costs.append(sell_value)
+                                                tpsrussiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                              
-                                            tpsrussiafcaprice_costs.append(sell_value)
-                                            tpsrussiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 tpsrussiafcaprice_costs = [float(x) for x in tpsrussiafcaprice_costs]    # str значения в float
                                 #print(tpsrussiafcaprice_costs)
                             elif cell.value == 'ТПС Казахстан FCA':
                                 #sales_column = cell.coordinate          # получаем колонку 'ТПС Казахстан FCA'    tpskazfcaprice
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                tpskazfcaprice_costs.append(sell_value)
+                                                tpskazfcaprice_cost_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                              
-                                            tpskazfcaprice_costs.append(sell_value)
-                                            tpskazfcaprice_cost_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 tpskazfcaprice_costs = [float(x) for x in tpskazfcaprice_costs]    # str значения в float
                                 #print('tpskazfcaprice_costs', tpskazfcaprice_costs)
                             elif cell.value == 'ТПС Средняя Азия, Закавказье, Молдова FCA':
                                 #sales_column = cell.coordinate          # получаем колонку 'ТПС Средняя Азия, Закавказье, Молдова FCA'    tpsmiddleasiafcaprice
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                tpsmiddleasiafcaprice_costs.append(sell_value)
+                                                tpsmiddleasiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                              
-                                            tpsmiddleasiafcaprice_costs.append(sell_value)
-                                            tpsmiddleasiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 tpsmiddleasiafcaprice_costs = [float(x) for x in tpsmiddleasiafcaprice_costs]    # str значения в float
                                 #print(tpsmiddleasiafcaprice_costs)
                             elif cell.value == 'Действующие цены':
                                 #sales_column = cell.coordinate          # получаем колонку 'Действующие цены'   
                                 sales_column = cell.column
                                 sales_row = cell.row
-                                for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        sell_value = ''
-                                        #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
-                                        if sell_value is str:
-                                            sell_value = cell.value.lstrip().rstrip()   
-                                        else:
-                                            sell_value = cell.value
-                                        if sell_value is None:
+                                try:
+                                    for col in sheet.iter_cols(min_row=sales_row+1, min_col=sales_column, max_col=sales_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            sell_value = ''
+                                            #sell_value =  cell.value.lstrip().rstrip().replace('.', ',')      # убрать пробелы в начале строки и в конце строки  
+                                            if sell_value is str:
+                                                sell_value = cell.value.lstrip().rstrip()   
+                                            else:
+                                                sell_value = cell.value
+                                            if sell_value is None:
+                                                pass
+                                            else:
+                                                if type(sell_value) is str:
+                                                    sell_value = 0                              
+                                                current_prices.append(sell_value)
+                                                current_prices_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
-                                        else:
-                                            if type(sell_value) is str:
-                                                sell_value = 0                              
-                                            current_prices.append(sell_value)
-                                            current_prices_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
-                                        pass
+                                except:
+                                    pass
                                 current_prices = [float(x) for x in current_prices]    # str значения в float
                                 #print(current_prices)
                                 #print('current_prices_row', current_prices_row)
                             elif cell.value == 'индексы':          # получаем колонку 'индексы'   ДОПОЛНИТЕЛЬНЫЕ
                                 indexes_column = cell.column
                                 indexes_row = cell.row
-                                for col in sheet.iter_cols(min_row=indexes_row+1, min_col=indexes_column, max_col=indexes_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        indexes_value = ''
-                                        indexes_value =  cell.value                               
-                                        indexes_row_dict[cell.row] = cell.value
+                                try:
+                                    for col in sheet.iter_cols(min_row=indexes_row+1, min_col=indexes_column, max_col=indexes_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            indexes_value = ''
+                                            indexes_value =  cell.value                               
+                                            indexes_row_dict[cell.row] = cell.value
+                                except:
+                                    pass
                             #print('indexes_list', indexes_list)
                             #print('indexes_row_dict', indexes_row_dict)
                             elif cell.value == 'сезонность':          # получаем колонку 'сезонность' ДОПОЛНИТЕЛЬНЫЕ
                                 season_column = cell.column
                                 season_row = cell.row
-                                for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        season_value = ''
-                                        season_value =  cell.value                               
-                                        season_row_dict[cell.row] = cell.value
+                                try:
+                                    for col in sheet.iter_cols(min_row=season_row+1, min_col=season_column, max_col=season_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            season_value = ''
+                                            season_value =  cell.value                               
+                                            season_row_dict[cell.row] = cell.value
+                                except:
+                                    pass
                             #print('season_row_dict', season_row_dict)
                             elif cell.value == 'рисунок протектора':          # получаем колонку 'рисунок протектора' ДОПОЛНИТЕЛЬНЫЕ
                                 thread_column = cell.column
                                 thread_row = cell.row
-                                for col in sheet.iter_cols(min_row=thread_row+1, min_col=thread_column, max_col=thread_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        threadn_value = ''
-                                        thread_value =  cell.value                               
-                                        thread_row_dict[cell.row] = cell.value
+                                try:
+                                    for col in sheet.iter_cols(min_row=thread_row+1, min_col=thread_column, max_col=thread_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            threadn_value = ''
+                                            thread_value =  cell.value                               
+                                            thread_row_dict[cell.row] = cell.value
+                                except:
+                                    pass
                             #print('thread_row_dict', thread_row_dict)
                             elif cell.value == 'ось':          # получаем колонку 'ось' ДОПОЛНИТЕЛЬНЫЕ
                                 ax_column = cell.column
                                 ax_row = cell.row
-                                for col in sheet.iter_cols(min_row=ax_row+1, min_col=ax_column, max_col=ax_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        ax_value = ''
-                                        ax_value =  cell.value                               
-                                        ax_row_dict[cell.row] = cell.value 
+                                try:
+                                    for col in sheet.iter_cols(min_row=ax_row+1, min_col=ax_column, max_col=ax_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            ax_value = ''
+                                            ax_value =  cell.value                               
+                                            ax_row_dict[cell.row] = cell.value 
+                                except:
+                                    pass
                             #print('ax_row_dict', ax_row_dict)
                             elif cell.value == 'применяемость':          # получаем колонку 'применяемость' ДОПОЛНИТЕЛЬНЫЕ
                                 usability_column = cell.column
                                 usability_row = cell.row
-                                for col in sheet.iter_cols(min_row=usability_row+1, min_col=usability_column, max_col=usability_column, max_row=sheet.max_row):
-                                    for cell in col:
-                                        usability_value = ''
-                                        usability_value =  cell.value                               
-                                        usability_row_dict[cell.row] = cell.value
+                                try:
+                                    for col in sheet.iter_cols(min_row=usability_row+1, min_col=usability_column, max_col=usability_column, max_row=sheet.max_row):
+                                        for cell in col:
+                                            usability_value = ''
+                                            usability_value =  cell.value                               
+                                            usability_row_dict[cell.row] = cell.value
+                                except:
+                                    pass
                             #print('usability_row_dict', usability_row_dict)
                             #if cell.value == 'дата':        # получаем строку'дата'
                             #    #print(cell.value)    
@@ -2002,16 +2044,20 @@ def read_from_file():
             #    studded_usage = studded_usagee[0]
             #else:
             #    studded_usage = None 
-            tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
-                tyre = key,   
-                indexes_list = obj_list_el[8]['indexes_dict'],
-                season_usage = season_usage,
-                tyre_thread = obj_list_el[10]['thread_dict'],
-                ax = obj_list_el[11]['ax_dict'],
-                usability = obj_list_el[12]['usability_dict'],
-                #studded_usage = studded_usage          
-                #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ                        
-            )
+            #print('key ==', key, 'indexes_list===', obj_list_el[8]['indexes_dict'], 'season_usage===', season_usage, 'tyre_thread===', obj_list_el[10]['thread_dict'], 'ax===', obj_list_el[11]['ax_dict'] , 'usability===', obj_list_el[12]['usability_dict'])
+            try:
+                tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
+                    tyre = key,   
+                    indexes_list = obj_list_el[8]['indexes_dict'],
+                    season_usage = season_usage,
+                    tyre_thread = obj_list_el[10]['thread_dict'],
+                    ax = obj_list_el[11]['ax_dict'],
+                    usability = obj_list_el[12]['usability_dict'],
+                    #studded_usage = studded_usage          
+                    #date_period = date_from_table,                 # ЗДЕСЬ ПРОПИСЫВАТЬ ДАТУ ВМЕСТО ЗАГЛУШКИ                        
+                )
+            except:
+                pass
     ## соберем Tyre_Sale объекты:
     #for obj in tyres_models.Tyre.objects.all():
     #    tyr_sal = sales_models.Tyre_Sale.objects.update_or_create(
