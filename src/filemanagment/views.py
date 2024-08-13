@@ -229,20 +229,17 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
             #print('settings.hour2 =============== ', settings.hour2)
 
-        #перезагрузка сервера nginx
         if self.request.POST.get('form_name') == "cform_reload_nginx.prefix": 
-            #subprocess.call('docker exec -it natjusha_project-nginx-1 nginx -s reload')
-            #subprocess.run(["systemctl", "reload", "nginx"])
-            #assss = subprocess.run('ls')
-            #print('assss===', assss)
-            ###subprocess.call(['gunicorn', 'proj.wsgi:application'])
+            subprocess.call('docker restart tyresellmanagment-src')       
 
-            #cmd = 'gunicorn proj.wsgi:application -b 0.0.0.0:8001'
-            #args = shlex.split(cmd)
-            #print('args======--==', args)
-            #p = subprocess.Popen(args)
+        from proj import celery
 
-            subprocess.call('docker restart tyresellmanagment-src')            
+        print('==========IFIFIFIFIFIFIIFI 1==', celery.app.control.inspect())
+        i = celery.app.control.inspect()
+        print('==========IFIFIFIFIFIFIIFI Show the items that have an ETA or are scheduled for later processing 2==', i.scheduled())
+        print('==========IFIFIFIFIFIFIIFI Show tasks that are currently active 3==', i.active())
+        print('==========IFIFIFIFIFIFIIFI Show tasks that have been claimed by workers 4==', i.reserved())
+
 
     
         form = forms.ImportSalesDataForm()  

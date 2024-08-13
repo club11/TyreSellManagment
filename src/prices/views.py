@@ -162,9 +162,9 @@ def belarus_sites_parsing():
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
-    for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы  
+    #for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы  
     #for slug in range(163, 200):                               # c 1 по 2 станицы      
-    #for slug in urls:      # рабочий вариант
+    for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
         newUrl = url + f'?page={slug}'
         webdriverr.get(newUrl)
@@ -176,6 +176,8 @@ def belarus_sites_parsing():
         products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_primary')
         if products:
             print('=============', slug, webdriverr.current_url)
+            print('webdriverr.current_url', webdriverr.session_id)
+            webdriverr.session_id
             for data_got in products:
                 #tyre_name = data_got.find('div', class_='schema-product__title')
                 tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
@@ -530,6 +532,8 @@ def belarus_sites_parsing():
         #for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
         #for slug in range(1, 2):   
         for slug in range(0,urls_get):         #### !!!!!
+            print('webdriverr.current_url', webdriverr.session_id)
+            webdriverr.session_id
             #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/tires/?PAGEN_1=3
             webdriverr.get(newUrl)
@@ -599,6 +603,8 @@ def belarus_sites_parsing():
         #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
         #for slug in range(0, 2):
         for slug in range(0,urls_get):    #!!!! working
+            print('webdriverr.current_url', webdriverr.session_id)
+            webdriverr.session_id
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -662,6 +668,8 @@ def belarus_sites_parsing():
         #for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
         #for slug in range(0, 2):
         for slug in range(0, urls_get):        # working   
+            print('webdriverr.current_url', webdriverr.session_id)
+            webdriverr.session_id
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -724,6 +732,8 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:                         
         #for slug in range(0, 2):
         for slug in range(0, urls_get): 
+            print('webdriverr.current_url', webdriverr.session_id)
+            webdriverr.session_id
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -978,7 +988,9 @@ def belarus_sites_parsing():
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/legkovye-shiny/' 
             for slug in range(pages_quantity_start, pages_quantity_end): 
-            #for slug in range(pages_quantity_start, 1):     
+            #for slug in range(pages_quantity_start, 1):
+                print('webdriverr.current_url', webdriverr.session_id)
+                webdriverr.session_id      
                 #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                 newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                 webdriverr.get(newUrl)
@@ -1048,6 +1060,8 @@ def belarus_sites_parsing():
             url = 'https://bagoria.by/gruzovye-shiny/'
             for slug in range(pages_quantity_start, pages_quantity_end):   
             #for slug in range(pages_quantity_start, 1):   
+                print('webdriverr.current_url', webdriverr.session_id)
+                webdriverr.session_id
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(3)
@@ -1096,7 +1110,9 @@ def belarus_sites_parsing():
             url = 'https://bagoria.by/industr-shiny/'
             bagoria_good_num = bg_nm
             for slug in range(pages_quantity_start, pages_quantity_end): 
-            #for slug in range(pages_quantity_start, 1):     
+            #for slug in range(pages_quantity_start, 1):  
+                print('webdriverr.current_url', webdriverr.session_id)
+                webdriverr.session_id   
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1147,6 +1163,8 @@ def belarus_sites_parsing():
         #    print('ISISISIISISSISS', pages_quantity_start, pages_quantity_end)
             for slug in range(pages_quantity_start, pages_quantity_end):
             #for slug in range(pages_quantity_start, 1):
+                print('webdriverr.current_url', webdriverr.session_id)
+                webdriverr.session_id
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(4)
