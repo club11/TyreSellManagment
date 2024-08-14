@@ -163,8 +163,8 @@ def belarus_sites_parsing():
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
     #for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы  
-    #for slug in range(163, 200):                               # c 1 по 2 станицы      
-    for slug in urls:      # рабочий вариант
+    for slug in range(163, 200):                               # c 1 по 2 станицы      
+    #for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
         newUrl = url + f'?page={slug}'
         webdriverr.get(newUrl)
