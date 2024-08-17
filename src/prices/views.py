@@ -133,7 +133,7 @@ def belarus_sites_parsing():
     #webdriverr_global = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     webdriverr = webdriverr_global  
 
-    webdriverr.set_script_timeout(3000) 
+    webdriverr.set_script_timeout(10000) 
 
     #try:
     url = 'https://catalog.onliner.by/tires'
@@ -165,8 +165,8 @@ def belarus_sites_parsing():
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
     #for slug in urls[0:5]:                               # c 1 по 2 станицы    
-    #for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы  
-    for slug in range(163, 200):                               # c 1 по 2 станицы      
+    for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы  
+    #for slug in range(163, 200):                               # c 1 по 2 станицы      
     #for slug in urls:      # рабочий вариант
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
         newUrl = url + f'?page={slug}'
@@ -465,7 +465,7 @@ def belarus_sites_parsing():
     # 2 ###### ПАРСИНГ АВТОСЕТЬ:
     webdriverr = webdriverr_global   
 
-    webdriverr.set_script_timeout(3000)
+    webdriverr.set_script_timeout(10000)
 
     try:
         avtoset_good_num = 0
@@ -863,7 +863,7 @@ def belarus_sites_parsing():
     # 3 ###### ПАРСИНГ BAGORIA:
     webdriverr = webdriverr_global    
 
-    webdriverr.set_script_timeout(3000)
+    webdriverr.set_script_timeout(10000)
 
     try:
         def switch_between_pages_generator(start, devider, lsegk_pages_quantity,  gruz_pages_quantity,  indus_pages_quantity,  selhoz_pages_quantity): 
