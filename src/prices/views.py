@@ -80,8 +80,7 @@ goods_dict_kolesatyt = {}
 goods_dict_kolesa_darom= {}
 
 
-def belarus_sites_parsing():
-
+def selenium_webdriver_start():
     # проверка - выполняется вызов функции для скрипта
     test_script_is_in_process = models.SCRIPT_IS_RUNNING
     from selenium import webdriver
@@ -118,7 +117,14 @@ def belarus_sites_parsing():
             #chrome_options.add_argument('--headless=old')
             #chrome_options.add_argument('--disable-dev-shm-usage')                                  
             webdriverr_global = webdriver.Chrome(options=chrome_options)  
-            pass                               
+            pass  
+    return webdriverr_global
+
+
+
+def belarus_sites_parsing():
+
+    webdriverr_global = selenium_webdriver_start()                         
 
     #chrome_options = webdriver.ChromeOptions()
     #chrome_options.add_argument("--no-sandbox")
@@ -463,9 +469,13 @@ def belarus_sites_parsing():
     #    pass                                                                                                                                                                                                       
     ##### END OF ONLINER PARSING
     # 2 ###### ПАРСИНГ АВТОСЕТЬ:
-    webdriverr = webdriverr_global   
 
-    webdriverr.set_script_timeout(10000)
+    try:
+        webdriverr = webdriverr_global   
+    #webdriverr.set_script_timeout(10000)
+    except:
+        webdriverr_global = selenium_webdriver_start() 
+        webdriverr = webdriverr_global 
 
     try:
         avtoset_good_num = 0
@@ -861,9 +871,12 @@ def belarus_sites_parsing():
         pass                                                                                                                                                                                                                   
     ###### END OF АВТОСЕТЬ PARSING
     # 3 ###### ПАРСИНГ BAGORIA:
-    webdriverr = webdriverr_global    
-
-    webdriverr.set_script_timeout(10000)
+    try:
+        webdriverr = webdriverr_global   
+    #webdriverr.set_script_timeout(10000)
+    except:
+        webdriverr_global = selenium_webdriver_start() 
+        webdriverr = webdriverr_global 
 
     try:
         def switch_between_pages_generator(start, devider, lsegk_pages_quantity,  gruz_pages_quantity,  indus_pages_quantity,  selhoz_pages_quantity): 
