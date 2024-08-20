@@ -52,7 +52,7 @@ import schedule
 from celery import shared_task
 from proj.celery import app
 from celery.schedules import crontab
-
+from selenium.common.exceptions import TimeoutException
 
 reg_list = [
         #'\d{3}/\d{2}[A-Za-z]\d{2}(\(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2}| \(\d{2}(\.|\,)\d{1}[A-Za-z]\d{2})', 
@@ -483,7 +483,14 @@ def belarus_sites_parsing():
         url = 'https://autoset.by/tires/'       
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        webdriverr.get(url)
+        #webdriverr.get(url)
+
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
+
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
@@ -581,7 +588,11 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(5)
@@ -645,7 +656,11 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(5)
@@ -707,7 +722,11 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(5)
@@ -983,7 +1002,11 @@ def belarus_sites_parsing():
         url = 'https://bagoria.by/legkovye-shiny/'       
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         soup = BeautifulSoup(webdriverr.page_source,'lxml')   
         #1. получаем количество страниц:
         #print('soup', soup)
@@ -1050,7 +1073,11 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         time.sleep(7)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(12)
@@ -1099,7 +1126,11 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         time.sleep(8)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(7)
@@ -1148,7 +1179,11 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
-        webdriverr.get(url)
+        try:
+           webdriverr.get(url);
+        except TimeoutException as ex:
+           print(ex.Message)
+           webdriverr.navigate().refresh()
         time.sleep(5)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(7)
