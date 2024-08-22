@@ -488,7 +488,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
 
         time.sleep(2)
@@ -591,7 +591,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -659,7 +659,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -725,7 +725,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         time.sleep(2)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -1005,7 +1005,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         soup = BeautifulSoup(webdriverr.page_source,'lxml')   
         #1. получаем количество страниц:
@@ -1076,7 +1076,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         time.sleep(7)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -1129,7 +1129,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         time.sleep(8)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -1182,7 +1182,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url);
         except TimeoutException as ex:
-           print(ex.Message)
+           print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         time.sleep(5)
         webdriverr.execute_script("window.scrollTo(0, document.body.scrollHeight);")
