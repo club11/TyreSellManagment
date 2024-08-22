@@ -470,12 +470,19 @@ def belarus_sites_parsing():
     ##### END OF ONLINER PARSING
     # 2 ###### ПАРСИНГ АВТОСЕТЬ:
 
+    #try:
+    #    webdriverr = webdriverr_global   
+    ##webdriverr.set_script_timeout(10000)
+    #except:
+    #    webdriverr_global = selenium_webdriver_start() 
+    #    webdriverr = webdriverr_global 
     try:
-        webdriverr = webdriverr_global   
-    #webdriverr.set_script_timeout(10000)
+        webdriverr.quit()
     except:
-        webdriverr_global = selenium_webdriver_start() 
-        webdriverr = webdriverr_global 
+        pass
+    webdriverr_global = selenium_webdriver_start() 
+    webdriverr = webdriverr_global 
+
 
     try:
         avtoset_good_num = 0
@@ -486,7 +493,7 @@ def belarus_sites_parsing():
         #webdriverr.get(url)
 
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -589,7 +596,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -657,7 +664,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -723,7 +730,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -890,12 +897,19 @@ def belarus_sites_parsing():
         pass                                                                                                                                                                                                                   
     ###### END OF АВТОСЕТЬ PARSING
     # 3 ###### ПАРСИНГ BAGORIA:
+    #try:
+    #    webdriverr = webdriverr_global   
+    ##webdriverr.set_script_timeout(10000)
+    #except:
+    #    webdriverr_global = selenium_webdriver_start() 
+    #    webdriverr = webdriverr_global 
     try:
-        webdriverr = webdriverr_global   
-    #webdriverr.set_script_timeout(10000)
+        webdriverr.quit()
     except:
-        webdriverr_global = selenium_webdriver_start() 
-        webdriverr = webdriverr_global 
+        pass
+    webdriverr_global = selenium_webdriver_start() 
+    webdriverr = webdriverr_global 
+
 
     try:
         def switch_between_pages_generator(start, devider, lsegk_pages_quantity,  gruz_pages_quantity,  indus_pages_quantity,  selhoz_pages_quantity): 
@@ -1003,7 +1017,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome()
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -1074,7 +1088,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -1127,7 +1141,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
@@ -1180,7 +1194,7 @@ def belarus_sites_parsing():
         #webdriverr = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
         webdriverr = webdriverr_global
         try:
-           webdriverr.get(url);
+           webdriverr.get(url)
         except TimeoutException as ex:
            print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
