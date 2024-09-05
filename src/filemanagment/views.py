@@ -111,8 +111,7 @@ def reading_filemanagementfile():
 ## очистка базы данных
 @app.task
 def clean_database():
-    from models import EXECUTE_CLEAN_BD
-    if EXECUTE_CLEAN_BD == 'execute':
+    if filemanagementmodels.EXECUTE_CLEAN_BD == 'execute':
         prices_models.ChemCurierTyresModel.objects.all().delete() 
         prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
         prices_models.CompetitorSiteModel.objects.all().delete() 
@@ -140,7 +139,7 @@ def clean_database():
         dictionaries_model.TyreParametersModel.objects.all().delete() 
         dictionaries_model.ModelNameModel.objects.all().delete()
         dictionaries_model.TyreSizeModel.objects.all().delete()   
-        EXECUTE_CLEAN_BD = None
+        filemanagementmodels.EXECUTE_CLEAN_BD = None
     else:
         pass        
 ## END очистка базы данных
@@ -292,8 +291,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
             execute_in_five_minutes = now - timedelta(minutes=now.minute % 5 + 5,
                           seconds=now.second,
                           microseconds=now.microsecond)
-            from models import EXECUTE_CLEAN_BD
-            EXECUTE_CLEAN_BD == 'execute'
+            filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
             clean_database.apply_async(eta=execute_in_five_minutes)
         # END очистить базу данных:
   
