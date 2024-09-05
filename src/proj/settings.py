@@ -179,8 +179,8 @@ if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
     minute1=15
     hour2=23
     minute2=35
-    hour3=25
-    minute3=61
+    hour3=0
+    minute3=0
 
 CELERY_BEAT_SCHEDULE = {
     'parcing': {

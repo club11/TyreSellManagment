@@ -136,7 +136,8 @@ def clean_database(set_task):
         dictionaries_model.TyreGroupModel.objects.all().delete() 
         dictionaries_model.TyreParametersModel.objects.all().delete() 
         dictionaries_model.ModelNameModel.objects.all().delete()
-        dictionaries_model.TyreSizeModel.objects.all().delete()    
+        dictionaries_model.TyreSizeModel.objects.all().delete()   
+        set_task == ''
     else:
         pass        
 ## END очистка базы данных
