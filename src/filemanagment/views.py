@@ -62,7 +62,7 @@ import subprocess, shlex
 #hello.apply_async(eta=dt)
 
 
-@app.task
+#@app.task
 def reading_filemanagementfile():
     print('KUKUKU2221111')
     a_file_name = 'aform_CHEM_.xlsx'
@@ -106,10 +106,10 @@ def reading_filemanagementfile():
         pass
 
 
-
+## очистка базы данных
 @app.task
-def clean_database():
-    ## очистка базы данных
+def clean_database(set_task):
+    if set_task == 'execute':
         prices_models.ChemCurierTyresModel.objects.all().delete() 
         prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
         prices_models.CompetitorSiteModel.objects.all().delete() 
@@ -136,8 +136,10 @@ def clean_database():
         dictionaries_model.TyreGroupModel.objects.all().delete() 
         dictionaries_model.TyreParametersModel.objects.all().delete() 
         dictionaries_model.ModelNameModel.objects.all().delete()
-        dictionaries_model.TyreSizeModel.objects.all().delete()            
-    ## END очистка базы данных
+        dictionaries_model.TyreSizeModel.objects.all().delete()    
+    else:
+        pass        
+## END очистка базы данных
 
 
 
@@ -282,6 +284,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
         # очистить базу данных:
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
+            clean_database('execute')
             now = datetime.now()
             execute_in_five_minutes = now - timedelta(minutes=now.minute % 5 + 5,
                           seconds=now.second,
