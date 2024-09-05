@@ -112,6 +112,7 @@ def reading_filemanagementfile():
 @app.task
 def clean_database():
     #print('filemanagementmodels.EXECUTE_CLEAN_BD =======' , filemanagementmodels.EXECUTE_CLEAN_BD)
+    global EXECUTE_CLEAN_BD
     print('filemanagementmodels.EXECUTE_CLEAN_BD =======' , EXECUTE_CLEAN_BD)
     #if filemanagementmodels.EXECUTE_CLEAN_BD == 'execute':
     if EXECUTE_CLEAN_BD == 'execute':
