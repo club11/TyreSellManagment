@@ -296,6 +296,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
             print('WE GOT 2 MIN TASK AWAIT')
             execute_in_two_minutes = datetime.now() + timedelta(minutes = 2)
             #filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
+            global EXECUTE_CLEAN_BD
             EXECUTE_CLEAN_BD = 'execute'
             clean_database.apply_async(eta=execute_in_two_minutes)
         # END очистить базу данных:
