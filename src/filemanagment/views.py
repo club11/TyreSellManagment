@@ -107,6 +107,38 @@ def reading_filemanagementfile():
 
 
 
+@app.task
+def clean_database():
+    ## очистка базы данных
+        prices_models.ChemCurierTyresModel.objects.all().delete() 
+        prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
+        prices_models.CompetitorSiteModel.objects.all().delete() 
+        from abc_table_xyz import models as abc_table_xyz_model
+        abc_table_xyz_model.Abcxyz.objects.all().delete()
+        abc_table_xyz_model.AbcxyzTable.objects.all().delete()
+        from sales import models as sl_model 
+        sl_model.Tyre_Sale.objects.all().delete()
+        sl_model.Sales.objects.all().delete()
+        sl_model.SalesTable.objects.all().delete()
+        prices_models.SemiVariableCosstModel.objects.all().delete()
+        prices_models.PlannedCosstModel.objects.all().delete()
+        prices_models.Belarus902PriceModel.objects.all().delete()
+        prices_models.TPSRussiaFCAModel.objects.all().delete()
+        prices_models.TPSKazFCAModel.objects.all().delete()
+        prices_models.TPSMiddleAsiaFCAModel.objects.all().delete()
+        prices_models.CurrentPricesModel.objects.all().delete()
+        prices_models.ChemCurierTyresModel.objects.all().delete()
+        from tyres import models as tr_models
+        tr_models.Tyre.objects.all().delete()
+        from dictionaries import models as dictionaries_model 
+        dictionaries_model.ContragentsModel.objects.all().delete() 
+        dictionaries_model.QantityCountModel.objects.all().delete() 
+        dictionaries_model.TyreGroupModel.objects.all().delete() 
+        dictionaries_model.TyreParametersModel.objects.all().delete() 
+        dictionaries_model.ModelNameModel.objects.all().delete()
+        dictionaries_model.TyreSizeModel.objects.all().delete()            
+    ## END очистка базы данных
+
 
 
 class ExcelTemplateView(LoginRequiredMixin, TemplateView):
@@ -246,6 +278,17 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         set_time_form_a = f"{settings.hour1}:{settings.minute1}"
         set_time_form_b = f"{settings.hour2}:{settings.minute2}"        
         #print('!!!ОТРИСОВКА СТРАНИЦЫ ВЫЧИСЛЕНИЯ В БЭКЕ ', self, datetime.now())            
+        
+
+        # очистить базу данных:
+        if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
+            now = datetime.now()
+            execute_in_five_minutes = now - timedelta(minutes=now.minute % 5 + 5,
+                          seconds=now.second,
+                          microseconds=now.microsecond)
+            clean_database.apply_async(eta=execute_in_five_minutes)
+        # END очистить базу данных:
+  
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 
                                         'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})})
     

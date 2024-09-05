@@ -321,9 +321,9 @@ class ChemcourierTableModelDetailView(DetailView):
             wb.close()    
 
 
-        prices_models.ChemCurierTyresModel.objects.all().delete()  
+        prices_models.ChemCurierTyresModel.objects.all().delete() 
+        prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
         prices_models.CompetitorSiteModel.objects.all().delete() 
-        prices_models.ComparativeAnalysisTableModel.objects.all().delete()
         from abc_table_xyz import models as abc_table_xyz_model
         abc_table_xyz_model.Abcxyz.objects.all().delete()
         abc_table_xyz_model.AbcxyzTable.objects.all().delete()

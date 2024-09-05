@@ -179,6 +179,8 @@ if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
     minute1=15
     hour2=23
     minute2=35
+    hour3=25
+    minute3=61
 
 CELERY_BEAT_SCHEDULE = {
     'parcing': {
@@ -188,7 +190,12 @@ CELERY_BEAT_SCHEDULE = {
     'reading_filemanagementfile': {
         'task': 'filemanagment.views.reading_filemanagementfile',
         'schedule': crontab(hour=hour2, minute=minute2),
-    },    
+    },
+
+    'clean_database': {
+        'task': 'filemanagment.views.clean_database',
+        'schedule': crontab(hour=hour3, minute=minute3),
+    },       
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',
     #    'schedule': 5 #* 60,
