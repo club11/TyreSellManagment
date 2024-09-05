@@ -48,7 +48,7 @@ from django.core.files.storage import FileSystemStorage
 
 import subprocess, shlex
 
-
+EXECUTE_CLEAN_BD = None
 
 
 #from datetime import timedelta
@@ -112,7 +112,8 @@ def reading_filemanagementfile():
 @app.task
 def clean_database():
     print('filemanagementmodels.EXECUTE_CLEAN_BD =======' , filemanagementmodels.EXECUTE_CLEAN_BD)
-    if filemanagementmodels.EXECUTE_CLEAN_BD == 'execute':
+    #if filemanagementmodels.EXECUTE_CLEAN_BD == 'execute':
+    if EXECUTE_CLEAN_BD == 'execute':
         print('CLEANING BD ON THE WAY')
         prices_models.ChemCurierTyresModel.objects.all().delete() 
         prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
@@ -141,7 +142,8 @@ def clean_database():
         dictionaries_model.TyreParametersModel.objects.all().delete() 
         dictionaries_model.ModelNameModel.objects.all().delete()
         dictionaries_model.TyreSizeModel.objects.all().delete()   
-        filemanagementmodels.EXECUTE_CLEAN_BD = None
+        #filemanagementmodels.EXECUTE_CLEAN_BD = None
+        EXECUTE_CLEAN_BD = None
     else:
         pass        
 ## END очистка базы данных
@@ -291,7 +293,8 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
             print('WE GOT 2 MIN TASK AWAIT')
             execute_in_two_minutes = datetime.now() + timedelta(minutes = 2)
-            filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
+            #filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
+            EXECUTE_CLEAN_BD = 'execute'
             clean_database.apply_async(eta=execute_in_two_minutes)
         # END очистить базу данных:
   
