@@ -49,6 +49,8 @@ from django.core.files.storage import FileSystemStorage
 import subprocess, shlex
 
 
+
+
 #from datetime import timedelta
 #@app.task()
 #def hello():
@@ -108,8 +110,9 @@ def reading_filemanagementfile():
 
 ## очистка базы данных
 @app.task
-def clean_database(set_task):
-    if set_task == 'execute':
+def clean_database():
+    from models import EXECUTE_CLEAN_BD
+    if EXECUTE_CLEAN_BD == 'execute':
         prices_models.ChemCurierTyresModel.objects.all().delete() 
         prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
         prices_models.CompetitorSiteModel.objects.all().delete() 
@@ -137,7 +140,7 @@ def clean_database(set_task):
         dictionaries_model.TyreParametersModel.objects.all().delete() 
         dictionaries_model.ModelNameModel.objects.all().delete()
         dictionaries_model.TyreSizeModel.objects.all().delete()   
-        set_task == ''
+        EXECUTE_CLEAN_BD = None
     else:
         pass        
 ## END очистка базы данных
@@ -289,7 +292,9 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
             execute_in_five_minutes = now - timedelta(minutes=now.minute % 5 + 5,
                           seconds=now.second,
                           microseconds=now.microsecond)
-            clean_database('execute').apply_async(eta=execute_in_five_minutes)
+            from models import EXECUTE_CLEAN_BD
+            EXECUTE_CLEAN_BD == 'execute'
+            clean_database.apply_async(eta=execute_in_five_minutes)
         # END очистить базу данных:
   
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 
