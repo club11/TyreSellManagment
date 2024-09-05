@@ -111,7 +111,9 @@ def reading_filemanagementfile():
 ## очистка базы данных
 @app.task
 def clean_database():
+    print('filemanagementmodels.EXECUTE_CLEAN_BD =======' , filemanagementmodels.EXECUTE_CLEAN_BD)
     if filemanagementmodels.EXECUTE_CLEAN_BD == 'execute':
+        print('CLEANING BD ON THE WAY')
         prices_models.ChemCurierTyresModel.objects.all().delete() 
         prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
         prices_models.CompetitorSiteModel.objects.all().delete() 
