@@ -289,12 +289,10 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
         # очистить базу данных:
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
-            now = datetime.now()
-            execute_in_five_minutes = now - timedelta(minutes=now.minute % 5 + 5,
-                          seconds=now.second,
-                          microseconds=now.microsecond)
+            print('WE GOT 2 MIN TASK AWAIT')
+            execute_in_two_minutes = datetime.now() + datetime.timedelta(minutes = 2)
             filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
-            clean_database.apply_async(eta=execute_in_five_minutes)
+            clean_database.apply_async(eta=execute_in_two_minutes)
         # END очистить базу данных:
   
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 
