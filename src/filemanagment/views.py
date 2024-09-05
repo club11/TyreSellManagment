@@ -290,7 +290,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         # очистить базу данных:
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
             print('WE GOT 2 MIN TASK AWAIT')
-            execute_in_two_minutes = datetime.now() + datetime.timedelta(minutes = 2)
+            execute_in_two_minutes = datetime.now() + timedelta(minutes = 2)
             filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
             clean_database.apply_async(eta=execute_in_two_minutes)
         # END очистить базу данных:
