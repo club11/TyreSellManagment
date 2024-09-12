@@ -62,7 +62,7 @@ import subprocess, shlex
 #hello.apply_async(eta=dt)
 
 
-#@app.task
+@app.task
 def reading_filemanagementfile():
     print('KUKUKU2221111')
     a_file_name = 'aform_CHEM_.xlsx'
@@ -142,6 +142,7 @@ def clean_database():
     dictionaries_model.ModelNameModel.objects.all().delete()
     dictionaries_model.TyreSizeModel.objects.all().delete()   
     #filemanagementmodels.EXECUTE_CLEAN_BD = None
+    print('CLEANING BD COMPLETE')
     EXECUTE_CLEAN_BD = None
       
 ## END очистка базы данных
