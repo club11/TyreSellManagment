@@ -48,8 +48,6 @@ from django.core.files.storage import FileSystemStorage
 
 import subprocess, shlex
 
-EXECUTE_CLEAN_BD = None
-
 
 #from datetime import timedelta
 #@app.task()
@@ -112,42 +110,40 @@ def reading_filemanagementfile():
 @app.task
 def clean_database():
     #print('filemanagementmodels.EXECUTE_CLEAN_BD =======' , filemanagementmodels.EXECUTE_CLEAN_BD)
-    global EXECUTE_CLEAN_BD
-    print('filemanagementmodels.EXECUTE_CLEAN_BD =======' , EXECUTE_CLEAN_BD)
+
     #if filemanagementmodels.EXECUTE_CLEAN_BD == 'execute':
-    if EXECUTE_CLEAN_BD == 'execute':
-        print('CLEANING BD ON THE WAY')
-        prices_models.ChemCurierTyresModel.objects.all().delete() 
-        prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
-        prices_models.CompetitorSiteModel.objects.all().delete() 
-        from abc_table_xyz import models as abc_table_xyz_model
-        abc_table_xyz_model.Abcxyz.objects.all().delete()
-        abc_table_xyz_model.AbcxyzTable.objects.all().delete()
-        from sales import models as sl_model 
-        sl_model.Tyre_Sale.objects.all().delete()
-        sl_model.Sales.objects.all().delete()
-        sl_model.SalesTable.objects.all().delete()
-        prices_models.SemiVariableCosstModel.objects.all().delete()
-        prices_models.PlannedCosstModel.objects.all().delete()
-        prices_models.Belarus902PriceModel.objects.all().delete()
-        prices_models.TPSRussiaFCAModel.objects.all().delete()
-        prices_models.TPSKazFCAModel.objects.all().delete()
-        prices_models.TPSMiddleAsiaFCAModel.objects.all().delete()
-        prices_models.CurrentPricesModel.objects.all().delete()
-        prices_models.ChemCurierTyresModel.objects.all().delete()
-        from tyres import models as tr_models
-        tr_models.Tyre.objects.all().delete()
-        from dictionaries import models as dictionaries_model 
-        dictionaries_model.ContragentsModel.objects.all().delete() 
-        dictionaries_model.QantityCountModel.objects.all().delete() 
-        dictionaries_model.TyreGroupModel.objects.all().delete() 
-        dictionaries_model.TyreParametersModel.objects.all().delete() 
-        dictionaries_model.ModelNameModel.objects.all().delete()
-        dictionaries_model.TyreSizeModel.objects.all().delete()   
-        #filemanagementmodels.EXECUTE_CLEAN_BD = None
-        EXECUTE_CLEAN_BD = None
-    else:
-        pass        
+
+    print('CLEANING BD ON THE WAY')
+    prices_models.ChemCurierTyresModel.objects.all().delete() 
+    prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
+    prices_models.CompetitorSiteModel.objects.all().delete() 
+    from abc_table_xyz import models as abc_table_xyz_model
+    abc_table_xyz_model.Abcxyz.objects.all().delete()
+    abc_table_xyz_model.AbcxyzTable.objects.all().delete()
+    from sales import models as sl_model 
+    sl_model.Tyre_Sale.objects.all().delete()
+    sl_model.Sales.objects.all().delete()
+    sl_model.SalesTable.objects.all().delete()
+    prices_models.SemiVariableCosstModel.objects.all().delete()
+    prices_models.PlannedCosstModel.objects.all().delete()
+    prices_models.Belarus902PriceModel.objects.all().delete()
+    prices_models.TPSRussiaFCAModel.objects.all().delete()
+    prices_models.TPSKazFCAModel.objects.all().delete()
+    prices_models.TPSMiddleAsiaFCAModel.objects.all().delete()
+    prices_models.CurrentPricesModel.objects.all().delete()
+    prices_models.ChemCurierTyresModel.objects.all().delete()
+    from tyres import models as tr_models
+    tr_models.Tyre.objects.all().delete()
+    from dictionaries import models as dictionaries_model 
+    dictionaries_model.ContragentsModel.objects.all().delete() 
+    dictionaries_model.QantityCountModel.objects.all().delete() 
+    dictionaries_model.TyreGroupModel.objects.all().delete() 
+    dictionaries_model.TyreParametersModel.objects.all().delete() 
+    dictionaries_model.ModelNameModel.objects.all().delete()
+    dictionaries_model.TyreSizeModel.objects.all().delete()   
+    #filemanagementmodels.EXECUTE_CLEAN_BD = None
+    EXECUTE_CLEAN_BD = None
+      
 ## END очистка базы данных
 
 
@@ -296,9 +292,9 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
             print('WE GOT 2 MIN TASK AWAIT')
             execute_in_two_minutes = datetime.now() + timedelta(minutes = 2)
             #filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
-            global EXECUTE_CLEAN_BD
-            EXECUTE_CLEAN_BD = 'execute'
-            clean_database.apply_async(eta=execute_in_two_minutes)
+            #clean_database.apply_async(eta=execute_in_two_minutes)
+            render(self.request, 'filemanagment/excel_import.html', {'form': form, 
+                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(eta=execute_in_two_minutes)
         # END очистить базу данных:
   
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 
