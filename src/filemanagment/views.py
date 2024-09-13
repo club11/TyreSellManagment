@@ -49,6 +49,7 @@ from django.core.files.storage import FileSystemStorage
 import subprocess, shlex
 
 
+
 #from datetime import timedelta
 #@app.task()
 #def hello():
@@ -274,14 +275,13 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
         from proj import celery
 
-        print('==========IFIFIFIFIFIFIIFI 1==', celery.app.control.inspect())
-        i = celery.app.control.inspect()
-        print('==========IFIFIFIFIFIFIIFI Show the items that have an ETA or are scheduled for later processing 2==', i.scheduled())
-        print('==========IFIFIFIFIFIFIIFI Show tasks that are currently active 3==', i.active())
-        print('==========IFIFIFIFIFIFIIFI Show tasks that have been claimed by workers 4==', i.reserved())
+        #print('==========IFIFIFIFIFIFIIFI 1==', celery.app.control.inspect())
+        #i = celery.app.control.inspect()
+        #print('==========IFIFIFIFIFIFIIFI Show the items that have an ETA or are scheduled for later processing 2==', i.scheduled())
+        #print('==========IFIFIFIFIFIFIIFI Show tasks that are currently active 3==', i.active())
+        #print('==========IFIFIFIFIFIFIIFI Show tasks that have been claimed by workers 4==', i.reserved())
 
 
-    
         form = forms.ImportSalesDataForm()  
         set_time_form_a = f"{settings.hour1}:{settings.minute1}"
         set_time_form_b = f"{settings.hour2}:{settings.minute2}"        
@@ -290,12 +290,14 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
         # очистить базу данных:
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
-            print('WE GOT 2 MIN TASK AWAIT')
+
+            print('WE GOT 15 SEC TASK AWAIT')
             execute_in_one_minutes = datetime.now() + timedelta(minutes = 1)
-            #filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
-            #clean_database.apply_async(eta=execute_in_two_minutes)
+            ##clean_database.apply_async(eta=execute_in_two_minutes)
+            #render(self.request, 'filemanagment/excel_import.html', {'form': form, 
+            #                            'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(eta=execute_in_one_minutes)
             render(self.request, 'filemanagment/excel_import.html', {'form': form, 
-                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(eta=execute_in_one_minutes)
+                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(countdown=15)
         # END очистить базу данных:
   
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 

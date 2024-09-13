@@ -182,11 +182,11 @@ if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
     minute2=35
 
 CELERY_BEAT_SCHEDULE = {
-    'clean_database': {
-        'task': 'filemanagment.views.clean_database',
-        #'schedule': crontab(hour=hour3, minute=minute3),
-        'schedule': timedelta(seconds=60),
-    },     
+    #'clean_database': {
+    #    'task': 'filemanagment.views.clean_database',
+    #    #'schedule': crontab(hour=hour3, minute=minute3),
+    #    'schedule': timedelta(seconds=60),
+    #},     
     'parcing': {
         'task': 'prices.views.running_programm',
         'schedule': crontab(hour=hour1, minute=minute1),
@@ -195,10 +195,6 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'filemanagment.views.reading_filemanagementfile',
         'schedule': crontab(hour=hour2, minute=minute2),
     },      
-    #'dfgdg': {
-    #    'task': 'prices.views.dfgdg',
-    #    'schedule': 5 #* 60,
-    #},
 }
 ###### END ДЛЯ redis -celery
 
