@@ -103,12 +103,12 @@ class PlannedCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='planned_costs',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='prices_currency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='плановая себестоимость',
@@ -128,12 +128,12 @@ class SemiVariableCosstModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='semi_variable_costs',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='semi_variable_prices_currency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='прямые затраты',
@@ -153,12 +153,12 @@ class Belarus902PriceModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='belarus902price',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='belarus902currency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='прейскуранты №№9, 902',
@@ -178,12 +178,12 @@ class TPSRussiaFCAModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='tpsrussiafcaprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='tpsrussiafcacurrency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='ТПС РФ FCA',
@@ -203,12 +203,12 @@ class TPSKazFCAModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='tpskazfcaprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='tpskazfcacurrency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='ТПС Казахстан FCA',
@@ -228,12 +228,12 @@ class TPSMiddleAsiaFCAModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='tpsmiddleasiafcaprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='tpsmiddleasiafcacurrency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='ТПС Средняя Азия, Закавказье, Молдова FCA',
@@ -253,12 +253,12 @@ class CurrentPricesModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='currentpricesprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
         related_name='currentpricescurrency',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='Действующие цены',
@@ -281,7 +281,7 @@ class ComparativeAnalysisTableModel(models.Model):
         related_name='comparative_analysis_table',
         blank=True,
         null=True,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     market_table = models.CharField(
         verbose_name='рынок сбыта',
@@ -501,54 +501,54 @@ class ComparativeAnalysisTyresModel(models.Model):
     tyre = models.ForeignKey(
         tyres_model.Tyre,
         related_name='tyre_comparative',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     planned_costs = models.ForeignKey(
         PlannedCosstModel,
         related_name='tyre_planned_costs',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True
     )
     semi_variable_prices = models.ForeignKey(
         SemiVariableCosstModel,
         related_name='tyre_semi_variable_prices',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
     belarus902price = models.ForeignKey(
         Belarus902PriceModel,
         related_name='tyre_belarus902price',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
     tpsrussiafcaprice = models.ForeignKey(
         TPSRussiaFCAModel,
         related_name='tyre_tpsrussiafcaprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
     tpskazfcaprice = models.ForeignKey(
         TPSKazFCAModel,
         related_name='tyre_tpskazfcaprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
     tpsmiddleasiafcaprice = models.ForeignKey(
         TPSMiddleAsiaFCAModel,
         related_name='tyre_tpsmiddleasiafcaprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
     )
     currentpricesprice = models.ForeignKey(
         CurrentPricesModel,
         related_name='tyre_currentpricesprice',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         default=0,
@@ -1673,7 +1673,7 @@ class CompetitorSiteModel(models.Model):
     )
     currency = models.ForeignKey(
         dictionaries_models.Currency,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     price = models.FloatField(
         verbose_name='цена конкурента',
@@ -1688,7 +1688,7 @@ class CompetitorSiteModel(models.Model):
     developer = models.ForeignKey(
         dictionaries_models.CompetitorModel,
         related_name='developer_competitor',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=False,
         blank=True, 
     )
@@ -1714,7 +1714,7 @@ class CompetitorSiteModel(models.Model):
         dictionaries_models.SeasonUsageModel,
         verbose_name='сезонность',
         related_name='competitor_site_sseason_uusage',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True, 
     )
@@ -1722,7 +1722,7 @@ class CompetitorSiteModel(models.Model):
         dictionaries_models.TyreGroupModel,
         verbose_name='группа шин',
         related_name='competitor_site_group_uusage',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True, 
     )    
@@ -1751,13 +1751,13 @@ class ChemCurierTyresModel(models.Model):
         dictionaries_models.TyreGroupModel,
         verbose_name='группа шин',
         related_name='chemcurier_group_uusage',
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         null=True,
         blank=True, 
     ) 
     currency_chem = models.ForeignKey(
         dictionaries_models.Currency,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
     )
     data_month_chem = models.DateField(
         verbose_name='месяц (дата) поставки',
@@ -1833,7 +1833,7 @@ class DataPriceValMoneyChemCurierModel(models.Model):
     )
     price_val_money_data = models.ForeignKey(
         ChemCurierTyresModel,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name='цены, объемы продаж на дату',
         related_name='price_val_money_data_obj',
         null=True, 
