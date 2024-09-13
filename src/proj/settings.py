@@ -16,6 +16,7 @@ from tokenize import Ignore
 import os
 
 from celery.schedules import crontab
+from datetime import timedelta
 
 #from ignore_data import KEY
 #from . secret_key import SECRET_KEY
@@ -194,7 +195,8 @@ CELERY_BEAT_SCHEDULE = {
 
     'clean_database': {
         'task': 'filemanagment.views.clean_database',
-        'schedule': crontab(hour=hour3, minute=minute3),
+        #'schedule': crontab(hour=hour3, minute=minute3),
+        'schedule': timedelta(seconds=60),
     },       
     #'dfgdg': {
     #    'task': 'prices.views.dfgdg',

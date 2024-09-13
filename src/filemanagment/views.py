@@ -291,11 +291,11 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         # очистить базу данных:
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
             print('WE GOT 2 MIN TASK AWAIT')
-            execute_in_two_minutes = datetime.now() + timedelta(minutes = 2)
+            execute_in_one_minutes = datetime.now() + timedelta(minutes = 1)
             #filemanagementmodels.EXECUTE_CLEAN_BD = 'execute'
             #clean_database.apply_async(eta=execute_in_two_minutes)
             render(self.request, 'filemanagment/excel_import.html', {'form': form, 
-                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(eta=execute_in_two_minutes)
+                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(eta=execute_in_one_minutes)
         # END очистить базу данных:
   
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 
