@@ -90,7 +90,7 @@ def reading_filemanagementfile():
     #удаление временно созданных файлов воизбежание дубликатов / захламления / шибок
     try:  
         for f in os.listdir('media'):
-            path_to = os.path.join('media',f)
+            path_to = os.path.join('media', f)
             if f == a_file_name:
                 os.remove(path_to) 
                 print('временный файл aform_CHEM_.xlsx удален')
@@ -98,7 +98,7 @@ def reading_filemanagementfile():
         pass
     try:    
         for f in os.listdir('media'):
-            path_to = os.path.join('media',f)
+            path_to = os.path.join('media', f)
             if f == b_file_name:
                 os.remove(path_to) 
                 print('временный файл bform_CHEM_.xlsx удален')
