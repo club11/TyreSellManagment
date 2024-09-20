@@ -301,10 +301,12 @@
                     <label class="form-check-label" for="btncheck5">показать/скрыть себестоимость</label> 
                   </div>
                   </form></li>
-              
-                </ul>    
+
                 <button type="submit" class="btn btn-warning" name1="change_period" value1="period">Принять</button>
+                </ul>    
+
               </form>
+
 
             </div>
           
@@ -363,7 +365,7 @@
           
 
             <div class="el-5">
-              <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            {#  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> #}
               <script type="text/javascript">
               google.charts.load('current', {callback: drawChart,packages: ['controls', 'corechart', 'bar']});
               
@@ -378,7 +380,7 @@
               var columnsTable = new google.visualization.DataTable();
                columnsTable.addColumn('number', 'colIndex');
                columnsTable.addColumn('string', 'colLabel');
-               var initState= {selectedValues: []};
+               var initState= {selectedValues1: []};
                // put the columns into this data table (skip column 0)
                for (var i = 1; i < data.getNumberOfColumns(); i++) {
                    columnsTable.addRow([i, data.getColumnLabel(i)]);
@@ -446,15 +448,15 @@
                    var view = {
                        columns: [0]
                    };
-                   for (var i = 0; i < state.selectedValues.length; i++) {
-                       row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+                   for (var i = 0; i < state.selectedValues1.length; i++) {
+                       row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues1[i]}])[0];
                        view.columns.push(columnsTable.getValue(row, 0));
                    }
                    // sort the indices into their original order
                    view.columns.sort(function (a, b) {
                        return (a - b);
                    });
-                   if (state.selectedValues.length > 0) {
+                   if (state.selectedValues1.length > 0) {
                      chart.setView(view);
                    } else {
                      chart.setView(null);
@@ -476,7 +478,7 @@
           
           
             <div class="el-55">
-                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+              {#  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> #}
                 <script type="text/javascript">
                 google.charts.load('current', {callback: drawChart,packages: ['controls', 'corechart', 'bar']});
                 
@@ -548,7 +550,6 @@
                              allowNone: true,
                           //   selectedValuesLayout: 'belowStacked'
                           //  labelStacking: 'vertical',
-                          
                          }
                      },
                      state: initState
@@ -637,22 +638,17 @@
                 
                 chartType: 'LineChart',   // ВЫБОР - КАКУЮ ВЕРСИЮ ТАБЛИЦЫ ЮЗАТЬ !!!!      ///  ВЫБОР КАК ОТОБРАЖАТЬ ГРАФИК
                 //chartType: 'Line',
-                
                 containerId: 'chart_div',
                 dataTable: data,
-                
                 options: google.charts.Line.convertOptions({
-                  
                   chart: {
                     title:"{{ chart_title|safe }}",
                     subtitle: "BYN",
-                  },
-                     
+                  },    
                 {% if full_lined_chart_checked_flag %}
                   interpolateNulls: true,         // !!!!!!  автозаполнение 0 значений                        
                 {% endif %}
                   
-                
                 //  curveType: 'function',    //   сгладить изгиб линии
                   pointSize: 7,
                   lineWidth: 7,
@@ -762,7 +758,6 @@
                 }
             });
           
-          
             function setOptions() {
                 var firstDate;
                 var lastDate;
@@ -792,7 +787,6 @@
                 }
             }
           
-          
             google.visualization.events.addListener(columnFilter, 'statechange', setChartView, control, setOptions);
           
             setChartView();
@@ -805,6 +799,7 @@
         }
       </script>
 
+
       <div id="colFilter_div"></div>
       <div id="chart_div" style="height: 500px;"></div>
     
@@ -815,6 +810,7 @@
             <div id="control_div"></div>
             <p><span id='dbgchart'></span></p>
         </div>
+
       </div>
     </div>
                 
@@ -852,7 +848,6 @@
           </body>
         </div>
        </div>
-     
      
      
        <div class="el el-77">
@@ -898,36 +893,3 @@
 
 {% endblock body %}
 
-
-
-
-
-
-
-{# <p> #}
-  {#   <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">скрыть/показать Onliner</button> #}
-  {#   <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="false" aria-controls="collapseWidthExample1">скрыть/показать Avtoset</button> #}
-  {#   <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="false" aria-controls="collapseWidthExample2">скрыть/показать Bagoria</button> #}
-  {#   <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="false" aria-controls="collapseWidthExample3">скрыть/показать Chemcurier</button> #}
-     {# <button class="btn btn-warning" type="button" data-bs-toggle="collapse" data-bs-target=".multi-collapse-horizontal" aria-expanded="false" aria-controls="collapseWidthExample collapseWidthExample1 collapseWidthExample2 collapseWidthExample3">скрыть/показать все</button> #}
-{# </p> #}
-
-{# <div class="btn-group-vertical" role="group" aria-label="Базовая группа переключателей флажков Сайты и Химкурьер">  #}
-{#   <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">  #}
-{#   <label class="btn btn-outline-success" for="btncheck1">скрыть/показать Onliner</label>  #}
-
-{#   <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample1" aria-expanded="false" aria-controls="collapseWidthExample1">  #}
-{#   <label class="btn btn-outline-success" for="btncheck2">скрыть/показать Avtoset</label> #} 
-
-{#   <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample2" aria-expanded="false" aria-controls="collapseWidthExample2"> #}
-{#   <label class="btn btn-outline-success" for="btncheck3">скрыть/показать Bagoria</label> #}
-
-{#   <input type="checkbox" class="btn-check" id="btncheck4" autocomplete="off" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample3" aria-expanded="false" aria-controls="collapseWidthExample3"> #}
-{#   <label class="btn btn-outline-success" for="btncheck4">скрыть/показать Chemcurier</label>  #}
-{# </div>  #}
-
-
-{#  <div class="form-check form-check-inline" >#}
-  {#  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="true" name="marketplace_on" {{ marketplace_on_checked }}>#}
-  {#  <label class="form-check-label" for="inlineCheckbox1">Переключить график: вывод данных в разрезе торговых площадок</label>#}
-  {#</div>  #}

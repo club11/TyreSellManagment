@@ -1242,6 +1242,7 @@ def read_from_file():
                                                 tpsrussiafcaprice_costs.append(sell_value)
                                                 tpsrussiafcaprice_costs_row[cell.row] = sell_value                                                      # закидываем в словарь строка значение 
                                             pass
+                                            print('==== sell_value ====', sell_value)
                                 except:
                                     pass
                                 tpsrussiafcaprice_costs = [float(x) for x in tpsrussiafcaprice_costs]    # str значения в float

@@ -48,6 +48,9 @@ class Tyre(models.Model):
     ##)
     def get_absolute_url(self):
         return reverse('tyres:tyre_list')
+    
+    def __str__(self):
+        return str(self.tyre_model)
 
 class TyreCard(models.Model):
     tyre = models.ForeignKey(

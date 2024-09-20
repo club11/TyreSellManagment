@@ -170,10 +170,9 @@ def belarus_sites_parsing():
     #2. получаем данные со всех страниц:
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
-    #for slug in urls[0:5]:                               # c 1 по 2 станицы    
-    for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы  
-    #for slug in range(163, 200):                               # c 1 по 2 станицы      
-    #for slug in urls:      # рабочий вариант
+    for slug in range(1,2):                               # c 1 по 2 станицы    
+    #for slug in range(1, 170):                               # !!!!!!!!!!! c 1 по 2 станицы      
+    ##for slug in urls:      
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
         newUrl = url + f'?page={slug}'
         webdriverr.get(newUrl)
@@ -184,7 +183,7 @@ def belarus_sites_parsing():
         soup = BeautifulSoup(webdriverr.page_source,'lxml')
         products = soup.find_all('div', class_='catalog-form__offers-item catalog-form__offers-item_primary')
         if products:
-            print('=============', slug, webdriverr.current_url)
+            #print('=============', slug, webdriverr.current_url)
             for data_got in products:
                 #tyre_name = data_got.find('div', class_='schema-product__title')
                 tyre_name = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_base-additional catalog-form__description_font-weight_semibold catalog-form__description_condensed-other')
@@ -193,11 +192,13 @@ def belarus_sites_parsing():
 #                if tyre_name and price:
 #                    print('=-=-=-=', tyre_name.text)
 #                    print('+-=+=+=', price.text)
+                tyre_season = None
                 if tyre_name and price:
                     # проверка на лишний тект в нелегковых шинахprice
                     check_name_is_foud = False
                     for check_name in list_to_check:
                         if check_name in tyre_name.text:
+                            #print('00000', tyre_name.text)
                             phrase_len = len(check_name)
                             wha_to_delete_start = tyre_name.text.find(check_name)
                             wha_to_delete_end = tyre_name.text.find(check_name) + phrase_len
@@ -219,13 +220,16 @@ def belarus_sites_parsing():
                         text_to_delete1 = tyre_name.text.find('шины') + 5
                         tyre_name_cleaned = tyre_name.text[text_to_delete1 : ]
                         tyre_name_cleaned = tyre_name_cleaned.replace('\n', '')
+                        tyre_season = tyre_name.text[0:text_to_delete1-5].replace(' ', '').replace('\n', '')
+                        #print('00000------', tyre_season)
                     start_str_serch = price.text.find('от') + 3
                     end_str_search = price.text.find('р') - 1
                     price_cleaned = price.text[start_str_serch : end_str_search]
                 ###### дополнительные праметры ищем: 
                 #for data_got in products:
                     #tyre_season = data_got.find('div', class_='schema-product__description')
-                    tyre_season = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
+                    tyre_group = data_got.find('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
+                    #print('tyre_group====', tyre_group)
                     seas_list = ['летние', 'зимние', 'всесезонные']
                     studded_list = ['без шипов', 'с шипами', 'возможность ошиповки']
                     group_list_cars = ['легковых', 'внедорожников', 'минивенов', 'кроссоверов'] 
@@ -236,22 +240,32 @@ def belarus_sites_parsing():
                     tyr_seas_check = False
                     tyr_group = None
                     season = None
+                             
                     if tyre_season:
-                        split_str_prepared = tyre_season.text
-                        split_str = split_str_prepared.replace('\n', '').split(', ')
-                        season_is = []
-                        try:
-                            if split_str[0] and split_str[0] in ['летние', 'зимние', 'всесезонные']:
-                                season_is = split_str[0]
-                        except:
-                            pass
+                        #split_str_prepared = tyre_season
+                        #print('===split_str_prepared', split_str_prepared)
+                        #split_str = split_str_prepared.replace('\n', '').split(', ')
+                        #season_is = []
+                        #try:
+                        #    if split_str[0] and split_str[0] in ['летние', 'зимние', 'всесезонные']:
+                        #        season_is = split_str[0]
+                        #except:
+                        #    pass
+                        for sseas in ['летние', 'зимние', 'всесезонные']:
+                            ttss = tyre_season.lower()
+                            #print('ttss===++++++', type(ttss), ttss, len(ttss), '=====',  type(sseas), sseas, len(sseas))
+                            if ttss == sseas:
+                                season = sseas  
                         group_is = []
                     t_gr = None
-                    split_str = data_got.find_all('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
-                    if split_str:
+
+                    stttdded = data_got.find_all('div', class_='catalog-form__description catalog-form__description_primary catalog-form__description_small-additional catalog-form__description_bullet catalog-form__description_condensed')
+                    
+                    if tyre_group:
+                        #print('===== === ===', tyre_group.text)
                         try:
-                            split_str1 = split_str[1].text
-                            print('--', split_str1) 
+                            split_str1 = tyre_group.text
+                            #print('--', split_str1) 
                             split_str_group = split_str1   
                             # для грузовых
                         except:
@@ -315,20 +329,29 @@ def belarus_sites_parsing():
                                     break
                             tyr_group = t_gr
                         # END группа для легковых    
-                        # сезонность
+                        # шипованность
+                        
                         studded_is = []                       # ШИПЫ - тут доработать
-                        for s_el in seas_list:
-                            if s_el in tyre_season.text:
-                                season = s_el
+                        ###for s_el in split_str:
+                        ###    if s_el in tyre_season.text:
+                        ###        season = s_el
                             #    if 'BEL-318' in tyre_name_cleaned:
                             #        print('group_is ========88888=', tyre_season.text)  
                             #        print('group_is =====================', season)  
-                        # END сезонность
+                        # END шипованность
                         # шипы
-                        for studded_el in studded_list:
-                            if studded_el in tyre_season.text:
-                                studded = studded_el
-                        #print( season, '          ', studded)
+                        studded = None
+                        if stttdded:
+                            for gfhgh in stttdded:
+                                #print('gfhgh', gfhgh.text)
+                                if 'шип' in gfhgh.text:
+                                    stttdded_text = gfhgh.text
+                            #print('stttdded_text', stttdded_text)           
+                            for studded_el in studded_list:
+                                if studded_el in stttdded_text:
+                                    studded = studded_el
+                                    #print('23434===', studded)
+                        # END шипованность
                         t_gr = None
                         # END 
             # выдираем типоразмер для добавления в словарь
@@ -347,9 +370,12 @@ def belarus_sites_parsing():
                                 str_right_data = tyre_name_cleaned[right_after_size_data_index : ]
                             product_name = str_left_data
                             if check_name_is_foud is False:
-                                company_name = product_name.split(' ')[0]
-                            tyre_param = str_right_data
-                    values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, #studded 
+                                company_name = product_name.split(' ')[0].replace(' ', '')
+                            try:
+                                tyre_param = str_right_data.split(' ')[0].replace(' ', '')
+                            except:
+                                tyre_param = str_right_data
+                    values = price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group, studded 
                     #print('||', price_cleaned, tyresize, product_name, tyre_param, company_name, season, tyr_group)  # 805,00 275/70R22.5    Белшина Escortera BEL-318  Белшина летние грузовые
                     goods_dict[tyre_name_cleaned] = values                                                                      # ПОДПРАВИТЬ КЛЮЧИ _ НЕ ВСЕ ПОПАДУТ ВЕДБ
         else:
@@ -557,9 +583,9 @@ def belarus_sites_parsing():
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
         ####for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы              
-        #for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
-        #for slug in range(1, 2):   
-        for slug in range(0,urls_get):         #### !!!!!
+        ##for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
+        for slug in range(1, 2):   
+        #for slug in range(0,urls_get):         #### !!!!!
             print('webdriverr.current_url', webdriverr.session_id)
             webdriverr.session_id
             #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
@@ -632,9 +658,9 @@ def belarus_sites_parsing():
                 urls_get.append(pageNum)            
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
-        #for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
-        #for slug in range(0, 2):
-        for slug in range(0,urls_get):    #!!!! working
+        ##for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
+        for slug in range(0, 2):
+        #for slug in range(0,urls_get):    #!!!! working
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -699,9 +725,9 @@ def belarus_sites_parsing():
                 urls_get.append(pageNum)
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
-        #for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-        #for slug in range(0, 2):
-        for slug in range(0, urls_get):        # working   
+        ##for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
+        for slug in range(0, 2):
+        #for slug in range(0, urls_get):        # working   
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -766,8 +792,8 @@ def belarus_sites_parsing():
                 urls_get.append(pageNum)
         urls_get = max(urls_get)
         #2. получаем данные со всех страниц:                         
-        #for slug in range(0, 2):
-        for slug in range(0, urls_get): 
+        for slug in range(0, 2):
+        #for slug in range(0, urls_get): 
             newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
             webdriverr.get(newUrl)
             time.sleep(2)
@@ -1038,8 +1064,8 @@ def belarus_sites_parsing():
         def legkovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/legkovye-shiny/' 
-            for slug in range(pages_quantity_start, pages_quantity_end): 
-            #for slug in range(pages_quantity_start, 1):    
+            #for slug in range(pages_quantity_start, pages_quantity_end): 
+            for slug in range(pages_quantity_start, 1):    
                 #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                 newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                 webdriverr.get(newUrl)
@@ -1111,8 +1137,8 @@ def belarus_sites_parsing():
         def gruzovik(pages_quantity_start, pages_quantity_end, bg_nm):
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/gruzovye-shiny/'
-            for slug in range(pages_quantity_start, pages_quantity_end):   
-            #for slug in range(pages_quantity_start, 1):   
+            #for slug in range(pages_quantity_start, pages_quantity_end):   
+            for slug in range(pages_quantity_start, 1):   
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(3)
@@ -1218,8 +1244,8 @@ def belarus_sites_parsing():
             bagoria_good_num = bg_nm
             url = 'https://bagoria.by/selhoz-shiny/'
         #    print('ISISISIISISSISS', pages_quantity_start, pages_quantity_end)
-            for slug in range(pages_quantity_start, pages_quantity_end):
-            #for slug in range(pages_quantity_start, 1):
+            #for slug in range(pages_quantity_start, pages_quantity_end):
+            for slug in range(pages_quantity_start, 1):
                 newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                 webdriverr.get(newUrl)
                 time.sleep(4)
@@ -4451,7 +4477,8 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 #print('perr_val', perr_val)
                 
 
-                
+        print('competit_on_current_date_assembled', competit_on_current_date_assembled)
+
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                  
         #for n in competit_on_current_date_assembled:
         #    print('fall behind', n)     
@@ -4498,6 +4525,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             context['competitor_values'] = ['']
 
         else:
+            #print('OOOOOOO00OOOOO===OOOOOOO00OOOOO', assembles_to_dict_data_dict)
             chart_data_counter = 0                                              # подмешиваем дату строкой как  # [1,  37.8, 80.8, 41.8], -
             if assembles_to_dict_data_dict['dates']:
                 number_of_periods = len(assembles_to_dict_data_dict['dates'])                         # old =number_of_periods== 5 ['20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023', '20.03.2023']       
@@ -4505,7 +4533,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 for lists_values in competit_on_current_date_assembled:
                     #print('chart_data_counter', chart_data_counter, assembles_to_dict_data_dict['dates'][chart_data_counter], '==', lists_values)
                     list_of_period_competitor_values = [] 
-                #    print('::::::::', 'chart_data_counter:', chart_data_counter, '  ', assembles_to_dict_data_dict['dates'])
+                    #print('::::::::', 'chart_data_counter:', chart_data_counter, '  ', assembles_to_dict_data_dict['dates'])
                     list_of_period_competitor_values.append(assembles_to_dict_data_dict['dates'][chart_data_counter])
                     list_of_period_competitor_values_new = [] 
                     date_in_str = datetime.datetime.strptime(assembles_to_dict_data_dict['dates'][chart_data_counter], '%Y-%m-%d').date()
@@ -4545,7 +4573,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             #    print('LEN GRAPHIC VAL', bbb)
             #print('context[competitor_values] ++--+-+-+-', assembles_to_dict_data_dict['competitor_values'], len(assembles_to_dict_data_dict['competitor_values']))
 
-        
+        list_of_competitor_values_new_dict
         ##### ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ:
         #for vvall in list_of_competitor_values_new_dict.values():
         #    print('vvall', vvall, len(list_of_competitor_values_new_dict.values()))
@@ -4553,11 +4581,16 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         ##### END ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ
             
 
+        print('list_of_competitor_values_new_dict', list_of_competitor_values_new_dict)
+        for hhh, xxx in list_of_competitor_values_new_dict.items():
+            print(hhh, xxx)  
 
         if not list_of_competitor_values_new_dict:
     #        print('END 0 ===== list_of_competitor_values_new_dict', list_of_competitor_values_new_dict)
             context['list_of_competitor_values_new'] = {(' '): ['null']}
-        else:            
+            #print('-------------RRRRRRRRRR--------------RRRRRRRRRRR------------------')  
+        else:  
+            #print('-------------RRRRRRRRRRRRRRRRRRRRR------------------')   
             context['list_of_competitor_values_new'] = list_of_competitor_values_new_dict  
     #        print('GGGOOODDD 3', context['list_of_competitor_values_new'])
 

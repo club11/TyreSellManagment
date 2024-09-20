@@ -123,6 +123,9 @@ class PlannedCosstModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:planned_cost')
+    
+    def __str__(self):
+        return str(self.price)
 
 class SemiVariableCosstModel(models.Model):
     tyre = models.ForeignKey(
@@ -148,6 +151,9 @@ class SemiVariableCosstModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:semi_variable_planned_cost')
+    
+    def __str__(self):
+        return str(self.price)
 
 class Belarus902PriceModel(models.Model):
     tyre = models.ForeignKey(
@@ -173,6 +179,9 @@ class Belarus902PriceModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:belarus902price')
+    
+    def __str__(self):
+        return str(self.price)
 
 class TPSRussiaFCAModel(models.Model):
     tyre = models.ForeignKey(
@@ -198,6 +207,9 @@ class TPSRussiaFCAModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:tpsrussiafca')
+    
+    def __str__(self):
+        return str(self.price)
 
 class TPSKazFCAModel(models.Model):
     tyre = models.ForeignKey(
@@ -223,6 +235,9 @@ class TPSKazFCAModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:tpskazfca')
+    
+    def __str__(self):
+        return str(self.price)
 
 class TPSMiddleAsiaFCAModel(models.Model):
     tyre = models.ForeignKey(
@@ -248,6 +263,9 @@ class TPSMiddleAsiaFCAModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:tpsmiddleasiafca')
+    
+    def __str__(self):
+        return str(self.price)
 
 class CurrentPricesModel(models.Model):
     tyre = models.ForeignKey(
@@ -273,6 +291,9 @@ class CurrentPricesModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('prices:currentprices')
+    
+    def __str__(self):
+        return str(self.price)
 
 class ComparativeAnalysisTableModel(models.Model):
     customer = models.ForeignKey(
@@ -561,6 +582,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         null=True
     )
 
+
     def currentpricesprice_from_currency_to_bel_rub(self):                                                                  # ДЛЯ ПЕРЕВОДА ИЗ РОСС РУБЛЯ В БЕЛ РУБЛЬ И ВЫВЕДЕНИЯ В TEMPLATE
         if self.currentpricesprice:
             if CURRENCY_VALUE_USD:
@@ -638,7 +660,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                 competior_is_found = False
                 tyre_in_base_season = ''
                 if objject.season and self.tyre.added_features.all():            
-                    #tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
+                    tyre_in_base_season = self.tyre.added_features.all()[0].season_usage 
                     tyre_in_base_season = self.tyre.added_features.all()
                     for n in tyre_in_base_season:
                         if n.season_usage:
@@ -649,22 +671,26 @@ class ComparativeAnalysisTyresModel(models.Model):
                     filtered_competitors_values_list.append(objject)
                 else:
                     if objject.season:
-                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
-                            #print('OOOO')
-                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
-                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
-                            continue
-                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
-                            #print('OOIIIIIOO')
-                            #print(tyre_in_base_season, objject.season.season_usage_name)
-                            objject.tyre_to_compare.add(self)
-                            filtered_competitors_values_list.append(objject)  
-                            continue
-
+                        try:
+                            if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                                #print('OOOO')
+                                #print(tyre_in_base_index, tyre_in_base_season, 'OOIIIIIOO', objject.parametres_competitor, objject.season.season_usage_name)
+                                objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                                filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                                continue
+                        except:
+                            pass
+                            #if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                            #    #print(tyre_in_base_index, 'OOIIIIIOO', objject.parametres_competitor)
+                            #    #print(tyre_in_base_season, objject.season.season_usage_name)
+                            #    objject.tyre_to_compare.add(self)
+                            #    filtered_competitors_values_list.append(objject)  
+                            #    continue
             #########################
             list_comp_ids = []
             for comp in filtered_competitors_values_list:
                 comp_name = comp.name_competitor + ' ' + comp.tyresize_competitor + ' ' + comp.parametres_competitor  + ' '+ comp.season.season_usage_name
+                #print('!!!', comp_name)
                 if DEFLECTION_VAL:                                                      # если есть введенные данные об скидке торговой надбавки
                     comp_price = comp.price * ((100 - DEFLECTION_VAL) * 0.01)
                 else:
@@ -677,13 +703,23 @@ class ComparativeAnalysisTyresModel(models.Model):
                     if CURRENCY_VALUE_USD:
                         deflection = (self.currentpricesprice.price  * CURRENCY_VALUE_USD  / comp_price) -1 
                         combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                        #print('====1', combined)
                     else:
                         deflection = ' '
                         combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
-                    
+                    #print('====2', combined)
                     if combined:
                         list_comp_ids.append(comp.id)
                         list_od_combined_comp_and_prices.append(combined)
+                        #print('====3', combined)
+
+                else:                   # ЕСЛИ ДЕЙСТВУЮЩИХ ЦЕН НЕТ или в ценах ошибка формата:
+                    deflection = ' '
+                    combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                    list_comp_ids.append(comp.id)
+                    list_od_combined_comp_and_prices.append(combined)
+                    #print('====4', combined)
+
                 ONLINER_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)
             #    list_comp_ids.append(comp.id)
             ONLINER_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
@@ -723,17 +759,20 @@ class ComparativeAnalysisTyresModel(models.Model):
                         filtered_competitors_values_list.append(objject)
             #            print('OOO22222O')
                     else:
-                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
-            #                print('OOOO', 'tyre_in_base_season', tyre_in_base_season, 'objject.season.season_usage_name', objject.season.season_usage_name)
-                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
-                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
-                            continue
-                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
-            #                print('OOIIIIIOO')
-                            #print(tyre_in_base_season, objject.season.season_usage_name)
-                            objject.tyre_to_compare.add(self)
-                            filtered_competitors_values_list.append(objject)  
-                            continue
+                        try:
+                            if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+            #                    print('OOOO', 'tyre_in_base_season', tyre_in_base_season, 'objject.season.season_usage_name', objject.season.season_usage_name)
+                                objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                                filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                                continue
+                        except:
+                            pass
+                            #if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+            #                  #     print('OOIIIIIOO')
+                            #    #print(tyre_in_base_season, objject.season.season_usage_name)
+                            #    objject.tyre_to_compare.add(self)
+                            #    filtered_competitors_values_list.append(objject)  
+                            #    continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
             list_comp_ids = []
@@ -764,6 +803,13 @@ class ComparativeAnalysisTyresModel(models.Model):
                     if combined:
                         list_comp_ids.append(comp.id)
                         list_od_combined_comp_and_prices.append(combined)                           # 1
+
+                else:                   # ЕСЛИ ДЕЙСТВУЮЩИХ ЦЕН НЕТ или в ценах ошибка формата:
+                    deflection = ' '
+                    combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                    list_comp_ids.append(comp.id)
+                    list_od_combined_comp_and_prices.append(combined)
+
                 AVTOSET_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name) 
                 #list_comp_ids.append(comp.id)                                               # 2
             AVTOSET_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ AVTOSET
@@ -802,17 +848,20 @@ class ComparativeAnalysisTyresModel(models.Model):
                         filtered_competitors_values_list.append(objject)
                         #print('OOO22222O')
                     else:
-                        if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
-                            #print('OOOO')
-                            objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
-                            filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
-                            continue
-                        if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
-                            #print('OOIIIIIOO')
-                            #print(tyre_in_base_season, objject.season.season_usage_name)
-                            objject.tyre_to_compare.add(self)
-                            filtered_competitors_values_list.append(objject)  
-                            continue
+                        try:
+                            if tyre_in_base_season == objject.season.season_usage_name and tyre_in_base_index == objject.parametres_competitor:       # 1) ЗАОДНО совмещаем конкурентов с шинами в базе по сезонности  и индексам:
+                                #print('OOOO')
+                                objject.tyre_to_compare.add(self)                           # ДОПОЛНИТЕЛЬНОЕ БАЛОВСТВО
+                                filtered_competitors_values_list.append(objject)            # ВОТ ТУТ ВСЕ И ПРОИСХОДИТ
+                                continue
+                        except:
+                            pass
+                            #if tyre_in_base_season == objject.season.season_usage_name:                                                               # 2) ЗАОДНО если нет, то совмещаем конкурентов с шинами в базе по сезонности
+                            #    #print('OOIIIIIOO')
+                            #    #print(tyre_in_base_season, objject.season.season_usage_name)
+                            #    objject.tyre_to_compare.add(self)
+                            #    filtered_competitors_values_list.append(objject)  
+                            #    continue
             #print(filtered_competitors_values_list, 'filtered_competitors_values_list')          # [<CompetitorSiteModel: CompetitorSiteModel object (143)>, <CompetitorSiteModel: CompetitorSiteModel object (144)>, <CompetitorSiteModel: CompetitorSiteModel object (145)>
             ##########################
             list_comp_ids = []
@@ -841,6 +890,13 @@ class ComparativeAnalysisTyresModel(models.Model):
                     if combined:
                         list_comp_ids.append(comp.id)
                         list_od_combined_comp_and_prices.append(combined)
+
+                else:                   # ЕСЛИ ДЕЙСТВУЮЩИХ ЦЕН НЕТ или в ценах ошибка формата:
+                    deflection = ' '
+                    combined = ((comp_name, comp_price, deflection), comp.developer, comp.date_period)
+                    list_comp_ids.append(comp.id)
+                    list_od_combined_comp_and_prices.append(combined)
+
                 BAGORIA_COMPETITORS_NAMES_FILTER.append(comp.developer.competitor_name)                                                                     #  ОТДЕЛЬНО ДЛЯ ФИЛЬТРА ПО ПРОИЗВОДИТЕЛЯМ ОНЛАЙНЕР
                 #list_comp_ids.append(comp.id)
             BAGORIA_COMPETITORS_NAMES_FILTER_IDS[self.pk] = list_comp_ids          

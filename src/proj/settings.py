@@ -103,23 +103,23 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 ### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }   
-#}
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'postgres',  # Наименование контейнера для базы данных в Docker Compose
-        'PORT': '5432',
-    }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }   
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'postgres',
+#        'USER': 'postgres',
+#        'PASSWORD': 'postgres',
+#        'HOST': 'postgres',  # Наименование контейнера для базы данных в Docker Compose
+#        'PORT': '5432',
+#    }
+#}
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -176,8 +176,8 @@ minute1=None
 hour2=None
 minute2=None
 if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
-    hour1=23
-    minute1=15
+    hour1=17
+    minute1=30
     hour2=23
     minute2=35
 

@@ -23,6 +23,9 @@ class TyreSizeModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:ts_list')
+    
+    def __str__(self):
+        return str(self.tyre_size)    
 
 class ModelNameModel(models.Model):
     model = models.CharField(
@@ -34,6 +37,9 @@ class ModelNameModel(models.Model):
         return reverse('dictionaries:model_list')
         #return reverse('dictionaries:dictionaries', args = [self.pk])
 
+    def __str__(self):
+        return str(self.model) 
+
 class TyreParametersModel(models.Model):
     tyre_type = models.CharField(
         verbose_name='параметры шины',
@@ -42,6 +48,9 @@ class TyreParametersModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:param_list')
+    
+    def __str__(self):
+        return str(self.tyre_type)
 
 class TyreGroupModel(models.Model):
     tyre_group = models.CharField(
@@ -51,6 +60,9 @@ class TyreGroupModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+    
+    def __str__(self):
+        return str(self.tyre_group)    
 
 class QantityCountModel(models.Model):
     quantity_count = models.CharField(
@@ -60,6 +72,9 @@ class QantityCountModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:qnt_list')
+    
+    def __str__(self):
+        return str(self.quantity_count)
 
 class ContragentsModel(models.Model):
     contragent_name = models.CharField(
@@ -69,6 +84,9 @@ class ContragentsModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+    
+    def __str__(self):
+        return str(self.contragent_name)
 
 
 class CompetitorModel(models.Model):
@@ -92,6 +110,9 @@ class SeasonUsageModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+    
+    def __str__(self):
+        return str(self.season_usage_name)    
 
 class StuddedUsageModel(models.Model):
     studded_name = models.CharField(
@@ -101,3 +122,6 @@ class StuddedUsageModel(models.Model):
 
     def get_absolute_url(self):
         return reverse('dictionaries:tg_list')
+
+    def __str__(self):
+        return str(self.studded_name)
