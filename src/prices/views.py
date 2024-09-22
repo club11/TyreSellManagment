@@ -16,6 +16,8 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
 import datetime
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 import re
 from tyres import models as tyres_models
 from dictionaries import models as dictionaries_models
@@ -888,8 +890,8 @@ def belarus_sites_parsing():
                         tyresize_competitor = k[0],                                        
                         name_competitor = v[1], 
                         parametres_competitor = v[2],
-                        season = season_usage,
                         group = tyre_groupp,
+                        season = season_usage,          
                     )    
                     )
         bulk_avtoset_compet = models.CompetitorSiteModel.objects.bulk_create(autoset_compet_obj_tyre_bulk_list)    
@@ -1360,7 +1362,7 @@ def belarus_sites_parsing():
             bulk_bagoria_compet = models.CompetitorSiteModel.objects.bulk_create(bagoria_compet_obj_tyre_bulk_list)
             list_tyre_sizes = set(list_tyre_sizes)
             for t_szz in list_tyre_sizes:
-                for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
+                for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'bagoria.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
                         obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)                                
             return 'Zapis Got'                
         sstart = 0
@@ -3380,7 +3382,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                         # end работа с датами   
                         #print('got_the_list!!!!', got_the_list)
                                                                                                        ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
-                    #print('!!!!!!===2222222', bagoria_competitors_dict1) 
+                    print('!!!!!!===2222222', bagoria_competitors_dict1) 
                     brand_name_subbrands_list = []
                     list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
                     for competitor in got_the_list:
@@ -3462,14 +3464,14 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                             list_to_delete_rarely_parsed.extend(final_list_to_delete_competitors_in_brand)          # формируем единый список на удаление
                             #print('list_to_delete_cometitors', list_to_delete_cometitors_to_compare)
                             # убираем непопулярных (реже спашенных модели данного бренда, исключая их из списка общего - останутся лишь производители с одной моделью (у тех производ, у которых было несколько моделей- останется лишь самый спашенный наиболее)):
-                        #print('DELETE', list_to_delete_rarely_parsed)
-                        #print('!!!!!!===1111==========================', bagoria_competitors_dict1)
+                        print('DELETE', list_to_delete_rarely_parsed)
+                        print('!!!!!!===1111==========================', bagoria_competitors_dict1)
                         for compet_to_delete in list_to_delete_rarely_parsed:
                             list_of_matched_competitors.remove(compet_to_delete)
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors            
                     else:       # если у каждого бренда-производителя по одной модели:
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-                    #print('=========3=================!!!!!!===', bagoria_competitors_dict1)     
+                    print('=========3=================!!!!!!===', bagoria_competitors_dict1)     
             except:
         #        print('3. EXCEPTION  - BAGORIA')
                 pass
@@ -4710,7 +4712,8 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 period_list_of_parrsed_brands_sites.append(gath_data)
                 if brand_counter == 10:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
                     break
-            t = ppeeerrr.date()
+            t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
+            #print('VOLKERBALL', t)
             t = t.strftime('%Y,%m,%d') 
             #period_list_of_parrsed_brands_sites.insert(0, t)  
             #period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites
@@ -4815,7 +4818,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 period_list_of_parrsed_tyresizes_sites.append(gath_data)
                 if tyresize_counter == 5:                                # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
                     break
-            t = ppeeerrr.date()
+            t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
             t = t.strftime('%Y,%m,%d') 
 
             period_list_of_parrsed_tyresizes_sites_dict[t] = period_list_of_parrsed_tyresizes_sites
@@ -6979,7 +6982,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
                 if brand_counter == 5:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
                     number_of_shown_brands_in_chart = brand_counter
                     break
-            t = ppeeerrr.date()
+            t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
             t = t.strftime('%Y,%m,%d') 
             period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites
 
@@ -7088,7 +7091,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
                 period_list_of_parrsed_tyresizes_sites.append(gath_data)
                 if tyresize_counter == 5:                                        # ОГРАНИЕЧЕНИЕ ТОП-5 для вывода в таблице значений
                     break
-            t = ppeeerrr.date()
+            t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
             t = t.strftime('%Y,%m,%d') 
 
             period_list_of_parrsed_tyresizes_sites_dict[t] = period_list_of_parrsed_tyresizes_sites
