@@ -3232,6 +3232,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                     pass
 
         models.AVTOSET_COMPETITORS_DICTIONARY1 = avtoset_competitors_dict1  
+        #print('AVTOSET_COMPETITORS_DICTIONARY1', avtoset_competitors_dict1)
         #object_unit.avtoset_competitor_on_date1() 
 
         ###### END OF AVTOSET
@@ -3263,9 +3264,9 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                         else:
                             date_filter_end =  models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').latest('date_period').date_period
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by').filter(date_period__range=[date_filter_start, date_filter_end])
-                        print('date_filter_start', date_filter_start, '===', 'date_filter_end', date_filter_end)
+                        #print('date_filter_start', date_filter_start, '===', 'date_filter_end', date_filter_end)
                     else:
-                        print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
+                        #№print('1.2 ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
                         got_the_list = models.CompetitorSiteModel.objects.filter(developer__competitor_name__in=models.BAGORIA_COMPETITORS, site='bagoria.by')                      ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ
                     # end работа с датами '
 
@@ -3352,6 +3353,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                         for compet_to_delete in list_to_delete_rarely_parsed:
                             list_of_matched_competitors.remove(compet_to_delete)
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                        #print('8=8=8=8=8=', list_of_matched_competitors)
                     # если у каждого производителя по одной модели:
                     else:
 
@@ -3370,13 +3372,15 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                         else:
                             date_filter_end =  all_competitors.latest('date_period').date_period
                         got_the_list = all_competitors.filter(date_period__range=[date_filter_start, date_filter_end])
+                        #print('got_the_list222!!!!', got_the_list)
                                                   
                     else:
                         #print('2.2 НЕ ВЫБРАН БРЕНД И НЕ ВВЕДЕНА ДАТА  - BAGORIA')
                         got_the_list = all_competitors 
-                        # end работа с датами       
+                        # end работа с датами   
+                        #print('got_the_list!!!!', got_the_list)
                                                                                                        ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
-
+                    #print('!!!!!!===2222222', bagoria_competitors_dict1) 
                     brand_name_subbrands_list = []
                     list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
                     for competitor in got_the_list:
@@ -3394,9 +3398,10 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                                 list_of_matched_competitors.append(competitor) 
                                 brand_name_subbrands_list.append(competitor.name_competitor)    #формирование суббренжов(моделей) в данном бренде
                     brand_name_subbrands_list_final = list(set(brand_name_subbrands_list))
-                #print('111list_of_matched_competitors', list_of_matched_competitors)
+                    #print('111list_of_matched_competitors', list_of_matched_competitors)
                     #print('22222brand_name_subbrands_list_final', brand_name_subbrands_list_final)
 
+                    #print('!!!!!!===111111111122323232323', list_of_matched_competitors) 
                     # доп проверка - так все бренды- у них м.б. по несколько моделей - проверить -есть ли у бреда несколько моделей -взять с наибольшей частотой паринга:
                     list_of_developers_which_brands_more_than_one_for_checking = []
                     for comp_brand in list_of_matched_competitors:
@@ -3458,15 +3463,18 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                             #print('list_to_delete_cometitors', list_to_delete_cometitors_to_compare)
                             # убираем непопулярных (реже спашенных модели данного бренда, исключая их из списка общего - останутся лишь производители с одной моделью (у тех производ, у которых было несколько моделей- останется лишь самый спашенный наиболее)):
                         #print('DELETE', list_to_delete_rarely_parsed)
+                        #print('!!!!!!===1111==========================', bagoria_competitors_dict1)
                         for compet_to_delete in list_to_delete_rarely_parsed:
                             list_of_matched_competitors.remove(compet_to_delete)
-                        bagoria_competitors_dict1 [object_unit.tyre] = list_of_matched_competitors           
+                        bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors            
                     else:       # если у каждого бренда-производителя по одной модели:
-                        bagoria_competitors_dict1 [object_unit.tyre] = list_of_matched_competitors
+                        bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+                    #print('=========3=================!!!!!!===', bagoria_competitors_dict1)     
             except:
         #        print('3. EXCEPTION  - BAGORIA')
                 pass
 
+        #print('!!!!!!===', bagoria_competitors_dict1)        
         models.BAGORIA_COMPETITORS_DICTIONARY1 = bagoria_competitors_dict1
 
         ####### END!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ИЗМЕНЕНИЯ В СЛОВАРЕ - ОСТАВЛЯЕМ ЕСЛИ ЕТЬ НЕСК ШИН ОДНОГО ПРОИЗВОДИТ - ОСТАВИТ С НАИМ ЦЕНОЙ:
@@ -4477,7 +4485,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 #print('perr_val', perr_val)
                 
 
-        print('competit_on_current_date_assembled', competit_on_current_date_assembled)
+        ###print('competit_on_current_date_assembled', competit_on_current_date_assembled)
 
     #    # END ЕСЛИ ЗНАЧЕНИЕ + NONE - ПОИСК ДАННЫХ В ДАТАХ РАНЬШЕ И ПРИРАВНИВАНИЕ К НИМ                  
         #for n in competit_on_current_date_assembled:
@@ -4581,9 +4589,9 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         ##### END ПРОВЕРКА ЦЕЛОСТНОСТИ СПИСКОВ - ЕСЛИ ЕСТЬ ПРОПУСКИ - ДОРИСОВАТЬ
             
 
-        print('list_of_competitor_values_new_dict', list_of_competitor_values_new_dict)
-        for hhh, xxx in list_of_competitor_values_new_dict.items():
-            print(hhh, xxx)  
+        #print('list_of_competitor_values_new_dict', list_of_competitor_values_new_dict)
+        #for hhh, xxx in list_of_competitor_values_new_dict.items():
+        #    print(hhh, xxx)  
 
         if not list_of_competitor_values_new_dict:
     #        print('END 0 ===== list_of_competitor_values_new_dict', list_of_competitor_values_new_dict)
@@ -4672,6 +4680,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         #print('!!!', list_of_parrsed_brands_sites)
         context['brands_from_sites'] = list_of_parrsed_brands_sites
 
+        #print('TTTT', date_to_look_parsed_datas)
         # ГРАФИК ДИНАМИКА ТОП БРЕНДОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
         period_list_of_parrsed_brands_sites_dict = {}
         daterange_is = pd.date_range(min_date, max_date)
@@ -4684,12 +4693,13 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             all_brands_all_sites_in_date = models.CompetitorSiteModel.objects.filter(date_period=date_to_look, site__in=['onliner.by', 'bagoria.by', 'autoset.by']).count()      # всего все бренды на дату
         #    print('all_brands_all_sites_in_date', all_brands_all_sites_in_date)
             for brand in date_to_look_parsed_datas:
-            #    print('brand', brand)
+                #print('brand', brand)
                 num_of_parsed_brand_express_shina = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='onliner.by').count()
                 num_of_parsed_brand_kolesa_darom = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='bagoria.by').count()
                 num_of_parsed_brand_kolesatyt = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='autoset.by').count() 
                 total_quantity = num_of_parsed_brand_express_shina + num_of_parsed_brand_kolesa_darom + num_of_parsed_brand_kolesatyt      
                 brand_counter += 1 
+                #print('brand_counter', brand_counter)
                 number_of_shown_brands_in_chart = brand_counter
             #    gath_data =  total_quantity
                 if all_brands_all_sites_in_date: 
@@ -4698,7 +4708,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                     gath_data = 0
             #    print('gath_data', gath_data)
                 period_list_of_parrsed_brands_sites.append(gath_data)
-                if brand_counter == 5:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
+                if brand_counter == 10:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
                     break
             t = ppeeerrr.date()
             t = t.strftime('%Y,%m,%d') 
@@ -4726,7 +4736,9 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             another_top_brands_counter_for_chart = second_quantity_counter
         else:
             another_top_brands_counter_for_chart = 'лист без данных'
-        context['top_brands_num'] = another_top_brands_counter_for_chart        
+        context['top_brands_num'] = another_top_brands_counter_for_chart   
+
+        #print('==1', another_top_brands_counter_for_chart)     
 
     #    print(context['dates_brands_list_for_chart_header'])
     #    print(context['period_list_of_parrsed_brands_sites_dict'])
@@ -4758,12 +4770,14 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
         top_tyresizes_counter_for_chart = 0
         if quantity_counter == 10 or quantity_counter > 10:               # ели типоразмеров более 10 - то берем то 10
-            top_tyresizes_counter_for_chartt = 10
+            top_tyresizes_counter_for_chart = 10
         elif quantity_counter < 10 and quantity_counter > 0:
             top_tyresizes_counter_for_chart = quantity_counter
         else:
             top_tyresizes_counter_for_chart = 'лист без данных'
         context['top_tyresizes_num'] = top_tyresizes_counter_for_chart
+
+        #print('==2', top_tyresizes_counter_for_chart)  
 
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['tyresizes_from_sites_date'] = date_to_look_parsed_data
@@ -6926,6 +6940,8 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
             top_brands_counter_for_chart = 'лист без данных'
         context['top_brands_num'] = top_brands_counter_for_chart
 
+        #print('top_brands_num', top_brands_counter_for_chart)
+
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['brands_from_sites_date'] = date_to_look_parsed_data
         
@@ -7021,12 +7037,17 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
 
         top_tyresizes_counter_for_chart = 0
         if quantity_counter == 10 or quantity_counter > 10:               # ели типоразмеров более 10 - то берем то 10
-            top_tyresizes_counter_for_chartt = 10
+            top_tyresizes_counter_for_chart = 10
+            #print('LAZEGUN1', top_tyresizes_counter_for_chartt)
         elif quantity_counter < 10 and quantity_counter > 0:
             top_tyresizes_counter_for_chart = quantity_counter
+            #print('LAZEGUN2', top_tyresizes_counter_for_chartt)
         else:
             top_tyresizes_counter_for_chart = 'лист без данных'
+            #print('LAZEGUN3', top_tyresizes_counter_for_chartt)
         context['top_tyresizes_num'] = top_tyresizes_counter_for_chart
+
+        #print('==2', top_tyresizes_counter_for_chart) 
 
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         context['tyresizes_from_sites_date'] = date_to_look_parsed_data

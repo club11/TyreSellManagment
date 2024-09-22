@@ -737,7 +737,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         if self.tyre in AVTOSET_COMPETITORS_DICTIONARY1.keys() and AVTOSET_COMPETITORS_DICTIONARY1.values():
             competitors_values_list = AVTOSET_COMPETITORS_DICTIONARY1[self.tyre]
             list_od_combined_comp_and_prices = []
-            #print(competitors_values_list,'competitors_values_list ')
+            #print(competitors_values_list,'competitors_values_list avtoset')
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
@@ -827,10 +827,11 @@ class ComparativeAnalysisTyresModel(models.Model):
         if self.tyre in BAGORIA_COMPETITORS_DICTIONARY1.keys() and BAGORIA_COMPETITORS_DICTIONARY1.values():
             competitors_values_list = BAGORIA_COMPETITORS_DICTIONARY1[self.tyre]
             list_od_combined_comp_and_prices = []
+            #print(self.tyre, 'BAGORIA_COMPETITORS_DICTIONARY1', BAGORIA_COMPETITORS_DICTIONARY1)
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
-            #    print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.date_period)
+                #print('objjectobjjectobjjectobjject======================================================', objject, objject.tyresize_competitor, objject.developer, objject.site, objject.date_period)
                 if objject is None:
                     pass
                 else:
