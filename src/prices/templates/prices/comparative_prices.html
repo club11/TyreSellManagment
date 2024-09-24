@@ -663,7 +663,7 @@
                   backgroundColor: '#f3f2ec',  
                   chartArea: {
               //      left: 100,
-                    width: '90%',
+                    width: '85%',
                   },
                 
                   subtitle: "BYN",
@@ -804,7 +804,7 @@
 
       <div id="colFilter_div"></div>
       {# <div id="chart_div" style="height: 500px;"></div> #}
-      <div id="chart_div" style="height: 100%;"></div>
+      <div id="chart_div" class="chart_div6" style="height: 80%;"></div>
     
     
     
@@ -838,6 +838,10 @@
                 title: 'Доля представленности бренда в общем количестве брендов, Топ-{{ top_brands_num }}, динамика',
                 vAxis: {title: '%', viewWindow: {max:100, } },
                 backgroundColor: '#f3f2ec',
+                chartArea: {
+                    width: '65%',
+                    left: '10%',
+                  },
                 isStacked: true
               };
             
@@ -871,8 +875,12 @@
             
               var options = {
                 title: 'Доля представленности типоразмера в общем количестве типоразмеров, Топ-{{ second_top_tyresize_num }}, динамика',
-                vAxis: {title: '%', viewWindow: {max:100, }, },  
+                vAxis: {title: '%', viewWindow: {max:100, },},  
                 backgroundColor: '#f3f2ec',
+                chartArea: {
+                    width: '65%',
+                    left: '10%',
+                  },
                 isStacked: true,
               };
             
