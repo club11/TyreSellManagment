@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-  {#   <meta name="viewport" content="width=device-width, initial-scale=1"> #}
+     <meta name="viewport" content="width=device-width, initial-scale=1"> 
 
     <link rel="icon" type="image/png" href="/media/favicon.ico">             {#   для favicon лого сайта   / одна строка кода-заменить путь для сервака в будущем #}
 
@@ -16,7 +16,9 @@
     <style>
 
 
-
+a:link {
+      text-decoration: none;
+}
 
 #navbar_image {
   padding-left: 5%;
@@ -134,6 +136,9 @@ li {
             background-color: #f3f2ec;
             font-size: 1.4vmin;
           }
+          .el-2mobile {
+            display: none;
+          }
           .el-3 {
             grid-column: 2 / span 5;
             grid-row: 4;
@@ -219,7 +224,7 @@ li {
         @media (max-width: 1252px) {   
            .navbar-nav>li {             /* NAVBAR для маленьких экранов расположение элементов  */
             /*   display: inline-block; */
-            font-size: small;
+            font-size: 1.4vmin;
           }  
       
           .container {    /* container-fluid  */
@@ -232,7 +237,19 @@ li {
             column-gap: 2px; 
             background-color: rgb(234, 232, 220);
             min-width: 90%;
-          }            
+          }  
+          
+          .div2 {
+            display: none;
+          }
+          .div2searchmobile {
+            grid-column: 2 / span 1;
+            grid-row: 4;
+            background-color: #eae8dc; 
+            font-size: 1.4vmin;
+            margin-left: auto; 
+            margin-right: 5;
+          }
 
           .el-0 {
             background-color: #eae8dc;
@@ -252,11 +269,14 @@ li {
             grid-column: 1 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
             grid-row: 2;
           }
-          .el-2 {
-            grid-column: 1 / span 2;
+          .el-2mobile {
+            grid-column: 1 / span 1;
             grid-row: 4;
-            background-color: #f3f2ec; 
+            background-color: #eae8dc; 
             font-size: 1.4vmin;
+          }
+          .el-2 {
+            display: none;
           }
           .el-3 {
             grid-column: 1 / span 2;
