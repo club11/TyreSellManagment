@@ -10,7 +10,6 @@
         <img src='/media/logo.png' alt="" width="250" height="30" class="d-inline-block align-text-left"></a>
     </li>
 
-
       <li class="nav-item">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -52,14 +51,65 @@
 </div>
        
 
-
-
-
-
-
       {#</li>#}
       {#<a class="nav-link" href="">1 BYN = {% currency_rate %}</a>#}
       {#</li>#}
 
 
+
+
+
+
+      <div class="navbar-collapse_mobile">
+        <ul class="navbar-nav ">
+      
+          <li class="nav-item" id="navbar_image">
+            <a class="navbar-brand" href="{% url 'main' %}">
+              <img src='/media/logo.png' alt="" width="250" height="30" class="d-inline-block align-text-left"></a>
+          </li>
+
+
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Ссылка
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+              <li><a class="dropdown-item" href="#">Действие</a></li>
+              <li><a class="dropdown-item" href="#">Другое действие</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Что-то еще</a></li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Ссылка</a>
+          </li>
+      
+            <li class="nav-item">
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Хим Курьер 
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                    <li><a class="nav-link" href="{% url 'chemcurier:chemcurier_table' %}">Конкуренты</a></li>
+                    <li><a class="nav-link" href="{% url 'chemcurier:chemcurier_table_progressive' %}">Динамика</a></li>
+                  </ul>
+                </li> 
+            </li>
+      
+            <li class="nav-item">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Цены
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+                  <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_bel' %}">Рынок РБ</a></li>
+                  <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_russia' %}">Рынок РФ</a></li> 
+                </ul>
+              </li> 
+          </li>
+        
+            {% include './check_if_logged.html' %} 
+        </ul>
+      </div>
 
