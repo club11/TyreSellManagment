@@ -320,37 +320,6 @@ class ChemcourierTableModelDetailView(DetailView):
 
             wb.close()    
 
-
-        prices_models.ChemCurierTyresModel.objects.all().delete() 
-        prices_models.ComparativeAnalysisTableModel.objects.all().delete() 
-        prices_models.CompetitorSiteModel.objects.all().delete() 
-        from abc_table_xyz import models as abc_table_xyz_model
-        abc_table_xyz_model.Abcxyz.objects.all().delete()
-        abc_table_xyz_model.AbcxyzTable.objects.all().delete()
-        from sales import models as sl_model 
-        sl_model.Tyre_Sale.objects.all().delete()
-        sl_model.Sales.objects.all().delete()
-        sl_model.SalesTable.objects.all().delete()
-        
-        prices_models.SemiVariableCosstModel.objects.all().delete()
-        prices_models.PlannedCosstModel.objects.all().delete()
-        prices_models.Belarus902PriceModel.objects.all().delete()
-        prices_models.TPSRussiaFCAModel.objects.all().delete()
-        prices_models.TPSKazFCAModel.objects.all().delete()
-        prices_models.TPSMiddleAsiaFCAModel.objects.all().delete()
-        prices_models.CurrentPricesModel.objects.all().delete()
-        prices_models.ChemCurierTyresModel.objects.all().delete()
-        from tyres import models as tr_models
-        tr_models.Tyre.objects.all().delete()
-        from dictionaries import models as dictionaries_model 
-        dictionaries_model.ContragentsModel.objects.all().delete() 
-        dictionaries_model.QantityCountModel.objects.all().delete() 
-        dictionaries_model.TyreGroupModel.objects.all().delete() 
-        dictionaries_model.TyreParametersModel.objects.all().delete() 
-        dictionaries_model.ModelNameModel.objects.all().delete()
-        dictionaries_model.TyreSizeModel.objects.all().delete()
-        
-
         ####### END СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
 
         return context  

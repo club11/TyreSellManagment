@@ -1,64 +1,53 @@
 {% load my_tags %}
 
-<div class="navbar-collapse">
-  <ul class="navbar-nav ">
 
-    <li class="nav-item" id="navbar_image">
-      {#<a class="navbar-brand" href="{% url 'homepage:main' %}"></a>#}
-      <a class="navbar-brand" href="{% url 'main' %}">
-        {#  <img src='/media/logo.png' alt="" width="250" height="30" class="d-inline-block align-text-left"></a> #} 
-        <img src='/media/logo.png' alt="" width="250" height="30" class="d-inline-block align-text-left"></a>
-    </li>
 
-      <li class="nav-item">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Хим Курьер 
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
-              <li><a class="nav-link" href="{% url 'chemcurier:chemcurier_table' %}">Конкуренты</a></li>
-              <li><a class="nav-link" href="{% url 'chemcurier:chemcurier_table_progressive' %}">Динамика</a></li>
-            </ul>
-          </li> 
-      </li>
 
-      <li class="nav-item">
+
+
+      
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark"></nav>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'main' %}">
+      <img src='/media/logo.png' alt="" width="250" height="30" class="d-inline-block align-text-left">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse navbar-dark bg-dark" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Хим Курьер
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'chemcurier:chemcurier_table' %}">Конкуренты</a></li>
+            <li><a class="dropdown-item" href="{% url 'chemcurier:chemcurier_table_progressive' %}">Динамика</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Цены
           </a>
-          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_bel' %}">Рынок РБ</a></li>
-          {#  <li><a class="dropdown-item" href="">Рынок РФ</a></li> #}
-            <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_russia' %}">Рынок РФ</a></li> 
+            <li><a class="dropdown-item" href="{% url 'prices:comparative_prices_russia' %}">Рынок РФ</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item  disabled" href="#" aria-disabled="true">Рынок Казахста</a></li>
           </ul>
-        </li> 
-    </li>
-
-      <li class="nav-item">
-          {#   <a class="nav-link" href=""> Курс валют НБ РБ на {% current_date %}: <b>RUB</b>={% currency_rate_russia_rub %}, <b>USD</b>={% currency_rate_usd %} </a> #} 
-      </li>    
-      {% include './check_if_logged.html' %} 
-  </ul>
-</div>
-
-<div class="navbar-collapse">
-  <ul class="navbar-nav ms-auto">
-    {% if user.is_active is True %}
-      {% include './user_name.html' %} 
-    {% endif %}
-  </ul>
-</div>
-       
-
-      {#</li>#}
-      {#<a class="nav-link" href="">1 BYN = {% currency_rate %}</a>#}
-      {#</li>#}
-
-
-
-
-
+        </li>
+        <li class="nav-item">
+          {# <a class="nav-link disabled" href="#" >урс валют НБ РБ на {% current_date %}: <b>RUB</b>={% currency_rate_russia_rub %}, <b>USD</b>={% currency_rate_usd %}</a> #}
+        </li>
+        {% include './check_if_logged.html' %} 
+      </ul>
+      {% if user.is_active is True %} 
+        {% include './user_name.html' %} 
+      {% endif %}
+    </div>
+  </div>
+</nav>
 
 
 
