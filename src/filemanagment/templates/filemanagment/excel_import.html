@@ -23,7 +23,7 @@
     <div class="el-import2">
       <form action="" method="post">
         {% csrf_token %} 
-          <button type="submit" class="btn btn-danger" name="form_name" value="delete_data_base_form.prefix">Очистить базу данных</button>
+          <button type="submit" class="btn btn-danger" name="form_name" value="delete_data_base_form.prefix"><b>Очистить базу данных</b></button>
       </form>
     </div>
     <div class="el-import3">
@@ -51,7 +51,7 @@
     <div class="el-import6">
     </div>         
     <div class="el-import7">
-        <a href="" class="btn btn-success">На главную</a>
+        <a href="{% url 'main' %}" class="btn btn-success">На главную</a>
     </div> 
   </div>
 </div>
