@@ -4,51 +4,68 @@
 
 {% block body %} 
 
-<h1>FILE import</h1>
 
-<form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %} 
-    Импортировать базу продукции(типоразмер, наименование продукции и т.д.):
-    {{ form.as_ul}}
-      <button type="submit" name="form_name" value="aform.prefix">Импортировать</button>
-</form>
-<b>-----------</b>
-<form action="" method="post" enctype="multipart/form-data">
-  Импортировать<br>
-  1. цены базовой (собственной продукции:) - базовые цены.<br> 
-  2. база химкурьер<br>
-  {% csrf_token %} 
-  {{ form.as_ul}}
-    <button type="submit" name="form_name" value="bform.prefix">Импортировать</button>
-</form>
-<b>-----------</b>
+<div class="main">
+  <div class="import_data">
+    <div class="el-import0">
+      <h1>Доступ к базе данных</h1>
+    </div>
+    <div class="el-import1">
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %} 
+        Импортировать базу продукции
+        <br>(типоразмер, наименование продукции и т.д.):
+        {{ form.as_ul}}
+        <br>
+          <br><button type="submit" name="form_name" value="aform.prefix">Импортировать</button>
+    </form>
+    </div>
+    <div class="el-import2">
+      <form action="" method="post"></form>
+        {% csrf_token %} 
+          <button type="submit" class="btn btn-danger" name="form_name" value="delete_data_base_form.prefix">Очистить базу данных</button>
+      </form>
+    </div>
+    <div class="el-import3">
+          <form action="" method="post" enctype="multipart/form-data">
+            Импортировать<br>
+            1. цены базовой (собственной продукции:) - базовые цены.<br> 
+            2. база химкурьер<br>
+            {% csrf_token %} 
+            {{ form.as_ul}}
+            <br>
+              <br><button type="submit" name="form_name" value="bform.prefix">Импортировать</button>
+          </form>
+    </div> 
+    <div class="el-import4">   
+          <form action="" method="post">
+            Установить время:
+            {% csrf_token %} 
+            {{ dform.as_ul }}
+            <br>
+              <br><button type="submit" name="form_name" value="dform.prefix">Установить</button>
+          </form>
+    </div>
+    <div class="el-import5">
+    </div>
+    <div class="el-import6">
+    </div>         
+    <div class="el-import7">
+        <a href="" class="btn btn-success">На главную</a>
+    </div> 
+  </div>
+</div>
+      {% endblock body %}
 
-<form action="" method="post">
-  Установить время:
-  {% csrf_token %} 
-  {{ dform.as_ul }}
-    <button type="submit" name="form_name" value="dform.prefix">Установить</button>
-</form>
-<b>-----------</b>
 
 
-<form action="" method="post">
-  Перезагрузить сервер
-  {% csrf_token %} 
-    <button type="submit" name="form_name" value="cform_reload_nginx.prefix">Перезагрузить</button>
-</form>
+      {#  <form action="" method="post"> #}
+        {#    Перезагрузить сервер #}
+        {#    {% csrf_token %}  #}
+        {#      <button type="submit" name="form_name" value="cform_reload_nginx.prefix">Перезагрузить</button> #}
+        {#  </form> #}
 
 
-<form action="" method="post">
-  {% csrf_token %} 
-    <button type="submit" class="btn btn-danger" name="form_name" value="delete_data_base_form.prefix">Очистить базу данных</button>
-</form>
-<b>-----------</b>
-
-
-<a href="" class="btn btn-success">На главную</a>
-
-{% endblock body %}
 
 
 

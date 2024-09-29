@@ -69,13 +69,13 @@ li {
             font-size: 10vw;
           }
         }
-        main{
+        main{                                                  /* <-- ФОН!!!!! */
           width: 100%;
           height: auto;
         /* <--  background-color: rgb(204, 4, 4);  /* <--цвет текста   background-color: rgb(204, 4, 4); */
           background-color: rgb(234, 232, 220);
           clear: both;
-        
+          min-height: 80vh;
         }
         td{
           color: rgb(0, 0, 0);      /* <--  цвет текста */
@@ -137,6 +137,9 @@ li {
             font-size: 1.4vmin;
           }
           .el-2mobile {
+            display: none;
+          }
+          .div2searchmobile {
             display: none;
           }
           .el-3 {
@@ -218,7 +221,8 @@ li {
           text-align: center; 
           flex-shrink: 0;
           color: white;
-        }        
+          min-height: 20vh;
+          }        
         }
 
         @media (max-width: 1252px) {   
@@ -360,6 +364,7 @@ li {
           flex-shrink: 0;
           color: white;
           font-size: 3.7vw;
+          min-height: 20vh;
           }
           #footer_h5 {
             font-size: 3.9vw;
@@ -432,10 +437,10 @@ tbody td:nth-child(2) {
 }
 
 
-thead tr:nth-child(1) th:nth-child(4) {background-color: green}
-thead tr:nth-child(1) th:nth-child(5) {background-color: green}
-tbody td:nth-child(4) {background-color: green}
-tbody td:nth-child(5) {background-color: green}
+thead tr:nth-child(1) th:nth-child(4) /* {background-color: rgb(231, 95, 95)}*/
+thead tr:nth-child(1) th:nth-child(5) /*{background-color: rgb(231, 95, 95)}*/
+tbody td:nth-child(4) /*{background-color: rgb(231, 95, 95)}*/
+tbody td:nth-child(5) /*{background-color: rgb(231, 95, 95)}*/
 
 /* table td, */
 /* table th.fit{  */ /* ПОДГОНКА ТЕКСТА ПОД ЯЧЕЙКУ -УВЕЛИЧИВАЕТ РАЗМЕР ТЕКСТА */ 
@@ -720,6 +725,94 @@ table th {
       grid-row: 2;
     }
   }
+
+/* ИМПОРТ*/
+  @media (min-width: 1253px) { 
+  .import_data {
+    display: grid;
+        grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
+        /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
+          /* Отступы между рядами */
+        row-gap: 40px;
+        /* Отступы между колонками */
+        column-gap: 5px; 
+        background-color: #eae8dc;
+        min-width: 80%;
+    }
+    .el-import0 {
+      background-color: #eae8dc;
+      text-align: center;
+      grid-column: 3 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 1;
+    }
+    .el-import1 {
+      background-color: #ddc122;
+      text-align: left;
+      grid-column: 3 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 2;
+    }
+    .el-import2 {
+      background-color: #ddc122;
+      text-align: center;
+
+      grid-column: 4 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 2;
+    }
+    .el-import3 {
+      background-color: #ddc122;
+      text-align: left;
+      grid-column: 3 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 3;
+    }
+    .el-import4 {
+      background-color: #ddc122;
+      text-align: left;
+      grid-column: 4 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 3;
+    }
+    .el-import5 {
+      background-color: #ddc122;
+      text-align: left;
+      grid-column: 3 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 4;
+    }
+    .el-import6 {
+      background-color: #ddc122;
+      text-align: left;
+      grid-column: 4 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 4;
+    }
+    .el-import7 {
+      background-color: #ddc122;
+      text-align: center;
+      grid-column: 3 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 5;
+    }
+  }
+  
+
+
+  @media (max-width: 1253px) { 
+  .import_data {
+    display: grid;
+        grid-template-columns: repeat(4, 1fr); /* <--6 колонок в сетке*/
+        /* grid-template-rows: auto 450px repeat(4, auto);  - явно задать высоту второй строк для одной и автоматом первую и еще 4 */
+          /* Отступы между рядами */
+        row-gap: 40px;
+        /* Отступы между колонками */
+        column-gap: 5px; 
+        background-color: rgb(78, 75, 58);
+        min-width: 80%;
+    }
+    .el-imp1 {
+            background-color: #eae8dc;
+            text-align: right;
+            grid-column: 1 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+            grid-row: 1;
+          }
+  }
+/* END ИМПОРТ*/
+
       </style>
 
     <link href='{% static "css/bootstrap.min.css" %}'rel="stylesheet">
@@ -770,15 +863,15 @@ table th {
 
     <footer class="py-5 .fixed-bottom">
       <div class="row">
-        <div class="col-2">
+        <div class="col-3">
           <h5 id="footer_h5">Section</h5>
           <ul class="nav flex-column">
-            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>
-            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Features</a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white"></a></li>
+            <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white"></a></li>
           </ul>
         </div>
   
-        <div class="col-2">
+        <div class="col-1">
           <h5 id="footer_h5">Section</h5>
           <ul class="nav flex-column">
             <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-white">Home</a></li>

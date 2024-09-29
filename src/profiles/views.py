@@ -35,8 +35,8 @@ class RegisterFormView(LoginRequiredMixin, FormView):
     
 class SomeUserLoginView(auth_views.LoginView):
     template_name = 'registration/login.html'
-    redirect_field_name = 'next'
-    #redirect_field_name = 'main'
+    #redirect_field_name = 'next'
+    redirect_field_name = 'main'
     
 
     # в случае отправки почтового запроса для регистрации:
@@ -104,6 +104,7 @@ class SomePasswordChangeView(auth_views.PasswordChangeView):
     template_name = 'registration/chp.html'
     form_class = PasswordChangeForm
     success_url = reverse_lazy('chemcurier:chemcurier_table')
+    #success_url = reverse_lazy('main')
 
 
     def get_form_kwargs(self):
