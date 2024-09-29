@@ -176,17 +176,17 @@ minute1=None
 hour2=None
 minute2=None
 if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
-    hour1=17
-    minute1=30
+    hour1=23
+    minute1=35
     hour2=23
     minute2=35
 
 CELERY_BEAT_SCHEDULE = {
-    #'clean_database': {
-    #    'task': 'filemanagment.views.clean_database',
-    #    #'schedule': crontab(hour=hour3, minute=minute3),
-    #    'schedule': timedelta(seconds=60),
-    #},     
+    ####'clean_database': {                                                                 # очитка уже в render response
+    ####    'task': 'filemanagment.views.clean_database',
+    ####    #'schedule': crontab(hour=hour3, minute=minute3),
+    ####    'schedule': timedelta(seconds=60),
+    ####},     
     'parcing': {
         'task': 'prices.views.running_programm',
         'schedule': crontab(hour=hour1, minute=minute1),

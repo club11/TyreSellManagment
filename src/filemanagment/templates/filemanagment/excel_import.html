@@ -21,7 +21,7 @@
     </form>
     </div>
     <div class="el-import2">
-      <form action="" method="post"></form>
+      <form action="" method="post">
         {% csrf_token %} 
           <button type="submit" class="btn btn-danger" name="form_name" value="delete_data_base_form.prefix">Очистить базу данных</button>
       </form>
@@ -55,7 +55,10 @@
     </div> 
   </div>
 </div>
-      {% endblock body %}
+
+
+
+{% endblock body %}
 
 
 

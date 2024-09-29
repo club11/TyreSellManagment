@@ -158,9 +158,15 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         
+        ###############################################################
+        #app.control.purge()         # ОЧИСТИТЬ СПИСОК ВСЕХ ЗАДАЧ CELERY
+        ###############################################################
+
         set_time_form_a = f"{settings.hour1}:{settings.minute1}"
         set_time_form_b = f"{settings.hour2}:{settings.minute2}"
         print('set_time_form_a-ISSSS', set_time_form_a)
+
+
         return self.render_to_response({'aform': forms.ImportDataForm(prefix='aform_pre'), 'bform': forms.ImportSalesDataForm(prefix='bform_pre'), 
                                         'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})})
     
@@ -181,6 +187,10 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
     #            t2.setDaemon(True)
     #            t2.start()       
             # END OLD VERSION
+
+        ###############################################################
+        app.control.purge()      # ОЧИСТИТЬ СПИСОК ВСЕХ ЗАДАЧ CELERY
+        ###############################################################
 
         if self.request.POST.get('form_name') == "aform.prefix":
             form_name = self.request.POST.get('form_name')
