@@ -159,7 +159,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         
         ###############################################################
-        #app.control.purge()         # ОЧИСТИТЬ СПИСОК ВСЕХ ЗАДАЧ CELERY
+        app.control.purge()         # ОЧИСТИТЬ СПИСОК ВСЕХ ЗАДАЧ CELERY
         ###############################################################
 
         set_time_form_a = f"{settings.hour1}:{settings.minute1}"
