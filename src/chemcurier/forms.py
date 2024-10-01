@@ -32,143 +32,133 @@ GROUPS = None
 CHEMCOURIER_EXCEL_CREATE = False
 CHEMCOURIER_PROGRESSIVE_EXCEL_CREATE = False
 
-def get_chem_periods():
-    list_of_choices = []
-    try:
-        earlest_date = prices_models.ChemCurierTyresModel.objects.earliest('data_month_chem').data_month_chem
-        latestst_date = prices_models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
-        period_of_dates_chem_in_base = pd.date_range(earlest_date, latestst_date, freq='MS').date
+#def get_chem_periods():
+#    list_of_choices = []
+#    try:
+#        earlest_date = prices_models.ChemCurierTyresModel.objects.earliest('data_month_chem').data_month_chem
+#        latestst_date = prices_models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
+#        period_of_dates_chem_in_base = pd.date_range(earlest_date, latestst_date, freq='MS').date
+#
+#        for dattte in period_of_dates_chem_in_base:
+#            str_date = dattte.strftime('%m.%Y')
+#            str_date_and_date = dattte, str_date
+#            list_of_choices.append(str_date_and_date)
+#        list_of_choices = list(reversed(list_of_choices))
+#    except:
+#        pass
+#    #print('list_of_choices ++++', list_of_choices)
+#    return list_of_choices
 
-        for dattte in period_of_dates_chem_in_base:
-            str_date = dattte.strftime('%m.%Y')
-            str_date_and_date = dattte, str_date
-            list_of_choices.append(str_date_and_date)
-        list_of_choices = list(reversed(list_of_choices))
-    except:
-        pass
-    print('list_of_choices ++++', list_of_choices)
-    return list_of_choices
+#def get_tyresizes_list():
+#    try:
+#        list_of_tyresizes = []
+#        list_of_tyresizes_only = []
+#        for obj in prices_models.ChemCurierTyresModel.objects.all():
+#            list_of_tyresizes_only.append(obj.tyre_size_chem)
+#        list_of_tyresizes_only = list(set(list_of_tyresizes_only))  
+#        for trsz in list_of_tyresizes_only:      # добавляем ключи:
+#            resizes_k_and_val = trsz, trsz
+#            list_of_tyresizes.append(resizes_k_and_val)
+#        #print('list_of_tyresizes === ')
+#        list_of_tyresizes.sort()
+#    except:
+#        list_of_tyresizes = []
+#    return list_of_tyresizes
 
-def get_tyresizes_list():
-    try:
-        list_of_tyresizes = []
-        list_of_tyresizes_only = []
-        for obj in prices_models.ChemCurierTyresModel.objects.all():
-            list_of_tyresizes_only.append(obj.tyre_size_chem)
-        list_of_tyresizes_only = list(set(list_of_tyresizes_only))  
-        for trsz in list_of_tyresizes_only:      # добавляем ключи:
-            resizes_k_and_val = trsz, trsz
-            list_of_tyresizes.append(resizes_k_and_val)
-        #print('list_of_tyresizes === ')
-        list_of_tyresizes.sort()
-    except:
-        list_of_tyresizes = []
-    return list_of_tyresizes
+#def get_tyrebrands_list():
+#    try:
+#        list_of_tyrebrandss = [('-','-')]
+#        list_of_tyrebrands_only = [] 
+#        for obj in prices_models.ChemCurierTyresModel.objects.all():
+#          list_of_tyrebrands_only.append(obj.producer_chem)  
+#        list_of_tyrebrands_only = list(set(list_of_tyrebrands_only))
+#        for brnd in list_of_tyrebrands_only:      # добавляем ключи:
+#            tyrebrands_val = brnd, brnd
+#            list_of_tyrebrandss.append(tyrebrands_val)
+#        list_of_tyrebrandss.sort()  
+#    except:
+#        list_of_tyrebrandss = [('-','-')]
+#    return list_of_tyrebrandss  
 
-def get_tyrebrands_list():
-    try:
-        list_of_tyrebrandss = [('-','-')]
-        list_of_tyrebrands_only = [] 
-        for obj in prices_models.ChemCurierTyresModel.objects.all():
-          list_of_tyrebrands_only.append(obj.producer_chem)  
-        list_of_tyrebrands_only = list(set(list_of_tyrebrands_only))
-        for brnd in list_of_tyrebrands_only:      # добавляем ключи:
-            tyrebrands_val = brnd, brnd
-            list_of_tyrebrandss.append(tyrebrands_val)
-        list_of_tyrebrandss.sort()  
-    except:
-        list_of_tyrebrandss = [('-','-')]
-    return list_of_tyrebrandss  
+#def get_recievers_list():
+#    try:
+#        list_of_recievers = [('-','-')]
+#        list_of_recievers_only = [] 
+#        for obj in prices_models.ChemCurierTyresModel.objects.all():
+#          list_of_recievers_only.append(obj.reciever_chem)  
+#        list_of_recievers_only = list(set(list_of_recievers_only))
+#        for reciever_chem in list_of_recievers_only:      # добавляем ключи:
+#            recievers_val = reciever_chem, reciever_chem
+#            list_of_recievers.append(recievers_val)
+#        list_of_recievers.sort()
+#    except:
+#        list_of_recievers = [('-','-')]
+#    #print('list_of_recievers', list_of_recievers)
+#    return list_of_recievers  
 
-def get_recievers_list():
-    try:
-        list_of_recievers = [('-','-')]
-        list_of_recievers_only = [] 
-        for obj in prices_models.ChemCurierTyresModel.objects.all():
-          list_of_recievers_only.append(obj.reciever_chem)  
-        list_of_recievers_only = list(set(list_of_recievers_only))
-        for reciever_chem in list_of_recievers_only:      # добавляем ключи:
-            recievers_val = reciever_chem, reciever_chem
-            list_of_recievers.append(recievers_val)
-        list_of_recievers.sort()
-    except:
-        list_of_recievers = [('-','-')]
-    print('list_of_recievers', list_of_recievers)
-    return list_of_recievers  
+#def get_prod_countrys_list():
+#    try:
+#        list_of_prod_country = [('-','-')]
+#        list_of_prod_country_only = [] 
+#        for obj in prices_models.ChemCurierTyresModel.objects.all():
+#          list_of_prod_country_only.append(obj.prod_country)  
+#        list_of_prod_country_only = list(set(list_of_prod_country_only))
+#        for prod_country in list_of_prod_country_only:      # добавляем ключи:
+#            prod_country_val = prod_country, prod_country
+#            list_of_prod_country.append(prod_country_val)
+#        list_of_prod_country.sort() 
+#    except:
+#        list_of_prod_country = [('-','-')]
+#    return list_of_prod_country  
 
-def get_prod_countrys_list():
-    try:
-        list_of_prod_country = [('-','-')]
-        list_of_prod_country_only = [] 
-        for obj in prices_models.ChemCurierTyresModel.objects.all():
-          list_of_prod_country_only.append(obj.prod_country)  
-        list_of_prod_country_only = list(set(list_of_prod_country_only))
-        for prod_country in list_of_prod_country_only:      # добавляем ключи:
-            prod_country_val = prod_country, prod_country
-            list_of_prod_country.append(prod_country_val)
-        list_of_prod_country.sort() 
-    except:
-        list_of_prod_country = [('-','-')]
-    return list_of_prod_country  
-
-def get_groups_list():
-    try:
-        list_of_groups = [('-','-')]
-        list_of_groups_only = [] 
-        for obj in prices_models.ChemCurierTyresModel.objects.all():
-          list_of_groups_only.append(obj.group_chem)  
-        list_of_groups_only = list(set(list_of_groups_only))
-        for group_chem in list_of_groups_only:      # добавляем ключи:
-            if group_chem:
-                group_chem_val = group_chem.tyre_group, group_chem.tyre_group
-                list_of_groups.append(group_chem_val)
-        list_of_groups.sort()
-    except:
-        list_of_groups = [('-','-')]
-    return list_of_groups  
+#def get_groups_list():
+#    try:
+#        list_of_groups = [('-','-')]
+#        list_of_groups_only = [] 
+#        for obj in prices_models.ChemCurierTyresModel.objects.all():
+#          list_of_groups_only.append(obj.group_chem)  
+#        list_of_groups_only = list(set(list_of_groups_only))
+#        for group_chem in list_of_groups_only:      # добавляем ключи:
+#            if group_chem:
+#                group_chem_val = group_chem.tyre_group, group_chem.tyre_group
+#                list_of_groups.append(group_chem_val)
+#        list_of_groups.sort()
+#    except:
+#        list_of_groups = [('-','-')]
+#    return list_of_groups  
 
 NUMBER_TO_MONTH_DICT = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
 MONTH_TO_NUMBER_DICT = { 'январь' : 1, 'февраль': 2, 'март' : 3, 'апрель' : 4, 'май' : 5, 'июнь' : 6, 'июль' : 7, 'август' : 8, 'сентябрь' : 9, 'октябрь' : 10, 'ноябрь' : 11, 'декабрь' : 12}
 
-PERIODS = get_chem_periods() 
-TYRESIZES = get_tyresizes_list()
-BRANDS = get_tyrebrands_list()
-RECIEVERS = get_recievers_list()
-PRODCOUTRYS = get_prod_countrys_list()
-GROUPS = get_groups_list()
-
-#print('PERIODS', PERIODS)
+#PERIODS = get_chem_periods() 
+#TYRESIZES = get_tyresizes_list()
+#BRANDS = get_tyrebrands_list()
+#RECIEVERS = get_recievers_list()
+#PRODCOUTRYS = get_prod_countrys_list()
+#GROUPS = get_groups_list()
 
 
-for name_period in NUMBER_TO_MONTH_DICT.keys():
-    if PERIODS:
-        for date_period in PERIODS:
-            date_period_month, date_period_year = date_period[1].split('.')
-            date_period_month_int = int(date_period_month)
-            #print('date_period_month', date_period_month, type(date_period_month), 'name_period', name_period, type(name_period))
-            if date_period_month_int == name_period:
-                #print('AVD', NUMBER_TO_MONTH_DICT.get(name_period))
-                month_in_str = NUMBER_TO_MONTH_DICT.get(name_period) 
-                year_in_str = date_period_year
-                month_year_in_str = date_period[0], month_in_str + ' '+ year_in_str                                
-                PERIODS_IN_STR_MONTH_TEMPORARY.append(month_year_in_str)
 
 
-PERIODS = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
-
-
-#####  ВРЕМЕННО
-#PERIODS = []
-#TYRESIZES = []
-#BRANDS = []
-#RECIEVERS = []
-#PRODCOUTRYS = []
-#GROUPS = []
-##### END  ВРЕМЕННО
+#for name_period in NUMBER_TO_MONTH_DICT.keys():
+#    if PERIODS:
+#        for date_period in PERIODS:
+#            date_period_month, date_period_year = date_period[1].split('.')
+#            date_period_month_int = int(date_period_month)
+#            #print('date_period_month', date_period_month, type(date_period_month), 'name_period', name_period, type(name_period))
+#            if date_period_month_int == name_period:
+#                #print('AVD', NUMBER_TO_MONTH_DICT.get(name_period))
+#                month_in_str = NUMBER_TO_MONTH_DICT.get(name_period) 
+#                year_in_str = date_period_year
+#                month_year_in_str = date_period[0], month_in_str + ' '+ year_in_str                                
+#                PERIODS_IN_STR_MONTH_TEMPORARY.append(month_year_in_str)
+#
+#PERIODS = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
 
 
 class PeriodForm(forms.Form): 
-    Parameter_CHOICES = PERIODS 
+    #Parameter_CHOICES = PERIODS 
+    Parameter_CHOICES = [('-','-')]
     periods = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES,
@@ -176,7 +166,8 @@ class PeriodForm(forms.Form):
     )    
 
 class StartPeriodForm(forms.Form): 
-    Parameter_CHOICES = PERIODS 
+    #Parameter_CHOICES = PERIODS 
+    Parameter_CHOICES = [('-','-')]
     periods_start = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES,
@@ -184,7 +175,8 @@ class StartPeriodForm(forms.Form):
     )  
 
 class EndPeriodForm(forms.Form): 
-    Parameter_CHOICES = PERIODS 
+    #Parameter_CHOICES = PERIODS 
+    Parameter_CHOICES = [('-','-')] 
     periods_end = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES,
@@ -192,7 +184,8 @@ class EndPeriodForm(forms.Form):
     )  
 
 class TyreSizeForm(forms.Form): 
-    Parameter_CHOICES_TYRESIZES = TYRESIZES   
+    #Parameter_CHOICES_TYRESIZES = TYRESIZES  
+    Parameter_CHOICES_TYRESIZES = [('-','-')]  
     tyresizes = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES_TYRESIZES,
@@ -200,7 +193,8 @@ class TyreSizeForm(forms.Form):
     )
 
 class BrandForm(forms.Form): 
-    Parameter_CHOICES_BRANDS = BRANDS  
+    #Parameter_CHOICES_BRANDS = BRANDS  
+    Parameter_CHOICES_BRANDS = [('-','-')]
     tyrebrands = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES_BRANDS,
@@ -208,9 +202,9 @@ class BrandForm(forms.Form):
         required=False,  
     )
     
-
 class RecieverForm(forms.Form): 
-    Parameter_CHOICES_RECIEVERS = RECIEVERS  
+    #Parameter_CHOICES_RECIEVERS = RECIEVERS  
+    Parameter_CHOICES_RECIEVERS = [('-','-')]  
     recievers = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES_RECIEVERS,
@@ -219,7 +213,8 @@ class RecieverForm(forms.Form):
     )
 
 class ProdCountryForm(forms.Form): 
-    Parameter_CHOICES_PRODCOUTRYS = PRODCOUTRYS  
+    #Parameter_CHOICES_PRODCOUTRYS = PRODCOUTRYS  
+    Parameter_CHOICES_PRODCOUTRYS = [('-','-')]  
     prod_countrys = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES_PRODCOUTRYS,
@@ -228,7 +223,8 @@ class ProdCountryForm(forms.Form):
     )
 
 class GroupForm(forms.Form): 
-    Parameter_CHOICES_GROUPS = GROUPS  
+    #Parameter_CHOICES_GROUPS = GROUPS  
+    Parameter_CHOICES_GROUPS = [('-','-')]
     prod_groups = forms.ChoiceField(
         widget = forms.Select,
         choices = Parameter_CHOICES_GROUPS,

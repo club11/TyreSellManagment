@@ -13,6 +13,102 @@ import openpyxl
 import os
 
 
+NUMBER_TO_MONTH_DICT = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
+MONTH_TO_NUMBER_DICT = { 'январь' : 1, 'февраль': 2, 'март' : 3, 'апрель' : 4, 'май' : 5, 'июнь' : 6, 'июль' : 7, 'август' : 8, 'сентябрь' : 9, 'октябрь' : 10, 'ноябрь' : 11, 'декабрь' : 12}
+
+def get_chem_periods():
+    list_of_choices = []
+    try:
+        earlest_date = prices_models.ChemCurierTyresModel.objects.earliest('data_month_chem').data_month_chem
+        latestst_date = prices_models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
+        period_of_dates_chem_in_base = pd.date_range(earlest_date, latestst_date, freq='MS').date
+        for dattte in period_of_dates_chem_in_base:
+            str_date = dattte.strftime('%m.%Y')
+            str_date_and_date = dattte, str_date
+            list_of_choices.append(str_date_and_date)
+        list_of_choices = list(reversed(list_of_choices))
+    except:
+        pass
+    #print('list_of_choices ++++', list_of_choices)
+    return list_of_choices
+
+def get_tyresizes_list():
+    try:
+        list_of_tyresizes = []
+        list_of_tyresizes_only = []
+        for obj in prices_models.ChemCurierTyresModel.objects.all():
+            list_of_tyresizes_only.append(obj.tyre_size_chem)
+        list_of_tyresizes_only = list(set(list_of_tyresizes_only))  
+        for trsz in list_of_tyresizes_only:      # добавляем ключи:
+            resizes_k_and_val = trsz, trsz
+            list_of_tyresizes.append(resizes_k_and_val)
+        #print('list_of_tyresizes === ')
+        list_of_tyresizes.sort()
+    except:
+        list_of_tyresizes = []
+    return list_of_tyresizes
+
+def get_tyrebrands_list():
+    try:
+        list_of_tyrebrandss = [('-','-')]
+        list_of_tyrebrands_only = [] 
+        for obj in prices_models.ChemCurierTyresModel.objects.all():
+          list_of_tyrebrands_only.append(obj.producer_chem)  
+        list_of_tyrebrands_only = list(set(list_of_tyrebrands_only))
+        for brnd in list_of_tyrebrands_only:      # добавляем ключи:
+            tyrebrands_val = brnd, brnd
+            list_of_tyrebrandss.append(tyrebrands_val)
+        list_of_tyrebrandss.sort()  
+    except:
+        list_of_tyrebrandss = [('-','-')]
+    return list_of_tyrebrandss  
+
+def get_recievers_list():
+    try:
+        list_of_recievers = [('-','-')]
+        list_of_recievers_only = [] 
+        for obj in prices_models.ChemCurierTyresModel.objects.all():
+          list_of_recievers_only.append(obj.reciever_chem)  
+        list_of_recievers_only = list(set(list_of_recievers_only))
+        for reciever_chem in list_of_recievers_only:      # добавляем ключи:
+            recievers_val = reciever_chem, reciever_chem
+            list_of_recievers.append(recievers_val)
+        list_of_recievers.sort()
+    except:
+        list_of_recievers = [('-','-')]
+    #print('list_of_recievers', list_of_recievers)
+    return list_of_recievers  
+
+def get_prod_countrys_list():
+    try:
+        list_of_prod_country = [('-','-')]
+        list_of_prod_country_only = [] 
+        for obj in prices_models.ChemCurierTyresModel.objects.all():
+          list_of_prod_country_only.append(obj.prod_country)  
+        list_of_prod_country_only = list(set(list_of_prod_country_only))
+        for prod_country in list_of_prod_country_only:      # добавляем ключи:
+            prod_country_val = prod_country, prod_country
+            list_of_prod_country.append(prod_country_val)
+        list_of_prod_country.sort() 
+    except:
+        list_of_prod_country = [('-','-')]
+    return list_of_prod_country 
+
+def get_groups_list():
+    try:
+        list_of_groups = [('-','-')]
+        list_of_groups_only = [] 
+        for obj in prices_models.ChemCurierTyresModel.objects.all():
+          list_of_groups_only.append(obj.group_chem)  
+        list_of_groups_only = list(set(list_of_groups_only))
+        for group_chem in list_of_groups_only:      # добавляем ключи:
+            if group_chem:
+                group_chem_val = group_chem.tyre_group, group_chem.tyre_group
+                list_of_groups.append(group_chem_val)
+        list_of_groups.sort()
+    except:
+        list_of_groups = [('-','-')]
+    return list_of_groups
 
 
 class ChemcourierTableModelDetailView(DetailView):
@@ -26,22 +122,34 @@ class ChemcourierTableModelDetailView(DetailView):
     def get_context_data(self, **kwargs):       
         context = super().get_context_data(**kwargs)
         obj = context.get('object')  
-
         context['chemcourier_table'] = obj
 
-        # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_groups_list() - если есть список данных - то считаем, что все формы популизированы данными
-        check_if_form_contais_data = forms.get_groups_list()
-        if check_if_form_contais_data == [('-','-')]:
-            try:
-                forms.PERIODS = forms.get_chem_periods()
-                forms.TYRESIZES = forms.get_tyresizes_list()
-                forms.BRANDS = forms.get_tyrebrands_list()
-                forms.RECIEVERS = forms.get_recievers_list()
-                forms.PRODCOUTRYS = forms.get_prod_countrys_list()
-                forms.GROUPS = forms.get_groups_list()
-            except:
-                pass
 
+        PERIODS_IN_STR_MONTH_TEMPORARY = []
+
+        PERIODS_CH = get_chem_periods() 
+        for name_period in NUMBER_TO_MONTH_DICT.keys():
+            if PERIODS_CH:
+                for date_period in PERIODS_CH:
+                    date_period_month, date_period_year = date_period[1].split('.')
+                    date_period_month_int = int(date_period_month)
+                    #print('date_period_month', date_period_month, type(date_period_month), 'name_period', name_period, type(name_period))
+                    if date_period_month_int == name_period:
+                        #print('AVD', NUMBER_TO_MONTH_DICT.get(name_period))
+                        month_in_str = NUMBER_TO_MONTH_DICT.get(name_period) 
+                        year_in_str = date_period_year
+                        month_year_in_str = date_period[0], month_in_str + ' '+ year_in_str                                
+                        PERIODS_IN_STR_MONTH_TEMPORARY.append(month_year_in_str)
+
+        TYRESIZES = get_tyresizes_list()
+        BRANDS = get_tyrebrands_list()
+        RECIEVERS = get_recievers_list()
+        PRODCOUTRYS = get_prod_countrys_list()
+        GROUPS = get_groups_list()
+
+
+        # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_groups_list() - если есть список данных - то считаем, что все формы популизированы данными
+        
         # 1. 
         # 1.1 получить период дат (месяц-год), доступных в спарсенной базе Хим Курьер
         # сфомированно в форме
@@ -50,17 +158,29 @@ class ChemcourierTableModelDetailView(DetailView):
         chosen_month_num = 1
         chosen_year_num = 1
         if forms.INITIAL_PERIOD:                                                            # если пользователь выбрал период
-            period_form = forms.PeriodForm(initial={'periods': forms.INITIAL_PERIOD})
-            chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD, '%Y-%m-%d').date()         
+            #period_form = forms.PeriodForm(initial={'periods': forms.INITIAL_PERIOD})
+
+            PERIODS_CH = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
+            period_form = forms.PeriodForm()
+            period_form.fields['periods'].choices = PERIODS_CH
+            period_form.fields['periods'].initial = forms.INITIAL_PERIOD
+            chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD, '%Y-%m-%d').date()    
+            #print('chosen_period ===', chosen_period)   
             chosen_year_num = chosen_period.year
             chosen_month_num = chosen_period.month   
         else: 
             try:                                                                               # если пользователь не выбрал период
+                #period_form = forms.PeriodForm()
+                #last_period = forms.PERIODS[-1] 
+
+                PERIODS_CH = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
                 period_form = forms.PeriodForm()
-                last_period = forms.PERIODS[-1] 
+                period_form.fields['periods'].choices = PERIODS_CH
+                last_period = PERIODS_CH[-1] 
+
                 chosen_period = last_period[0]
                 chosen_year_num = chosen_period.year
-                chosen_month_num = chosen_period.month  
+                chosen_month_num = chosen_period.month 
             except:
                 period_form = forms.PeriodForm()
         context['period_form'] = period_form
@@ -76,13 +196,24 @@ class ChemcourierTableModelDetailView(DetailView):
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
             #print('1===', forms.INITIAL_TYREISIZE )
-            tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
+            #tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
+            #tyresize_to_check = forms.INITIAL_TYREISIZE
+
+            tyresizes_form = forms.TyreSizeForm() 
+            tyresizes_form.fields['tyresizes'].choices = TYRESIZES
+            tyresizes_form.fields['tyresizes'].initial = forms.INITIAL_TYREISIZE
             tyresize_to_check = forms.INITIAL_TYREISIZE
         else:
             #print('2===')
-            if forms.TYRESIZES:
+            #if forms.TYRESIZES:
+            if TYRESIZES:
+                #tyresizes_form = forms.TyreSizeForm()
+                #tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка 
+
                 tyresizes_form = forms.TyreSizeForm()
-                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка 
+                tyresizes_form.fields['tyresizes'].choices = TYRESIZES
+                tyresize_to_check = TYRESIZES[0]      #берем первый из списка 
+
 
         context['tyresizes_form'] = tyresizes_form
         context['current_tyresize'] = tyresize_to_check
@@ -90,35 +221,68 @@ class ChemcourierTableModelDetailView(DetailView):
         # 3.1 получение бренда для отбора (создание формы):
         tyrebrands_to_check = None
         if forms.INITIAL_BRANDS and forms.INITIAL_BRANDS != '-':
-            tyrebrands_form = forms.BrandForm(initial={'tyrebrands': forms.INITIAL_BRANDS})
-            tyrebrands_to_check = forms.INITIAL_BRANDS
+            #tyrebrands_form = forms.BrandForm(initial={'tyrebrands': forms.INITIAL_BRANDS})
+            #tyrebrands_to_check = forms.INITIAL_BRANDS
+
+            tyrebrands_form = forms.BrandForm()  
+            tyrebrands_form.fields['tyrebrands'].choices = BRANDS
+            tyrebrands_form.fields['tyrebrands'].initial = forms.INITIAL_BRANDS 
+            tyrebrands_to_check = forms.INITIAL_BRANDS                 
         else:    
+            #tyrebrands_form = forms.BrandForm()
+
             tyrebrands_form = forms.BrandForm()
+            tyrebrands_form.fields['tyrebrands'].choices = BRANDS
+
         context['tyrebrands_form'] = tyrebrands_form
         # 3.2 получение получателя для отбора (создание формы):
         recievers_to_check = None
         if forms.INITIAL_RECIEVER and forms.INITIAL_RECIEVER != '-':
-            recievers_form = forms.RecieverForm(initial={'recievers': forms.INITIAL_RECIEVER})
+            #recievers_form = forms.RecieverForm(initial={'recievers': forms.INITIAL_RECIEVER})
+            #recievers_to_check = forms.INITIAL_RECIEVER
+
+            recievers_form = forms.RecieverForm()
+            recievers_form.fields['recievers'].choices = RECIEVERS
+            recievers_form.fields['recievers'].initial = forms.INITIAL_RECIEVER
             recievers_to_check = forms.INITIAL_RECIEVER
         else:    
+            #recievers_form = forms.RecieverForm()
+
             recievers_form = forms.RecieverForm()
+            recievers_form.fields['recievers'].choices = RECIEVERS
         context['recievers_form'] = recievers_form      
         # 3.3 получение страну производства для отбора (создание формы):
         prod_countrys_to_check = None
         if forms.INITIAL_PRODCOUTRYS and forms.INITIAL_PRODCOUTRYS != '-':
-            prod_countrys_form = forms.ProdCountryForm(initial={'prod_countrys': forms.INITIAL_PRODCOUTRYS})
+            #prod_countrys_form = forms.ProdCountryForm(initial={'prod_countrys': forms.INITIAL_PRODCOUTRYS})
+            #prod_countrys_to_check = forms.INITIAL_PRODCOUTRYS
+
+            prod_countrys_form = forms.ProdCountryForm()
+            prod_countrys_form.fields['prod_countrys'].choices = PRODCOUTRYS
+            prod_countrys_form.fields['prod_countrys'].initial = forms.INITIAL_PRODCOUTRYS
             prod_countrys_to_check = forms.INITIAL_PRODCOUTRYS
         else:    
+            #prod_countrys_form = forms.ProdCountryForm()
+
             prod_countrys_form = forms.ProdCountryForm()
+            prod_countrys_form.fields['prod_countrys'].choices = PRODCOUTRYS
         context['prod_countrys_form'] = prod_countrys_form   
 
         # 3.4 получение группу для отбора (создание формы):
         prod_groups_to_check = None
         if forms.INITIAL_GROUPS and forms.INITIAL_GROUPS != '-':
-            groups_form = forms.GroupForm(initial={'prod_groups': forms.INITIAL_GROUPS})
+            #groups_form = forms.GroupForm(initial={'prod_groups': forms.INITIAL_GROUPS})
+            #prod_groups_to_check = forms.INITIAL_GROUPS
+
+            groups_form = forms.GroupForm()
+            groups_form.fields['prod_groups'].choices = GROUPS
+            groups_form.fields['prod_groups'].initial = GROUPS
             prod_groups_to_check = forms.INITIAL_GROUPS
         else:    
+            #groups_form = forms.GroupForm()
+
             groups_form = forms.GroupForm()
+            groups_form.fields['prod_groups'].choices = GROUPS
         context['groups_form'] = groups_form   
 
         # 4 ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ    
@@ -419,16 +583,7 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_chem_periods() - если есть список данных - то считаем, что все формы популизированы данными
         check_if_form_contais_data = forms.PERIODS
         #print('check_if_form_contais_data ||||||||||||||', check_if_form_contais_data)
-        #if check_if_form_contais_data == []:
-        #    try:
-        #        forms.PERIODS = forms.get_chem_periods()
-        #        forms.TYRESIZES = forms.get_tyresizes_list()
-        #        forms.BRANDS = forms.get_tyrebrands_list()
-        #        forms.RECIEVERS = forms.get_recievers_list()
-        #        forms.PRODCOUTRYS = forms.get_prod_countrys_list()
-        #        forms.GROUPS = forms.get_groups_list()
-        #    except:
-        #        pass
+
         # 1. 
         # 1.1 получить период дат (месяц-год), доступных в спарсенной базе Хим Курьер
         # сфомированно в форме
@@ -436,8 +591,6 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         #1.2 форма для ввода периорда + получение месяца и года для поиска в базе Chemcurier объектов:
         chosen_per_num_start = None       
         chosen_per_num_end = None 
-        #print('forms.PERIODS', forms.PERIODS)
-        #print('forms.PERIODS', forms.INITIAL_PERIOD_START)
         forms.PERIODS
         if forms.INITIAL_PERIOD_START or forms.INITIAL_PERIOD_END:
             if forms.INITIAL_PERIOD_START:                                                            # если пользователь выбрал период
