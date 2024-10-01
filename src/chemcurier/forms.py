@@ -150,21 +150,11 @@ for name_period in NUMBER_TO_MONTH_DICT.keys():
                 #print('AVD', NUMBER_TO_MONTH_DICT.get(name_period))
                 month_in_str = NUMBER_TO_MONTH_DICT.get(name_period) 
                 year_in_str = date_period_year
-                #month_in_str_data = date_period[0], month_in_str
-                #year_in_str_data = date_period[0], year_in_str
-                #PERIODS_IN_STR_MONTH.append(month_in_str_data)
-                #PERIODS_IN_STR_YEARS.append(year_in_str_data)
-
                 month_year_in_str = date_period[0], month_in_str + ' '+ year_in_str                                
                 PERIODS_IN_STR_MONTH_TEMPORARY.append(month_year_in_str)
 
-#PERIODS_IN_STR_MONTH = list(set(PERIODS_IN_STR_MONTH))
-#PERIODS_IN_STR_YEARS = list(set(PERIODS_IN_STR_YEARS))
-#print('PERIODS_IN_STR_MONTH ', PERIODS_IN_STR_MONTH)
-#print('PERIODS_IN_STR_YEARS ', PERIODS_IN_STR_YEARS)
-PERIODS = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
-#print('PERIODS', PERIODS)
 
+PERIODS = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
 
 
 #####  ВРЕМЕННО
@@ -184,19 +174,6 @@ class PeriodForm(forms.Form):
         choices = Parameter_CHOICES,
         label='Период',      
     )    
-    #periods_month = forms.ChoiceField(
-    #    widget = forms.Select,
-    #    choices = Parameter_CHOICES,
-    #    label='Период',      
-    #)
-    #Parameter_CHOICES = PERIODS_IN_STR_YEARS  
-    #periods_years = forms.ChoiceField(
-    #    widget = forms.Select,
-    #    choices = Parameter_CHOICES,
-    #    label='Период',      
-    #)
-
- 
 
 class StartPeriodForm(forms.Form): 
     Parameter_CHOICES = PERIODS 
