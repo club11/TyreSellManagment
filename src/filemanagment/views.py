@@ -158,10 +158,6 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         
-        ###############################################################
-        app.control.purge()         # ОЧИСТИТЬ СПИСОК ВСЕХ ЗАДАЧ CELERY
-        ###############################################################
-
         set_time_form_a = f"{settings.hour1}:{settings.minute1}"
         set_time_form_b = f"{settings.hour2}:{settings.minute2}"
         print('set_time_form_a-ISSSS', set_time_form_a)
@@ -283,14 +279,6 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
         if self.request.POST.get('form_name') == "cform_reload_nginx.prefix": 
             subprocess.call('docker restart tyresellmanagment-src')       
 
-        from proj import celery
-
-        #print('==========IFIFIFIFIFIFIIFI 1==', celery.app.control.inspect())
-        #i = celery.app.control.inspect()
-        #print('==========IFIFIFIFIFIFIIFI Show the items that have an ETA or are scheduled for later processing 2==', i.scheduled())
-        #print('==========IFIFIFIFIFIFIIFI Show tasks that are currently active 3==', i.active())
-        #print('==========IFIFIFIFIFIFIIFI Show tasks that have been claimed by workers 4==', i.reserved())
-
 
         form = forms.ImportSalesDataForm()  
         set_time_form_a = f"{settings.hour1}:{settings.minute1}"
@@ -300,14 +288,20 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 
         # очистить базу данных:
         if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
-
             print('WE GOT 15 SEC TASK AWAIT')
             execute_in_one_minutes = datetime.now() + timedelta(minutes = 1)
-            ##clean_database.apply_async(eta=execute_in_two_minutes)
-            #render(self.request, 'filemanagment/excel_import.html', {'form': form, 
-            #                            'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(eta=execute_in_one_minutes)
             render(self.request, 'filemanagment/excel_import.html', {'form': form, 
                                         'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(countdown=15)
+
+        ###############################################################
+        if self.request.POST.get('form_name') == "celery_qeue_down":
+            app.control.purge()      # ОЧИСТИТЬ СПИСОК ВСЕХ ЗАДАЧ CELERY
+            print('CELERY queue is CLEARED')
+
+            render(self.request, 'filemanagment/excel_import.html', {'form': form, 
+                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})})
+        ###############################################################            
+
         # END очистить базу данных:
   
         return render(self.request, 'filemanagment/excel_import.html', {'form': form, 

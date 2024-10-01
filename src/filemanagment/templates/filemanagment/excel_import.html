@@ -47,12 +47,19 @@
           </form>
     </div>
     <div class="el-import5">
-    </div>
+    </div>  
+ 
     <div class="el-import6">
     </div>         
     <div class="el-import7">
         <a href="{% url 'main' %}" class="btn btn-success">На главную</a>
     </div> 
+    <div class="el-import8">
+      <form action="" method="post">
+        {% csrf_token %} 
+          <button type="submit" name="form_name" value="celery_qeue_down">Сброс Celery очереди задач</button>
+      </form>
+    </div>
   </div>
 </div>
 

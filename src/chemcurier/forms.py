@@ -46,7 +46,7 @@ def get_chem_periods():
         list_of_choices = list(reversed(list_of_choices))
     except:
         pass
-    print('list_of_choices', list_of_choices)
+    print('list_of_choices ++++', list_of_choices)
     return list_of_choices
 
 def get_tyresizes_list():
@@ -93,6 +93,7 @@ def get_recievers_list():
         list_of_recievers.sort()
     except:
         list_of_recievers = [('-','-')]
+    print('list_of_recievers', list_of_recievers)
     return list_of_recievers  
 
 def get_prod_countrys_list():
