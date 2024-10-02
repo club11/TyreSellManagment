@@ -146,6 +146,7 @@ class ChemcourierTableModelDetailView(DetailView):
         RECIEVERS = get_recievers_list()
         PRODCOUTRYS = get_prod_countrys_list()
         GROUPS = get_groups_list()
+        print('GROUPS', GROUPS)
 
 
         # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_groups_list() - если есть список данных - то считаем, что все формы популизированы данными
@@ -213,7 +214,6 @@ class ChemcourierTableModelDetailView(DetailView):
                 tyresizes_form = forms.TyreSizeForm()
                 tyresizes_form.fields['tyresizes'].choices = TYRESIZES
                 tyresize_to_check = TYRESIZES[0]      #берем первый из списка 
-
 
         context['tyresizes_form'] = tyresizes_form
         context['current_tyresize'] = tyresize_to_check
@@ -580,6 +580,28 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
 
         context['chemcourier_table'] = obj
 
+        PERIODS_IN_STR_MONTH_TEMPORARY = []
+
+        PERIODS_CH = get_chem_periods() 
+        for name_period in NUMBER_TO_MONTH_DICT.keys():
+            if PERIODS_CH:
+                for date_period in PERIODS_CH:
+                    date_period_month, date_period_year = date_period[1].split('.')
+                    date_period_month_int = int(date_period_month)
+                    #print('date_period_month', date_period_month, type(date_period_month), 'name_period', name_period, type(name_period))
+                    if date_period_month_int == name_period:
+                        #print('AVD', NUMBER_TO_MONTH_DICT.get(name_period))
+                        month_in_str = NUMBER_TO_MONTH_DICT.get(name_period) 
+                        year_in_str = date_period_year
+                        month_year_in_str = date_period[0], month_in_str + ' '+ year_in_str                                
+                        PERIODS_IN_STR_MONTH_TEMPORARY.append(month_year_in_str)
+
+        TYRESIZES = get_tyresizes_list()  
+        BRANDS = get_tyrebrands_list()  
+        RECIEVERS = get_recievers_list()   
+        PRODCOUTRYS = get_prod_countrys_list()   
+        GROUPS = get_groups_list()   
+
         # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_chem_periods() - если есть список данных - то считаем, что все формы популизированы данными
         check_if_form_contais_data = forms.PERIODS
         #print('check_if_form_contais_data ||||||||||||||', check_if_form_contais_data)
@@ -594,30 +616,63 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         forms.PERIODS
         if forms.INITIAL_PERIOD_START or forms.INITIAL_PERIOD_END:
             if forms.INITIAL_PERIOD_START:                                                            # если пользователь выбрал период
-                period_form_start = forms.StartPeriodForm(initial={'periods_start': forms.INITIAL_PERIOD_START})
-                chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_START, '%Y-%m-%d').date()         
+                #period_form_start = forms.StartPeriodForm(initial={'periods_start': forms.INITIAL_PERIOD_START})
+                #chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_START, '%Y-%m-%d').date() 
+                #chosen_per_num_start = chosen_period
+
+                period_form_start = forms.StartPeriodForm()
+                period_form_start.fields['periods_start'].choices = PERIODS_IN_STR_MONTH_TEMPORARY
+                period_form_start.fields['periods_start'].initial = forms.INITIAL_PERIOD_START
+                chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_START, '%Y-%m-%d').date() 
                 chosen_per_num_start = chosen_period
-            #print('1?')      
+            #print('1?', chosen_period, period_form_start)      
             if forms.INITIAL_PERIOD_END:      
-                period_form_end = forms.EndPeriodForm(initial={'periods_end': forms.INITIAL_PERIOD_END}) 
-                chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_END, '%Y-%m-%d').date()         
-                chosen_per_num_end = chosen_period     
-            #print('2?')  
+                #period_form_end = forms.EndPeriodForm(initial={'periods_end': forms.INITIAL_PERIOD_END}) 
+                #chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_END, '%Y-%m-%d').date()         
+                #chosen_per_num_end = chosen_period  
+
+                period_form_end = forms.EndPeriodForm()
+                period_form_end.fields['periods_end'].choices = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
+                period_form_end.fields['periods_end'].initial = forms.INITIAL_PERIOD_END 
+                chosen_period = datetime.datetime.strptime(forms.INITIAL_PERIOD_END, '%Y-%m-%d').date()                
+                chosen_per_num_end = chosen_period 
+            #print('2?', chosen_period, period_form_end)  
         else: 
             try:                                                                               # если пользователь не выбрал период
+                #period_form_start = forms.StartPeriodForm()
+                #period_form_end = forms.EndPeriodForm()
+                #last_period = forms.PERIODS[-1] 
+                #chosen_period = last_period[0]
+                #chosen_per_num_start = chosen_period 
+                #chosen_per_num_end = chosen_per_num_start 
+                #print('3?', chosen_period )
+
+                PERIODS_CH = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
                 period_form_start = forms.StartPeriodForm()
                 period_form_end = forms.EndPeriodForm()
-                last_period = forms.PERIODS[-1] 
+                period_form_start.fields['periods_start'].choices = PERIODS_IN_STR_MONTH_TEMPORARY
+                period_form_end.fields['periods_end'].choices = PERIODS_CH
+                last_period = forms.PERIODS[-1]
                 chosen_period = last_period[0]
                 chosen_per_num_start = chosen_period 
                 chosen_per_num_end = chosen_per_num_start 
-                print('3?', chosen_period )       
+                #print('3?', chosen_period )                
+
             except:
+                #period_form_start = forms.StartPeriodForm()
+                #period_form_end = forms.EndPeriodForm()
+                #chosen_per_num_start = datetime.date.today()
+                #chosen_per_num_end = datetime.date.today()                
+                #print('4?')
+
+                PERIODS_CH = list(reversed(PERIODS_IN_STR_MONTH_TEMPORARY))
                 period_form_start = forms.StartPeriodForm()
-                period_form_end = forms.EndPeriodForm()
+                period_form_end = forms.EndPeriodForm()  
+                period_form_start.fields['periods_start'].choices = PERIODS_IN_STR_MONTH_TEMPORARY
+                period_form_end.fields['periods_end'].choices = PERIODS_CH 
                 chosen_per_num_start = datetime.date.today()
-                chosen_per_num_end = datetime.date.today()                
-                print('4?')  
+                chosen_per_num_end = datetime.date.today() 
+                #print('4?')             
 
         context['period_form_start'] = period_form_start
         context['period_form_end'] = period_form_end
@@ -626,12 +681,21 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         tyresizes_form = forms.TyreSizeForm()
         tyresize_to_check = None
         if forms.INITIAL_TYREISIZE:
-            tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
+            #tyresizes_form = forms.TyreSizeForm(initial={'tyresizes': forms.INITIAL_TYREISIZE})
+            #tyresize_to_check = forms.INITIAL_TYREISIZE
+
+            tyresizes_form = forms.TyreSizeForm() 
+            tyresizes_form.fields['tyresizes'].choices = TYRESIZES
+            tyresizes_form.fields['tyresizes'].initial = forms.INITIAL_TYREISIZE
             tyresize_to_check = forms.INITIAL_TYREISIZE
         else:
-            if forms.TYRESIZES:
+            if TYRESIZES:
+                #tyresizes_form = forms.TyreSizeForm()
+                #tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка  
+
                 tyresizes_form = forms.TyreSizeForm()
-                tyresize_to_check = forms.TYRESIZES[0]      #берем первый из списка  
+                tyresizes_form.fields['tyresizes'].choices = TYRESIZES
+                tyresize_to_check = TYRESIZES[0]      #берем первый из списка 
 
         context['tyresizes_form'] = tyresizes_form
         context['current_tyresize'] = tyresize_to_check
@@ -639,35 +703,70 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
         # 3.1 получение бренда для отбора (создание формы):
         tyrebrands_to_check = None
         if forms.INITIAL_BRANDS and forms.INITIAL_BRANDS != '-':
-            tyrebrands_form = forms.BrandForm(initial={'tyrebrands': forms.INITIAL_BRANDS})
-            tyrebrands_to_check = forms.INITIAL_BRANDS
+            #tyrebrands_form = forms.BrandForm(initial={'tyrebrands': forms.INITIAL_BRANDS})
+            #tyrebrands_to_check = forms.INITIAL_BRANDS
+
+            tyrebrands_form = forms.BrandForm()  
+            tyrebrands_form.fields['tyrebrands'].choices = BRANDS
+            tyrebrands_form.fields['tyrebrands'].initial = forms.INITIAL_BRANDS 
+            tyrebrands_to_check = forms.INITIAL_BRANDS 
         else:    
+            #tyrebrands_form = forms.BrandForm()
+
             tyrebrands_form = forms.BrandForm()
+            tyrebrands_form.fields['tyrebrands'].choices = BRANDS
+
         context['tyrebrands_form'] = tyrebrands_form
         # 3.2 получение получателя для отбора (создание формы):
         recievers_to_check = None
         if forms.INITIAL_RECIEVER and forms.INITIAL_RECIEVER != '-':
-            recievers_form = forms.RecieverForm(initial={'recievers': forms.INITIAL_RECIEVER})
+            #recievers_form = forms.RecieverForm(initial={'recievers': forms.INITIAL_RECIEVER})
+            #recievers_to_check = forms.INITIAL_RECIEVER
+
+            recievers_form = forms.RecieverForm()
+            recievers_form.fields['recievers'].choices = RECIEVERS
+            recievers_form.fields['recievers'].initial = forms.INITIAL_RECIEVER
             recievers_to_check = forms.INITIAL_RECIEVER
         else:    
+            #recievers_form = forms.RecieverForm()
+
             recievers_form = forms.RecieverForm()
+            recievers_form.fields['recievers'].choices = RECIEVERS
         context['recievers_form'] = recievers_form      
         # 3.3 получение страну производства для отбора (создание формы):
         prod_countrys_to_check = None
         if forms.INITIAL_PRODCOUTRYS and forms.INITIAL_PRODCOUTRYS != '-':
-            prod_countrys_form = forms.ProdCountryForm(initial={'prod_countrys': forms.INITIAL_PRODCOUTRYS})
+            #prod_countrys_form = forms.ProdCountryForm(initial={'prod_countrys': forms.INITIAL_PRODCOUTRYS})
+            #prod_countrys_to_check = forms.INITIAL_PRODCOUTRYS
+
+            prod_countrys_form = forms.ProdCountryForm()
+            prod_countrys_form.fields['prod_countrys'].choices = PRODCOUTRYS
+            prod_countrys_form.fields['prod_countrys'].initial = forms.INITIAL_PRODCOUTRYS
             prod_countrys_to_check = forms.INITIAL_PRODCOUTRYS
         else:    
+            #prod_countrys_form = forms.ProdCountryForm()
+
             prod_countrys_form = forms.ProdCountryForm()
+            prod_countrys_form.fields['prod_countrys'].choices = PRODCOUTRYS
         context['prod_countrys_form'] = prod_countrys_form   
 
         # 3.4 получение группу для отбора (создание формы):
         prod_groups_to_check = None
         if forms.INITIAL_GROUPS and forms.INITIAL_GROUPS != '-':
-            groups_form = forms.GroupForm(initial={'prod_groups': forms.INITIAL_GROUPS})
-            prod_groups_to_check = forms.INITIAL_GROUPS
-        else:    
+            #groups_form = forms.GroupForm(initial={'prod_groups': forms.INITIAL_GROUPS})
+            #prod_groups_to_check = forms.INITIAL_GROUPS
+
             groups_form = forms.GroupForm()
+            groups_form.fields['prod_groups'].choices = GROUPS
+            groups_form.fields['prod_groups'].initial = GROUPS
+            prod_groups_to_check = forms.INITIAL_GROUPS
+            print('TTTDF 11', prod_groups_to_check)
+        else:    
+            #groups_form = forms.GroupForm()
+
+            groups_form = forms.GroupForm()
+            groups_form.fields['prod_groups'].choices = GROUPS
+            print('TTTDF 22', prod_groups_to_check)
         context['groups_form'] = groups_form   
 
         # 4 ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ    
