@@ -2633,8 +2633,8 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
         table_lookup_only_with_competitors_all_parsed = table_lookup_only_with_competitors
-        #for kk in table_lookup_only_with_competitors_all_parsed:
-        #    print('kk', kk.tyre.tyre_size.tyre_size)
+        for kk in table_lookup_only_with_competitors_all_parsed:
+            print('kk', kk.tyre.tyre_size.tyre_size)
 
         # 1. ПРОДУКЦИЯ
 
@@ -3750,6 +3750,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
         if models.SELF_PRODUCTION:
             context['in_base_tyres_list_checked_bage'] = in_base_tyres_check_status_list_checked_bage    # для вплывающей подсказки - значек с выбранными позициями типоразмеров
+        print('========', in_base_tyres_check_status_list)
         context['in_base_tyres'] = in_base_tyres_check_status_list
          ### END Отдельная сборка списка всех объеков с конкурентами для меню
 

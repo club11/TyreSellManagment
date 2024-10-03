@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from . import models
 from . import forms
+from dictionaries import models as dictionaries_models
 from prices import models as prices_models
 from prices import forms as prices_forms
 from homepage.templatetags import my_tags as homepage_my_tags
@@ -95,19 +96,22 @@ def get_prod_countrys_list():
     return list_of_prod_country 
 
 def get_groups_list():
-    try:
-        list_of_groups = [('-','-')]
-        list_of_groups_only = [] 
-        for obj in prices_models.ChemCurierTyresModel.objects.all():
-          list_of_groups_only.append(obj.group_chem)  
-        list_of_groups_only = list(set(list_of_groups_only))
-        for group_chem in list_of_groups_only:      # добавляем ключи:
-            if group_chem:
-                group_chem_val = group_chem.tyre_group, group_chem.tyre_group
-                list_of_groups.append(group_chem_val)
-        list_of_groups.sort()
-    except:
-        list_of_groups = [('-','-')]
+    #print('DEADPOOL AND VOLVERINE')
+    
+    list_of_groups = [('-','-')]
+    list_of_groups_only = [] 
+    #for obj in prices_models.ChemCurierTyresModel.objects.all():
+    for obj in dictionaries_models.TyreGroupModel.objects.all():  
+      list_of_groups_only.append(obj.tyre_group)  
+    list_of_groups_only = list(set(list_of_groups_only))
+    #print('list_of_groups_only', list_of_groups_only)
+    for group_chem in list_of_groups_only:      # добавляем ключи:
+        if group_chem:
+            group_chem_val = group_chem, group_chem
+            list_of_groups.append(group_chem_val)
+    list_of_groups.sort()
+#
+    #list_of_groups = [('-','-')]
     return list_of_groups
 
 
@@ -146,7 +150,7 @@ class ChemcourierTableModelDetailView(DetailView):
         RECIEVERS = get_recievers_list()
         PRODCOUTRYS = get_prod_countrys_list()
         GROUPS = get_groups_list()
-        print('GROUPS', GROUPS)
+        #print('GROUPS', GROUPS)
 
 
         # 0. чекнуть, есть ли данные в формах. Для справки дергается одна функция forms.get_groups_list() - если есть список данных - то считаем, что все формы популизированы данными
@@ -276,7 +280,7 @@ class ChemcourierTableModelDetailView(DetailView):
 
             groups_form = forms.GroupForm()
             groups_form.fields['prod_groups'].choices = GROUPS
-            groups_form.fields['prod_groups'].initial = GROUPS
+            groups_form.fields['prod_groups'].initial = forms.INITIAL_GROUPS
             prod_groups_to_check = forms.INITIAL_GROUPS
         else:    
             #groups_form = forms.GroupForm()
@@ -758,15 +762,13 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
 
             groups_form = forms.GroupForm()
             groups_form.fields['prod_groups'].choices = GROUPS
-            groups_form.fields['prod_groups'].initial = GROUPS
+            groups_form.fields['prod_groups'].initial = forms.INITIAL_GROUPS
             prod_groups_to_check = forms.INITIAL_GROUPS
-            print('TTTDF 11', prod_groups_to_check)
         else:    
             #groups_form = forms.GroupForm()
 
             groups_form = forms.GroupForm()
             groups_form.fields['prod_groups'].choices = GROUPS
-            print('TTTDF 22', prod_groups_to_check)
         context['groups_form'] = groups_form   
 
         # 4 ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ    
