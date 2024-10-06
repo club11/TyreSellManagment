@@ -4,14 +4,16 @@
 {% block body %} 
 
 <div class="main">
-    <div class="container" id="container_form">
-        {{ is_valid }}
-        <form action="{% url 'profiles:register' %}" method="post">
-            {% csrf_token %}
-            {# {{ form|crispy }}  #}  
-                {{ form.as_p }}  
-            <button type="submit" class="btn btn-outline-success">Принять</button>
-        </form>
+    <div class="registration_by_admin">
+        <div class="registration_by_admin0">
+            {{ is_valid }}
+            <form action="{% url 'profiles:register' %}" method="post">
+                {% csrf_token %}
+                {# {{ form|crispy }}  #}  
+                    {{ form.as_p }}  
+                <button type="submit" class="btn btn-outline-success">Принять</button>
+            </form>
+        </div>    
     </div>
 </div>
 

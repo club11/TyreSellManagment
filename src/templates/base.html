@@ -854,6 +854,43 @@ table th {
   }
 /* END ИМПОРТ*/
 
+
+/* Регистрация пользователя*/
+@media (min-width: 1253px) { 
+  .registration_by_admin {
+    display: grid;
+        grid-template-columns: repeat(6, 1fr); /* <--6 колонок в сетке*/
+        row-gap: 40px;
+        column-gap: 5px; 
+        background-color: #eae8dc;
+        min-width: 80%;
+    }
+    .registration_by_admin0 {
+      background-color: #eae8dc;
+      text-align: center;
+      grid-column: 3 / span 2;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 2;
+    }
+}
+
+@media (mzx-width: 1253px) { 
+  .registration_by_admin {
+    display: grid;
+        grid-template-columns: repeat(3, 1fr); /* <--6 колонок в сетке*/
+        row-gap: 40px;
+        column-gap: 5px; 
+        background-color: #eae8dc;
+        min-width: 80%;
+    }
+    .registration_by_admin0 {
+      background-color: #eae8dc;
+      text-align: center;
+      grid-column: 2 / span 1;  /* <--или же можно grid-column: 1 / span 2;  - тип растянить на 2*/
+      grid-row: 2;
+    }
+}
+/* Регистрация пользователя*/
+
       </style>
 
     <link href='{% static "css/bootstrap.min.css" %}'rel="stylesheet">
