@@ -20,7 +20,7 @@ services:
 
   postgres:
     image: postgres:latest
-    #image: postgres:16.4-alpine    # docker-compose down --volumes --- сбросить данные из базы данных при конфликте старой-новой версий. 1. запуститься под старой версией постгрес. 2. выполнить команду 6на удаление 
+    #image: postgres:16.4-alpine    # !!!!выполнить команду docker-compose down --volumes --- сбросить данные из базы данных при конфликте старой-новой версий. 1. запуститься под старой версией постгрес. 2. выполнить команду 6на удаление 
     container_name: postgres
     environment:   
       POSTGRES_DB: postgres

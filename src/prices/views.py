@@ -2633,8 +2633,8 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
         table_lookup_only_with_competitors_all_parsed = table_lookup_only_with_competitors
-        for kk in table_lookup_only_with_competitors_all_parsed:
-            print('kk', kk.tyre.tyre_size.tyre_size)
+        #for kk in table_lookup_only_with_competitors_all_parsed:
+        #    print('kk', kk.tyre.tyre_size.tyre_size)
 
         # 1. ПРОДУКЦИЯ
 

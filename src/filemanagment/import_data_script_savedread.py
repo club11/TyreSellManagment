@@ -141,6 +141,16 @@ def delete_temp_file():
         print('временный файл PEMANENT_FILE.xlsx (exel с ХИМ КУРЬЕР) удален')
     except:
         pass
+    try:
+        os.remove("aform_CHEM_.xlsx")
+        print('временный файл aform_CHEM_.xlsx удален')
+    except:
+        pass
+    try:
+        os.remove("bform_CHEM_.xlsx")
+        print('временный файл bform_CHEM_.xlsx удален')
+    except:
+        pass
 
 
 # расчет объема для считывания из файла по N строк
@@ -1042,7 +1052,6 @@ def read_from_file():
     #### ЕСЛИ ЗАБРАСЫВАЮТСЯ ФАЙЛЫ ХИМКУРЬЕР:
 
     
-
         except:
             pass   
   
@@ -2277,6 +2286,12 @@ def read_from_file():
         get_saved_file_form_b.close()
     except:
         pass
+
+    
+    try:
+        delete_temp_file()
+    except:
+        pass        
     
     ## если не химкурьер импорт - то вернуть флаг что был импорт не химкурьер BИНАЧЕ- смотри выше return
     return copy_file_created,  list_of_sheet_potential_names_var_list_is 
