@@ -63,6 +63,9 @@ import subprocess, shlex
 #hello.apply_async(eta=dt)
 
 
+
+
+
 @app.task
 def reading_filemanagementfile():
     print('KUKUKU2221111')
@@ -208,11 +211,14 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     if not file_already_exist:
                         fs = FileSystemStorage()
                         fs.save(file_to_save.name, file_to_save)
-                        #print(file_to_save.name, file_to_save, '=======')     
+                        #print(file_to_save.name, file_to_save, '=======')  
 
-                    #os.path.join(path_to_save, file_to_save.name)         
+                        render(self.request, 'filemanagment/excel_import.html'), reading_filemanagementfile.apply_async(countdown=5) 
+                                                 
+                    #os.path.join(path_to_save, file_to_save.name)  
+                    #        
 
-        if self.request.POST.get('form_name') == "bform.prefix":            
+        if self.request.POST.get('form_name') == "bform.prefix":   
             form_name = self.request.POST.get('form_name')
             if form_name == "bform.prefix":
                 form = forms.ImportDataForm(self.request.POST, self.request.FILES)
@@ -232,7 +238,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     if not file_already_exist:
                         fs = FileSystemStorage()
                         fs.save(file_to_save.name, file_to_save)
-                        #print(file_to_save.name, file_to_save, '=======')   
+                        render(self.request, 'filemanagment/excel_import.html'), reading_filemanagementfile.apply_async(countdown=5) 
 
 
         #установка времени выполнения импорта:
