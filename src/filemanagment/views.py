@@ -68,21 +68,17 @@ import subprocess, shlex
 
 @app.task
 def reading_filemanagementfile():
-    print('KUKUKU2221111')
     a_file_name = 'aform_CHEM_.xlsx'
     b_file_name = 'bform_CHEM_.xlsx'
     temporary_created_file_a = False
-    print('KUKUKU')
     for f in os.listdir('media'):
         path_to = os.path.join('media',f)
-        print('LLLLLL', f, '===', path_to)
         if f == a_file_name:
             temporary_created_file_a = True
             print('IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII')
             break
     temporary_created_file_b = False
     for f in os.listdir('media'):
-        print('TTTTTTT', f)
         if f == b_file_name:
             temporary_created_file_b = True
             print('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
@@ -213,7 +209,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                         fs.save(file_to_save.name, file_to_save)
                         #print(file_to_save.name, file_to_save, '=======')  
 
-                        render(self.request, 'filemanagment/excel_import.html'), reading_filemanagementfile.apply_async(countdown=5) 
+                        render(self.request, 'filemanagment/excel_import.html'), reading_filemanagementfile.apply_async(countdown=15) 
                                                  
                     #os.path.join(path_to_save, file_to_save.name)  
                     #        
@@ -238,7 +234,7 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     if not file_already_exist:
                         fs = FileSystemStorage()
                         fs.save(file_to_save.name, file_to_save)
-                        render(self.request, 'filemanagment/excel_import.html'), reading_filemanagementfile.apply_async(countdown=5) 
+                        render(self.request, 'filemanagment/excel_import.html'), reading_filemanagementfile.apply_async(countdown=60) 
 
 
         #установка времени выполнения импорта:
