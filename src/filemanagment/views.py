@@ -259,24 +259,26 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
                     print('DDDDDTTTTT', dt)
                     prices_views.running_programm.apply_async(eta=dt)          ### ВСЯ МАГИЯ ЗДЕСЬ
 
-            #print('settings.hour1 =============== ', settings.hour1)
-            dots_position_b = gett_time_b.find(':')
-            if dots_position_b:
-                hour2_in_str = gett_time_b[0:dots_position_b]
-                minute2_in_str = gett_time_b[dots_position_b+1:]
-                if hour2_in_str.isdigit() and minute2_in_str.isdigit() and len(hour2_in_str) < 3 and len(minute2_in_str) < 3:
-                    settings.hour2 = int(hour2_in_str)      #чистая косметика
-                    settings.minute2 = int(minute2_in_str)  #чистая косметика
+            ### УСТАНОВКА ВРЕМЕНИ ИМПОРТА ДАННЫХ ПО ФОРМЕ
+            ##print('settings.hour1 =============== ', settings.hour1)
+            #dots_position_b = gett_time_b.find(':')
+            #if dots_position_b:
+            #    hour2_in_str = gett_time_b[0:dots_position_b]
+            #    minute2_in_str = gett_time_b[dots_position_b+1:]
+            #    if hour2_in_str.isdigit() and minute2_in_str.isdigit() and len(hour2_in_str) < 3 and len(minute2_in_str) < 3:
+            #        settings.hour2 = int(hour2_in_str)      #чистая косметика
+            #        settings.minute2 = int(minute2_in_str)  #чистая косметика#
 
-                    hour2_in_int = int(hour2_in_str)
-                    minute2_in_int = int(minute2_in_str)
-                    #dt = datetime.strptime(f'{hour2_in_int}:{minute2_in_int}', '%H:%M').time()
-                    dt = datetime.now()
-                    dt = dt.replace(hour=hour2_in_int, minute=minute2_in_int)
-                    dt = dt - timedelta(hours=3)         #сдвиг времени выполлнения по серваку на 3 часа назад
-                    reading_filemanagementfile.apply_async(eta=dt)      ### ВСЯ МАГИЯ ЗДЕСЬ
+            #        hour2_in_int = int(hour2_in_str)
+            #        minute2_in_int = int(minute2_in_str)
+            #        #dt = datetime.strptime(f'{hour2_in_int}:{minute2_in_int}', '%H:%M').time()
+            #        dt = datetime.now()
+            #        dt = dt.replace(hour=hour2_in_int, minute=minute2_in_int)
+            #        dt = dt - timedelta(hours=3)         #сдвиг времени выполлнения по серваку на 3 часа назад
+            #        reading_filemanagementfile.apply_async(eta=dt)      ### ВСЯ МАГИЯ ЗДЕСЬ
 
             #print('settings.hour2 =============== ', settings.hour2)
+            ### END УСТАНОВКА ВРЕМЕНИ ИМПОРТА ДАННЫХ ПО ФОРМЕ
 
         if self.request.POST.get('form_name') == "cform_reload_nginx.prefix": 
             subprocess.call('docker restart tyresellmanagment-src')       
