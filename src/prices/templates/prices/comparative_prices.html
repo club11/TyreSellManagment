@@ -454,7 +454,6 @@
                     google.charts.setOnLoadCallback(drawChart);
                   
                     function drawChart() {
-                    
                       var data = google.visualization.arrayToDataTable(
                         {{ final_parsed_data_from_sites|safe }}
                       );
@@ -591,10 +590,12 @@
 
             }
               </script>
+              <body>
                   {#   <div id="chart_div1" style="height: 390px;"></div> #}
                   {#   <div id="chart_div1" style="width: 900px; height: 500px;"></div> #}
                     <div id="chart_div1" class="chart_div1" style="height: 100%;"></div>
                     <div id="colFilter_div1"></div>
+              </body>
             </div>    
           
           
