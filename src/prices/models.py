@@ -827,7 +827,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         if self.tyre in BAGORIA_COMPETITORS_DICTIONARY1.keys() and BAGORIA_COMPETITORS_DICTIONARY1.values():
             competitors_values_list = BAGORIA_COMPETITORS_DICTIONARY1[self.tyre]
             list_od_combined_comp_and_prices = []
-            print(self.tyre, 'BAGORIA_COMPETITORS_DICTIONARY1', BAGORIA_COMPETITORS_DICTIONARY1)
+            #print(self.tyre, 'BAGORIA_COMPETITORS_DICTIONARY1', BAGORIA_COMPETITORS_DICTIONARY1)
             ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
             filtered_competitors_values_list = []
             for objject in competitors_values_list:
@@ -1255,7 +1255,7 @@ class ComparativeAnalysisTyresModel(models.Model):
                         min_value_usd = '{:,}'.format(min_value_usd).replace(',', ' ')
                         #  END перевод в удобоваримый вид
                         chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
-            print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
+            #print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
     #        print('11!!', chemcurier_unique_result)
             return chemcurier_unique_result
         except:

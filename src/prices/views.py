@@ -1047,7 +1047,7 @@ def belarus_sites_parsing():
         try:
            webdriverr.get(url)
         except TimeoutException as ex:
-           print('======FAILURE ==== ACHTUNG======', ex.Message)
+           #print('======FAILURE ==== ACHTUNG======', ex.Message)
            webdriverr.navigate().refresh()
         soup = BeautifulSoup(webdriverr.page_source,'lxml')   
         #1. получаем количество страниц:
@@ -2591,7 +2591,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         # ОПРЕДЕЛЕНИЕ ДАТЫ: 
         if not models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START and not models.COMPETITORS_DATE_FROM_USER_ON_FILTER:           #ЕСЛИ ПОЛЬЗОВАТЕЛЬ НЕ ВЫБИРАЛ НИ НАЧ НИ КОНЕЧ ДАТЫ
             today_is = datetime.date.today()                                                                # автоматически ставит дату на неделю назад
-            week_ago_date = today_is - datetime.timedelta(days=7)
+            week_ago_date = today_is - datetime.timedelta(days=2)
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START = [week_ago_date.strftime('%Y-%m-%d')]
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER = [today_is.strftime('%Y-%m-%d')]
             models.COMPETITORS_DATE_FROM_USER_ON_FILTER_START_IS_NOT_CHOSEN = True 
@@ -3382,7 +3382,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                         # end работа с датами   
                         #print('got_the_list!!!!', got_the_list)
                                                                                                        ####!~!!!!!!!!!!!!!!!!! ПОКАЗЫВАТЬ В TEMPLATE ФИЛЬТР ДО 3 ПРОИЗВОДИТЕЛЕЙ ПО ДЕФОЛТУ    
-                    print('!!!!!!===2222222', bagoria_competitors_dict1) 
+                    #print('!!!!!!===2222222', bagoria_competitors_dict1) 
                     brand_name_subbrands_list = []
                     list_to_delete_rarely_parsed = []    #для удаления реже спаршеных моделей внутри одного бренда(производителя)
                     for competitor in got_the_list:
@@ -3464,14 +3464,14 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                             list_to_delete_rarely_parsed.extend(final_list_to_delete_competitors_in_brand)          # формируем единый список на удаление
                             #print('list_to_delete_cometitors', list_to_delete_cometitors_to_compare)
                             # убираем непопулярных (реже спашенных модели данного бренда, исключая их из списка общего - останутся лишь производители с одной моделью (у тех производ, у которых было несколько моделей- останется лишь самый спашенный наиболее)):
-                        print('DELETE', list_to_delete_rarely_parsed)
-                        print('!!!!!!===1111==========================', bagoria_competitors_dict1)
+                        #print('DELETE', list_to_delete_rarely_parsed)
+                        #print('!!!!!!===1111==========================', bagoria_competitors_dict1)
                         for compet_to_delete in list_to_delete_rarely_parsed:
                             list_of_matched_competitors.remove(compet_to_delete)
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors            
                     else:       # если у каждого бренда-производителя по одной модели:
                         bagoria_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-                    print('=========3=================!!!!!!===', bagoria_competitors_dict1)     
+                    #print('=========3=================!!!!!!===', bagoria_competitors_dict1)     
             except:
         #        print('3. EXCEPTION  - BAGORIA')
                 pass
