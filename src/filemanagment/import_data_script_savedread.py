@@ -975,8 +975,11 @@ def read_from_file():
                         tyre_obj, created = tyres_models.Tyre.objects.get_or_create(
                             tyre_model=dictionaries_models.ModelNameModel.objects.get(model=tyre_model_list[n]),
                             tyre_size=dictionaries_models.TyreSizeModel.objects.get(tyre_size=tyre_size_list[n]),
+
+                            line_in_excel = n
                         )
                         all_params_in_tyre = list(tyre_obj.tyre_type.all())
+                        print('n=11=', n, all_params_in_tyre)
                         #print('all_params_in_tyre == tyre_type_el_list', all_params_in_tyre,'//////',  tyre_type_el_list)
                         if all_params_in_tyre == tyre_type_el_list:
                             pass
@@ -1411,7 +1414,7 @@ def read_from_file():
                                 current_row_number = int
                                 if cell.value == 'Наименование продукции':
                                     for row in sheet.iter_rows(min_row=cell.row+1, max_row=sheet.max_row):   
-                                        print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
+                                        #print('Row number:', str(row[0].row),'ROW ROW ROW')                         # СПОСОБ ПОЛУЧИТЬ НОМЕР СТРОКИ
                                         ### проверка если строка пустая
                                         if str(row[cell.column-1].value) is not str(row[cell.column-1].value):        
                                             tyresize_list.append(' ')
@@ -1426,11 +1429,13 @@ def read_from_file():
                                         '\d{2}[A-Za-z]\d{1}([A-Za-z]|-)\d{1}',
                                         '\d{2}[A-Za-z]\d{1}(\.|\,)\d{2}([A-Za-z]|-)\d{1}',
                                         '\d{2}(\.|\,)\d{1}/\d{2}([A-Za-z]|-)(\d{2}(\.|\,)\d{1}|\d{2})',                       
-                                        '\d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2} ',
-                                        '\d{1}[A-Za-z]-\d{2} ',
+                                        '\d{1}(\.|\,)\d{2}(([A-Za-z]|-)|[A-Za-z]-)\d{2}',
+                                        '\d{1}[A-Za-z]-\d{2}',
                                         '\d{3}[A-Za-z]\d{2}[A-Za-z]',
                                         '\s\d{2}([A-Za-z]|-)\d{2}(\.|\,)\d{1}', 
                                         '\d{2}[A-Za-z][A-Za-z]\d{2}', 
+
+                                        '\d{2}.d{1}/\d{2}-\d{2}.\d{1}',
                                         ]
                                         for n in reg_list:
                                             result = re.search(rf'(?i){n}', str(row[cell.column-1].value))
@@ -1885,6 +1890,7 @@ def read_from_file():
                             tpsmiddleasiafcaprice_costs_ddict['tpsmiddleasiafcaprice_costs_ddict'] = tpsmiddleasiafcaprice_costs_row.get(n)
                             indexes_dict = {}
                             indexes_dict['indexes_dict'] = indexes_row_dict.get(n) 
+                            #print('------', n, '------',  indexes_row_dict.get(n), '------', indexes_row_dict)
                             season_dict = {}
                             season_dict['season_dict'] = season_row_dict.get(n) 
                             thread_dict = {}
@@ -2047,7 +2053,7 @@ def read_from_file():
         ## ЗАБРАСЫВАЕМ ИНДЕКСЫ, сезонность, рисунок протектора, ось, применяемость ДОПОЛНИТЕЛЬНОЕ в модель TyreAddedFeatureModel - дополнительная таблица к таблице модели Tyres:
         #if obj_list_el[9] or obj_list_el[10] or obj_list_el[11] or obj_list_el[12] or obj_list_el[13]:
         for key, obj_list_el in row_parsing_sales_costs_prices_dict.items():
-            #print('KEY', key)
+    #        print('ZZ CHECK_ZZ', key, '---', obj_list_el)
             #if obj_list_el[8]['indexes_dict'] and obj_list_el[9]['season_dict'] and obj_list_el[10]['thread_dict'] and obj_list_el[11]['ax_dict'] and obj_list_el[12]['usability_dict']:
             season_usage = dictionaries_models.SeasonUsageModel.objects.filter(season_usage_name=obj_list_el[9]['season_dict']) 
             if season_usage:
@@ -2059,6 +2065,7 @@ def read_from_file():
             #    studded_usage = studded_usagee[0]
             #else:
             #    studded_usage = None 
+        #    print('key ==', key)
             #print('key ==', key, 'indexes_list===', obj_list_el[8]['indexes_dict'], 'season_usage===', season_usage, 'tyre_thread===', obj_list_el[10]['thread_dict'], 'ax===', obj_list_el[11]['ax_dict'] , 'usability===', obj_list_el[12]['usability_dict'])
             try:
                 tyre_added_feature_object = tyres_models.TyreAddedFeatureModel.objects.update_or_create(
@@ -2143,7 +2150,8 @@ def read_from_file():
     #    print('key', key, key.tyre_model.model, key.tyre_size.tyre_size, key.tyre_group.all(), key.tyre_type.all())
     for key in row_parsing_sales_costs_prices_dict.keys():
         tyre_obj = key
-    #    print('tyre_obj', tyre_obj.tyre_size.tyre_size)
+        #print('KEY', key)  # BEL-244
+        #print('tyre_obj', tyre_obj.tyre_size.tyre_size)
     # 2.1) возмем все объекты плановой себестоимости:
         planned_costs_obj_set = prices_models.PlannedCosstModel.objects.filter(tyre=tyre_obj)            # !!!! ФИЛЬТР ВСЕХ ОБЪЕКТОВ + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period
         #planned_costs_obj_set = prices_models.PlannedCosstModel.objects.get(tyre=tyre_obj)                  # ОДИН объект на дату + ДОБАВИТЬ ФИЛЬТР ПО ПЕРИОДУ   ===== date_period

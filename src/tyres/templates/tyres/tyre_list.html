@@ -25,8 +25,20 @@
         {% endif %}
           {{ object.tyre_size.tyre_size }} {{ object.tyre_model.model }}
           {% for param in object.tyre_type.all %}
-          {{ param.tyre_type }}
-        {% endfor %}
+            {{ param.tyre_type }}
+          {% endfor %}
+
+            ========
+          
+          {% for added_feature in object.added_features.all %}
+            {{ added_feature.indexes_list }}
+            {{ added_feature.season_usage }}
+            {{ added_feature.tyre_thread }}
+            {{ added_feature.ax }}
+            {{ added_feature.usability }}
+            {{ added_feature.studded_usage }}
+          {% endfor %}
+
       </a>
         </td>
         <td><a href="{% url 'tyres:tyre_update' object.pk %}">Обновить</a></td>

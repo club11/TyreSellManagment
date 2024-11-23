@@ -29,6 +29,12 @@ class Tyre(models.Model):
         default=None,
         blank=True,
     )
+    
+    line_in_excel = models.FloatField(
+        verbose_name='строка в excel',
+        max_length=6,
+        null=True 
+    )
 
     #prime_cost = models.FloatField(
     #    verbose_name='полные затраты',
@@ -50,7 +56,7 @@ class Tyre(models.Model):
         return reverse('tyres:tyre_list')
     
     def __str__(self):
-        return str(self.tyre_model)
+        return str(self.tyre_model) + '   ' + str(self.tyre_size) 
 
 class TyreCard(models.Model):
     tyre = models.ForeignKey(
@@ -117,3 +123,4 @@ class TyreAddedFeatureModel(models.Model):
         on_delete=models.PROTECT,
         null=True 
     )  
+
