@@ -4878,9 +4878,9 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         #### END  PANDAS
 
 
-        for compar_obj in models.ComparativeAnalysisTyresModel.objects.all():
-            print(tyres_models.TyreAddedFeatureModel.objects.get(tyre=compar_obj.tyre).tyre.tyre_size, tyres_models.TyreAddedFeatureModel.objects.get(tyre=compar_obj.tyre).tyre.tyre_model, tyres_models.TyreAddedFeatureModel.objects.get(tyre=compar_obj.tyre).indexes_list, '====')
-        print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') 
+    ##    for compar_obj in models.ComparativeAnalysisTyresModel.objects.all():
+    ##        print(tyres_models.TyreAddedFeatureModel.objects.get(tyre=compar_obj.tyre).tyre.tyre_size, tyres_models.TyreAddedFeatureModel.objects.get(tyre=compar_obj.tyre).tyre.tyre_model, tyres_models.TyreAddedFeatureModel.objects.get(tyre=compar_obj.tyre).indexes_list, '====')
+    ##    print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX') 
 
         return context
     
