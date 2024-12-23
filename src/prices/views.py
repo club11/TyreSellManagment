@@ -174,7 +174,7 @@ def belarus_sites_parsing():
     #2. получаем данные со всех страниц:
     list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
     shins_phrase = ['шины', 'Шины']
-    #for slug in range(1,4):                               # c 1 по 2 станицы    
+    #for slug in range(1,15):                               # c 1 по 2 станицы    
     for slug in range(1, 160):                               # !!!!!!!!!!! c 1 по 2 станицы      
     ##for slug in urls:      
         #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
@@ -455,9 +455,6 @@ def belarus_sites_parsing():
                 #print('XXX', v[1], v[6], v[3])
 
                 
-
-                    
-
                 #for tty in tyres_models.TyreAddedFeatureModel.objects.filter(tyre__tyre_size__tyre_size=v[1],  tyre__tyre_group__tyre_group=v[6]):
                 #    print('XXX TTT XXX', tty.indexes_list)
                 #    #print('XXX TTT XXX',)
@@ -495,9 +492,30 @@ def belarus_sites_parsing():
     list_tyre_sizes = set(list_tyre_sizes)
     for t_szz in list_tyre_sizes:
         for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'onliner.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+            #### присвоение индекса ###
+            #print('===')
+            try:
+                if (obbj.tyresize_competitor == comparative_analys_tyres_model_object.tyre.tyre_size.tyre_size and
+                    obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
+                    obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
+                    obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
+                    print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+                    
+                    obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
+                ### END присвоение индекса ### 
+            except:
+                pass
+            #obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  
+    print('=========ITS NICE TO MEET YOU=========') 
 
 
+    
+
+
+    #        
+
+
+           
   
 
     #finally:
@@ -907,7 +925,20 @@ def belarus_sites_parsing():
         list_tyre_sizes = set(list_tyre_sizes)
         for t_szz in list_tyre_sizes:
             for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'autoset.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                    obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)             
+                    #obbj.tyre_to_compare.add(comparative_analys_tyres_model_object) 
+                    #### присвоение индекса ###
+                    try:
+                        if (obbj.tyresize_competitor == comparative_analys_tyres_model_object.tyre.tyre_size.tyre_size and
+                            obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
+                            obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
+                            obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
+                            #print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
+                        ### END присвоение индекса ### 
+                    except:
+                        pass
+
+
                     ### OLD VERSION
                     ##competitor_site_model = models.CompetitorSiteModel.objects.update_or_create(
                     ##    site = 'autoset.by',
@@ -1377,7 +1408,19 @@ def belarus_sites_parsing():
             list_tyre_sizes = set(list_tyre_sizes)
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'bagoria.by'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                        obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)                                
+                    #obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+                    try:
+                        if (obbj.tyresize_competitor == comparative_analys_tyres_model_object.tyre.tyre_size.tyre_size and
+                            obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
+                            obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
+                            obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
+                            print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
+                        ### END присвоение индекса ### 
+                    except:
+                        pass 
+
             return 'Zapis Got'                
         sstart = 0
         ddevider = 2######################  ВАЖНО = ключевое значение вводить здесь - на сколько разбивать запрос
@@ -1463,7 +1506,7 @@ def belarus_sites_parsing():
     except:
         pass  
     ###### END OF BAGORIA PARSING
-    finally:
+#    finally:
         webdriverr.quit() 
                                                                                                                                                                                              
 
@@ -1970,7 +2013,21 @@ def russia_sites_parsing():
             list_tyre_sizes = set(list_tyre_sizes)
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'express-shina.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                        obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+                    #obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)
+                    #### присвоение индекса ###
+                    #print('===')
+                    try:
+                        if (obbj.tyresize_competitor == comparative_analys_tyres_model_object.tyre.tyre_size.tyre_size and
+                            obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
+                            obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
+                            obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
+                        #    print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
+                        ### END присвоение индекса ### 
+                    except:
+                        pass
+
         except:
             pass   
         ##### END OF express-shina PARSING
@@ -2275,7 +2332,21 @@ def russia_sites_parsing():
             list_tyre_sizes = set(list_tyre_sizes)
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'kolesatyt.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                        obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+                    #obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+                    #### присвоение индекса ###
+                    #print('===')
+                    try:
+                        if (obbj.tyresize_competitor == comparative_analys_tyres_model_object.tyre.tyre_size.tyre_size and
+                            obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
+                            obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
+                            obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
+                            #print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
+                        ### END присвоение индекса ### 
+                    except:
+                        pass
+
         except:
             pass                                                                                                                                                                                                                   
         ###### END OF kolesatyt PARSING
@@ -2527,7 +2598,21 @@ def russia_sites_parsing():
             list_tyre_sizes = set(list_tyre_sizes)
             for t_szz in list_tyre_sizes:
                 for obbj, comparative_analys_tyres_model_object in itertools.product(models.CompetitorSiteModel.objects.filter(tyresize_competitor=t_szz, site = 'kolesa-darom.ru'), models.ComparativeAnalysisTyresModel.objects.filter(tyre__tyre_size__tyre_size=t_szz)):
-                        obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)                
+                    #obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)   
+                    #### присвоение индекса ###
+                    #print('===')
+                    try:
+                        if (obbj.tyresize_competitor == comparative_analys_tyres_model_object.tyre.tyre_size.tyre_size and
+                            obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
+                            obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
+                            obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
+                            #print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+
+                            obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
+                        ### END присвоение индекса ### 
+                    except:
+                        pass
+
         except:
             pass
         # 3 END  ###### ПАРСИНГ KOLESA_DAROM
