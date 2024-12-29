@@ -1119,7 +1119,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
     def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
-        #try:
+        try:
             chemcurier_unique_result = ''
             if self.tyre in CHEMCURIER_COMPETITORS_DICTIONARY1.keys():                  # Tyre object (1926) [<ChemCurierTyresModel: ChemCurierTyresModel object (98)>, <ChemCurierTyresModel: ChemCurierTyresModel object (99)>, <ChemCurierTyresModel: ChemCurierTyresModel object (100)>, <ChemCurierTyresModel: ChemCurierTyresModel object (101)>]
                 min_value = '' # минимальное значение из всех прозодителей последнего периода поставки
@@ -1295,6 +1295,8 @@ class ComparativeAnalysisTyresModel(models.Model):
         #        print('from_num_to_month_onverter', from_num_to_month_onverter)
 
                 ######  1.1 подготовка производителя с минимальным значением. Впринципе, есть готовый словарь values_on_period_for_comparison_dict, где собраны средние значения производителей данного типорамера по периодам. Получим  прямо находу хдесь
+                min_value = None
+
                 month_name_from_number_dict = { 1 : 'январь', 2: 'февраль', 3 : 'март', 4 : 'апрель', 5 : 'май', 6 :'июнь', 7 : 'июль', 8 : 'август', 9 : 'сентябрь', 10 : 'октябрь', 11 : 'ноябрь', 12 : 'декабрь'}
                 for period_nnum_prod, vval in values_on_period_for_comparison_dict.items():
                     for values in vval:
@@ -1309,12 +1311,15 @@ class ComparativeAnalysisTyresModel(models.Model):
                     if min_value:           # если есть значение в периоде - то закончить переборку
                         break
             # ПЕРЕВОД ПО КУРСУ НАЦБАНКА
-                min_value_usd = None
-            if CURRENCY_VALUE_USD:
-                min_value_usd = min_value * CURRENCY_VALUE_USD
-
+                min_value_usd = 0
+                if CURRENCY_VALUE_USD:
+                    min_value_usd = min_value * CURRENCY_VALUE_USD
+                #print('+!+!+!+!+!+!+!', min_value, '+!+!+!+!+!+!+!', type(min_value))
+                #print('-!_!_!_!_!_!_!', min_value_usd, '-!_!_!_!_!_!_!', type(min_value_usd))
             # РАСЧЕТ ОТКЛОНЕНИЯ:        
                 deflection = '' 
+                min_value = float(min_value)
+                min_value_usd = float(min_value_usd)
                 try:                                                                                                                     # для расчета отклонения 
                     if type(min_value) is float and self.belarus902price != None:  
                         deflection = self.belarus902price.price / min_value       # для расчета отклонения
@@ -1339,10 +1344,10 @@ class ComparativeAnalysisTyresModel(models.Model):
             #print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
         #    print('11!!', chemcurier_unique_result)
             return chemcurier_unique_result
-        #except:
+        except:
             #chemcurier_unique_result = ('', '', '', '', '')
             #return chemcurier_unique_result
-        #    pass
+            pass
 
     
 # ______ RUS_____
