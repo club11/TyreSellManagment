@@ -751,7 +751,7 @@ def belarus_sites_parsing():
             urls_get = max(urls_get)
             #2. получаем данные со всех страниц:                         
             ##for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-            #for slug in range(1, 2):
+            #for slug in range(1, 1):
             for slug in range(0, urls_get):        # working   
                 newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
                 webdriverr.get(newUrl)
@@ -1410,7 +1410,7 @@ def belarus_sites_parsing():
                                 obbj.group == comparative_analys_tyres_model_object.tyre.tyre_group.all()[0] and
                                 obbj.season == comparative_analys_tyres_model_object.tyre.added_features.all()[0].season_usage and
                                 obbj.parametres_competitor == comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list):              
-                                print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
+                                #print(obbj.tyresize_competitor, comparative_analys_tyres_model_object.tyre.added_features.all()[0].indexes_list, '==-=-==')  # dictionaries.TyreGroupModel.None
 
                                 obbj.tyre_to_compare.add(comparative_analys_tyres_model_object)  #   
                             ### END присвоение индекса ### 
@@ -2655,6 +2655,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):       
         context = super().get_context_data(**kwargs)
         obj = context.get('object')
+        sites_tlook = ['onliner.by', 'autoset.by', 'bagoria.by']
 
         # ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ       
         curr_value = None
@@ -2740,6 +2741,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
+        table_lookup_only_with_competitors = table_lookup_only_with_competitors.filter(price_tyre_to_compare__site__in=sites_tlook)
         table_lookup_only_with_competitors_all_parsed = table_lookup_only_with_competitors
         #for kk in table_lookup_only_with_competitors_all_parsed:
         #    print('kk', kk.tyre.tyre_size.tyre_size)
@@ -2839,7 +2841,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             list_of_tyre_comparative_objects_is_empty = True
 
 
-    #    print('!@#!@!@@' , list_of_tyre_comparative_objects)
+        #print('!@#!@!@@' , list_of_tyre_comparative_objects)
 
         #3. ПО БРЕНДАМ ОТБОР БУДЕТ ДАЛЕЕ
 
@@ -2850,11 +2852,14 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         ## 1 фильтр конкурентов Onliner:
         all_competitors = models.CompetitorSiteModel.objects.filter(site='onliner.by', tyre_to_compare__in=list_of_tyre_comparative_objects)
 
+        print('list_of_tyre_comparative_objects', list_of_tyre_comparative_objects)
+        print('all_competitors', all_competitors)
+
             # 1.2 ФИЛЬТР список производителей :
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         onliner_competitors_dict1 = {}
-        for object_unit in list_of_tyre_comparative_objects:
+        for object_unit in list_of_tyre_comparative_objects.filter(price_tyre_to_compare__site='onliner.by'):
             object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
@@ -2962,36 +2967,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                         onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
                     # если у каждого производителя по одной модели:
                     else:
-                        ## подсчет каких моделей(суббренда) конкурента больше есть для данной модели:
-                        ##print('brand_name_subbrands_list_final', brand_name_subbrands_list_final)
-                        #comp_brand_model_dict = {}
-                        #for comp_brand_model in brand_name_subbrands_list_final:
-                        #    comp_brand_model_list = []
-                        #    for subbrand_model_competitor in list_of_matched_competitors:
-                        #        if subbrand_model_competitor.name_competitor == comp_brand_model:
-                        #            comp_brand_model_list.append(subbrand_model_competitor)
-                        ##    print('1', comp_brand_model)
-                        #    comp_brand_model_dict[comp_brand_model] = comp_brand_model_list
-                        #if len(comp_brand_model_dict.items()) > 1:      #если есть несколько моделей у данного бренда: берем самую спаршенную:
-                        #    keu = None
-                        #    v_len = 0
-                        #    for k, v in comp_brand_model_dict.items():
-                        #        #print(k, 'MMM', len(v))
-                        #        if len(v) > v_len:
-                        #            keu_index = k
-                        #            v_len = len(v)
-                        #    #print(keu_index, 'ABBA', v_len)
-                        #    list_of_matched_competitors_with_one_brand_model = comp_brand_model_dict[keu_index]
-                        #    #print('BBBBBB===1', list_of_matched_competitors_with_one_brand_model)
-                        #if len(comp_brand_model_dict.items()) == 1:
-                        #    list_of_matched_competitors_with_one_brand_model = list(comp_brand_model_dict.values())[0]
-                        #    #print('BBBBBB===2', list_of_matched_competitors_with_one_brand_model)
-                        #if len(comp_brand_model_dict.items()) < 1:
-                        #    list_of_matched_competitors_with_one_brand_model = []
-                        #    print('BBBBBB===3', list_of_matched_competitors_with_one_brand_model)
-                        #list_of_matched_competitors = list_of_matched_competitors_with_one_brand_model
                         onliner_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-
                 else:
                     # работа с датами без конкурентов (вся продукция)
 
@@ -3120,7 +3096,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         avtoset_competitors_dict1 = {}
-        for object_unit in list_of_tyre_comparative_objects:
+        for object_unit in list_of_tyre_comparative_objects.filter(price_tyre_to_compare__site='autoset.by'):
             object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
@@ -3355,7 +3331,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         bagoria_competitors_dict1  = {}
-        for object_unit in list_of_tyre_comparative_objects:
+        for object_unit in list_of_tyre_comparative_objects.filter(price_tyre_to_compare__site='bagoria.by'):
             object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
@@ -3599,12 +3575,11 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         try:
             # 1.1 ФИЛЬТР по дате (БЕРЕТСЯ ПОСЛЕДНИЙ ПЕРИОД В ОТЧЕТЕ ХИМКУРЬЕР) # НО - МОЖНО И СДЕЛАТЬ ЗА ПЕРИОД - В MODELS ЕСТЬ РАСЧЕТ НА ПЕРИОДЫ - НУЖНО ТОЛЬКО ЗДЕЬ УБРАТЬ НА ПОСЛ ДАТУ И ЗАДАТЬ ПЕРИОД ОТБОРА
             last_fate_availible_chem = models.ChemCurierTyresModel.objects.latest('data_month_chem').data_month_chem
-        #    print('!!!!!!!!!', last_fate_availible_chem, type(last_fate_availible_chem))
+            #print('!!!!=!!!!!', last_fate_availible_chem, type(last_fate_availible_chem))
             all_competitors_chem = models.ChemCurierTyresModel.objects.filter(data_month_chem=last_fate_availible_chem)     # по дате 
-        #    print('last_fate_availible_chem', last_fate_availible_chem, 'all_competitors', all_competitors_chem)
-#           # 1.2 ФИЛЬТР список производителей:
+    #        print('last_fate_availible_chem', last_fate_availible_chem, 'all_competitors', all_competitors_chem)
+#              # 1.2 ФИЛЬТР список производителей:
             # 1.2.1 - как вариант - выбор из тех производителей - кого ввел пользователь
-
             list_brands_to_check = []       # набиваем перечень рендов- кого выбрал пользователь
             if models.BAGORIA_COMPETITORS:
                 list_brands_to_check.extend(models.BAGORIA_COMPETITORS)   
@@ -3612,25 +3587,28 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 list_brands_to_check.extend(models.AVTOSET_COMPETITORS) 
             if models.ONLINER_COMPETITORS:
                   list_brands_to_check.extend(models.ONLINER_COMPETITORS)
-
             chemcurier_competitors_dict1 = {}
             if list_brands_to_check:       # если бренды выбранные есть - искать по ним:                    !!!!!!!! вариант - отбора как обычно делаем
                 all_competitors_chem = all_competitors_chem.filter(producer_chem__in=list_brands_to_check)        # поиск на посл дату в химкурьере по указанным брендам
             else:
-                pass                                                                                    # поиск на посл дату в химкурьере 
-            for object_unit in list_of_tyre_comparative_objects:
-                list_of_matched_competitors = []
-                for competitor in all_competitors_chem:  
-                    for t_gr in object_unit.tyre.tyre_group.all():
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem and t_gr == competitor.group_chem and competitor.average_price_in_usd is not None:         # сверка по типоразмеру и группе шин не пустые
-                            list_of_matched_competitors.append(competitor)
-                chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-       #    #####  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
+                pass  
+            ### old version:
+            #for object_unit in list_of_tyre_comparative_objects:                        # поиск на посл дату в химкурьер
+            #    list_of_matched_competitors = []
+            #    for competitor in all_competitors_chem:  
+            #        for t_gr in object_unit.tyre.tyre_group.all():
+            #            if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem and t_gr == competitor.group_chem and competitor.average_price_in_usd is not None:         # сверка по типоразмеру и группе шин не пустые
+            #                list_of_matched_competitors.append(competitor)
+            #    chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+            ### END old version
+            ### new version:    
+            for object_unit in list_of_tyre_comparative_objects:                        # поиск на посл дату в химкурьер
+                #matched_chem_comp_rs = list(all_competitors_chem.filter(tyre_size_chem=object_unit.tyre.tyre_size.tyre_size, group_chem__in=object_unit.tyre.tyre_group.all(), average_price_in_usd__isnull=False))
+                matched_chem_comp_rs = all_competitors_chem.filter(tyre_size_chem=object_unit.tyre.tyre_size.tyre_size, group_chem__in=object_unit.tyre.tyre_group.all(), average_price_in_usd__isnull=False)
+                chemcurier_competitors_dict1[object_unit.tyre] = matched_chem_comp_rs
+            ### END new version
+               #####  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
             models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-            #print('models.CHEMCURIER_COMPETITORS_DICTIONARY1 ==', models.CHEMCURIER_COMPETITORS_DICTIONARY1)
-            #for tt in models.CHEMCURIER_COMPETITORS_DICTIONARY1.values():
-            #    for n in tt:
-            #        print(n.producer_chem, n.data_month_chem)
         except:
             pass
         ###### END OF CHEMCURIER
@@ -5194,6 +5172,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
     def get_context_data(self, **kwargs):       
         context = super().get_context_data(**kwargs)
         obj = context.get('object')
+        sites_tlook = ['express-shina.ru', 'kolesa-darom.ru', 'kolesatyt.ru']
 
         # ДЛЯ ПОЛУЧЕНИЯ ВАЛЮТЫ ПО КУРСУ НБ РБ НА ДАТУ       
         curr_value = None
@@ -5276,6 +5255,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
 
         # ФИЛЬТР ПО СОБСТВЕННОЙ ПРОДУКЦИИ: 
         table_lookup_only_with_competitors = models.ComparativeAnalysisTyresModel.objects.filter(price_tyre_to_compare__isnull=False).distinct() ## ОБРАБАТЫВАЕМ ТОЛЬКО ТЕ У КОТОРЫХ ЕСТЬ СПАРСЕННЫЕ КОНКУРЕНТЫ ПО РАЗМЕРУ (БЕЗ ПРИВЯЗКИ К ПАРАМЕТРАМБ ИХ ФИЛЬТРУЕМ ПОЗЖЕ)
+        table_lookup_only_with_competitors = table_lookup_only_with_competitors.filter(price_tyre_to_compare__site__in=sites_tlook)
         table_lookup_only_with_competitors_all_parsed = table_lookup_only_with_competitors
         #for kk in table_lookup_only_with_competitors_all_parsed:
         #    print('kk', kk.tyre.tyre_size.tyre_size)
@@ -5378,7 +5358,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         express_shina_competitors_dict1 = {}
-        for object_unit in list_of_tyre_comparative_objects:
+        for object_unit in list_of_tyre_comparative_objects.filter(price_tyre_to_compare__site='express-shina.ru'):
             object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
@@ -5605,7 +5585,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         kolesa_darom_competitors_dict1 = {}
-        for object_unit in list_of_tyre_comparative_objects:
+        for object_unit in list_of_tyre_comparative_objects.filter(price_tyre_to_compare__site='kolesa-darom.ru'):
             object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
@@ -5836,7 +5816,7 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
         # выбор по производителю:                               
         # ФИЛЬТР 4  - задаваемые производители шин для работы в таблице:
         kolesatyt_competitors_dict1 = {}
-        for object_unit in list_of_tyre_comparative_objects:
+        for object_unit in list_of_tyre_comparative_objects.filter(price_tyre_to_compare__site='kolesatyt.ru'):
             object_unit.planned_profitabilit = object_unit.planned_profitability()          ######  FOR WHAT?
             object_unit.direct_cost_varianc = object_unit.direct_cost_variance()            ######  FOR WHAT?
             list_of_matched_competitors = []
@@ -6084,20 +6064,24 @@ class ComparativeAnalysisTableModelDetailRussiaView(LoginRequiredMixin, DetailVi
             if list_brands_to_check:       # если бренды выбранные есть - искать по ним:                    !!!!!!!! вариант - отбора как обычно делаем
                 all_competitors_chem = all_competitors_chem.filter(producer_chem__in=list_brands_to_check)        # поиск на посл дату в химкурьере по указанным брендам
             else:
-                pass                                                                                    # поиск на посл дату в химкурьере 
-            for object_unit in list_of_tyre_comparative_objects:
-                list_of_matched_competitors = []
-                for competitor in all_competitors_chem:  
-                    for t_gr in object_unit.tyre.tyre_group.all():
-                        if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem and t_gr == competitor.group_chem and competitor.average_price_in_usd is not None:         # сверка по типоразмеру и группе шин не пустые
-                            list_of_matched_competitors.append(competitor)
-                chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
-       #    #####  НАДО СФОРМИРОВАТЬ СЛОВАРЬ С НЕСКОЛЬКИМИ КОНКУРЕНТАМИя 05.12.2022
+                pass  
+            ### old version:                                                                                  # поиск на посл дату в химкурьере 
+            #for object_unit in list_of_tyre_comparative_objects:
+            #    list_of_matched_competitors = []
+            #    for competitor in all_competitors_chem:  
+            #        for t_gr in object_unit.tyre.tyre_group.all():
+            #            if object_unit.tyre.tyre_size.tyre_size == competitor.tyre_size_chem and t_gr == competitor.group_chem and competitor.average_price_in_usd is not None:         # сверка по типоразмеру и группе шин не пустые
+            #                list_of_matched_competitors.append(competitor)
+            #    chemcurier_competitors_dict1[object_unit.tyre] = list_of_matched_competitors
+            ### END old version
+            ### new version:    
+            for object_unit in list_of_tyre_comparative_objects:                        # поиск на посл дату в химкурьер
+                #matched_chem_comp_rs = list(all_competitors_chem.filter(tyre_size_chem=object_unit.tyre.tyre_size.tyre_size, group_chem__in=object_unit.tyre.tyre_group.all(), average_price_in_usd__isnull=False))
+                matched_chem_comp_rs = all_competitors_chem.filter(tyre_size_chem=object_unit.tyre.tyre_size.tyre_size, group_chem__in=object_unit.tyre.tyre_group.all(), average_price_in_usd__isnull=False)
+                chemcurier_competitors_dict1[object_unit.tyre] = matched_chem_comp_rs
+            ### END new version
             models.CHEMCURIER_COMPETITORS_DICTIONARY1 = chemcurier_competitors_dict1  
-            #print('models.CHEMCURIER_COMPETITORS_DICTIONARY1 ==', models.CHEMCURIER_COMPETITORS_DICTIONARY1)
-            for tt in models.CHEMCURIER_COMPETITORS_DICTIONARY1.values():
-                for n in tt:
-                    print(n.producer_chem, n.data_month_chem)
+
         except:
             pass
         ###### END OF CHEMCURIER

@@ -1119,7 +1119,7 @@ class ComparativeAnalysisTyresModel(models.Model):
         return the_very_final_list_of_competitors_for_current_model_for_header_list
 
     def chemcurier_competitor_on_date1(self):                                       # отдаем конкурентов и цены + отклонение цены 902 прайса от цены CHEMCURIER (+ прикрутить формулы сняьтия ценоой надбавки и НДС)   CHEMCURIER                                                           
-        try:
+        #try:
             chemcurier_unique_result = ''
             if self.tyre in CHEMCURIER_COMPETITORS_DICTIONARY1.keys():                  # Tyre object (1926) [<ChemCurierTyresModel: ChemCurierTyresModel object (98)>, <ChemCurierTyresModel: ChemCurierTyresModel object (99)>, <ChemCurierTyresModel: ChemCurierTyresModel object (100)>, <ChemCurierTyresModel: ChemCurierTyresModel object (101)>]
                 min_value = '' # минимальное значение из всех прозодителей последнего периода поставки
@@ -1128,63 +1128,126 @@ class ComparativeAnalysisTyresModel(models.Model):
                 month_num = '' # номер месяца - на всякий случай
 
                 competitors_values_list = CHEMCURIER_COMPETITORS_DICTIONARY1[self.tyre] 
+                #print('APT APT APT APT ', competitors_values_list)      #APT APT APT APT  [<ChemCurierTyresModel: ChemCurierTyresModel object (614334)>, <ChemCurierTyresModel: ChemCurierTyresModel object (617500)>]
                 ######################### ДОП ФИЛЬТРАЦИЯ ПО ТИПОРАЗМЕРУ, ИНДЕКСАМ, СЕЗОННОСТИ:
                 gathered_tyresizes_by_producer_name_dict = {}
-                list_of_producer_names_list = []
-                for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
-                    #print('objjectobjjectobjjectobjject======================================================', objject,)
-                    if objject is None:
-                        pass
-                    else:
-                        list_of_producer_names_list.append(objject.producer_chem)
-            #    print('list_of_producer_names_list', list_of_producer_names_list) 
+                
+                # old version:
+                #list_of_producer_names_list = []
+                #for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
+                #    #print('objjectobjjectobjjectobjject======================================================', objject,)
+                #    if objject is None:
+                #        pass
+                #    else:
+                #        list_of_producer_names_list.append(objject.producer_chem)
+                # END old version
+                
+                # NEW version:
+                list_of_producer_names_list = list(competitors_values_list.values_list('producer_chem', flat=True))
+                #print('==++++++++=+++asss', list_of_producer_names_list)
+                # END NEW version
+
+                # old version:
+                #print('list_of_producer_names_list', list_of_producer_names_list) 
+                #list_of_producer_names_list = list(set(list_of_producer_names_list)) 
+                #for prod_name in list_of_producer_names_list:
+                #    gathered_tyresizes_by_producer_name_list = []  
+                #    for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
+                #    # 1. выбрать все строки (типоразмеры) одного производителя:             
+                #        if objject.producer_chem == prod_name:
+                #            gathered_tyresizes_by_producer_name_list.append(objject)
+                #    print('GAZERET1==========', gathered_tyresizes_by_producer_name_list, 'PPP', prod_name)
+                #    gathered_tyresizes_by_producer_name_dict[prod_name] = gathered_tyresizes_by_producer_name_list
+                ## END old version
+
+                ## NEW version:
                 list_of_producer_names_list = list(set(list_of_producer_names_list)) 
                 for prod_name in list_of_producer_names_list:
-                    gathered_tyresizes_by_producer_name_list = []  
-                    for objject in competitors_values_list:         # пройтись по хикуреровским объектам данного типоразмера
-                    # 1. выбрать все строки (типоразмеры) одного производителя:             
-                        if objject.producer_chem == prod_name:
-                            gathered_tyresizes_by_producer_name_list.append(objject)
-            #        print('GAZERET', gathered_tyresizes_by_producer_name_list, 'PPP', prod_name)
+                    gathered_tyresizes_by_producer_name_list = [] 
+                    #gathered_tyresizes_by_producer_name_list = list(competitors_values_list.filter(producer_chem=prod_name))
+                    gathered_tyresizes_by_producer_name_list = competitors_values_list.filter(producer_chem=prod_name)
+                    #print('GAZERET2==========', gathered_tyresizes_by_producer_name_list, 'PPP', prod_name)
                     gathered_tyresizes_by_producer_name_dict[prod_name] = gathered_tyresizes_by_producer_name_list
+                # END NEW version
+
             #    print('|||||', gathered_tyresizes_by_producer_name_dict)   # ||||| {'Nexen': [<ChemCurierTyresModel: ChemCurierTyresModel object (112)>, <ChemCurierTyresModel: ChemCurierTyresModel object (128)>, <ChemCurierTyresModel: ChemCurierTyresModel object (136)>], 'Continental': [<ChemCurierTyresModel: ChemCurierTyresModel object (120)>]}
                 # 2 есть словарь gathered_tyresizes_by_producer_name_dict - все размеры отфильтрованы по производителю, теперь выведение средних их цен по каждому периоду из всех размеров одного производителя:
+                
+                ## old version:
+                #motnth_periods_vol = []
+                #motnth_periods_vol_dates = []
+                #for val in gathered_tyresizes_by_producer_name_dict.values():
+                #    for chemcur_obj in val:                 # ChemCurierTyresModel object (109)):
+                #        motnth_periods_vol_dates.append(chemcur_obj.data_month_chem)
+                #    eldest_date = min(motnth_periods_vol_dates)
+                #    latest_date = max(motnth_periods_vol_dates)
+                #    motnth_periods_vol = pd.date_range(start=eldest_date, end=latest_date).date
+                #print("????????? =====11", motnth_periods_vol_dates)
+                #print('=========11', motnth_periods_vol)         #========= 1
+                ## END old version
+
+                # NEW version:
+                eldest_date = None
+                latest_date = None
                 motnth_periods_vol = []
                 motnth_periods_vol_dates = []
-                for val in gathered_tyresizes_by_producer_name_dict.values():
-                    for chemcur_obj in val:                 # ChemCurierTyresModel object (109)):
-                        motnth_periods_vol_dates.append(chemcur_obj.data_month_chem)
+                for val in gathered_tyresizes_by_producer_name_dict.values(): #+++++!+!+!+!+!+! dict_values([<QuerySet [<ChemCurierTyresModel: ChemCurierTyresModel object (614334)>]>, <QuerySet [<ChemCurierTyresModel: ChemCurierTyresModel object (617500)>]>])
+                    eldest_date1 = val.earliest("data_month_chem").data_month_chem
+                    latest_date1 = val.latest("data_month_chem").data_month_chem
+                    motnth_periods_vol_dates.append(eldest_date1)
+                    motnth_periods_vol_dates.append(latest_date1)
                     eldest_date = min(motnth_periods_vol_dates)
                     latest_date = max(motnth_periods_vol_dates)
+                if eldest_date and latest_date:
                     motnth_periods_vol = pd.date_range(start=eldest_date, end=latest_date).date
-                #print('=========', motnth_periods_vol)         #========= 1
+                #print('=========22', motnth_periods_vol)         #========= 1
+                # END NEW version
+
+
+                # old version:
                 # Собираем словарь производитель - все его одинакового типоразмера сложенные по месяцам СО СРЕДНВЗВЕШЕННЫМ ЗНАЧЕНИЕМ        -  сюда можно вмешаться - подмешать проверки по объемам, например
+                #gazered_all_sizws_by_periods_in_one_producer = {}                                                                                                                                                             
+                #for key, val in gathered_tyresizes_by_producer_name_dict.items(): 
+                #    all_prices_by_producer_gathered = {} 
+                #    for per_num in motnth_periods_vol:
+                #        list_of_values = [] 
+                #        for chemcur_obj in val:
+                #            if chemcur_obj.data_month_chem == per_num:
+                #                mon_val = chemcur_obj.average_price_in_usd
+                #                list_of_values.append(mon_val)
+                #        all_prices_by_producer_gathered[per_num] = list_of_values 
+                #    gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered  
+                #print('!!!1111!!!!==', gazered_all_sizws_by_periods_in_one_producer 
+                ## END old version
+
+                # NEW version:
                 gazered_all_sizws_by_periods_in_one_producer = {}                                                                                                                                                             
                 for key, val in gathered_tyresizes_by_producer_name_dict.items(): 
                     all_prices_by_producer_gathered = {} 
-                    for per_num in motnth_periods_vol:
-                        list_of_values = [] 
-                        for chemcur_obj in val:
-                            if chemcur_obj.data_month_chem == per_num:
-                                mon_val = chemcur_obj.average_price_in_usd
-                                list_of_values.append(mon_val)
-                        all_prices_by_producer_gathered[per_num] = list_of_values   
-                    gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered     
+                    for per_num in motnth_periods_vol: 
+                        list_of_values = list(val.filter(data_month_chem = per_num).values_list('average_price_in_usd', flat=True))
+                        all_prices_by_producer_gathered[per_num] = list_of_values
+                    #print('!!!!!!!!@@!!list_of_values2', list_of_values)
+                    # END остановился здесь
+                    gazered_all_sizws_by_periods_in_one_producer[key] = all_prices_by_producer_gathered
+                #print('!!!2222!!!!==', gazered_all_sizws_by_periods_in_one_producer)
+                # END NEW version      
+                
+                # ЗДЕСЬ ОСТАНОВИЛСЯ:
     #            print('UU', gazered_all_sizws_by_periods_in_one_producer)                                          # здесь все годно  - все норм посчитано
                 # 1 ОПЦИЯ ДЛЯ ВЫВОДА: расчет средневзвешенной стоимости типоразмера одного производителя:
                 result_main_per_producer_size_calculated_dict = {}
                 for producer, perid_mumb_periods in gazered_all_sizws_by_periods_in_one_producer.items():
-                #    print('=-=-=-=', producer, '=-=-=-=', perid_mumb_periods)
+                    #print('=-=-=-=', producer, '=-=-=-=', perid_mumb_periods)
                     periods_dict = {}
                     for perid_mumb, values in perid_mumb_periods.items():
-                #        print(values, len(values))
+                        #print(values, len(values))
                         result_summ_in_period = 0           
                         val_quqnt_calc = 0
                         for numb in values:
                 #            print('NUMB', numb)
                             result_summ_in_period += numb
                             val_quqnt_calc +=1
-
                         if result_summ_in_period !=0 and val_quqnt_calc > 0:
                             periods_dict[perid_mumb] = result_summ_in_period / val_quqnt_calc
                         else:
@@ -1274,12 +1337,12 @@ class ComparativeAnalysisTyresModel(models.Model):
                         #  END перевод в удобоваримый вид
                         chemcurier_unique_result = result_min_value_producer, min_value, min_value_usd, deflection, period
             #print('producer = ', result_min_value_producer, 'min_value_usd = ', min_value_usd, 'min value = ', min_value, 'month =', period)
-    #        print('11!!', chemcurier_unique_result)
+        #    print('11!!', chemcurier_unique_result)
             return chemcurier_unique_result
-        except:
+        #except:
             #chemcurier_unique_result = ('', '', '', '', '')
             #return chemcurier_unique_result
-            pass
+        #    pass
 
     
 # ______ RUS_____
