@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 import datetime
+from django.db.models import JSONField
 
 ONLINER_COMPETITORS_DICTIONARY1 = {}
 ONLINER_HEADER_NUMBER = int
@@ -119,6 +120,9 @@ TOP_BRANDS_NUM = 0
 PERIOD_LIST_OF_PARSED_TYRETYPES_DICT = {}
 DATES_TYRESIZES_LIST_FOR_CHART_HEADER = []
 SECOND_TOP_TYRESIZE_NUM = 0
+
+DATE_TO_LOOK_PARSED_DATAS = []
+LIST_OF_PARRSED_TYRESIZE_SITES1 = []
 # END BELARUS - сохранение данных для избегания повторных расчетов
 
 # RUSSIA - сохранение данных для избегания повторных расчетов
@@ -2020,3 +2024,6 @@ class DataPriceValMoneyChemCurierModel(models.Model):
     )
 
 
+class AllCompetitorSiteModelDict(models.Model):
+    chart_one_json = JSONField(default=dict) #  {'02.01.2025': [[['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 14], ['bagoria.by', 121], ['autoset.by', 8]], 143]}
+    chart_two_json = JSONField(default=dict)
