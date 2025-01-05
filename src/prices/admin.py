@@ -82,7 +82,12 @@ class  ComparativeAnalysisTyresModelAdmin(admin.ModelAdmin):
     ]
 
 
-
+class AllCompetitorSiteModelDictModelAdmin(admin.ModelAdmin):
+    list_display = [
+            'chart_one_json',
+            'chart_two_json',
+            'chart_four_json',
+    ]
 
 
 class CompetitorSiteModelAdmin(admin.ModelAdmin):
@@ -143,3 +148,4 @@ admin.site.register(models.ComparativeAnalysisTyresModel, ComparativeAnalysisTyr
 admin.site.register(models.CompetitorSiteModel, CompetitorSiteModelAdmin)
 admin.site.register(models.DataPriceValMoneyChemCurierModel, DataPriceValMoneyChemCurierModelAdmin)
 admin.site.register(models.ChemCurierTyresModel, ChemCurierTyresModelAdmin)
+admin.site.register(models.AllCompetitorSiteModelDict, AllCompetitorSiteModelDictModelAdmin)

@@ -123,6 +123,8 @@ SECOND_TOP_TYRESIZE_NUM = 0
 
 DATE_TO_LOOK_PARSED_DATAS = []
 LIST_OF_PARRSED_TYRESIZE_SITES1 = []
+
+CLOSEST_DATA_FOUND = None #нужен для сверки в случаях, когда искадись данные на ближайшую дату (не найдены та текущую), для снижения нагрузки от повторных расчетов при обновлении страницы
 # END BELARUS - сохранение данных для избегания повторных расчетов
 
 # RUSSIA - сохранение данных для избегания повторных расчетов
@@ -2027,3 +2029,4 @@ class DataPriceValMoneyChemCurierModel(models.Model):
 class AllCompetitorSiteModelDict(models.Model):
     chart_one_json = JSONField(default=dict) #  {'02.01.2025': [[['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 14], ['bagoria.by', 121], ['autoset.by', 8]], 143]}
     chart_two_json = JSONField(default=dict)
+    chart_four_json = JSONField(default=dict)
