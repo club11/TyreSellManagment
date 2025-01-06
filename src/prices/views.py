@@ -142,47 +142,114 @@ def chart_one_belarus():            # для расчета данных к та
             final_parsed_data_from_sites.append(to_put_in_list_data)
             #print('final_parsed_data_from_sites_whole', final_parsed_data_from_sites_whole)
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-        print('FFFINAL COUNTDOWN')
+        #print('FFFINAL COUNTDOWN', final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data ) #210 [['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 20], ['bagoria.by', 147], ['autoset.by', 43]] 06.01.2025
         return final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data 
-
     date_to_look_parsed_data = datetime.datetime.now().date()
     date_to_look_parsed_data.strftime('%d.%m.%Y')
-    date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-    try:
-        if not models.AllCompetitorSiteModelDict.objects.values_list('chart_one_json', flat=True)[0]['belarus'][date_to_look_parsed_data]:   # если на автомате роходит парсинг и на дату нет - сформировать
-            final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data = execute_look()
-    except:
-        pass
-    # блок по созданию отпечатка всех спарсенных данных на дату:
+    final_parsed_data_from_sites_whole = []
+    date_to_look_parsed_data = []
+    final_parsed_data_from_sites = []
     what_to_add_to_json = {}
     date_to_look_parsed_data = datetime.datetime.now().date()
+    date_to_look_parsed_data_indate_type = date_to_look_parsed_data
+    if date_to_look_parsed_data is datetime.date:
+        date_to_look_parsed_data.strftime('%d.%m.%Y')
     if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
         date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
         date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
+        date_to_look_parsed_data_indate_type = date_to_look_parsed_data
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-        #print('IIIIISIIIS', date_to_look_parsed_data, type(date_to_look_parsed_data))
-    what_to_add_to_json['belarus'] = {}
     try:
-        data_to_return = models.AllCompetitorSiteModelDict.objects.values_list('chart_one_json', flat=True)[0]['belarus'][date_to_look_parsed_data]
-        #print('***', data_to_return)
-        if data_to_return:
-            date_to_look_parsed_data = date_to_look_parsed_data
-            final_parsed_data_from_sites = data_to_return[0]
-            final_parsed_data_from_sites_whole = data_to_return[1]
-            #print('==223==', what_to_add_to_json)
-    except:     # если на текущую дату нет данных - 1) взять старые данные и добавить к ним данные на текущую дату:
-        try:
-            what_to_add_to_json = models.AllCompetitorSiteModelDict.objects.values_list('chart_one_json', flat=True)[0]['belarus']
-        except:
-            pass
-        final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data = execute_look()
-        #date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-        what_to_add_to_json['belarus'] = {date_to_look_parsed_data : [final_parsed_data_from_sites, final_parsed_data_from_sites_whole]}
-        models.AllCompetitorSiteModelDict.objects.update_or_create(chart_one_json=what_to_add_to_json)   #  {'02.01.2025': [[['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 14], ['bagoria.by', 121], ['autoset.by', 8]], 143]}
-        #print('SSSSSS1', models.AllCompetitorSiteModelDict.objects.values_list('chart_one_json', flat=True)[0])
-    # END блок по созданию отпечатка всех спарсенных данных на дату
-    #models.AllCompetitorSiteModelDict.objects.all().delete()
-    return final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data
+            #блок для формирования словаря во время парсинга ------- ПАРСИНГ
+        if not models.AllCompetitorSiteModelDict.objects.exclude(chart_one_json={}).filter(chart_one_json__isnull=False):    # если на автомате роходит парсинг и на дату нет - сформировать  
+            final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data = execute_look()
+            what_to_add_to_json = {}
+            what_to_add_to_json[date_to_look_parsed_data] = final_parsed_data_from_sites_whole, final_parsed_data_from_sites
+            if not what_to_add_to_json:
+                pass
+            else:
+                chart_one_json_obj, iss_created = models.AllCompetitorSiteModelDict.objects.get_or_create(chart_one_json=what_to_add_to_json) 
+                chart_one_json_obj.chart_one_json = what_to_add_to_json
+                chart_one_json_obj.save()
+                #print('CHOTOSDELAL', models.AllCompetitorSiteModelDict.objects.values_list('chart_one_json', flat=True))
+    except: 
+        pass
+             # ЕСЛИ ДАННЫЕ ЕСТЬ   ----- НЕ ПАРСИНГ  # ВЕРНУТЬ EXCEPT
+    # блок по созданию отпечатка всех спарсенных данных на дату:
+    what_to_add_to_json = {}
+    try:        # ПОЛУЧИТЬ ДАННЫЕ НА ВЫБРАННУЮ ДАТУ           
+        data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_one_json={}).filter(chart_one_json__isnull=False).values_list('chart_one_json', flat=True)#.filter(chart_one_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
+        #print('DATA--', date_to_look_parsed_data)
+        #print('ЖЖЖ',  data_to_return)
+        data_to_return = list(data_to_return)#[0]
+        for n in list(data_to_return):
+            n = dict(n)
+            try:
+                if n[date_to_look_parsed_data]:
+                    data_to_return = n[date_to_look_parsed_data]
+                    #data_to_return = dict(data_to_return)
+                    #data_to_return = data_to_return[date_to_look_parsed_data]
+                    if data_to_return:
+                        date_to_look_parsed_data = date_to_look_parsed_data
+                        final_parsed_data_from_sites_whole = data_to_return[0]
+                        final_parsed_data_from_sites = data_to_return[1]
+                        #print('П--АПА', final_parsed_data_from_sites_whole, date_to_look_parsed_data, final_parsed_data_from_sites)
+                        break
+            except: 
+                pass
+    except: 
+        pass
+    if not final_parsed_data_from_sites_whole or not final_parsed_data_from_sites: # если на текущую дату нет данных - 1) ПОПЫТАТЬСЯ СФОРМИРОВАТЬ СЛОВАРЬ: 
+        final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data = execute_look() 
+        #print('USRATSJA2 func1')
+        what_to_add_to_json = {}
+        what_to_add_to_json[date_to_look_parsed_data] = final_parsed_data_from_sites_whole, final_parsed_data_from_sites
+        if not what_to_add_to_json or not final_parsed_data_from_sites_whole or not final_parsed_data_from_sites:
+            #try: # если на конкретную дату инфы нет - взять ближайшую следующую БЛИЖАЙШУЮ ДАТУ В СПИСКЕ в списке:
+                data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_one_json={}).filter(chart_one_json__isnull=False).values_list('chart_one_json', flat=True)#.filter(chart_one_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
+                data_to_return = list(data_to_return)#[0]
+                list_dates_keys = []    # список со всеми доступными датами
+                for n in list(data_to_return):
+                    if datetime.datetime.strptime(list(dict(n).keys())[0], '%d.%m.%Y').date() != date_to_look_parsed_data_indate_type:
+                        #print('=++++++', datetime.datetime.strptime(list(dict(n).keys())[0], '%d.%m.%Y'), '------', date_to_look_parsed_data)
+                        list_dates_keys.append(datetime.datetime.strptime(list(dict(n).keys())[0], '%d.%m.%Y').date())
+                #print('list_dates_keys', list_dates_keys)
+                closest_date = min(list_dates_keys, key=lambda x: (x>date_to_look_parsed_data_indate_type, abs(x-date_to_look_parsed_data_indate_type)))
+                date_to_look_parsed_data = closest_date.strftime('%d.%m.%Y')    # БЛИЖАЙШАЯ НАЙДЕННАЯ ДАТА 
+                data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_one_json={}).filter(chart_one_json__isnull=False).values_list('chart_one_json', flat=True)#.filter(chart_one_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
+                data_to_return = list(data_to_return)#[0]
+                for n in list(data_to_return):                  #ПОИСК НА БЛИЖАЙШУЮ НАЙДЕННУЮ ДАТУ
+                    try:
+                        data_to_return_is = None
+                        if n[date_to_look_parsed_data]:
+                            data_to_return_is = n[date_to_look_parsed_data]
+                            if data_to_return_is:
+                                date_to_look_parsed_data = date_to_look_parsed_data
+                                final_parsed_data_from_sites_whole = data_to_return_is[0]
+                                final_parsed_data_from_sites = data_to_return_is[1]
+                                break        
+                    except: 
+                        pass
+                if final_parsed_data_from_sites_whole:
+                    print('KO-KO-KO', final_parsed_data_from_sites_whole, date_to_look_parsed_data, final_parsed_data_from_sites)
+                    models.CLOSEST_DATA_FOUND1 = date_to_look_parsed_data_indate_type
+                    #print('models.CLOSEST_DATA_FOUND1 = ', models.CLOSEST_DATA_FOUND1) 
+                    return final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data
+            #except:
+            #    pass
+        else:
+            chart_one_json_obj, iss_created = models.AllCompetitorSiteModelDict.objects.get_or_create(chart_one_json=what_to_add_to_json) 
+            chart_one_json_obj.chart_one_json = what_to_add_to_json
+            chart_one_json_obj.save()
+            #print('obj_with_dict ============', ) 
+        # END блок по созданию отпечатка всех спарсенных данных на дату
+    #print('I CHO TAM', final_parsed_data_from_sites_whole, date_to_look_parsed_data, final_parsed_data_from_sites) 
+    models.CLOSEST_DATA_FOUND1 = None 
+    return final_parsed_data_from_sites_whole, final_parsed_data_from_sites, date_to_look_parsed_data  # 210 [['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 20], ['bagoria.by', 147], ['autoset.by', 43]] 06.01.2025
+    #(210, [['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 20], ['bagoria.by', 147], ['autoset.by', 43]], '06.01.2025')
+
+
+
 
 
 def chart_two_belarus():
@@ -212,45 +279,118 @@ def chart_two_belarus():
             top_brands_counter_for_chart = quantity_counter
         else:
             top_brands_counter_for_chart = 'лист без данных'
-        date_to_look_parsed_datas = list_of_parrsed_brands_sites
-        models.DATE_TO_LOOK_PARSED_DATAS = date_to_look_parsed_datas
+        #print('==1!!!!!!!!!!!', top_brands_counter_for_chart)
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
+        #date_to_look_parsed_datas1 = list_of_parrsed_brands_sites
+        models.DATE_TO_LOOK_PARSED_DATAS = list_of_parrsed_brands_sites 
         list_of_parrsed_brands_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_brands_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ  
-        return top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites, quantity_counter
-    
+        return top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites #, quantity_counter
     date_to_look_parsed_data = datetime.datetime.now().date()
     date_to_look_parsed_data.strftime('%d.%m.%Y')
-    date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
+    top_brands_counter_for_chart = []
+    date_to_look_parsed_data = []
+    list_of_parrsed_brands_sites = []
+    what_to_add_to_json = {}
+    date_to_look_parsed_data = datetime.datetime.now().date()
+    date_to_look_parsed_data_indate_type = date_to_look_parsed_data
+    if date_to_look_parsed_data is datetime.date:
+        date_to_look_parsed_data.strftime('%d.%m.%Y')
+    if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+        date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+        date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
+        date_to_look_parsed_data_indate_type = date_to_look_parsed_data
+        date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
     try:
-        if not models.AllCompetitorSiteModelDict.objects.values_list('chart_two_json', flat=True)[0]['belarus'][date_to_look_parsed_data]:        # если на автомате роходит парсинг и на дату нет - сформировать  
-            top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites, quantity_counter = execute_look()     
-    except:         # ЕСЛИ ДАННЫЕ ЕСТЬ
-        # блок по созданию отпечатка всех спарсенных данных на дату:
-        what_to_add_to_json = {}
-        date_to_look_parsed_data = datetime.datetime.now().date()
-        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-            date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
-            date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
-            date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-        what_to_add_to_json['belarus'] = {}
-        try:            # ПОЛУЧИТЬ ДАННЫЕ ЗДЕСЬ
-            data_to_return = models.AllCompetitorSiteModelDict.objects.values_list('chart_two_json', flat=True)[1]['belarus'][date_to_look_parsed_data]
-            if data_to_return:
-                date_to_look_parsed_data = date_to_look_parsed_data
-                top_brands_counter_for_chart = data_to_return[0]
-                list_of_parrsed_brands_sites = data_to_return[1]
-        except:     # если на текущую дату нет данных - 1) взять старые данные и добавить к ним данные на текущую дату:
+            #блок для формирования словаря во время парсинга ------- ПАРСИНГ
+        if not models.AllCompetitorSiteModelDict.objects.exclude(chart_two_json={}).filter(chart_two_json__isnull=False):    # если на автомате роходит парсинг и на дату нет - сформировать  
+            top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sitess = execute_look()
+            what_to_add_to_json = {}
+            what_to_add_to_json[date_to_look_parsed_data] = top_brands_counter_for_chart, list_of_parrsed_brands_sites
+            if not what_to_add_to_json:
+                pass
+            else:
+                chart_two_json_obj, iss_created = models.AllCompetitorSiteModelDict.objects.get_or_create(chart_two_json=what_to_add_to_json) 
+                chart_two_json_obj.chart_two_json = what_to_add_to_json
+                chart_two_json_obj.save()
+                #print('CHOTOSDELAL', models.AllCompetitorSiteModelDict.objects.values_list('chart_two_json', flat=True))
+    except: 
+        pass
+             # ЕСЛИ ДАННЫЕ ЕСТЬ   ----- НЕ ПАРСИНГ  # ВЕРНУТЬ EXCEPT
+    # блок по созданию отпечатка всех спарсенных данных на дату:
+    what_to_add_to_json = {}
+    try:        # ПОЛУЧИТЬ ДАННЫЕ НА ВЫБРАННУЮ ДАТУ           
+        data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_two_json={}).filter(chart_two_json__isnull=False).values_list('chart_two_json', flat=True)#.filter(chart_two_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
+        #print('DATA--', date_to_look_parsed_data)
+        #print('ЖЖЖ',  data_to_return)
+        data_to_return = list(data_to_return)#[0]
+        for n in list(data_to_return):
+            n = dict(n)
             try:
-                what_to_add_to_json = models.AllCompetitorSiteModelDict.objects.values_list('chart_two_json', flat=True)[0]['belarus']
+                if n[date_to_look_parsed_data]:
+                    data_to_return = n[date_to_look_parsed_data]
+                    #data_to_return = dict(data_to_return)
+                    #data_to_return = data_to_return[date_to_look_parsed_data]
+                    if data_to_return:
+                        date_to_look_parsed_data = date_to_look_parsed_data
+                        top_brands_counter_for_chart = data_to_return[0]
+                        list_of_parrsed_brands_sites = data_to_return[1]
+                        #print('П--АПА', top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites)
+                        break
+            except: 
+                pass
+    except: 
+        pass
+    if not top_brands_counter_for_chart or not list_of_parrsed_brands_sites: # если на текущую дату нет данных - 1) ПОПЫТАТЬСЯ СФОРМИРОВАТЬ СЛОВАРЬ: 
+        iziziziziz = execute_look()
+        top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites = execute_look() 
+        #print('USRATSJA2')
+        what_to_add_to_json = {}
+        what_to_add_to_json[date_to_look_parsed_data] = top_brands_counter_for_chart, list_of_parrsed_brands_sites
+        if not what_to_add_to_json or not top_brands_counter_for_chart or not list_of_parrsed_brands_sites:
+            try: # если на конкретную дату инфы нет - взять ближайшую следующую БЛИЖАЙШУЮ ДАТУ В СПИСКЕ в списке:
+                data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_two_json={}).filter(chart_two_json__isnull=False).values_list('chart_two_json', flat=True)#.filter(chart_two_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
+                data_to_return = list(data_to_return)#[0]
+                list_dates_keys = []    # список со всеми доступными датами
+                for n in list(data_to_return):
+                    if datetime.datetime.strptime(list(dict(n).keys())[0], '%d.%m.%Y').date() != date_to_look_parsed_data_indate_type:
+                        #print('=++++++', datetime.datetime.strptime(list(dict(n).keys())[0], '%d.%m.%Y'), '------', date_to_look_parsed_data)
+                        list_dates_keys.append(datetime.datetime.strptime(list(dict(n).keys())[0], '%d.%m.%Y').date())
+                #print('list_dates_keys', list_dates_keys)
+                closest_date = min(list_dates_keys, key=lambda x: (x>date_to_look_parsed_data_indate_type, abs(x-date_to_look_parsed_data_indate_type)))
+                #print('CLOSEST', closest_date, type(closest_date))
+                date_to_look_parsed_data = closest_date.strftime('%d.%m.%Y')    # БЛИЖАЙШАЯ НАЙДЕННАЯ ДАТА 
+                data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_two_json={}).filter(chart_two_json__isnull=False).values_list('chart_two_json', flat=True)#.filter(chart_two_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
+                data_to_return = list(data_to_return)#[0]
+                for n in list(data_to_return):                  #ПОИСК НА БЛИЖАЙШУЮ НАЙДЕННУЮ ДАТУ
+                    n = dict(n)
+                    try:
+                        if n[date_to_look_parsed_data]:
+                            data_to_return = n[date_to_look_parsed_data]
+                            #data_to_return = dict(data_to_return)
+                            #data_to_return = data_to_return[date_to_look_parsed_data]
+                            if data_to_return:
+                                date_to_look_parsed_data = date_to_look_parsed_data
+                                top_brands_counter_for_chart = data_to_return[0]
+                                list_of_parrsed_brands_sites = data_to_return[1]
+                                #print('П--2222АПА', top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites)
+                                break        
+                    except: 
+                        pass
+                if top_brands_counter_for_chart:
+                    models.CLOSEST_DATA_FOUND2 = date_to_look_parsed_data
+                    models.CLOSEST_DATA_FOUND2 = date_to_look_parsed_data_indate_type
+                    #print('models.CLOSEST_DATA_FOUND2 = ', models.CLOSEST_DATA_FOUND2) 
+                    return top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites
             except:
                 pass
-            top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites, quantity_counter = execute_look() 
-            what_to_add_to_json['belarus'] = {date_to_look_parsed_data : [top_brands_counter_for_chart, list_of_parrsed_brands_sites]}
-            if what_to_add_to_json:
-                models.AllCompetitorSiteModelDict.objects.update_or_create(chart_two_json=what_to_add_to_json)  
-            #print('SSSSSS2', models.AllCompetitorSiteModelDict.objects.values_list('chart_two_json', flat=True)[0])   
-    # END блок по созданию отпечатка всех спарсенных данных на дату 
-    #models.AllCompetitorSiteModelDict.objects.all().delete()   
+        else:
+            chart_two_json_obj, iss_created = models.AllCompetitorSiteModelDict.objects.get_or_create(chart_two_json=what_to_add_to_json) 
+            chart_two_json_obj.chart_two_json = what_to_add_to_json
+            chart_two_json_obj.save()
+            #print('obj_with_dict ============', ) 
+        # END блок по созданию отпечатка всех спарсенных данных на дату
+    #print('I CHO TAM2', top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites) 
+    models.CLOSEST_DATA_FOUND2 = None 
     return top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites
 
 
@@ -280,21 +420,18 @@ def chart_four_belarus():
             top_tyresizes_counter_for_chart = quantity_counter
         else:
             top_tyresizes_counter_for_chart = 'лист без данных'
-        print('==2!!!!!!!!!!!', top_tyresizes_counter_for_chart)  
+        print('==4!!!!!!!!!!!', top_tyresizes_counter_for_chart)  
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
         #print('DATA DATA DATA DATA', date_to_look_parsed_data)
         list_of_parrsed_tyresize_sites1 = list_of_parrsed_tyresize_sites
         models.LIST_OF_PARRSED_TYRESIZE_SITES1 = list_of_parrsed_tyresize_sites
         list_of_parrsed_tyresize_sites = ','.join(str(x[0:4]) for x in list_of_parrsed_tyresize_sites) # !!!!!!! ДРУГОЙ ВАРИАНТ ПЕРЕДАЧИ ДАННЫХ
-        return top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites
-    
+        return top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites 
     date_to_look_parsed_data = datetime.datetime.now().date()
     date_to_look_parsed_data.strftime('%d.%m.%Y')
-    
     top_tyresizes_counter_for_chart = []
     date_to_look_parsed_data = []
     list_of_parrsed_tyresize_sites = []
-
     what_to_add_to_json = {}
     date_to_look_parsed_data = datetime.datetime.now().date()
     date_to_look_parsed_data_indate_type = date_to_look_parsed_data
@@ -305,12 +442,11 @@ def chart_four_belarus():
         date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
         date_to_look_parsed_data_indate_type = date_to_look_parsed_data
         date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-
     try:
             #блок для формирования словаря во время парсинга ------- ПАРСИНГ
         if not models.AllCompetitorSiteModelDict.objects.exclude(chart_four_json={}).filter(chart_four_json__isnull=False):    # если на автомате роходит парсинг и на дату нет - сформировать  
             ##убрать пустые объекты:
-            #print('!!!!!++++!!!!!', models.AllCompetitorSiteModelDict.objects.values_list('chart_four_json', flat=True))
+            #print('!!!!!ALARM++++!!!!!', models.AllCompetitorSiteModelDict.objects.values_list('chart_four_json', flat=True))
             #for chart_four_json_ob in models.AllCompetitorSiteModelDict.objects.filter(chart_four_json={}):
             #    chart_four_json_ob.delete()
             #    print("ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ")
@@ -324,12 +460,11 @@ def chart_four_belarus():
                 chart_four_json_obj, iss_created = models.AllCompetitorSiteModelDict.objects.get_or_create(chart_four_json=what_to_add_to_json) 
                 chart_four_json_obj.chart_four_json = what_to_add_to_json
                 chart_four_json_obj.save()
-                #print('CHOTOSDELAL', models.AllCompetitorSiteModelDict.objects.values_list('chart_four_json', flat=True))
+                print('CHOTOSDELAL--=-=-=-')
     except: 
         pass
              # ЕСЛИ ДАННЫЕ ЕСТЬ   ----- НЕ ПАРСИНГ  # ВЕРНУТЬ EXCEPT
     # блок по созданию отпечатка всех спарсенных данных на дату:
-
     what_to_add_to_json = {}
     try:        # ПОЛУЧИТЬ ДАННЫЕ НА ВЫБРАННУЮ ДАТУ           
         data_to_return = models.AllCompetitorSiteModelDict.objects.exclude(chart_four_json={}).filter(chart_four_json__isnull=False).values_list('chart_four_json', flat=True)#.filter(chart_four_json__contains=[date_to_look_parsed_data]) # СПИСОК С ДАННЫМИ НА ДАТУ ИЗ СЛОВАРЯ  
@@ -347,16 +482,15 @@ def chart_four_belarus():
                         date_to_look_parsed_data = date_to_look_parsed_data
                         top_tyresizes_counter_for_chart = data_to_return[0]
                         list_of_parrsed_tyresize_sites = data_to_return[1]
-                        #print('П--АПА', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites)
+                        print('П--АПА', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites)
                         break
             except: 
                 pass
     except: 
         pass
-   
     if not top_tyresizes_counter_for_chart or not list_of_parrsed_tyresize_sites: # если на текущую дату нет данных - 1) ПОПЫТАТЬСЯ СФОРМИРОВАТЬ СЛОВАРЬ: 
         top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites = execute_look() 
-        #print('USRATSJA2')
+        print('USRATSJA2')
         what_to_add_to_json = {}
         what_to_add_to_json[date_to_look_parsed_data] = top_tyresizes_counter_for_chart, list_of_parrsed_tyresize_sites
         if not what_to_add_to_json or not top_tyresizes_counter_for_chart or not list_of_parrsed_tyresize_sites:
@@ -385,7 +519,7 @@ def chart_four_belarus():
                                 date_to_look_parsed_data = date_to_look_parsed_data
                                 top_tyresizes_counter_for_chart = data_to_return[0]
                                 list_of_parrsed_tyresize_sites = data_to_return[1]
-                                print('П--2222АПА', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites)
+                                print('П--002222------АПА это 4 функция', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites)
                                 break        
                     except: 
                         pass
@@ -393,6 +527,7 @@ def chart_four_belarus():
                     #models.CLOSEST_DATA_FOUND = date_to_look_parsed_data
                     models.CLOSEST_DATA_FOUND = date_to_look_parsed_data_indate_type
                     #print('models.CLOSEST_DATA_FOUND = ', models.CLOSEST_DATA_FOUND) 
+                    #print('KOT KIT', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites)
                     return top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites
             except:
                 pass
@@ -401,9 +536,8 @@ def chart_four_belarus():
             chart_four_json_obj.chart_four_json = what_to_add_to_json
             chart_four_json_obj.save()
             #print('obj_with_dict ============', ) 
-        
         # END блок по созданию отпечатка всех спарсенных данных на дату
-    print('I CHO TAM', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites) 
+    #print('I CHO TAM', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites) 
     models.CLOSEST_DATA_FOUND = None 
     return top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites
 
@@ -4988,17 +5122,37 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
         #### END  ТЕСТОВАЯ ШТУКА ДЛЯ ГРАФИКОВ PANDAS
         
+
+        # ФИЛЬТР даты для кругового и 4-х графиков:
+        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+            date_to_look_parsed_data_is = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+            date_to_look_parsed_data_is = datetime.datetime.strptime(date_to_look_parsed_data_is, '%Y-%m-%d').date()
+            date_to_look_parsed_data_is = date_to_look_parsed_data_is.strftime('%d.%m.%Y')
         #### КРУГОВОЙ ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ С САЙТА: PANDAS
-        if not models.FINAL_PARSED_DATA_FROM_SITES or not models.FINAL_PARSED_DATA_FROM_SITES_DATA: #если еще не расчитывались данные на сегодня - подготовить данные
-            final_parsed_data_from_sites_whole, final_parsed_data_from_sites,  date_to_look_parsed_data = chart_one_belarus()
-            context['final_parsed_data_from_sites_whole'] = final_parsed_data_from_sites_whole   
-            context['final_parsed_data_from_sites'] = final_parsed_data_from_sites
-            context['final_parsed_data_from_sites_data'] = date_to_look_parsed_data
-            models.FINAL_PARSED_DATA_FROM_SITES_WHOLE = context['final_parsed_data_from_sites_whole']
-            models.FINAL_PARSED_DATA_FROM_SITES = context['final_parsed_data_from_sites']
-            models.FINAL_PARSED_DATA_FROM_SITES_DATA = context['final_parsed_data_from_sites_data']
-            #print("HELL YEHA--1-")
-        else:                                                                                           # если уже на сегодня расчитано - взять готовые данные
+        if not models.FINAL_PARSED_DATA_FROM_SITES or not models.FINAL_PARSED_DATA_FROM_SITES_DATA or models.FINAL_PARSED_DATA_FROM_SITES_DATA != date_to_look_parsed_data_is: #если еще не расчитывались данные на сегодня - подготовить данные
+            # СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)
+            #if models.CLOSEST_DATA_FOUND1 and models.CLOSEST_DATA_FOUND1 == datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date():  
+            if models.FINAL_PARSED_DATA_FROM_SITES_WHOLE and models.CLOSEST_DATA_FOUND1 == datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date():     
+                #print("1+_+_+_", models.CLOSEST_DATA_FOUND1, '$$$$$', datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date(), '$$$$$')
+                context['final_parsed_data_from_sites_whole'] = models.FINAL_PARSED_DATA_FROM_SITES_WHOLE
+                context['final_parsed_data_from_sites'] = models.FINAL_PARSED_DATA_FROM_SITES
+                context['final_parsed_data_from_sites_data'] = models.FINAL_PARSED_DATA_FROM_SITES_DATA
+                #print('ДАННЫЕ ДАНЫ НА БЛИЖАЙШУЮ ДАТУ БЕЗ ПОВТОРНОГО РАСЧЕТА')
+            # END СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)              
+            else:    
+                models.CLOSEST_DATA_FOUND1 = None
+                final_parsed_data_from_sites_whole, final_parsed_data_from_sites,  date_to_look_parsed_data = chart_one_belarus()
+                #print('A1111111AAAAAAAAAAAAAAAAAAAAAAAAAAA')
+                context['final_parsed_data_from_sites_whole'] = final_parsed_data_from_sites_whole   
+                context['final_parsed_data_from_sites'] = final_parsed_data_from_sites
+                context['final_parsed_data_from_sites_data'] = date_to_look_parsed_data
+                models.FINAL_PARSED_DATA_FROM_SITES_WHOLE = context['final_parsed_data_from_sites_whole']
+                models.FINAL_PARSED_DATA_FROM_SITES = context['final_parsed_data_from_sites']
+                models.FINAL_PARSED_DATA_FROM_SITES_DATA = context['final_parsed_data_from_sites_data']
+                #print("HELL YEHA--11-")
+        else:    
+            models.CLOSEST_DATA_FOUND1 = None  
+            #print('B111111BBBBBBBBBBBBBBBBBBBBBBBBBBBBB')                                                                                     # если уже на сегодня расчитано - взять готовые данные
             context['final_parsed_data_from_sites_whole'] = models.FINAL_PARSED_DATA_FROM_SITES_WHOLE
             context['final_parsed_data_from_sites'] = models.FINAL_PARSED_DATA_FROM_SITES
             context['final_parsed_data_from_sites_data'] = models.FINAL_PARSED_DATA_FROM_SITES_DATA
@@ -5006,15 +5160,33 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         #### END  КРУГОВОЙ ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ С САЙТА: PANDAS
 
         #### ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
-        if not models.BRANDS_FROM_SITES or not models.BRANDS_FROM_SITES_DATE:                #если еще не расчитывались данные на сегодня - подготовить данные
-            top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites = chart_two_belarus()
-            context['top_brands_num'] = top_brands_counter_for_chart
-            context['brands_from_sites_date'] = date_to_look_parsed_data
-            context['brands_from_sites'] = list_of_parrsed_brands_sites
-            models.BRANDS_FROM_SITES = context['brands_from_sites']
-            models.BRANDS_FROM_SITES_DATE= context['brands_from_sites_date']
-            models.TOP_BRANDS_NUM = context['top_brands_num']
-        else:                                                           # если уже на сегодня расчитано - взять готовые данные
+        #if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+        #    date_to_look_parsed_data_is = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+        #    date_to_look_parsed_data_is = datetime.datetime.strptime(date_to_look_parsed_data_is, '%Y-%m-%d').date()
+        #    date_to_look_parsed_data_is = date_to_look_parsed_data_is.strftime('%d.%m.%Y')
+        if not models.BRANDS_FROM_SITES_DATE or not models.BRANDS_FROM_SITES_DATE or models.BRANDS_FROM_SITES_DATE != date_to_look_parsed_data_is:                #если еще не расчитывались данные на сегодня - подготовить данные
+            # СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)
+            #if models.CLOSEST_DATA_FOUND2 and models.CLOSEST_DATA_FOUND2 == datetime.datetime.strptime(date_to_look_parsed_data, '%d.%m.%Y').date(): 
+            if models.TOP_BRANDS_NUM and models.CLOSEST_DATA_FOUND2 == datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date():   
+                #print("2+_+_+_", models.CLOSEST_DATA_FOUND2, '$$$$$', datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date(), '$$$$$')
+                context['brands_from_sites'] = models.BRANDS_FROM_SITES
+                context['brands_from_sites_date'] = models.BRANDS_FROM_SITES_DATE
+                context['top_brands_num'] = models.TOP_BRANDS_NUM
+                #print('ДАННЫЕ ДАНЫ НА БЛИЖАЙШУЮ ДАТУ БЕЗ ПОВТОРНОГО РАСЧЕТА')
+            # END СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)              
+            else:
+                models.CLOSEST_DATA_FOUND2 = None
+                top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites = chart_two_belarus()
+                #print('A222222AAAAAAAAAAAAAAAAAAAAAAAAAAA')
+                context['top_brands_num'] = top_brands_counter_for_chart
+                context['brands_from_sites_date'] = date_to_look_parsed_data
+                context['brands_from_sites'] = list_of_parrsed_brands_sites
+                models.BRANDS_FROM_SITES = context['brands_from_sites']
+                models.BRANDS_FROM_SITES_DATE= context['brands_from_sites_date']
+                models.TOP_BRANDS_NUM = context['top_brands_num']
+        else: 
+            models.CLOSEST_DATA_FOUND2 = None
+            #print('B222222BBBBBBBBBBBBBBBBBBBBBBBBBBBBB')                                                                      # если уже на сегодня расчитано - взять готовые данные
             context['brands_from_sites'] = models.BRANDS_FROM_SITES
             context['brands_from_sites_date'] = models.BRANDS_FROM_SITES_DATE
             context['top_brands_num'] = models.TOP_BRANDS_NUM
@@ -5082,14 +5254,14 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
             context['dates_brands_list_for_chart_header'] = dates_brands_list_for_chart_header[0:number_of_shown_brands_in_chart+1]
             context['period_list_of_parrsed_brands_sites_dict'] = period_list_of_parrsed_brands_sites_dict
-            context['top_brands_num'] = another_top_brands_counter_for_chart  
+            context['second_top_brands_num'] = another_top_brands_counter_for_chart  
             models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT = period_list_of_parrsed_brands_sites_dict
             models.DATES_BRANDS_LIST_FOR_CHART_HEADER = context['dates_brands_list_for_chart_header']
             models.TOP_BRANDS_NUM = another_top_brands_counter_for_chart   
             #print('CRAWLING IN THE DARK1', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
         else:                                                                                                   # если уже на сегодня расчитано - взять готовые данные
             context['period_list_of_parrsed_brands_sites_dict'] = models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT
-            context['top_brands_num'] = models.TOP_BRANDS_NUM
+            context['second_top_brands_num'] = models.TOP_BRANDS_NUM
             context['dates_brands_list_for_chart_header'] = models.DATES_BRANDS_LIST_FOR_CHART_HEADER
             #print("HELL YEHA")
         #print('==1', another_top_brands_counter_for_chart)     
@@ -5099,26 +5271,25 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
 
         #### ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ С САЙТОВ: PANDAS
-        if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
-            date_to_look_parsed_data = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
-            date_to_look_parsed_data = datetime.datetime.strptime(date_to_look_parsed_data, '%Y-%m-%d').date()
-            date_to_look_parsed_data = date_to_look_parsed_data.strftime('%d.%m.%Y')
-
-
-        #elif #not models.TYRESIZES_FROM_SITES_DATE or not models.TYRESITES_FROM_SITES or models.TYRESIZES_FROM_SITES_DATE != date_to_look_parsed_data or models.CLOSEST_DATA_FOUND == None:
-        if not models.TYRESIZES_FROM_SITES_DATE or not models.TYRESITES_FROM_SITES or models.TYRESIZES_FROM_SITES_DATE != date_to_look_parsed_data:
+        #if models.COMPETITORS_DATE_FROM_USER_ON_FILTER:
+        #    date_to_look_parsed_data_is = models.COMPETITORS_DATE_FROM_USER_ON_FILTER[0]
+        #    date_to_look_parsed_data_is = datetime.datetime.strptime(date_to_look_parsed_data_isa, '%Y-%m-%d').date()
+        #    date_to_look_parsed_data_is = date_to_look_parsed_data_is.strftime('%d.%m.%Y')
+        #elif #not models.TYRESIZES_FROM_SITES_DATE or not models.TYRESITES_FROM_SITES or models.TYRESIZES_FROM_SITES_DATE != date_to_look_parsed_data_is or models.CLOSEST_DATA_FOUND == None:
+        if not models.TYRESIZES_FROM_SITES_DATE or not models.TYRESITES_FROM_SITES or models.TYRESIZES_FROM_SITES_DATE != date_to_look_parsed_data_is:
             # СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)
-            if models.CLOSEST_DATA_FOUND and models.CLOSEST_DATA_FOUND == datetime.datetime.strptime(date_to_look_parsed_data, '%d.%m.%Y').date():   
-                print("+_+_+_", models.CLOSEST_DATA_FOUND, '$$$$$', datetime.datetime.strptime(date_to_look_parsed_data, '%d.%m.%Y').date(), '$$$$$')
+            #if models.CLOSEST_DATA_FOUND and models.CLOSEST_DATA_FOUND == datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date():   
+            if models.TOP_TYRESIZES_NUM and models.CLOSEST_DATA_FOUND == datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date():
+                #print("+_+_+_ZOPA", models.CLOSEST_DATA_FOUND, '$$$$$', datetime.datetime.strptime(date_to_look_parsed_data_is, '%d.%m.%Y').date(), '$$$$$')
                 context['tyresizes_from_sites_date'] = models.TYRESIZES_FROM_SITES_DATE
                 context['tyresizes_from_sites'] = models.TYRESITES_FROM_SITES
                 context['top_tyresizes_num'] = models.TOP_TYRESIZES_NUM 
-                print('ДАННЫЕ ДАНЫ НА БЛИЖАЙШУЮ ДАТУ БЕЗ ПОВТОРНОГО РАСЧЕТА')
-        # END СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)  
+                #print('ДАННЫЕ ДАНЫ НА БЛИЖАЙШУЮ ДАТУ БЕЗ ПОВТОРНОГО РАСЧЕТА')
+            # END СПЕЦИАЛЬНЫЙ ОТРЕЗОК - исключение - вернуть ранее подготовленные данные данные без повторного расчета (расчитано ниже) в случве подготовки данных на ближайшую дату (на выбранную дату данных нет)  
             else:
                 models.CLOSEST_DATA_FOUND = None
                 top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites = chart_four_belarus()
-                print('AAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+                #print('AAAAAAAAAAAAAAAAAAAAAAAAAAAA')
                 context['top_tyresizes_num'] = top_tyresizes_counter_for_chart
                 context['tyresizes_from_sites_date'] = date_to_look_parsed_data
                 context['tyresizes_from_sites'] = list_of_parrsed_tyresize_sites
@@ -5127,11 +5298,12 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
                 models.TOP_TYRESIZES_NUM = context['top_tyresizes_num']  
         else:
             models.CLOSEST_DATA_FOUND = None
-            print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
+            #print('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
             context['tyresizes_from_sites_date'] = models.TYRESIZES_FROM_SITES_DATE
             context['tyresizes_from_sites'] = models.TYRESITES_FROM_SITES
             context['top_tyresizes_num'] = models.TOP_TYRESIZES_NUM 
             #print('IM TURNING INTO THIS CREATURE 999')
+        #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ С САЙТОВ: PANDAS
 
         # ГРАФИК ДИНАМИКА ТОП БРЕНДОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
         if not models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT or not models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER:         # если данные на текущую дату еще не созданы - создать
