@@ -2029,6 +2029,6 @@ class DataPriceValMoneyChemCurierModel(models.Model):
 
 
 class AllCompetitorSiteModelDict(models.Model):
-    chart_one_json = JSONField(default=dict) #  {'02.01.2025': [[['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 14], ['bagoria.by', 121], ['autoset.by', 8]], 143]}
-    chart_two_json = JSONField(default=dict)
-    chart_four_json = JSONField(default=dict)
+    chart_one_json = JSONField(default=dict)   # данные для кругового графика #  {'02.01.2025': [[['Сайт', 'Количество спарсенных конкурентов'], ['onliner.by', 14], ['bagoria.by', 121], ['autoset.by', 8]], 143]}
+    chart_two_json = JSONField(default=dict)   # данные для топ графика по брендам
+    chart_four_json = JSONField(default=dict) # данные для топ графика по типоразмерам
