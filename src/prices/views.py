@@ -338,7 +338,6 @@ def chart_two_belarus():
     except: 
         pass
     if not top_brands_counter_for_chart or not list_of_parrsed_brands_sites: # если на текущую дату нет данных - 1) ПОПЫТАТЬСЯ СФОРМИРОВАТЬ СЛОВАРЬ: 
-        iziziziziz = execute_look()
         top_brands_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_brands_sites = execute_look() 
         #print('USRATSJA2')
         what_to_add_to_json = {}
@@ -392,11 +391,9 @@ def chart_two_belarus():
 
 
 def chart_three_belarus(brands_on_date, min_d, max_d):
-
     min_date = min_d
     max_date = max_d
     #date_to_look_parsed_datas = models.DATE_TO_LOOK_PARSED_DATAS
-    
     date_to_look_parsed_datas = brands_on_date
     date_to_look_parsed_datas = ''.join([i for i in date_to_look_parsed_datas if not i.isdigit()])
     edupl_counter = 0
@@ -409,24 +406,21 @@ def chart_three_belarus(brands_on_date, min_d, max_d):
             break
     date_to_look_parsed_datas = date_to_look_parsed_datas[:point_stop]
     date_to_look_parsed_datas = date_to_look_parsed_datas.replace(',', '').replace('[', '').replace('\'', '').replace(' ', '').split(']')
-    
     #for ttyyt in date_to_look_parsed_datas:
     #    print('-----', ttyyt )     
-
     period_list_of_parrsed_brands_sites_dict = {}
     daterange_is = pd.date_range(min_date, max_date)
     number_of_shown_brands_in_chart = 0             # количество показываемых в таблице брендов (например, топ-5)
-    
     get_dict_wit_whole_data_on_date = models.AllCompetitorSiteModelDict.objects.exclude(chart_one_json={}).filter(chart_one_json__isnull=False).values_list('chart_one_json', flat=True)
     get_detailed_on_data_dics = models.AllCompetitorSiteModelDict.objects.exclude(chart_two_json={}).filter(chart_two_json__isnull=False).values_list('chart_two_json', flat=True)
     get_dict_wit_whole_data_on_date  = list(get_dict_wit_whole_data_on_date)
     get_detailed_on_data_dics = list(get_detailed_on_data_dics)
     for ppeeerrr in daterange_is:
-        date_to_look = ppeeerrr.date()
+        #date_to_look = ppeeerrr.date()
         period_list_of_parrsed_brands_sites = []
         brand_counter = 0
         period_str = ppeeerrr.strftime('%d.%m.%Y')
-        get_total_numb_all_on_date = None
+        #get_total_numb_all_on_date = None
         get_brand_numb_all_on_date = None
         for n in get_dict_wit_whole_data_on_date:
             #print('ZAS PROVERIM', n)
@@ -478,32 +472,9 @@ def chart_three_belarus(brands_on_date, min_d, max_d):
                 pass
         t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
         t = t.strftime('%Y,%m,%d') 
-        period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites
-        
+        period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites  
         #for k, v in period_list_of_parrsed_brands_sites_dict.items():
-        #    print('CHO POCHEM', k,'----',  v)
-        
-    #    print('HHHHFHFHH', date_to_look_parsed_datas)
-    #    for brand in date_to_look_parsed_datas:
-    #        #print('brand', brand)
-    #        num_of_parsed_brand_express_shina = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='onliner.by').count()
-    #        num_of_parsed_brand_kolesa_darom = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='bagoria.by').count()
-    #        num_of_parsed_brand_kolesatyt = models.CompetitorSiteModel.objects.filter(developer__competitor_name=brand[0], date_period=date_to_look, site='autoset.by').count() 
-    #        total_quantity = num_of_parsed_brand_express_shina + num_of_parsed_brand_kolesa_darom + num_of_parsed_brand_kolesatyt      
-    #        brand_counter += 1 
-    #        #print('brand_counter', brand_counter)
-    #        number_of_shown_brands_in_chart = brand_counter
-    #        if all_brands_all_sites_in_date: 
-    #            gath_data = float("{:.1f}".format(total_quantity / all_brands_all_sites_in_date * 100 ))   # доля бренда в общем количестве на дату 
-    #        else:
-    #            gath_data = 0
-    #        period_list_of_parrsed_brands_sites.append(gath_data)
-    #        if brand_counter == 10:                                      # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
-    #            break
-    #    t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
-    #    #print('VOLKERBALL', t)
-    #    t = t.strftime('%Y,%m,%d') 
-    #    period_list_of_parrsed_brands_sites_dict[t] = period_list_of_parrsed_brands_sites
+        #    print('CHO POCHEM', k,'----',  v)  
     brands_list_for_chart_header = []
     for brand in date_to_look_parsed_datas:
         brands_list_for_chart_header.append(brand)
@@ -518,11 +489,7 @@ def chart_three_belarus(brands_on_date, min_d, max_d):
     elif second_quantity_counter < 10 and second_quantity_counter > 0:
         another_top_brands_counter_for_chart = second_quantity_counter
     else:
-        another_top_brands_counter_for_chart = 'лист без данных'    
-    #print(print('DAMA=====DAMA1 dates_brands_list_for_chart_header', dates_brands_list_for_chart_header))
-    #print(print('DAMA=====DAMA1 period_list_of_parrsed_brands_sites_dict', period_list_of_parrsed_brands_sites_dict))
-    #print(print('DAMA=====DAMA1 another_top_brands_counter_for_chart', another_top_brands_counter_for_chart))
-    #print(print('DAMA=====DAMA1 number_of_shown_brands_in_chart', number_of_shown_brands_in_chart  ))                  
+        another_top_brands_counter_for_chart = 'лист без данных'                    
     return dates_brands_list_for_chart_header, period_list_of_parrsed_brands_sites_dict, another_top_brands_counter_for_chart, number_of_shown_brands_in_chart   
 
 
@@ -672,6 +639,111 @@ def chart_four_belarus():
     #print('I CHO TAM', top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites) 
     models.CLOSEST_DATA_FOUND = None 
     return top_tyresizes_counter_for_chart, date_to_look_parsed_data, list_of_parrsed_tyresize_sites
+
+
+def chart_five_belarus(brands_on_date, min_d, max_d):
+    min_date = min_d
+    max_date = max_d
+    date_to_look_parsed_datas = brands_on_date
+    #date_to_look_parsed_datas = ''.join([i for i in date_to_look_parsed_datas if not i.isdigit()])
+    edupl_counter = 0
+    point_stop = 0
+    for n in range(0, len(date_to_look_parsed_datas)):
+        point_stop = n
+        if date_to_look_parsed_datas[n] == ']':
+            edupl_counter += 1
+        if edupl_counter == 10:
+            break
+    date_to_look_parsed_datas = date_to_look_parsed_datas[:point_stop]
+    sozdat_listok = []
+    date_to_look_parsed_datas = date_to_look_parsed_datas.replace(' ', '').replace('[', '').split('],') 
+    for lisochek in date_to_look_parsed_datas:
+        sozdat_listok.append(lisochek.split(',')[0])
+    date_to_look_parsed_datas = sozdat_listok
+    #for ttyyt in date_to_look_parsed_datas:
+    #    print('-----', ttyyt )     
+    period_list_of_parrsed_tyresizes_sites_dict = {}
+    daterange_is = pd.date_range(min_date, max_date)
+    number_of_shown_tyresizes_in_chart = 0             # количество показываемых в таблице типоразмеров (например, топ-5)
+    get_dict_wit_whole_data_on_date = models.AllCompetitorSiteModelDict.objects.exclude(chart_one_json={}).filter(chart_one_json__isnull=False).values_list('chart_one_json', flat=True)
+    get_detailed_on_data_dics = models.AllCompetitorSiteModelDict.objects.exclude(chart_four_json={}).filter(chart_four_json__isnull=False).values_list('chart_four_json', flat=True)
+    get_dict_wit_whole_data_on_date = list(get_dict_wit_whole_data_on_date)
+    get_detailed_on_data_dics = list(get_detailed_on_data_dics)
+    for ppeeerrr in daterange_is:
+        #date_to_look = ppeeerrr.date()
+        period_list_of_parrsed_tyresizes_sites = []
+        tyresize_counter = 0
+        period_str = ppeeerrr.strftime('%d.%m.%Y')
+        #get_total_numb_all_on_date = None
+        get_tyresize_numb_all_on_date = None
+        for n in get_dict_wit_whole_data_on_date:
+            #print('ZAS PROVERIM', n)
+            n = dict(n)
+            try:
+                if n[period_str]:
+                    all_tyresizes_all_sites_in_date = n[period_str][0]
+                    #print('ASSASIN', all_tyresizes_all_sites_in_date)
+                    break 
+            except:
+                pass
+        for n in get_detailed_on_data_dics:
+            #print('ZAS PROVERIM1', n)
+            n = dict(n)
+            #print('N', n)
+            try:
+                if n[period_str][1]:
+                    get_tyresize_numb_all_on_date = n[period_str]
+                    #print(period_str, 'ASSASIN1', get_tyresize_numb_all_on_date, len(get_tyresize_numb_all_on_datee[1]), type(get_tyresize_numb_all_on_date[1]))              
+                    for brand in date_to_look_parsed_datas:
+                        try:
+                            #add_len = len(brand[0])
+                            add_len = len(brand)
+                            #print('!!!!!!!!++!!', get_tyresize_numb_all_on_date[1])
+                            #start_llook_at_point = get_tyresize_numb_all_on_date[1].rfind(brand[0]) + add_len + 2
+                            start_llook_at_point = get_tyresize_numb_all_on_date[1].rfind(brand) + add_len + 2
+                            if start_llook_at_point:
+                                end_llook_at_point = get_tyresize_numb_all_on_date[1][start_llook_at_point:].find(']')
+                                str_to_look_cut_start = get_tyresize_numb_all_on_date[1][start_llook_at_point:]
+                                slice_tyresize = str_to_look_cut_start[:end_llook_at_point].replace(' ', '')
+                                vlll_ll = list(slice_tyresize.split(',')) 
+                                itogo_tyresize_on_date = 0 
+                                for n in vlll_ll:
+                                    ads = int(float(n))
+                                    itogo_tyresize_on_date += ads  
+                                tyresize_counter += 1
+                                number_of_shown_tyresizes_in_chart = tyresize_counter
+                                if all_tyresizes_all_sites_in_date and itogo_tyresize_on_date: 
+                                    gath_data = float("{:.1f}".format(itogo_tyresize_on_date / all_tyresizes_all_sites_in_date * 100 ))   # доля бренда в общем количестве на дату 
+                                else:
+                                    gath_data = 0
+                                period_list_of_parrsed_tyresizes_sites.append(gath_data)
+                                if tyresize_counter == 10:                 # ограничитель топ до 10
+                                    break
+                        except:
+                            pass
+                    break # ПОД ВОПРОСОМ
+            except:
+                pass
+        t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
+        t = t.strftime('%Y,%m,%d') 
+        period_list_of_parrsed_tyresizes_sites_dict[t] = period_list_of_parrsed_tyresizes_sites  
+        #for k, v in period_list_of_parrsed_tyresizes_sites_dict.items():
+        #    print('CHO POCHEM', k,'----',  v)  
+    tyresizes_list_for_chart_header = []
+    for tyresize in date_to_look_parsed_datas:
+        tyresizes_list_for_chart_header.append(tyresize)
+    dates_tyresizes_list_for_chart_header = ['Date']                           #  списком даты
+    for tyresize in date_to_look_parsed_datas:
+        dates_tyresizes_list_for_chart_header.append(tyresize)
+    second_quantity_counter = number_of_shown_tyresizes_in_chart 
+    another_top_tyresize_counter_for_chart = 0
+    if second_quantity_counter == 10 or second_quantity_counter > 10:               # ели брендов более 10 - то берем то 10
+        another_top_tyresize_counter_for_chart = 10
+    elif second_quantity_counter < 10 and second_quantity_counter > 0:
+        another_top_tyresize_counter_for_chart = second_quantity_counter
+    else:
+        another_top_tyresize_counter_for_chart = 'лист без данных'                       
+    return dates_tyresizes_list_for_chart_header, period_list_of_parrsed_tyresizes_sites_dict, another_top_tyresize_counter_for_chart, number_of_shown_tyresizes_in_chart
 
 def belarus_sites_parsing():
 
@@ -5324,8 +5396,6 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
         # ГРАФИК ДИНАМИКА ТОП БРЕНДОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
         if not models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT or not models.DATES_BRANDS_LIST_FOR_CHART_HEADER:                     #если еще не расчитывались данные на сегодня - подготовить данные
-            print('MOJA NNNOGAAAAAA!!!!')
-            print('=33878=', models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT )
             dates_brands_list_for_chart_header, period_list_of_parrsed_brands_sites_dict, another_top_brands_counter_for_chart, number_of_shown_brands_in_chart = chart_three_belarus(models.BRANDS_FROM_SITES, min_date, max_date)  
             context['dates_brands_list_for_chart_header'] = dates_brands_list_for_chart_header[0:number_of_shown_brands_in_chart+1]
             context['period_list_of_parrsed_brands_sites_dict'] = period_list_of_parrsed_brands_sites_dict
@@ -5374,59 +5444,9 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             context['top_tyresizes_num'] = models.TOP_TYRESIZES_NUM 
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ С САЙТОВ: PANDAS
 
-        # ГРАФИК ДИНАМИКА ТОП БРЕНДОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
+        # ГРАФИК ДИНАМИКА ТОП ТИПОРАЗМЕРОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
         if not models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT or not models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER:         # если данные на текущую дату еще не созданы - создать
-        #def chart_five_belarus():
-            list_of_parrsed_tyresize_sites1 = models.LIST_OF_PARRSED_TYRESIZE_SITES1
-            period_list_of_parrsed_tyresizes_sites_dict = {}
-            daterange_is = pd.date_range(min_date, max_date)
-            number_of_shown_tyresizes_in_chart = 0             # количество показываемых в таблице брендов (например, топ-5)
-            for ppeeerrr in daterange_is:
-                date_to_look = ppeeerrr.date()
-                quantity_in_day = 0
-                period_list_of_parrsed_tyresizes_sites = []
-                tyresize_counter = 0
-                all_tyresizes_all_sites_in_date = models.CompetitorSiteModel.objects.filter(date_period=date_to_look, site__in=['onliner.by', 'bagoria.by', 'autoset.by']).count()      # всего все бренды на дату
-                #print('all_tyresizes_all_sites_in_date', all_tyresizes_all_sites_in_date)
-                for tyresize in list_of_parrsed_tyresize_sites1:
-                #    print('tyresize', tyresize[0])
-                    num_of_parsed_tyresize_express_shina = models.CompetitorSiteModel.objects.filter(tyresize_competitor=tyresize[0], date_period=date_to_look, site='onliner.by').count()
-                    num_of_parsed_tyresize_kolesa_darom = models.CompetitorSiteModel.objects.filter(tyresize_competitor=tyresize[0], date_period=date_to_look, site='bagoria.by').count()
-                    num_of_parsed_tyresize_kolesatyt = models.CompetitorSiteModel.objects.filter(tyresize_competitor=tyresize[0], date_period=date_to_look, site='autoset.by').count() 
-                    total_quantity = num_of_parsed_tyresize_express_shina + num_of_parsed_tyresize_kolesa_darom + num_of_parsed_tyresize_kolesatyt      
-                    tyresize_counter += 1 
-                    number_of_shown_tyresizes_in_chart = tyresize_counter
-                #    gath_data =  total_quantity
-                    if all_tyresizes_all_sites_in_date: 
-                    #    gath_data = total_quantity / all_tyresizes_all_sites_in_date  # доля бренда в общем количестве на дату
-                    #    print('total_quantity', total_quantity)
-                        gath_data = float("{:.1f}".format(total_quantity)), float("{:.1f}".format(total_quantity / all_tyresizes_all_sites_in_date * 100))
-                    else:
-                        gath_data = 0
-                #    print('gath_data', gath_data)
-                    period_list_of_parrsed_tyresizes_sites.append(gath_data)
-                    if tyresize_counter == 5:                                # ОГРАНИЧИТЕЛЬ ВЫВОДИМЫХ (ТОП-5)
-                        break
-                t = ppeeerrr.date() - relativedelta(months=1)   # отнимаем месяц для гугл таблицы
-                t = t.strftime('%Y,%m,%d') 
-                period_list_of_parrsed_tyresizes_sites_dict[t] = period_list_of_parrsed_tyresizes_sites
-            tyresizes_list_for_chart_header = []
-            for trsize in list_of_parrsed_tyresize_sites1:
-                tyresizes_list_for_chart_header.append(trsize[0])
-            #for v, nn in period_list_of_parrsed_tyresizes_sites_dict.items():          # значения брендов суммарные списком на дату
-            #    nn.insert(0, v)
-            dates_tyresizes_list_for_chart_header = ['Date']                           #  списком даты
-            for trsize in list_of_parrsed_tyresize_sites1:
-                dates_tyresizes_list_for_chart_header.append(trsize[0])
-            second_quantity_tyresizes_counter = number_of_shown_tyresizes_in_chart
-            another_top_tyresize_counter_for_chart = 0
-            if second_quantity_tyresizes_counter == 10 or second_quantity_tyresizes_counter > 10:               # ели брендов более 10 - то берем то 10
-                another_top_tyresize_counter_for_chart = 10
-            elif second_quantity_tyresizes_counter < 10 and second_quantity_tyresizes_counter > 0:
-                another_top_tyresize_counter_for_chart = second_quantity_tyresizes_counter
-            else:
-                another_top_tyresize_counter_for_chart = 'лист без данных' 
-
+            dates_tyresizes_list_for_chart_header, period_list_of_parrsed_tyresizes_sites_dict, another_top_tyresize_counter_for_chart, number_of_shown_tyresizes_in_chart = chart_five_belarus(models.TYRESITES_FROM_SITES, min_date, max_date)
             context['dates_tyresizes_list_for_chart_header'] = dates_tyresizes_list_for_chart_header[0:number_of_shown_tyresizes_in_chart+1]
             context['period_list_of_parrsed_tyresizes_sites_dict'] = period_list_of_parrsed_tyresizes_sites_dict           
             context['second_top_tyresize_num'] = another_top_tyresize_counter_for_chart 
@@ -5438,12 +5458,11 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             context['dates_tyresizes_list_for_chart_header'] = models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER
             context['second_top_tyresize_num'] = models.SECOND_TOP_TYRESIZE_NUM
             #print('IM TURNING INTO THIS CREATURE')
+        #### END ГРАФИК ДИНАМИКА ТОП ТИПОРАЗМЕРОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
 
         print("--- %s seconds ---" % (time.time() - start_time_CHECK))
-        #for n, v in period_list_of_parrsed_tyresizes_sites_dict.items():
-        #    print(n, v)
 
-        #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ  С САЙТОВ: PANDAS
+        
 
         #### END  PANDAS
 
