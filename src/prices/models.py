@@ -127,6 +127,9 @@ LIST_OF_PARRSED_TYRESIZE_SITES1 = []
 CLOSEST_DATA_FOUND = None
 CLOSEST_DATA_FOUND1 = None #нужен для сверки в случаях, когда искадись данные на ближайшую дату (не найдены та текущую), для снижения нагрузки от повторных расчетов при обновлении страницы
 CLOSEST_DATA_FOUND2 = None
+
+MIN_DATE_TABLE = None
+MAX_DATE_TABLE = None
 # END BELARUS - сохранение данных для избегания повторных расчетов
 
 # RUSSIA - сохранение данных для избегания повторных расчетов

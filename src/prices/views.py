@@ -323,7 +323,7 @@ def chart_two_belarus():
         for n in list(data_to_return):
             n = dict(n)
             try:
-                if n[date_to_look_parsed_data]:
+                if n[date_to_look_parsed_data] and n[date_to_look_parsed_data][1]:
                     data_to_return = n[date_to_look_parsed_data]
                     #data_to_return = dict(data_to_return)
                     #data_to_return = data_to_return[date_to_look_parsed_data]
@@ -489,7 +489,9 @@ def chart_three_belarus(brands_on_date, min_d, max_d):
     elif second_quantity_counter < 10 and second_quantity_counter > 0:
         another_top_brands_counter_for_chart = second_quantity_counter
     else:
-        another_top_brands_counter_for_chart = 'лист без данных'                    
+        another_top_brands_counter_for_chart = 'лист без данных'  
+    models.MIN_DATE_TABLE = min_d 
+    models.MAX_DATE_TABLE = max_d 
     return dates_brands_list_for_chart_header, period_list_of_parrsed_brands_sites_dict, another_top_brands_counter_for_chart, number_of_shown_brands_in_chart   
 
 
@@ -574,7 +576,7 @@ def chart_four_belarus():
         for n in list(data_to_return):
             n = dict(n)
             try:
-                if n[date_to_look_parsed_data]:
+                if n[date_to_look_parsed_data] and n[date_to_look_parsed_data][1]:
                     data_to_return = n[date_to_look_parsed_data]
                     #data_to_return = dict(data_to_return)
                     #data_to_return = data_to_return[date_to_look_parsed_data]
@@ -656,7 +658,7 @@ def chart_five_belarus(brands_on_date, min_d, max_d):
             break
     date_to_look_parsed_datas = date_to_look_parsed_datas[:point_stop]
     sozdat_listok = []
-    date_to_look_parsed_datas = date_to_look_parsed_datas.replace(' ', '').replace('[', '').split('],') 
+    date_to_look_parsed_datas = date_to_look_parsed_datas.replace(' ', '').replace('\'', '').replace('[', '').split('],') 
     for lisochek in date_to_look_parsed_datas:
         sozdat_listok.append(lisochek.split(',')[0])
     date_to_look_parsed_datas = sozdat_listok
@@ -742,7 +744,9 @@ def chart_five_belarus(brands_on_date, min_d, max_d):
     elif second_quantity_counter < 10 and second_quantity_counter > 0:
         another_top_tyresize_counter_for_chart = second_quantity_counter
     else:
-        another_top_tyresize_counter_for_chart = 'лист без данных'                       
+        another_top_tyresize_counter_for_chart = 'лист без данных'  
+    models.MIN_DATE_TABLE = min_d 
+    models.MAX_DATE_TABLE = max_d                      
     return dates_tyresizes_list_for_chart_header, period_list_of_parrsed_tyresizes_sites_dict, another_top_tyresize_counter_for_chart, number_of_shown_tyresizes_in_chart
 
 def belarus_sites_parsing():
@@ -5395,7 +5399,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
 
 
         # ГРАФИК ДИНАМИКА ТОП БРЕНДОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
-        if not models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT or not models.DATES_BRANDS_LIST_FOR_CHART_HEADER:                     #если еще не расчитывались данные на сегодня - подготовить данные
+        if not models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT or not models.DATES_BRANDS_LIST_FOR_CHART_HEADER or not models.BRANDS_FROM_SITES_DATE or models.MIN_DATE_TABLE != min_date or models.MAX_DATE_TABLE != max_date:                     #если еще не расчитывались данные на сегодня - подготовить данные
             dates_brands_list_for_chart_header, period_list_of_parrsed_brands_sites_dict, another_top_brands_counter_for_chart, number_of_shown_brands_in_chart = chart_three_belarus(models.BRANDS_FROM_SITES, min_date, max_date)  
             context['dates_brands_list_for_chart_header'] = dates_brands_list_for_chart_header[0:number_of_shown_brands_in_chart+1]
             context['period_list_of_parrsed_brands_sites_dict'] = period_list_of_parrsed_brands_sites_dict
@@ -5403,16 +5407,16 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT = period_list_of_parrsed_brands_sites_dict
             models.DATES_BRANDS_LIST_FOR_CHART_HEADER = context['dates_brands_list_for_chart_header']
             models.TOP_BRANDS_NUM = another_top_brands_counter_for_chart   
-            #print('CRAWLING IN THE DARK1', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
-            #print('ZELJA CLOWN', dates_brands_list_for_chart_header)
-            #print('ZELJA CLOWN', period_list_of_parrsed_brands_sites_dict)
+            print('CRAWLING IN THE DARK1', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
+            print('ZELJA CLOWN', dates_brands_list_for_chart_header)
+            print('ZELJA CLOWN', period_list_of_parrsed_brands_sites_dict)
             #print('ZELJA CLOWN', another_top_brands_counter_for_chart)
             #print('ZELJA CLOWN', number_of_shown_brands_in_chart)
         else:                                                                                                   # если уже на сегодня расчитано - взять готовые данные
             context['period_list_of_parrsed_brands_sites_dict'] = models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT
             context['second_top_brands_num'] = models.TOP_BRANDS_NUM
             context['dates_brands_list_for_chart_header'] = models.DATES_BRANDS_LIST_FOR_CHART_HEADER
-            #print("HELL YEHA")
+            print("HELL YEHA")
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
 
 
@@ -5445,7 +5449,7 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО ТИПОРАЗМЕРУ С САЙТОВ: PANDAS
 
         # ГРАФИК ДИНАМИКА ТОП ТИПОРАЗМЕРОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
-        if not models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT or not models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER:         # если данные на текущую дату еще не созданы - создать
+        if not models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT or not models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER or models.MIN_DATE_TABLE != min_date or models.MAX_DATE_TABLE != max_date:         # если данные на текущую дату еще не созданы - создать
             dates_tyresizes_list_for_chart_header, period_list_of_parrsed_tyresizes_sites_dict, another_top_tyresize_counter_for_chart, number_of_shown_tyresizes_in_chart = chart_five_belarus(models.TYRESITES_FROM_SITES, min_date, max_date)
             context['dates_tyresizes_list_for_chart_header'] = dates_tyresizes_list_for_chart_header[0:number_of_shown_tyresizes_in_chart+1]
             context['period_list_of_parrsed_tyresizes_sites_dict'] = period_list_of_parrsed_tyresizes_sites_dict           
@@ -5453,11 +5457,16 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             models.SECOND_TOP_TYRESIZE_NUM = context['second_top_tyresize_num']
             models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT = context['period_list_of_parrsed_tyresizes_sites_dict']
             models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER = context['dates_tyresizes_list_for_chart_header']
+            print('CRAWLING IN THE DARK2', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
+            print('ZELJA CLOWN2', dates_tyresizes_list_for_chart_header)
+            print('ZELJA CLOWN2', period_list_of_parrsed_tyresizes_sites_dict)
+            #print('ZELJA CLOWN2', another_top_tyresize_counter_for_chart)
+            #print('ZELJA CLOWN2', number_of_shown_tyresizes_in_chart)
         else:                                                                                                       # если данные на текущую дату еще не созданы - взять готовое
             context['period_list_of_parrsed_tyresizes_sites_dict'] = models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT
             context['dates_tyresizes_list_for_chart_header'] = models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER
             context['second_top_tyresize_num'] = models.SECOND_TOP_TYRESIZE_NUM
-            #print('IM TURNING INTO THIS CREATURE')
+            print("HELL YEHA2")
         #### END ГРАФИК ДИНАМИКА ТОП ТИПОРАЗМЕРОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
 
         print("--- %s seconds ---" % (time.time() - start_time_CHECK))
