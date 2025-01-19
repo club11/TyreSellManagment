@@ -1024,6 +1024,8 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
                         sum_val += float(v[1].replace(' ', ''))
                         aver_val = sum_val / item_val
                 item_val = '{0:,}'.format(item_val).replace(',', ' ')
+
+                sum_val = float('{:.2f}'.format(sum_val))
                 sum_val = '{0:,}'.format(sum_val).replace(',', ' ')
                 aver_val = float('{:.2f}'.format(aver_val))
                 aver_val = '{0:,}'.format(aver_val).replace(',', ' ')
