@@ -32,6 +32,9 @@ GROUPS = None
 CHEMCOURIER_EXCEL_CREATE = False
 CHEMCOURIER_PROGRESSIVE_EXCEL_CREATE = False
 
+SREDNEVZ_VAL = True
+SREDNEVZ_VAL_PROGRESSIVE = True
+
 #def get_chem_periods():
 #    list_of_choices = []
 #    try:
@@ -231,4 +234,12 @@ class GroupForm(forms.Form):
         label='Группа шин',   
         required=False,  
     )
+
+class SrednevzForm(forms.Form): 
+    #Parameter_CHOICES_GROUPS = [('-','-')]
+    srendnevz = forms.BooleanField(
+        required=False,
+        label='Средневз цена бренда',
+        initial=False,
+        widget=forms.CheckboxInput(attrs={'class': 'fa fa-share'}))
 

@@ -100,7 +100,7 @@ class ChemCourierTableModel(models.Model):
             avengers_in_dict_assebled = {}  
             avengers_in_dict_assebled_for_table = {}    
             for val in v:
-            #    print(val, '====', k)
+                #print(val, '====', k)
                 avengers_in_dict_assebled[val[0]] = list(val[1])
 
                 ###### ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ:   
@@ -152,7 +152,7 @@ class ChemCourierTableModel(models.Model):
             aver = '{:,}'.format(aver).replace(',', ' ') 
             ###### END ПЕРЕВОД В ЧИТАЕМЫЙ ВИД: СОКРАЩЕНИЕ ЧИСЕЛЬ ДО СТОТЫХ ПОСЛЕ ЗАПЯТОЙ, ПРОБЕЛЫ МЕЖДУ РАЗРЯДАМИ:
             ITOGO_RESULT_DICT[per] = '{0:,}'.format(val).replace(',', ' '), sum, aver    
-    #    print('CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE', CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE)                 
+        #print('CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE', CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE)                 
                     
         return CHEM_TABLE_FINAL_DATA_FINAL_FOR_TABLE, ITOGO_RESULT_DICT
     

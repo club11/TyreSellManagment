@@ -357,10 +357,65 @@ class ChemcourierTableModelDetailView(DetailView):
 
         # 5.2 пересборка в словарный вид -для отрисовки в таблице:
 
+        ### ВСТАВОЧКА - расчитывать средневзвешенную цену бренда
+        srendnevz_form = forms.SrednevzForm()
+        srendnevz_form.fields['srendnevz'].initial = forms.SREDNEVZ_VAL
+        context['srendnevz_form'] = srendnevz_form
 
         models.CHEM_PNJ_IN_TABLE_LIST = get_chem_courier_objects_from_base
-        context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base.order_by('producer_chem')
+        if forms.SREDNEVZ_VAL is False: # ПОКАЗЫВАТЬ ЧТО ЕСТЬВ ХИМКУРЬЕРЕ
+            context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base.order_by('producer_chem')
+        else:       # РАСЧИТАТЬ И ПОКАЗЫВАТЬ СРЕДНЕВЗВЕШЕННУЮ
+            context['show_sredne'] = 'show'
+            orderd_query = get_chem_courier_objects_from_base.order_by('producer_chem')
+            brands_list = list(orderd_query.values_list('producer_chem', flat=True).distinct())
+            srednevsvesh_dict = {}
+            for br_name in brands_list:
+                all_br_objs = orderd_query.filter(producer_chem=br_name)
+                stuck_counter = 0
+                money_counter = 0
+                srednevsz = 0
+                recievers = []
+                country_prod = []
+                group = []
+                for abbjcts in all_br_objs:
+                    stuck_counter += abbjcts.val_on_moth_chem                
+                    money_counter += abbjcts.money_on_moth_chem
+                    recievers.append(abbjcts.reciever_chem)
+                    country_prod.append(abbjcts.prod_country)
+                    group.append(abbjcts.group_chem.tyre_group)
+                if stuck_counter > 0:    
+                    srednevsz = money_counter / stuck_counter 
+                recievers = list(set(recievers)) 
+                country_prod = list(set(country_prod)) 
+                group = list(set(group))
+                recievers_str = ''
+                for el in recievers:
+                    recievers_str += el + ' '
+                recievers = recievers_str 
+                country_prod = ''
+                for el in country_prod:
+                    country_prod += el + ' '
+                country_prod = country_prod 
+                group_str = ''
+                for el in group:
+                    group_str += el + ' '
+                group = group_str
+                usdd_to_bell = prices_models.CURRENCY_VALUE_USD * srednevsz
+                money_counter =float('{:.2f}'.format(money_counter))
+                money_counter = '{:,}'.format(money_counter).replace(',', ' ')
+                srednevsz =float('{:.2f}'.format(srednevsz))
+                srednevsz = '{:,}'.format(srednevsz).replace(',', ' ')
+                usdd_to_bell =float('{:.2f}'.format(usdd_to_bell))
+                usdd_to_bell = '{:,}'.format(usdd_to_bell).replace(',', ' ')
+                srednevsvesh_dict[br_name] = recievers, country_prod, group, stuck_counter, money_counter, srednevsz, usdd_to_bell
+            context['get_chem_courier_objects_from_base'] = srednevsvesh_dict
+            #for kkk, vvv in srednevsvesh_dict.items():
+            #    print('SLUSHU EMPEROR', kkk, vvv)
+        ### END ВСТАВОЧКА - расчитывать средневзвешенную цену бренда
 
+
+        #context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base.order_by('producer_chem')
 
         ####### 6 СКАЧИВАНИЕ ФАЙЛА - EXCEL ТАБЛИЦА с данными из таблицы
         if forms.CHEMCOURIER_EXCEL_CREATE is True:
@@ -548,7 +603,15 @@ class ChemcourierTableModelUpdateView(View):
                 prices_models.CURRENCY_DATE_GOT_FROM_USER = chosen_date_for_currency
                 prices_models.CURRENCY_ON_DATE is True
 
-        # 8. создать EXCEL CHEMCOURIER
+        # 8. выбор представления данных Хим Курьер в виде средневзвешенной по бренду или прсто списком  
+        get_srednevz = request.POST.get('srendnevz')
+        if get_srednevz == 'on':
+            pass
+            forms.SREDNEVZ_VAL = True
+        else:
+            forms.SREDNEVZ_VAL = False              
+
+        # 9. создать EXCEL CHEMCOURIER
         chemcuorier_download = request.POST.getlist('chemcuorier_download') 
         if chemcuorier_download:
             response = None
@@ -843,8 +906,76 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
     #    context['get_chem_courier_objects_from_base'] = get_chem_courier_objects_from_base
         
         # 6 в отрисовку таблицы 
-        context['get_chem_courier_objects_from_base'] = obj.table_content_creation()[0]
+        ### ВСТАВОЧКА - расчитывать средневзвешенную цену бренда
+        srendnevz_form = forms.SrednevzForm()
+        srendnevz_form.fields['srendnevz'].initial = forms.SREDNEVZ_VAL_PROGRESSIVE
+        context['srendnevz_form'] = srendnevz_form
+        if forms.SREDNEVZ_VAL_PROGRESSIVE is False: # ПОКАЗЫВАТЬ ЧТО ЕСТЬВ ХИМКУРЬЕРЕ
+            context['get_chem_courier_objects_from_base'] = obj.table_content_creation()[0]
         #print('!!!!!!!!', context['get_chem_courier_objects_from_base'])
+        else:       # РАСЧИТАТЬ И ПОКАЗЫВАТЬ СРЕДНЕВЗВЕШЕННУЮ
+            dict_of_collected_data = obj.table_content_creation()[0]
+            iii = dict_of_collected_data.keys()
+            brands_list = []
+            for k_v in iii:
+                brands_list.append(k_v[0])
+            brands_list = list(set(brands_list))
+            some_iter = 0
+            try:
+                dates_list_one = []
+                for some_val, datess in dict_of_collected_data.items():
+                    if some_iter == 1:    
+                        break
+                    dates_list_one = list(datess.keys())
+                    some_iter += 1
+            except:
+                pass
+            srednevsvesh_dict = {}
+            for br_name in brands_list:     #['Zeetex', ''Hilo',]
+                receiver_list = []
+                date_vall_sredn_dict = {}
+                for datte in dates_list_one:
+                    stuck = 0
+                    deneg = 0
+                    sr_doll = 0
+                    for key_brand_receiver, val_dicts in dict_of_collected_data.items():   #('Zeetex', '«Северный путь»') +++++++++++++ {datetime.date(2020, 8, 1): ['40', '631.36', '15.78'], datetime.date(2020, 9, 1): ['40', '558.11', '13.95'], datetime.date(2020, 6, 1): [' ', ' ', ' '], 
+                        if key_brand_receiver[0] == br_name:
+                            receiver_list.append(key_brand_receiver[1])
+                            # dict_keys([datetime.date(2020, 4, 1), datetime.date(2020, 2, 1), datetime.date(2020, 10, 1), datetime.date(2020, 9, 1), datetime.date(2020, 3, 1), datetime.date(2020, 1, 1)])
+                            if val_dicts[datte]:
+                                #print('XXXXXX', val_dicts[datte][0], ' EAI IT ', key_brand_receiver, ' DDDATE', datte)  
+                                if val_dicts[datte][0] != ' ':
+                                    stuck += int(val_dicts[datte][0])
+                                if val_dicts[datte][1] != ' ':
+                                    deneg += float(val_dicts[datte][1].replace(' ', ''))
+                            if stuck > 0:
+                                sr_doll = deneg / stuck  
+                    if stuck == 0:
+                        stuck = ' '
+                    else:
+                        stuck = str(stuck) 
+                    if deneg == 0:
+                        deneg = ' '
+                    else:
+                        deneg =float('{:.2f}'.format(deneg))
+                        deneg = '{:,}'.format(deneg).replace(',', ' ')  
+                    if sr_doll == 0:
+                        sr_doll = ' '
+                    else:
+                        sr_doll =float('{:.2f}'.format(sr_doll))
+                        sr_doll = '{:,}'.format(sr_doll).replace(',', ' ')     
+                    date_vall_sredn_dict[datte] = [stuck, deneg, sr_doll]
+                receiver_list = list(set(receiver_list))
+                recievers_str = ''
+                for el in receiver_list:
+                    recievers_str += el + ' '
+                srednevsvesh_dict[(br_name, recievers_str)] = date_vall_sredn_dict
+            #for michael_jackson, beat_it in srednevsvesh_dict.items():
+            #    print(michael_jackson, '=====' , beat_it)           
+            #srednevsvesh_dict = {key: value for key, value in sorted(srednevsvesh_dict.items())}
+            srednevsvesh_dict = dict(sorted(srednevsvesh_dict.items()))        
+            context['get_chem_courier_objects_from_base'] = srednevsvesh_dict   
+           
 
         # 7 количество столбцов именно сданными на дату:
         headers_len = []
@@ -1257,7 +1388,15 @@ class ChemcourierTableProgressiveModelUpdateView(View):
                 prices_models.CURRENCY_DATE_GOT_FROM_USER = chosen_date_for_currency
                 prices_models.CURRENCY_ON_DATE is True
 
-        # 8. создать EXCEL CHEMCOURIER
+        # 8. выбор представления данных Хим Курьер в виде средневзвешенной по бренду или прсто списком  
+        get_srednevz = request.POST.get('srendnevz')
+        if get_srednevz == 'on':
+            pass
+            forms.SREDNEVZ_VAL_PROGRESSIVE = True
+        else:
+            forms.SREDNEVZ_VAL_PROGRESSIVE = False  
+
+        # 9. создать EXCEL CHEMCOURIER
         chemcuorier_download = request.POST.getlist('chemcuorier_progr_download') 
         response = None
         a_resp = None

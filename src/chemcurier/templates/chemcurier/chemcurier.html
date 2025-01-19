@@ -31,7 +31,8 @@
                         <li style="display: inline;">{{ groups_form }}</li>
                         <li style="display: inline;">{{ currency_input_form }}</li>   
                         <li style="display: inline;"><b>{{ currency }}</b></li> 
-                        <li style="display: inline;"><b>{{ curr_value }}</b></li>      
+                        <li style="display: inline;"><b>{{ curr_value }}</b></li>           
+                        <li style="display: inline;">{{ srendnevz_form }}</li>                           
                     </ul>     
                 </form>
             </div>
@@ -58,8 +59,20 @@
                     </thead>
 
                     <tbody>
-                        {% for obj in get_chem_courier_objects_from_base %}
-                            <tr>
+                        {% if show_sredne %}
+                            {% for brand_name, values in get_chem_courier_objects_from_base.items %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    {#    <td>{{ obj.tyre_size_chem }}</td> #}
+                                    <td>{{ brand_name }}</td>
+                                    {% for val in values%}
+                                        <td>{{ val }}</td>
+                                    {% endfor %}                              
+                                </tr>
+                            {% endfor %} 
+                        {% else %}
+                            {% for obj in get_chem_courier_objects_from_base %}
+                                <tr>
                                     <td>{{ forloop.counter }}</td>
                                     {#    <td>{{ obj.tyre_size_chem }}</td> #}
                                     <td>{{ obj.producer_chem }}</td>
@@ -70,14 +83,15 @@
                                     <td>{{ obj.obj_money_on_moth_chem_for_table }}</td>
                                     <td>{{ obj.obj_average_price_in_usd_chem_for_table }}</td>
                                     <td>{{ obj.average_from_usd_to_bel }}</td>
-                            </tr>
-                        {% endfor %}    
-                            <tr>
-                                <td colspan="5" align="center"><b>ИТОГО</b></td>
-                                {% for data in chemcourier_table.num_summ %}
-                                <td><b>{{ data }}</b></td>
-                                {% endfor %}
-                            </tr>
+                                </tr>
+                            {% endfor %}    
+                                <tr>
+                                    <td colspan="5" align="center"><b>ИТОГО</b></td>
+                                    {% for data in chemcourier_table.num_summ %}
+                                    <td><b>{{ data }}</b></td>
+                                    {% endfor %}
+                                </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
