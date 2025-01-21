@@ -517,27 +517,35 @@ class ChemcourierTableModelDetailView(DetailView):
             #wb.save('/home/user/Desktop/FileName.xlsx')
 
             # сохранение в папку DOWNLOADS пользователя:
-            user_path_is = os.path.expanduser("~")
-            #print('path_is', user_path_is)
-            download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
-        #    print('tyresize_to_check_name', tyresize_to_check_name)
-            if os.path.exists(download_folder_exist):
-                users_download_path = user_path_is + "/Downloads/" + f'Chemcourier_{tyresize_to_check_name}.xlsx'
-                dowload_to = os.path.normpath(users_download_path)     
-            else:                                                                           # если папки Downloads нет - создать файл в корневой папке пользователя
-                users_download_path = user_path_is  + f'Chemcourier_{tyresize_to_check_name}.xlsx'
-                dowload_to = os.path.normpath(users_download_path)
+            from pathlib import Path
+            downloads_path = str(Path.home() / "Downloads")
+            print(str(Path.home()))
+            print(os.path.exists(downloads_path), '+++++++')
 
+
+            user_path_is = os.path.expanduser("~")
+            print('path_is', user_path_is)
+            download_folder_exist = user_path_is + "/Downloads/"                            # создать файл в папке Downloads
+            if os.path.exists(download_folder_exist):
+                users_download_path = download_folder_exist + f'Chemcourier_{tyresize_to_check_name}.xlsx'
+                dowload_to = os.path.normpath(users_download_path)   
+                print('KUDA1', dowload_to) 
+            else:                                                                           # если папки Downloads нет - создать файл в корневой папке пользователя
+                users_download_path = user_path_is  + f' Chemcourier_{tyresize_to_check_name}.xlsx'
+                dowload_to = os.path.normpath(users_download_path)
+                print('KUDA2', dowload_to) 
 
             def not_in_use(filename):                                               # проверка - используется ли в данный момент файл (если он откурыт -то будет попытка его переписыть с ошибкой - надо избеать)
                     try:
                         os.rename(filename,filename)
                         return True
                     except:  
-                        return False     
+                        return False 
+                        
             if os.path.exists(dowload_to):          
                 if not_in_use(dowload_to):
                     wb.save(dowload_to)
+                    print('BEAT IITT1')
             else:
                 wb.save(dowload_to)
 
@@ -1024,7 +1032,6 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
                         sum_val += float(v[1].replace(' ', ''))
                         aver_val = sum_val / item_val
                 item_val = '{0:,}'.format(item_val).replace(',', ' ')
-
                 sum_val = float('{:.2f}'.format(sum_val))
                 sum_val = '{0:,}'.format(sum_val).replace(',', ' ')
                 aver_val = float('{:.2f}'.format(aver_val))
@@ -1159,7 +1166,7 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
                 excel_sheet.cell(row=val, column=3).value = key[1]
 
                 the_val = val
-    #        print('num_to_abc_convert_dict', num_to_abc_convert_dict)               #  !!!! DICT_T_T
+            #print('num_to_abc_convert_dict', num_to_abc_convert_dict)               #  !!!! DICT_T_T
 
             for column_n in columns_dict.values():
 

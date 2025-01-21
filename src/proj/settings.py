@@ -101,24 +101,24 @@ WSGI_APPLICATION = 'proj.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }   
-}
-
+#### ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql:
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'postgres',
-#        'USER': 'postgres',
-#        'PASSWORD': 'postgres',
-#        'HOST': 'postgres',  # Наименование контейнера для базы данных в Docker Compose
-#        'PORT': '5432',
-#    }
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': BASE_DIR / 'db.sqlite3',
+#    }   
 #}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',  # Наименование контейнера для базы данных в Docker Compose
+        'PORT': '5432',
+    }
+}
 ##### END ПЕРЕД сборкой докер-контейнера раскоментить sqlite3 и закоментить postgresql
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
