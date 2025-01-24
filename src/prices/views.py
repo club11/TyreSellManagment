@@ -805,8 +805,8 @@ def belarus_sites_parsing():
         #2. получаем данные со всех страниц:
         list_to_check = ['автобусов и грузовых автомобилей', 'большегрузных автомобилей', 'строительной и дорожной техники', 'тракторов и сельскохозяйственной техники', 'микроавтобусов и легкогрузовых автомобилей']
         shins_phrase = ['шины', 'Шины']
-        for slug in range(1,2):                               # c 1 по 2 станицы    
-        #for slug in range(1, 160):                               # !!!!!!!!!!! c 1 по 2 станицы      
+        #for slug in range(1,2):                               # c 1 по 2 станицы    
+        for slug in range(1, 160):                               # !!!!!!!!!!! c 1 по 2 станицы      
         ####for slug in urls:      
             #newUrl = url.replace('?', f'?page={slug}')     # https://catalog.onliner.by/tires?page=3
             newUrl = url + f'?page={slug}'
@@ -1235,8 +1235,8 @@ def belarus_sites_parsing():
             #2. получаем данные со всех страниц:                         
             ####for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы              
             ##for slug in urls[0:3]:                                 #!!!!! c 1 по 2 станицы
-            for slug in range(0, 1):   
-            #for slug in range(0,urls_get):         #### !!!!!
+            #for slug in range(0, 1):   
+            for slug in range(0,urls_get):         #### !!!!!
                 #print('webdriverr.current_url', webdriverr.session_id)
                 webdriverr.session_id
                 #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://autoset.by/tires/?PAGEN_1=3
@@ -1310,8 +1310,8 @@ def belarus_sites_parsing():
             urls_get = max(urls_get)
             #2. получаем данные со всех страниц:                         
             ##for slug in range(1, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы                
-            for slug in range(1, 2):
-            #for slug in range(0,urls_get):    #!!!! working
+            #for slug in range(1, 2):
+            for slug in range(0,urls_get):    #!!!! working
                 newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/trucks-tires/?PAGEN_1=2
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1377,8 +1377,8 @@ def belarus_sites_parsing():
             urls_get = max(urls_get)
             #2. получаем данные со всех страниц:                         
             ##for slug in range(0, urls_get[-1]):                             # мое добавление специально для АВТОСЕТЬ   # c 1 по 2 станицы
-            for slug in range(1, 1):
-            #for slug in range(0, urls_get):        # working   
+            #for slug in range(1, 1):
+            for slug in range(0, urls_get):        # working   
                 newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/industrial-tires/?PAGEN_1=2
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1443,8 +1443,8 @@ def belarus_sites_parsing():
                     urls_get.append(pageNum)
             urls_get = max(urls_get)
             #2. получаем данные со всех страниц:                         
-            for slug in range(2, 2):
-            #for slug in range(0, urls_get): 
+            #for slug in range(2, 2):
+            for slug in range(0, urls_get): 
                 newUrl = url + f'?PAGEN_1={slug}'       #https://autoset.by/agricultural-tires/?PAGEN_1=2
                 webdriverr.get(newUrl)
                 time.sleep(2)
@@ -1728,8 +1728,8 @@ def belarus_sites_parsing():
             def legkovik(pages_quantity_start, pages_quantity_end, bg_nm):
                 bagoria_good_num = bg_nm
                 url = 'https://bagoria.by/legkovye-shiny/' 
-                #for slug in range(pages_quantity_start, pages_quantity_end): 
-                for slug in range(pages_quantity_start, 1):    
+                for slug in range(pages_quantity_start, pages_quantity_end): 
+                #for slug in range(pages_quantity_start, 1):    
                     #newUrl = url.replace('', f'/?PAGEN_1={slug}')       #https://bagoria.by/legkovye-shiny/?PAGEN_1=3
                     newUrl = url + f'?nav=page-{slug}'       #https://bagoria.by/legkovye-shiny/?nav=page-9
                     webdriverr.get(newUrl)
@@ -1801,8 +1801,8 @@ def belarus_sites_parsing():
             def gruzovik(pages_quantity_start, pages_quantity_end, bg_nm):
                 bagoria_good_num = bg_nm
                 url = 'https://bagoria.by/gruzovye-shiny/'
-                #for slug in range(pages_quantity_start, pages_quantity_end):   
-                for slug in range(pages_quantity_start, 1):   
+                for slug in range(pages_quantity_start, pages_quantity_end):   
+                #for slug in range(pages_quantity_start, 1):   
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(3)
@@ -1854,8 +1854,8 @@ def belarus_sites_parsing():
             def induztrial(pages_quantity_start, pages_quantity_end, bg_nm):
                 url = 'https://bagoria.by/industr-shiny/'
                 bagoria_good_num = bg_nm
-                #for slug in range(pages_quantity_start, pages_quantity_end): 
-                for slug in range(pages_quantity_start, 1):   
+                for slug in range(pages_quantity_start, pages_quantity_end): 
+                #for slug in range(pages_quantity_start, 1):   
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/industr-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(2)
@@ -1908,8 +1908,8 @@ def belarus_sites_parsing():
                 bagoria_good_num = bg_nm
                 url = 'https://bagoria.by/selhoz-shiny/'
             #    print('ISISISIISISSISS', pages_quantity_start, pages_quantity_end)
-                #for slug in range(pages_quantity_start, pages_quantity_end):
-                for slug in range(pages_quantity_start, 1):
+                for slug in range(pages_quantity_start, pages_quantity_end):
+                #for slug in range(pages_quantity_start, 1):
                     newUrl = url + f'?PAGEN_1={slug}'       #https://bagoria.by/selhoz-shiny/
                     webdriverr.get(newUrl)
                     time.sleep(4)
@@ -5407,16 +5407,16 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT = period_list_of_parrsed_brands_sites_dict
             models.DATES_BRANDS_LIST_FOR_CHART_HEADER = context['dates_brands_list_for_chart_header']
             models.TOP_BRANDS_NUM = another_top_brands_counter_for_chart   
-            print('CRAWLING IN THE DARK1', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
-            print('ZELJA CLOWN', dates_brands_list_for_chart_header)
-            print('ZELJA CLOWN', period_list_of_parrsed_brands_sites_dict)
+            #print('CRAWLING IN THE DARK1', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
+            #print('ZELJA CLOWN', dates_brands_list_for_chart_header)
+            #print('ZELJA CLOWN', period_list_of_parrsed_brands_sites_dict)
             #print('ZELJA CLOWN', another_top_brands_counter_for_chart)
             #print('ZELJA CLOWN', number_of_shown_brands_in_chart)
         else:                                                                                                   # если уже на сегодня расчитано - взять готовые данные
             context['period_list_of_parrsed_brands_sites_dict'] = models.PERIOD_LIST_OF_PARSED_BRANDS_SITES_DICT
             context['second_top_brands_num'] = models.TOP_BRANDS_NUM
             context['dates_brands_list_for_chart_header'] = models.DATES_BRANDS_LIST_FOR_CHART_HEADER
-            print("HELL YEHA")
+            #print("HELL YEHA")
         #### END ГРАФИК КОЛИЧЕСТВО СПАРСЕННЫХ ДАННЫХ ПО БРЕНДУ С САЙТОВ: PANDAS
 
 
@@ -5457,19 +5457,19 @@ class ComparativeAnalysisTableModelDetailView(LoginRequiredMixin, DetailView):
             models.SECOND_TOP_TYRESIZE_NUM = context['second_top_tyresize_num']
             models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT = context['period_list_of_parrsed_tyresizes_sites_dict']
             models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER = context['dates_tyresizes_list_for_chart_header']
-            print('CRAWLING IN THE DARK2', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
-            print('ZELJA CLOWN2', dates_tyresizes_list_for_chart_header)
-            print('ZELJA CLOWN2', period_list_of_parrsed_tyresizes_sites_dict)
+            #print('CRAWLING IN THE DARK2', another_top_brands_counter_for_chart, type(another_top_brands_counter_for_chart)) 
+            #print('ZELJA CLOWN2', dates_tyresizes_list_for_chart_header)
+            #print('ZELJA CLOWN2', period_list_of_parrsed_tyresizes_sites_dict)
             #print('ZELJA CLOWN2', another_top_tyresize_counter_for_chart)
             #print('ZELJA CLOWN2', number_of_shown_tyresizes_in_chart)
         else:                                                                                                       # если данные на текущую дату еще не созданы - взять готовое
             context['period_list_of_parrsed_tyresizes_sites_dict'] = models.PERIOD_LIST_OF_PARSED_TYRETYPES_DICT
             context['dates_tyresizes_list_for_chart_header'] = models.DATES_TYRESIZES_LIST_FOR_CHART_HEADER
             context['second_top_tyresize_num'] = models.SECOND_TOP_TYRESIZE_NUM
-            print("HELL YEHA2")
+            #print("HELL YEHA2")
         #### END ГРАФИК ДИНАМИКА ТОП ТИПОРАЗМЕРОВ ИСХОДЯ ИЗ ПОСЛЕДНЕЙ ДАТЫ:
 
-        print("--- %s seconds ---" % (time.time() - start_time_CHECK))
+        #print("--- %s seconds ---" % (time.time() - start_time_CHECK))
 
         
 

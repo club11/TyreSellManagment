@@ -953,8 +953,16 @@ class ChemcourierProgressiveTableModelDetailView(DetailView):
                             if val_dicts[datte]:
                                 #print('XXXXXX', val_dicts[datte][0], ' EAI IT ', key_brand_receiver, ' DDDATE', datte)  
                                 if val_dicts[datte][0] != ' ':
-                                    stuck += int(val_dicts[datte][0])
+                                    try:
+                                        val_dicts[datte][0].replace(' ', '')
+                                    except:
+                                        pass
+                                        stuck += int(val_dicts[datte][0])
                                 if val_dicts[datte][1] != ' ':
+                                    try:
+                                        val_dicts[datte][1].replace(' ', '')
+                                    except:
+                                        pass                                    
                                     deneg += float(val_dicts[datte][1].replace(' ', ''))
                             if stuck > 0:
                                 sr_doll = deneg / stuck  
