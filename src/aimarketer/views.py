@@ -1,7 +1,7 @@
 #from gc import get_objects
 #from multiprocessing import context
 #from django.shortcuts import render
-#from django.views.generic import TemplateView
+from django.views.generic import TemplateView
 #from django.urls import reverse_lazy
 #from django.http import HttpResponseRedirect
 ##from . import forms
@@ -185,9 +185,9 @@
 #
 #
 #
-#class AiarketerTemplateView(TemplateView):
-#    #model = models.SalesTable
-#    template_name = 'aimarketer/aimarketer.html'
+class AiarketerTemplateView(TemplateView):
+    #model = models.SalesTable
+    template_name = 'aimarketer/aimarketer.html'
 #
 #    def get(self, request, *args, **kwargs):
 #        context = self.get_context_data(**kwargs)
