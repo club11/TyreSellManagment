@@ -147,7 +147,12 @@ def clean_database():
       
 ## END очистка базы данных
 
+# очитсть базу Хим Курьер
+@app.task
+def clean_chem_courier_from_database():
+    prices_models.ChemCurierTyresModel.objects.all().delete() 
 
+# END очитсть базу Хим Курьер
 
 class ExcelTemplateView(LoginRequiredMixin, TemplateView):
 #class ExcelTemplateView(View):    
@@ -296,6 +301,12 @@ class ExcelTemplateView(LoginRequiredMixin, TemplateView):
             execute_in_one_minutes = datetime.now() + timedelta(minutes = 1)
             render(self.request, 'filemanagment/excel_import.html', {'form': form, 
                                         'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_database.apply_async(countdown=15)
+
+        # очистить базу данных:
+        if self.request.POST.get('form_name') == "delete_data_base_form.prefix":
+            execute_in_one_minutes = datetime.now() + timedelta(minutes = 1)
+            render(self.request, 'filemanagment/excel_import.html', {'form': form, 
+                                        'dform': forms.ImportTimeForm(initial={'time_task_a': set_time_form_a, 'time_task_b': set_time_form_b})}), clean_chem_courier_from_database.apply_async(countdown=15)
 
         ###############################################################
         if self.request.POST.get('form_name') == "celery_qeue_down":

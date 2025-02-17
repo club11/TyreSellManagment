@@ -23,7 +23,8 @@ urlpatterns = [
     path('prices/', include('prices.urls', namespace='prices')),  
     path('chemcurier/', include('chemcurier.urls', namespace='chemcurier')),  
     path('profiles/', include('profiles.urls', namespace='profiles')), 
- 
+    path('aimarketer/', include('aimarketer.urls', namespace='aimarketer')), 
+
     path('login', profiles_views.SomeUserLoginView.as_view(), name='login'),
     path('chp', profiles_views.SomePasswordChangeView.as_view(), name='chp'),
     path('logged_out', profiles_views.SomeLogoutView.as_view(), name='logged_out'),

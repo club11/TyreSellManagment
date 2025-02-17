@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'prices',
     'chemcurier',
     'profiles',
+    'aimarketer',
 
 #    'crispy_forms',
     'django.contrib.postgres', #это модуль Django, который предоставляет интеграцию с базой данных PostgreSQL
