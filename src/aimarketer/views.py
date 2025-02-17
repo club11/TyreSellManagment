@@ -1,56 +1,49 @@
-from gc import get_objects
-from multiprocessing import context
-from django.shortcuts import render
-from django.views.generic import TemplateView
-from django.urls import reverse_lazy
-from django.http import HttpResponseRedirect
-#from . import forms
-#from . import models
-
-# Import required libraries
-#import sklearn
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-import seaborn as sns
-from datetime import datetime
-import warnings
-warnings.filterwarnings('ignore')
-
-class MarketingAIAnalyzer:
-    def __init__(self):
-        self.data = None
-        self.models = {}
-        self.analysis_results = {}
-        
-    def load_data(self, file_path=None):
-        """
-        Load data from CSV file or create sample data for testing
-        """
-        try:
-            if file_path:
-                self.data = pd.read_csv(file_path)
-            else:
-                # Create sample data for demonstration
-                np.random.seed(42)
-                dates = pd.date_range(start='2023-01-01', end='2023-12-31', freq='D')
-                self.data = pd.DataFrame({
-                    'Date': dates,
-                    'Sales': np.random.normal(1000, 200, len(dates)),
-                    'Marketing_Spend': np.random.normal(200, 50, len(dates)),
-                    'Customers': np.random.randint(50, 150, len(dates)),
-                    'Customer_Satisfaction': np.random.uniform(3.5, 5.0, len(dates))
-                })
-            return "Data loaded successfully"
-        except Exception as e:
-            return f"Error loading data: {str(e)}"
-
-    def analyze_trends(self):
+#from gc import get_objects
+#from multiprocessing import context
+#from django.shortcuts import render
+#from django.views.generic import TemplateView
+#from django.urls import reverse_lazy
+#from django.http import HttpResponseRedirect
+##from . import forms
+##from . import models
+#
+## Import required libraries
+##import sklearn
+#import pandas as pd
+#import numpy as np
+#import matplotlib.pyplot as plt
+#
+#from sklearn.preprocessing import StandardScaler
+#from sklearn.cluster import KMeans
+#from sklearn.linear_model import LinearRegression
+#from sklearn.model_selection import train_test_split
+#import seaborn as sns
+#from datetime import datetime
+#import warnings
+#warnings.filterwarnings('ignore')
+#
+#class MarketingAIAnalyzer:
+#    def __init__(self):
+#        self.data = None
+#        self.models = {}
+#        self.analysis_results = {}
+#        
+#    def load_data(self, file_path=None):
+#        try:
+#            np.random.seed(42)
+#            dates = pd.date_range(start='2018-01-01', end='2023-12-31', freq='D')
+#            self.data = pd.DataFrame({
+#                'Date': dates,
+#                'Sales': np.random.normal(1000, 200, len(dates)),
+#                'Marketing_Spend': np.random.normal(200, 50, len(dates)),
+#                'Customers': np.random.randint(50, 150, len(dates)),
+#                'Customer_Satisfaction': np.random.uniform(3.5, 5.0, len(dates))
+#            })
+#            return "Data loaded successfully"
+#        except Exception as e:
+#            return f"Error loading data: {str(e)}"
+#
+#    def analyze_trends(self):
         """
         Analyze sales trends and patterns
         """
@@ -82,8 +75,8 @@ class MarketingAIAnalyzer:
             
         except Exception as e:
             return f"Error in trend analysis: {str(e)}"
-
-    def customer_segmentation(self):
+#
+#    def customer_segmentation(self):
         """
         Perform customer segmentation using KMeans
         """
@@ -116,8 +109,8 @@ class MarketingAIAnalyzer:
             
         except Exception as e:
             return f"Error in customer segmentation: {str(e)}"
-
-    def predict_sales(self, days_to_forecast=30):
+#
+#    def predict_sales(self, days_to_forecast=30):
         """
         Predict future sales using Linear Regression
         """
@@ -153,9 +146,9 @@ class MarketingAIAnalyzer:
             
         except Exception as e:
             return f"Error in sales prediction: {str(e)}"
-
-    
-    def generate_report(self):
+#
+#    
+#    def generate_report(self):
         
         print('!!!!!!!', self.analysis_results)
 
@@ -187,55 +180,55 @@ class MarketingAIAnalyzer:
             
         except Exception as e:
             return f"Error generating report: {str(e)}"
-
-
-
-
-
-class AiarketerTemplateView(TemplateView):
-    #model = models.SalesTable
-    template_name = 'aimarketer/aimarketer.html'
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs):
-        kwargs.setdefault("view", self)
-        if self.extra_context is not None:
-            kwargs.update(self.extra_context)
-
-        # Example usage
-        analyzer = MarketingAIAnalyzer()
-        print("1. Loading data...")
-        print(analyzer.load_data())
-
-        print("\
-        2. Analyzing trends...")
-        trends = analyzer.analyze_trends()
-        print("Trend analysis completed")
-
-        print("\
-        3. Performing customer segmentation...")
-        segments = analyzer.customer_segmentation()
-        print("\
-        Customer Segments:")
-        print(segments)
-
-        print("\
-        4. Predicting sales...")
-        predictions = analyzer.predict_sales()
-        print("\
-        Prediction Results:")
-        print(predictions)
-
-        print("\
-        5. Generating final report...")
-        report = analyzer.generate_report()
-        print("\
-        Final Report:")
-        print(report)
-
-        kwargs['report'] = report
-
-        return kwargs
+#
+#
+#
+#
+#
+#class AiarketerTemplateView(TemplateView):
+#    #model = models.SalesTable
+#    template_name = 'aimarketer/aimarketer.html'
+#
+#    def get(self, request, *args, **kwargs):
+#        context = self.get_context_data(**kwargs)
+#        return self.render_to_response(context)
+#
+#    def get_context_data(self, **kwargs):
+#        kwargs.setdefault("view", self)
+#        if self.extra_context is not None:
+#            kwargs.update(self.extra_context)
+#
+#        # Example usage
+#        analyzer = MarketingAIAnalyzer()
+#        print("1. Loading data...")
+#        print(analyzer.load_data())
+#
+#        print("\
+#        2. Analyzing trends...")
+#        trends = analyzer.analyze_trends()
+#        print("Trend analysis completed")
+#
+#        print("\
+#        3. Performing customer segmentation...")
+#        segments = analyzer.customer_segmentation()
+#        print("\
+#        Customer Segments:")
+#        print(segments)
+#
+#        print("\
+#        4. Predicting sales...")
+#        predictions = analyzer.predict_sales()
+#        print("\
+#        Prediction Results:")
+#        print(predictions)
+#
+#        print("\
+#        5. Generating final report...")
+#        report = analyzer.generate_report()
+#        print("\
+#        Final Report:")
+#        print(report)
+#
+#        kwargs['report'] = report
+#
+#        return kwargs
