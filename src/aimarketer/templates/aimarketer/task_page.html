@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Долгая задача с Celery</title>
+    <style>
+        .progress-container {
+            width: 300px;
+            height: 20px;
+            border: 1px solid #ccc;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <h1>Обработка длительной задачи</h1>
+    
+    <button onclick="startTask()">Начать обработку</button>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        let currentTaskId = null;
+
+        async function startTask() {
+            try {
+                const response = await fetch('/start-task/');
+                const data = await response.json();
+                currentTaskId = data.task_id;
+                checkProgress();
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        async function checkProgress() {
+            if (!currentTaskId) return;
+
+            try {
+                const response = await fetch(`/task-status/${currentTaskId}/`);
+                const data = await response.json();
+
+                if (data.status === 'PROGRESS' || data.status === 'PROGRESS') {
+                    const progress = (data.progress / data.total) * 100;
+                    document.getElementById('progress-bar').style.width = `${progress}%`;
+                    setTimeout(checkProgress, 1000);
+                }
+
+                if (data.status === 'SUCCESS') {
+                    document.getElementById('result').innerHTML = 
+                        `<strong>Результат:</strong> ${data.result.result}<br>
+                         <em>Детали:</em> ${data.result.details}`;
+                    document.getElementById('progress-bar').style.width = '100%';
+                }
+
+                if (data.status === 'FAILURE') {
+                    document.getElementById('result').innerHTML = 
+                        `<strong>Ошибка:</strong> ${data.error}`;
+                }
+
+            } catch (error) {
+                console.error('Ошибка проверки статуса:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -190,6 +190,10 @@ CELERY_BEAT_SCHEDULE = {
     'reading_filemanagementfile': {
         'task': 'filemanagment.views.reading_filemanagementfile',
         'schedule': crontab(hour=hour2, minute=minute2),
+    },  
+    'open_ai_reload_paige': {
+        'task': 'aimarketer.views.open_ai_reload_paige',
+        'schedule': crontab(hour=hour2, minute=minute2),
     },      
 }
 ###### END ДЛЯ redis -celery
