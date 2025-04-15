@@ -975,13 +975,15 @@ def belarus_sites_parsing():
                                 #        print('group_is =====================', season)  
                             # END шипованность
                             # шипы
+                            stttdded_text = ''
                             studded = None
                             if stttdded:
                                 for gfhgh in stttdded:
                                     #print('gfhgh', gfhgh.text)
                                     if 'шип' in gfhgh.text:
                                         stttdded_text = gfhgh.text
-                                #print('stttdded_text', stttdded_text)           
+                                #print('stttdded_text', stttdded_text)   
+                                        
                                 for studded_el in studded_list:
                                     if studded_el in stttdded_text:
                                         studded = studded_el

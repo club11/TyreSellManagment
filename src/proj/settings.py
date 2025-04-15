@@ -183,10 +183,10 @@ if hour1 is None or minute1  is None or hour2 is None or minute2 is None:
 
 CELERY_BEAT_SCHEDULE = {
     # 'clean_database' - очитка уже в render response
-    #'parcing': {
-    #    'task': 'prices.views.running_programm',
-    #    'schedule': crontab(hour=hour1, minute=minute1),
-    #},
+    'parcing': {
+        'task': 'prices.views.running_programm',
+        'schedule': crontab(hour=hour1, minute=minute1),
+    },
     'reading_filemanagementfile': {
         'task': 'filemanagment.views.reading_filemanagementfile',
         'schedule': crontab(hour=hour2, minute=minute2),

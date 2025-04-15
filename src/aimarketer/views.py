@@ -1,6 +1,6 @@
 
 from django.shortcuts import render
-from django.views.generic import FormView, RedirectView, TemplateView
+from django.views.generic import FormView#, TemplateView,
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from . import forms
@@ -13,88 +13,83 @@ from openai import OpenAI
 from proj.celery import app
 
 from celery import shared_task
-from celery.result import AsyncResult
-
-#@app.task
-@shared_task
-def open_ai_reload_paige(a_request):         
-    some_request = a_request
-    client = OpenAI(
-      base_url="https://openrouter.ai/api/v1",
-      api_key="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",
-    )
-    completion = client.chat.completions.create(
-      extra_headers={
-        "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-        "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
-      },
-      extra_body={},
-      model="deepseek/deepseek-r1-zero:free", 
-      messages=[
-        {
-          "role": "user",
-          "content": some_request
-        }
-      ]
-    )
-    print('****', completion.choices[0].message.content)
-    #a_context = super().get_context_data(**kwargs)
-    #a_context = context
-    #a_context['response'] = completion.choices[0].message.content
-    return completion.choices[0].message.content
-
-
-################
-import time
-@shared_task(bind=True)
-def long_running_task(self, duration=10):
-    """Имитация длительной задачи с прогрессом"""
-    for i in range(duration):
-        time.sleep(1)
-        self.update_state(
-            state='PROGRESS',
-            meta={'current': i+1, 'total': duration}
-        )
-    return {'result': 'Завершено успешно!', 'details': f'Обработано {duration} итераций'}
+#from celery.result import AsyncResult
+import prices.models
+import chemcurier.models
 
 class AiarketerTemplateView(FormView):
+    #model = models.SalesTable
     template_name = 'aimarketer/aimarketer.html'
     form_class = forms.AIForm
 
+    #@app.task
+    @shared_task
+    #def open_ai_reload_paige(request, context):
+    def open_ai_reload_paige(a_request):    
+    #def open_ai_reload_paige(self):    
+        print('ASS')
+        a_request
+        client = OpenAI(
+          base_url="https://openrouter.ai/api/v1",
+          api_key="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",
+        )
+        completion = client.chat.completions.create(
+          extra_headers={
+            "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+            "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+          },
+          extra_body={},
+          model="deepseek/deepseek-r1-zero:free",
+          
+          messages=[
+            {
+              "role": "user",
+              "content": a_request
+            }
+          ]
+        )
+        print('****+++++++++++++++++++++++++++++++++++', completion.choices[0].message.content)
+        #context = self.get_context_data(**kwargs)
+        #a_context['response'] = completion.choices[0].message.content
+        return completion.choices[0].message.content
+        #return render(a_request, 'aimarketer/aimarketer.html', context=a_context)
+ 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        #print(self.request.POST, 'DODGE================')
+        # 1. вариант - ответ AI- по тестовому запросу:
         if self.request.POST.get('ai_request'):
-            task = self.open_ai_reload_paige.delay(request.POST['ai_request'])
-            #self.request.session['task_id'] = task.id
+            data_to_analyse = request.POST['ai_request']
+        # 2. вариант - анализ данных из BD:    
+        #else:
+            a_queryset = prices.models.ChemCurierTyresModel.objects.all()[:30].values_list() #.values_list('tyre_size_chem', 'producer_chem', 'val_on_moth_chem')
+            #print('AAA=============================', a_queryset)
+            # Форматируем данные для анализа
+        # 2. Подготовка структурированных данных
+            
+            from django.core.serializers.json import DjangoJSONEncoder
+            data_to_analyse_data = json.dumps(list(a_queryset), cls=DjangoJSONEncoder)
+            #print(data_to_analyse)
+       
+        # 5. Формирование промпта для AI
+            data_to_analyse_is = f"""
+            Задачи анализа:
+            1. Выявить топ-10 брендов по объему импорта 
+            2. Выявить топ-10 типоразмеров по объему импорта
+            в следующих данных:
+            {data_to_analyse_data}
+            """
+            # 3. Проанализировать распределение по странам производства
+            # 4. Найти аномалии в данных
+            # 5. Определить корреляцию между типоразмером и ценой
+            # 6. Спрогнозировать спрос на следующие 6 месяцев
+       
+            print('WHAT WE ANALYZE', data_to_analyse)
 
-            return JsonResponse({'task_id': task.id}, status=202)
-        return render(self.request, 'aimarketer/aimarketer.html', context=context) 
-class TaskView(TemplateView):
-    template_name = 'task_page.html'
+            self.open_ai_reload_paige.delay(data_to_analyse)
+            #self.open_ai_reload_paige.delay(data_to_analyse_data)
+            self.open_ai_reload_paige.delay(data_to_analyse_is)
 
-class StartTaskView(TemplateView):
-    def get(self, request, *args, **kwargs):
-        task = long_running_task.delay(10)  # Запуск задачи на 10 секунд
-        return JsonResponse({'task_id': task.id}, status=202)
-class TaskStatusView(TemplateView):
-    def get(self, request, task_id, *args, **kwargs):
-        task = long_running_task.AsyncResult(task_id)
-        
-        if task.state == 'FAILURE':
-            return JsonResponse({'status': 'error', 'error': str(task.result)})   
-        response = {
-            'status': task.state,
-            'task_id': task_id
-        }  
-        if task.state == 'PROGRESS':
-            response.update({
-                'progress': task.info.get('current', 0),
-                'total': task.info.get('total', 10)
-            })     
-        if task.state == 'SUCCESS':
-            response['result'] = task.result
-        
-        return JsonResponse(response)
-################    
+        return render(self.request, 'aimarketer/aimarketer.html', context=context)
+    
+    
 
